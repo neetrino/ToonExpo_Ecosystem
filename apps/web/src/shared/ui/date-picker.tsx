@@ -189,7 +189,7 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(functio
         <CalendarDays className="size-4 shrink-0 text-brand" aria-hidden />
       </button>
 
-      <DropdownPortal open={open && !disabled} anchorRef={buttonRef} matchWidth>
+      <DropdownPortal open={open && !disabled} anchorRef={buttonRef} matchWidth fitContent>
         <div
           ref={panelRef}
           id={panelId}
