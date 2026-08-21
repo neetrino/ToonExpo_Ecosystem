@@ -1512,7 +1512,7 @@
       "projectMeta": "{districts} districts · {buildings} buildings · phase {phase}",
       "labLink": "Mapping lab (QA)",
       "backToProjects": "Projects",
-      "backToWizard": "Wizard",
+      "backToWizard": "Back",
       "activePhase": "Continue with phase {phase}",
       "allPhasesDone": "All phases are complete",
       "filters": {
@@ -3673,8 +3673,6 @@
       "subtitle": "Site renders, building maps, and floorplans with navigation hotspots",
       "loading": "Loading visual maps…",
       "empty": "No visual canvases yet. Create one to add hotspots.",
-      "newCanvas": "+ New Canvas",
-      "cancelCreate": "Cancel",
       "untitled": "Untitled canvas",
       "primaryYes": "Primary",
       "primaryNo": "—",
@@ -3693,18 +3691,6 @@
         "status": "Status",
         "hotspots": "Hotspots",
         "actions": "Actions"
-      },
-      "form": {
-        "contextType": "Context type",
-        "contextEntity": "Context entity",
-        "contextProject": "Project",
-        "contextBuilding": "Building",
-        "contextFloor": "Floor",
-        "mediaAssetId": "Canvas image",
-        "title": "Title",
-        "create": "Create canvas",
-        "creating": "Creating…",
-        "cancel": "Cancel"
       },
       "editor": {
         "loading": "Loading canvas…",

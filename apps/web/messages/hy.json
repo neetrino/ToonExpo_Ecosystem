@@ -1512,7 +1512,7 @@
       "projectMeta": "{districts} թաղամաս · {buildings} շենք · փուլ {phase}",
       "labLink": "Mapping lab (QA)",
       "backToProjects": "Նախագծեր",
-      "backToWizard": "Փուլեր",
+      "backToWizard": "Հետ",
       "activePhase": "Հիմա Փուլ {phase}",
       "allPhasesDone": "Բոլոր փուլերը պատրաստ են",
       "filters": {
@@ -3413,8 +3413,6 @@
       "subtitle": "Նախագծի ռենդերներ, շենքերի քարտեզներ և հատակագծեր՝ հղման կետերով",
       "loading": "Բեռնվում են տեսական քարտեզները…",
       "empty": "Դեռ տեսական canvas չկա։ Ստեղծեք և ավելացրեք կետեր։",
-      "newCanvas": "+ Նոր canvas",
-      "cancelCreate": "Չեղարկել",
       "untitled": "Անվերնագիր canvas",
       "primaryYes": "Հիմնական",
       "primaryNo": "—",
@@ -3433,18 +3431,6 @@
         "status": "Կարգավիճակ",
         "hotspots": "Կետեր",
         "actions": "Գործողություն"
-      },
-      "form": {
-        "contextType": "Կոնտեքստի տեսակ",
-        "contextEntity": "Կոնտեքստի օբյեկտ",
-        "contextProject": "Նախագիծ",
-        "contextBuilding": "Շենք",
-        "contextFloor": "Հարկ",
-        "mediaAssetId": "Canvas-ի պատկեր",
-        "title": "Վերնագիր",
-        "create": "Ստեղծել canvas",
-        "creating": "Ստեղծվում է…",
-        "cancel": "Չեղարկել"
       },
       "editor": {
         "loading": "Canvas-ը բեռնվում է…",

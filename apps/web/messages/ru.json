@@ -1512,7 +1512,7 @@
       "projectMeta": "{districts} районов · {buildings} зданий · фаза {phase}",
       "labLink": "Mapping lab (QA)",
       "backToProjects": "Проекты",
-      "backToWizard": "Мастер",
+      "backToWizard": "Назад",
       "activePhase": "Сейчас фаза {phase}",
       "allPhasesDone": "Все фазы завершены",
       "filters": {
@@ -3413,8 +3413,6 @@
       "subtitle": "Рендеры проекта, карты корпусов и поэтажные планы с навигационными точками",
       "loading": "Загрузка визуальных карт…",
       "empty": "Визуальных canvas пока нет. Создайте и добавьте точки.",
-      "newCanvas": "+ Новый canvas",
-      "cancelCreate": "Отмена",
       "untitled": "Canvas без названия",
       "primaryYes": "Основной",
       "primaryNo": "—",
@@ -3433,18 +3431,6 @@
         "status": "Статус",
         "hotspots": "Точки",
         "actions": "Действия"
-      },
-      "form": {
-        "contextType": "Тип контекста",
-        "contextEntity": "Объект контекста",
-        "contextProject": "Проект",
-        "contextBuilding": "Корпус",
-        "contextFloor": "Этаж",
-        "mediaAssetId": "Изображение canvas",
-        "title": "Название",
-        "create": "Создать canvas",
-        "creating": "Создание…",
-        "cancel": "Отмена"
       },
       "editor": {
         "loading": "Загрузка canvas…",
