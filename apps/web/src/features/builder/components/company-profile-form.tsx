@@ -3,7 +3,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { CompanyProfileResponse } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -23,6 +22,7 @@ import {
 } from '@/features/media/schemas/media-fields.schema';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
+import { useFormErrorToast } from '@/shared/ui/use-form-error-toast';
 import { useSuccessToast } from '@/shared/ui/use-success-toast';
 
 const companyProfileSchema = z
@@ -45,8 +45,10 @@ type CompanyProfileFormProps = {
 export const CompanyProfileForm = ({ profile, canEdit }: CompanyProfileFormProps) => {
   const t = useTranslations('Builder.company');
   const mutation = useUpdateCompanyProfileMutation();
-  const [error, setError] = useState<string | null>(null);
   const { showSuccess, successToast } = useSuccessToast();
+  const { showError, onInvalid, errorToast } = useFormErrorToast({
+    fieldLabels: { description: t('form.description'), logoMediaId: t('form.logoMedia') },
+  });
 
   const {
     register,
@@ -63,7 +65,6 @@ export const CompanyProfileForm = ({ profile, canEdit }: CompanyProfileFormProps
   });
 
   const onSubmit = handleSubmit(async (values) => {
-    setError(null);
     try {
       await mutation.mutateAsync({
         description: emptyToNull(values.description),
@@ -72,9 +73,9 @@ export const CompanyProfileForm = ({ profile, canEdit }: CompanyProfileFormProps
       });
       showSuccess(t('saveSuccess'));
     } catch {
-      setError(t('errors.generic'));
+      showError(t('errors.generic'));
     }
-  });
+  }, onInvalid);
 
   if (!canEdit) {
     return <p className="text-sm text-ink-secondary">{t('adminOnly')}</p>;
@@ -121,16 +122,12 @@ export const CompanyProfileForm = ({ profile, canEdit }: CompanyProfileFormProps
           />
         )}
       />
-      {error ? (
-        <p role="alert" className="text-sm text-danger">
-          {error}
-        </p>
-      ) : null}
       <Button type="submit" variant="secondary" disabled={busy || !isDirty}>
         {busy ? t('saving') : t('save')}
       </Button>
     </form>
     {successToast}
+    {errorToast}
     </>
   );
 };

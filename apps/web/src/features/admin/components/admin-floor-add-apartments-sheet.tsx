@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { useAdminBulkCreateApartmentsMutation } from '@/features/admin/hooks/use-admin-inventory';
@@ -20,6 +20,7 @@ import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
+import { useFormErrorToast } from '@/shared/ui/use-form-error-toast';
 
 type AdminFloorAddApartmentsSheetProps = {
   open: boolean;
@@ -58,7 +59,9 @@ export const AdminFloorAddApartmentsSheet = ({
   const inventoryT = useTranslations('Builder.inventory');
   const mutation = useAdminBulkCreateApartmentsMutation();
   const mutationScope = toCatalogMutationScope(sheetScope, companyId);
-  const [error, setError] = useState<string | null>(null);
+  const { showError, onInvalid, errorToast } = useFormErrorToast({
+    fieldLabels: { count: inventoryT('count'), startNumber: inventoryT('startNumber') },
+  });
 
   const {
     register,
@@ -74,12 +77,10 @@ export const AdminFloorAddApartmentsSheet = ({
     if (!open) {
       return;
     }
-    setError(null);
     reset(DEFAULT_FORM_VALUES);
   }, [open, reset]);
 
   const onSubmit = handleSubmit(async (values) => {
-    setError(null);
     try {
       await mutation.mutateAsync({
         companyId,
@@ -90,9 +91,9 @@ export const AdminFloorAddApartmentsSheet = ({
       });
       onClose();
     } catch {
-      setError(inventoryT('errors.generic'));
+      showError(inventoryT('errors.generic'));
     }
-  });
+  }, onInvalid);
 
   const busy = isSubmitting || mutation.isPending;
 
@@ -131,15 +132,10 @@ export const AdminFloorAddApartmentsSheet = ({
           </FormField>
         </div>
 
-        {error ? (
-          <p role="alert" className="text-sm text-danger">
-            {error}
-          </p>
-        ) : null}
-
         <Button type="submit" size="sm" variant="secondary" disabled={busy}>
           {busy ? inventoryT('adding') : t('submit')}
         </Button>
+        {errorToast}
       </form>
     </AdminCreateSheet>
   );

@@ -37,7 +37,19 @@
     "placeholders": {
       "url": "https://"
     },
-    "back": "Back"
+    "back": "Back",
+    "formErrors": {
+      "required": "{field} is required",
+      "requiredInLanguage": "{field} is required in {language}",
+      "invalid": "{field} is invalid",
+      "tooLong": "{field} is too long",
+      "generic": "Fill in the required fields and try again",
+      "languages": {
+        "hy": "Armenian",
+        "ru": "Russian",
+        "en": "English"
+      }
+    }
   },
   "ReadinessKpi": {
     "categories": {

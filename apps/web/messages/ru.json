@@ -37,7 +37,19 @@
     "placeholders": {
       "url": "https://"
     },
-    "back": "Назад"
+    "back": "Назад",
+    "formErrors": {
+      "required": "Поле «{field}» обязательно",
+      "requiredInLanguage": "Поле «{field}» обязательно в {language} версии",
+      "invalid": "Поле «{field}» заполнено неверно",
+      "tooLong": "Поле «{field}» слишком длинное",
+      "generic": "Заполните обязательные поля и попробуйте снова",
+      "languages": {
+        "hy": "армянской",
+        "ru": "русской",
+        "en": "английской"
+      }
+    }
   },
   "ReadinessKpi": {
     "categories": {

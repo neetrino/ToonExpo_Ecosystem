@@ -4,13 +4,13 @@ import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import { catalogMediaContext, catalogProjectDetailHref } from '@/features/builder/catalog-scope';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useLocale, useTranslations } from 'next-intl';
-import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { TranslationTabs } from '@/features/builder/components/translation-tabs';
 import { getProjectFormPlaceholder } from '@/features/builder/constants/project-content-placeholders';
 import { useAutoProjectSlug } from '@/features/builder/hooks/use-auto-project-slug';
 import { useCreatePortalProjectMutation } from '@/features/builder/hooks/use-portal-projects';
+import { useProjectFormErrorToast } from '@/features/builder/hooks/use-project-form-error-toast';
 import {
   createProjectSchema,
   type CreateProjectFormValues,
@@ -63,7 +63,8 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
   const siteLocale = useLocale();
   const router = useRouter();
   const createMutation = useCreatePortalProjectMutation();
-  const [formError, setFormError] = useState<string | null>(null);
+  const { showError, onInvalid, errorToast, focusLocale, focusTick } =
+    useProjectFormErrorToast();
 
   const {
     register,
@@ -86,7 +87,6 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
   const slugField = register('slug');
 
   const onSubmit = handleSubmit(async (values) => {
-    setFormError(null);
     try {
       const project = await createMutation.mutateAsync(toCreateProjectRequest(values));
       if (onCreated) {
@@ -95,15 +95,15 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
       }
       router.push(catalogProjectDetailHref(scope, project.id));
     } catch {
-      setFormError(t('errors.generic'));
+      showError(t('errors.generic'));
     }
-  });
+  }, onInvalid);
 
   const busy = isSubmitting || createMutation.isPending;
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-5" noValidate>
-      <TranslationTabs>
+      <TranslationTabs focusLocale={focusLocale} focusTick={focusTick}>
         {(locale) => (
           <div className="flex flex-col gap-4">
             <FormField
@@ -234,15 +234,10 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
         )}
       />
 
-      {formError ? (
-        <p role="alert" className="rounded-sm bg-danger-soft px-3 py-2 text-sm text-danger">
-          {formError}
-        </p>
-      ) : null}
-
       <Button type="submit" variant="secondary" disabled={busy}>
         {busy ? t('form.submitting') : t('form.submit')}
       </Button>
+      {errorToast}
     </form>
   );
 };

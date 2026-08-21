@@ -3,7 +3,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { CompanyResponse } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
 import { Controller, useForm, type Control } from 'react-hook-form';
 
 import { COMPANY_DESCRIPTION_MAX_LENGTH, COMPANY_SHORT_DESCRIPTION_MAX_LENGTH, COMPANY_STATUSES } from '@/features/admin/constants';
@@ -23,8 +22,8 @@ import {
 } from '@/features/companies/schemas/company-contact-fields.schema';
 import { toNullableMediaId } from '@/features/media/schemas/media-fields.schema';
 import { Button } from '@/shared/ui/button';
-import { EphemeralToast } from '@/shared/ui/ephemeral-toast';
 import { FormField } from '@/shared/ui/form-field';
+import { useFormErrorToast } from '@/shared/ui/use-form-error-toast';
 import { useSuccessToast } from '@/shared/ui/use-success-toast';
 import { Input } from '@/shared/ui/input';
 import { Select } from '@/shared/ui/select';
@@ -47,8 +46,15 @@ const blurActiveField = (): void => {
 export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
   const t = useTranslations('Admin.companies');
   const updateMutation = useUpdateAdminCompanyMutation(company.id);
-  const [errorToast, setErrorToast] = useState<{ id: number; message: string } | null>(null);
   const { showSuccess, successToast } = useSuccessToast();
+  const { showError, onInvalid, errorToast } = useFormErrorToast({
+    fieldLabels: {
+      name: t('form.name'),
+      status: t('form.status'),
+      shortDescription: t('form.shortDescription'),
+      description: t('form.description'),
+    },
+  });
 
   const {
     register,
@@ -70,7 +76,6 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
   });
 
   const onSubmit = handleSubmit(async (values) => {
-    setErrorToast(null);
     blurActiveField();
     try {
       await updateMutation.mutateAsync({
@@ -85,9 +90,9 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
       reset(values);
       showSuccess(t('detail.saveSuccess'));
     } catch {
-      setErrorToast({ id: Date.now(), message: t('errors.generic') });
+      showError(t('errors.generic'));
     }
-  });
+  }, onInvalid);
 
   const busy = isSubmitting || updateMutation.isPending;
 
@@ -193,14 +198,7 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
       </Button>
     </form>
     {successToast}
-    <EphemeralToast
-      id={errorToast?.id}
-      message={errorToast?.message ?? null}
-      onDismiss={() => {
-        setErrorToast(null);
-      }}
-      tone="danger"
-    />
+    {errorToast}
     </>
   );
 };

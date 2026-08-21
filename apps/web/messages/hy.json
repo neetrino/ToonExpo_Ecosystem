@@ -37,7 +37,19 @@
     "placeholders": {
       "url": "https://"
     },
-    "back": "Հետ"
+    "back": "Հետ",
+    "formErrors": {
+      "required": "«{field}» դաշտը պարտադիր է",
+      "requiredInLanguage": "«{field}» դաշտը պարտադիր է {language} տարբերակում",
+      "invalid": "«{field}» դաշտը սխալ է լրացված",
+      "tooLong": "«{field}» դաշտը չափազանց երկար է",
+      "generic": "Լրացրեք պարտադիր դաշտերը և կրկին փորձեք",
+      "languages": {
+        "hy": "հայերեն",
+        "ru": "ռուսերեն",
+        "en": "անգլերեն"
+      }
+    }
   },
   "ReadinessKpi": {
     "categories": {
