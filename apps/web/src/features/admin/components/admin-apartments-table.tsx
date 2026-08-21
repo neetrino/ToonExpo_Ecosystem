@@ -4,6 +4,7 @@ import type { AdminApartmentListItem, ApartmentSalesStatus } from '@toonexpo/con
 import { useTranslations } from 'next-intl';
 
 import { AdminApartmentCard } from '@/features/admin/components/admin-apartment-card';
+import type { CatalogScope } from '@/features/builder/catalog-scope';
 import { catalogApartmentDetailHref } from '@/features/builder/catalog-scope';
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
 import { Link } from '@/i18n/navigation';
@@ -17,6 +18,8 @@ type AdminApartmentsTableProps = {
   apartments: AdminApartmentListItem[];
   returnTo: string;
   viewMode?: ViewMode | undefined;
+  showCompany?: boolean | undefined;
+  catalogScope?: CatalogScope | undefined;
 };
 
 /**
@@ -26,6 +29,8 @@ export const AdminApartmentsTable = ({
   apartments,
   returnTo,
   viewMode = VIEW_MODE_CARDS,
+  showCompany = true,
+  catalogScope,
 }: AdminApartmentsTableProps) => {
   const t = useTranslations('Admin.apartments');
 
@@ -33,7 +38,14 @@ export const AdminApartmentsTable = ({
     return (
       <AdminListCardGrid className="gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {apartments.map((apartment) => (
-          <AdminApartmentCard key={apartment.id} apartment={apartment} returnTo={returnTo} />
+          <AdminApartmentCard
+            key={apartment.id}
+            apartment={apartment}
+            returnTo={returnTo}
+            showCompany={showCompany}
+            showFeatured={catalogScope?.mode !== 'portal'}
+            catalogScope={catalogScope}
+          />
         ))}
       </AdminListCardGrid>
     );
@@ -48,7 +60,9 @@ export const AdminApartmentsTable = ({
               <th className="px-3 py-2.5 text-left font-medium">{t('columns.unit')}</th>
               <th className="px-3 py-2.5 text-left font-medium">{t('columns.building')}</th>
               <th className="px-3 py-2.5 text-left font-medium">{t('columns.floor')}</th>
-              <th className="px-3 py-2.5 text-left font-medium">{t('columns.company')}</th>
+              {showCompany ? (
+                <th className="px-3 py-2.5 text-left font-medium">{t('columns.company')}</th>
+              ) : null}
               <th className="px-3 py-2.5 text-left font-medium">{t('columns.project')}</th>
               <th className="px-3 py-2.5 text-center font-medium">{t('columns.status')}</th>
               <th className="px-3 py-2.5 text-center font-medium">{t('columns.sales')}</th>
@@ -63,7 +77,7 @@ export const AdminApartmentsTable = ({
                   <td className="px-3 py-2.5 align-middle">
                     <Link
                       href={catalogApartmentDetailHref(
-                        { mode: 'admin', companyId: apartment.builderCompanyId },
+                        catalogScope ?? { mode: 'admin', companyId: apartment.builderCompanyId },
                         apartment.id,
                         { returnTo },
                       )}
@@ -78,9 +92,11 @@ export const AdminApartmentsTable = ({
                   <td className="px-3 py-2.5 align-middle text-ink-secondary">
                     {t('floorNumber', { number: apartment.floorNumber })}
                   </td>
-                  <td className="px-3 py-2.5 align-middle text-ink-secondary">
-                    {apartment.companyName}
-                  </td>
+                  {showCompany ? (
+                    <td className="px-3 py-2.5 align-middle text-ink-secondary">
+                      {apartment.companyName}
+                    </td>
+                  ) : null}
                   <td className="px-3 py-2.5 align-middle text-ink-secondary">
                     {apartment.projectName}
                   </td>

@@ -12,6 +12,11 @@ import {
   useAdminBuildingInventoryGlanceQuery,
   useAdminDeleteBuildingMutation,
 } from '@/features/admin/hooks/use-admin-inventory';
+import {
+  PLATFORM_INVENTORY_SHEET_SCOPE,
+  toCatalogMutationScope,
+  type InventorySheetScope,
+} from '@/features/admin/inventory-sheet-scope';
 import { toCatalogPublicationStatus } from '@/features/catalog/utils/catalog-publication-status';
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
 import { LIST_STATUS_BADGE_COMPACT_CLASS } from '@/shared/ui/list-status-badge';
@@ -25,6 +30,8 @@ type AdminBuildingInventorySheetProps = {
   onCloseFloor: () => void;
   /** Nested under project buildings sheet = 1; standalone from buildings hub = 0. */
   stackLevel?: number | undefined;
+  /** Portal vs platform-admin APIs. Defaults to platform admin hubs. */
+  sheetScope?: InventorySheetScope | undefined;
 };
 
 type FloorSheetSnapshot = {
@@ -44,14 +51,18 @@ export const AdminBuildingInventorySheet = ({
   onSelectFloor,
   onCloseFloor,
   stackLevel = 0,
+  sheetScope = PLATFORM_INVENTORY_SHEET_SCOPE,
 }: AdminBuildingInventorySheetProps) => {
   const t = useTranslations('Admin.buildings.inventory');
-  const query = useAdminBuildingInventoryGlanceQuery(buildingId ?? '');
+  const query = useAdminBuildingInventoryGlanceQuery(buildingId ?? '', sheetScope);
   const glance = query.data;
   const floorSnapshotRef = useRef<FloorSheetSnapshot | null>(null);
   const deleteMutation = useAdminDeleteBuildingMutation();
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const mutationCatalogScope = glance
+    ? toCatalogMutationScope(sheetScope, glance.builderCompanyId)
+    : null;
 
   useEffect(() => {
     setConfirmDelete(false);
@@ -96,7 +107,11 @@ export const AdminBuildingInventorySheet = ({
     }
     setDeleteError(null);
     void deleteMutation
-      .mutateAsync({ companyId: glance.builderCompanyId, buildingId: glance.id })
+      .mutateAsync({
+        companyId: glance.builderCompanyId,
+        buildingId: glance.id,
+        ...(mutationCatalogScope ? { scope: mutationCatalogScope } : {}),
+      })
       .then(() => {
         setConfirmDelete(false);
         onClose();
@@ -163,8 +178,12 @@ export const AdminBuildingInventorySheet = ({
 
         {glance ? (
           <div className="flex flex-col gap-2">
-            <AdminBuildingInventoryGlanceCard glance={glance} onSelectFloor={onSelectFloor} />
-            <AdminBuildingFloorPlansForm glance={glance} />
+            <AdminBuildingInventoryGlanceCard
+              glance={glance}
+              onSelectFloor={onSelectFloor}
+              sheetScope={sheetScope}
+            />
+            <AdminBuildingFloorPlansForm glance={glance} sheetScope={sheetScope} />
           </div>
         ) : null}
       </SideSheet>
@@ -179,6 +198,7 @@ export const AdminBuildingInventorySheet = ({
           publicationStatus={floorSheetStatus}
           floorplan={floorSheetPlan}
           stackLevel={stackLevel + 1}
+          sheetScope={sheetScope}
           onClose={onCloseFloor}
         />
       ) : null}

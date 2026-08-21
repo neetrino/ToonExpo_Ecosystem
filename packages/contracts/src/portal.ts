@@ -38,6 +38,11 @@ export type PortalProjectListItem = {
   locationText: string | null;
   city: string | null;
   district: string | null;
+  companyName: string;
+  /** Builder company logo; initials shown when null. */
+  companyLogoUrl: string | null;
+  /** Project cover only (no building fallback). */
+  cover: MediaAssetSummary | null;
   buildingsCount: number;
   apartmentsCount: number;
   createdAt: string;

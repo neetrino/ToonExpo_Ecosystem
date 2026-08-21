@@ -39,6 +39,24 @@ export const catalogNewProjectHref = (scope: CatalogScope): string =>
     ? `/admin/projects/new?companyId=${encodeURIComponent(scope.companyId)}`
     : '/builder/projects/new';
 
+/**
+ * Builder/admin UI href for the buildings hub under Projects.
+ */
+export const catalogBuildingsListHref = (scope: CatalogScope): string =>
+  scope.mode === 'admin' ? '/admin/projects/buildings' : '/builder/projects/buildings';
+
+/**
+ * Builder/admin UI href for the floors hub under Projects.
+ */
+export const catalogFloorsListHref = (scope: CatalogScope): string =>
+  scope.mode === 'admin' ? '/admin/projects/floors' : '/builder/projects/floors';
+
+/**
+ * Builder/admin UI href for the apartments hub under Projects.
+ */
+export const catalogApartmentsListHref = (scope: CatalogScope): string =>
+  scope.mode === 'admin' ? '/admin/projects/apartments' : '/builder/projects/apartments';
+
 type CatalogApartmentDetailHrefOptions = {
   /** Path (+ query) to return to from apartment detail. */
   returnTo?: string;

@@ -28,6 +28,12 @@ import {
   adminFloorsQueryKey,
 } from '@/features/admin/constants';
 import {
+  isPlatformInventoryScope,
+  PLATFORM_INVENTORY_SHEET_SCOPE,
+  toCatalogMutationScope,
+  type InventorySheetScope,
+} from '@/features/admin/inventory-sheet-scope';
+import {
   bulkCreatePortalApartments,
   listPortalApartments,
 } from '@/features/builder/api/portal-apartments-api';
@@ -42,7 +48,14 @@ import {
   listPortalFloors,
   updatePortalFloor,
 } from '@/features/builder/api/portal-floors-api';
+import { getPortalBuildingInventoryGlance } from '@/features/builder/api/portal-inventory-api';
 import type { CatalogScope } from '@/features/builder/catalog-scope';
+import {
+  PORTAL_INVENTORY_APARTMENTS_QUERY_KEY,
+  PORTAL_INVENTORY_BUILDINGS_QUERY_KEY,
+  PORTAL_INVENTORY_FLOORS_QUERY_KEY,
+  PORTAL_PROJECTS_QUERY_KEY,
+} from '@/features/builder/constants';
 
 const toListParams = (
   page: number,
@@ -128,41 +141,67 @@ export const useAdminApartmentsQuery = (
 };
 
 /**
- * Building inventory glance for the admin Buildings hub sheet.
+ * Building inventory glance for Buildings hub / nested sheets.
  */
-export const useAdminBuildingInventoryGlanceQuery = (buildingId: string) =>
+export const useAdminBuildingInventoryGlanceQuery = (
+  buildingId: string,
+  sheetScope: InventorySheetScope = PLATFORM_INVENTORY_SHEET_SCOPE,
+) =>
   useQuery({
-    queryKey: adminBuildingInventoryGlanceQueryKey(buildingId),
-    queryFn: () => getAdminBuildingInventoryGlance(buildingId),
+    queryKey: [...adminBuildingInventoryGlanceQueryKey(buildingId), sheetScope],
+    queryFn: () => {
+      if (!isPlatformInventoryScope(sheetScope) && sheetScope.mode === 'portal') {
+        return getPortalBuildingInventoryGlance(buildingId, { scope: sheetScope });
+      }
+      return getAdminBuildingInventoryGlance(buildingId);
+    },
     enabled: buildingId.length > 0,
   });
 
 /**
- * Floors under a building (admin catalog scope) for create-apartment picker.
+ * Floors under a building (catalog scope) for create-apartment picker.
  */
-export const useAdminBuildingFloorsQuery = (companyId: string, buildingId: string) =>
-  useQuery({
-    queryKey: ['admin', 'buildings', buildingId, 'floors', companyId] as const,
-    queryFn: () => listPortalFloors(buildingId, { scope: adminCatalogScope(companyId) }),
-    enabled: companyId.length > 0 && buildingId.length > 0,
+export const useAdminBuildingFloorsQuery = (
+  companyId: string,
+  buildingId: string,
+  sheetScope: InventorySheetScope = PLATFORM_INVENTORY_SHEET_SCOPE,
+) => {
+  const scope = toCatalogMutationScope(sheetScope, companyId);
+  return useQuery({
+    queryKey: ['admin', 'buildings', buildingId, 'floors', scope] as const,
+    queryFn: () => listPortalFloors(buildingId, { scope }),
+    enabled: buildingId.length > 0 && (scope.mode === 'portal' || companyId.length > 0),
   });
+};
 
 /**
- * Floor apartments via admin catalog scope (nested floor sheet).
+ * Floor apartments via catalog scope (nested floor sheet).
  */
-export const useAdminFloorApartmentsQuery = (companyId: string, floorId: string) =>
-  useQuery({
-    queryKey: ['admin', 'floors', floorId, 'apartments', companyId] as const,
-    queryFn: () => listPortalApartments(floorId, { scope: adminCatalogScope(companyId) }),
-    enabled: companyId.length > 0 && floorId.length > 0,
+export const useAdminFloorApartmentsQuery = (
+  companyId: string,
+  floorId: string,
+  sheetScope: InventorySheetScope = PLATFORM_INVENTORY_SHEET_SCOPE,
+) => {
+  const scope = toCatalogMutationScope(sheetScope, companyId);
+  return useQuery({
+    queryKey: ['admin', 'floors', floorId, 'apartments', scope] as const,
+    queryFn: () => listPortalApartments(floorId, { scope }),
+    enabled: floorId.length > 0 && (scope.mode === 'portal' || companyId.length > 0),
   });
-
+};
 const invalidateAdminInventory = (queryClient: ReturnType<typeof useQueryClient>): void => {
   void queryClient.invalidateQueries({ queryKey: ADMIN_BUILDINGS_QUERY_KEY });
   void queryClient.invalidateQueries({ queryKey: ADMIN_FLOORS_QUERY_KEY });
   void queryClient.invalidateQueries({ queryKey: ADMIN_APARTMENTS_QUERY_KEY });
   void queryClient.invalidateQueries({ queryKey: ADMIN_PROJECTS_QUERY_KEY });
+  void queryClient.invalidateQueries({ queryKey: PORTAL_PROJECTS_QUERY_KEY });
+  void queryClient.invalidateQueries({ queryKey: PORTAL_INVENTORY_BUILDINGS_QUERY_KEY });
+  void queryClient.invalidateQueries({ queryKey: PORTAL_INVENTORY_FLOORS_QUERY_KEY });
+  void queryClient.invalidateQueries({ queryKey: PORTAL_INVENTORY_APARTMENTS_QUERY_KEY });
 };
+
+const mutationScope = (companyId: string, scope?: CatalogScope): CatalogScope =>
+  scope ?? adminCatalogScope(companyId);
 
 /**
  * Creates a building under a project (admin catalog).
@@ -175,9 +214,10 @@ export const useAdminCreateBuildingMutation = () => {
       companyId: string;
       projectId: string;
       body: CreatePortalBuildingRequest;
+      scope?: CatalogScope;
     }) =>
       createPortalBuilding(input.projectId, input.body, {
-        scope: adminCatalogScope(input.companyId),
+        scope: mutationScope(input.companyId, input.scope),
       }),
     onSuccess: () => {
       invalidateAdminInventory(queryClient);
@@ -196,9 +236,10 @@ export const useAdminCreateFloorMutation = () => {
       companyId: string;
       buildingId: string;
       body: CreatePortalFloorRequest;
+      scope?: CatalogScope;
     }) =>
       createPortalFloor(input.buildingId, input.body, {
-        scope: adminCatalogScope(input.companyId),
+        scope: mutationScope(input.companyId, input.scope),
       }),
     onSuccess: (_floor, input) => {
       invalidateAdminInventory(queryClient);
@@ -221,9 +262,10 @@ export const useAdminBulkCreateApartmentsMutation = () => {
       floorId: string;
       buildingId?: string;
       body: BulkCreatePortalApartmentsRequest;
+      scope?: CatalogScope;
     }) =>
       bulkCreatePortalApartments(input.floorId, input.body, {
-        scope: adminCatalogScope(input.companyId),
+        scope: mutationScope(input.companyId, input.scope),
       }),
     onSuccess: (_result, input) => {
       invalidateAdminInventory(queryClient);
@@ -250,9 +292,10 @@ export const useAdminUpdateBuildingMutation = () => {
       companyId: string;
       buildingId: string;
       body: UpdatePortalBuildingRequest;
+      scope?: CatalogScope;
     }) =>
       updatePortalBuilding(input.buildingId, input.body, {
-        scope: adminCatalogScope(input.companyId),
+        scope: mutationScope(input.companyId, input.scope),
       }),
     onSuccess: (_building, input) => {
       invalidateAdminInventory(queryClient);
@@ -275,9 +318,10 @@ export const useAdminUpdateFloorMutation = () => {
       buildingId: string;
       floorId: string;
       body: UpdatePortalFloorRequest;
+      scope?: CatalogScope;
     }) =>
       updatePortalFloor(input.floorId, input.body, {
-        scope: adminCatalogScope(input.companyId),
+        scope: mutationScope(input.companyId, input.scope),
       }),
     onSuccess: (_floor, input) => {
       invalidateAdminInventory(queryClient);
@@ -310,8 +354,10 @@ export const useAdminDeleteBuildingMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (input: { companyId: string; buildingId: string }) =>
-      deletePortalBuilding(input.buildingId, { scope: adminCatalogScope(input.companyId) }),
+    mutationFn: (input: { companyId: string; buildingId: string; scope?: CatalogScope }) =>
+      deletePortalBuilding(input.buildingId, {
+        scope: mutationScope(input.companyId, input.scope),
+      }),
     onSuccess: () => {
       invalidateAdminInventory(queryClient);
     },
@@ -325,8 +371,15 @@ export const useAdminDeleteFloorMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (input: { companyId: string; buildingId: string; floorId: string }) =>
-      deletePortalFloor(input.floorId, { scope: adminCatalogScope(input.companyId) }),
+    mutationFn: (input: {
+      companyId: string;
+      buildingId: string;
+      floorId: string;
+      scope?: CatalogScope;
+    }) =>
+      deletePortalFloor(input.floorId, {
+        scope: mutationScope(input.companyId, input.scope),
+      }),
     onSuccess: (_result, input) => {
       invalidateAdminInventory(queryClient);
       void queryClient.invalidateQueries({

@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { CompanyMemberGuard } from '../company/guards/company-member.guard.js';
+import { InventoryHubModule } from '../inventory/inventory-hub.module.js';
 import { PrismaModule } from '../prisma/prisma.module.js';
 import { PortalApartmentsController } from './apartments/portal-apartments.controller.js';
 import { PortalApartmentsService } from './apartments/portal-apartments.service.js';
@@ -8,14 +9,16 @@ import { PortalBuildingsController } from './buildings/portal-buildings.controll
 import { PortalBuildingsService } from './buildings/portal-buildings.service.js';
 import { PortalFloorsController } from './floors/portal-floors.controller.js';
 import { PortalFloorsService } from './floors/portal-floors.service.js';
+import { PortalInventoryController } from './inventory/portal-inventory.controller.js';
 import { PortalProjectQrService } from './projects/portal-project-qr.service.js';
 import { PortalProjectsController } from './projects/portal-projects.controller.js';
 import { PortalProjectsService } from './projects/portal-projects.service.js';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, InventoryHubModule],
   controllers: [
     PortalProjectsController,
+    PortalInventoryController,
     PortalBuildingsController,
     PortalFloorsController,
     PortalApartmentsController,

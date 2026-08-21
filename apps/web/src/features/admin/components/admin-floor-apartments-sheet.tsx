@@ -13,6 +13,11 @@ import {
   useAdminDeleteFloorMutation,
   useAdminFloorApartmentsQuery,
 } from '@/features/admin/hooks/use-admin-inventory';
+import {
+  PLATFORM_INVENTORY_SHEET_SCOPE,
+  toCatalogMutationScope,
+  type InventorySheetScope,
+} from '@/features/admin/inventory-sheet-scope';
 import { catalogApartmentDetailHref } from '@/features/builder/catalog-scope';
 import { toCatalogPublicationStatus } from '@/features/catalog/utils/catalog-publication-status';
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
@@ -34,6 +39,7 @@ type AdminFloorApartmentsSheetProps = {
   onClose: () => void;
   /** Nested under building sheet = 1; standalone from floors hub = 0. */
   stackLevel?: number | undefined;
+  sheetScope?: InventorySheetScope | undefined;
 };
 
 /**
@@ -49,12 +55,14 @@ export const AdminFloorApartmentsSheet = ({
   floorplan,
   onClose,
   stackLevel = 1,
+  sheetScope = PLATFORM_INVENTORY_SHEET_SCOPE,
 }: AdminFloorApartmentsSheetProps) => {
   const t = useTranslations('Admin.buildings.inventory');
   const createT = useTranslations('Admin.apartments.create');
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const query = useAdminFloorApartmentsQuery(companyId, floorId);
+  const mutationScope = toCatalogMutationScope(sheetScope, companyId);
+  const query = useAdminFloorApartmentsQuery(companyId, floorId, sheetScope);
   const apartments = query.data ?? [];
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
@@ -81,7 +89,7 @@ export const AdminFloorApartmentsSheet = ({
   const runDelete = (): void => {
     setDeleteError(null);
     void deleteMutation
-      .mutateAsync({ companyId, buildingId, floorId })
+      .mutateAsync({ companyId, buildingId, floorId, scope: mutationScope })
       .then(() => {
         setConfirmDelete(false);
         onClose();
@@ -171,6 +179,7 @@ export const AdminFloorApartmentsSheet = ({
               buildingId={buildingId}
               floorId={floorId}
               variant="edit"
+              sheetScope={sheetScope}
             />
           </div>
 
@@ -196,7 +205,7 @@ export const AdminFloorApartmentsSheet = ({
                 {apartments.map((apartment) => (
                   <li key={apartment.id}>
                     <Link
-                      href={catalogApartmentDetailHref({ mode: 'admin', companyId }, apartment.id, {
+                      href={catalogApartmentDetailHref(mutationScope, apartment.id, {
                         returnTo,
                       })}
                       className="flex items-center justify-between gap-3 rounded-lg bg-surface px-3 py-2.5 transition-colors hover:bg-brand-soft/40"
@@ -241,6 +250,7 @@ export const AdminFloorApartmentsSheet = ({
         buildingId={buildingId}
         floorId={floorId}
         floorLabel={floorLabel}
+        sheetScope={sheetScope}
         onClose={() => {
           setAddOpen(false);
         }}
