@@ -19,6 +19,7 @@ import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
 import { PhoneFormControl } from '@/shared/ui/phone-form-control';
 import { Select } from '@/shared/ui/select';
+import { useFormErrorToast } from '@/shared/ui/use-form-error-toast';
 
 type CreatePartnerSheetProps = {
   open: boolean;
@@ -43,6 +44,15 @@ export const CreatePartnerSheet = ({ open, onClose }: CreatePartnerSheetProps) =
   const locale = useLocale();
   const router = useRouter();
   const mutation = useCreatePartnerMutation();
+  const { showError, onInvalid, errorToast } = useFormErrorToast({
+    fieldLabels: {
+      name: t('name'),
+      adminFirstName: t('adminFirstName'),
+      adminSurname: t('adminSurname'),
+      adminEmail: t('adminEmail'),
+      adminPhone: t('adminPhone'),
+    },
+  });
 
   const form = useForm<CreatePartnerFormValues>({
     resolver: zodResolver(createPartnerSchema),
@@ -63,9 +73,9 @@ export const CreatePartnerSheet = ({ open, onClose }: CreatePartnerSheetProps) =
       form.reset();
       router.push(`/admin/partners/${result.id}`);
     } catch (error) {
-      form.setError('root', { message: t(`errors.${mapCreateError(error)}`) });
+      showError(t(`errors.${mapCreateError(error)}`));
     }
-  });
+  }, onInvalid);
 
   const handleClose = (): void => {
     onClose();
@@ -189,15 +199,10 @@ export const CreatePartnerSheet = ({ open, onClose }: CreatePartnerSheetProps) =
           </FormField>
         </fieldset>
 
-        {form.formState.errors.root?.message ? (
-          <p role="alert" className="rounded-sm bg-danger-soft px-3 py-2 text-sm text-danger">
-            {form.formState.errors.root.message}
-          </p>
-        ) : null}
-
         <Button type="submit" variant="primary" disabled={busy} className="w-full">
           {busy ? t('submitting') : t('submit')}
         </Button>
+        {errorToast}
       </form>
     </AdminCreateSheet>
   );

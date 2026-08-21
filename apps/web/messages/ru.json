@@ -37,7 +37,19 @@
     "placeholders": {
       "url": "https://"
     },
-    "back": "Назад"
+    "back": "Назад",
+    "formErrors": {
+      "required": "Поле «{field}» обязательно",
+      "requiredInLanguage": "Поле «{field}» обязательно в {language} версии",
+      "invalid": "Поле «{field}» заполнено неверно",
+      "tooLong": "Поле «{field}» слишком длинное",
+      "generic": "Заполните обязательные поля и попробуйте снова",
+      "languages": {
+        "hy": "армянской",
+        "ru": "русской",
+        "en": "английской"
+      }
+    }
   },
   "ReadinessKpi": {
     "categories": {
@@ -782,6 +794,8 @@
       "breadcrumb": "Навигация",
       "breadcrumbHome": "Главная",
       "breadcrumbSearch": "Поиск",
+      "breadcrumbBuilding": "Building {name}",
+      "breadcrumbFloor": "Floor {number}",
       "inquireTitle": "Запрос по этому дому",
       "inquireSubtitle": "Мы свяжем вас с застройщиком.",
       "inquireAgentRole": "Партнёр ToonExpo",
@@ -1500,7 +1514,7 @@
       "projectMeta": "{districts} районов · {buildings} зданий · фаза {phase}",
       "labLink": "Mapping lab (QA)",
       "backToProjects": "Проекты",
-      "backToWizard": "Мастер",
+      "backToWizard": "Назад",
       "activePhase": "Сейчас фаза {phase}",
       "allPhasesDone": "Все фазы завершены",
       "filters": {
@@ -1936,11 +1950,11 @@
       "create": {
         "cta": "+ Добавить проект",
         "title": "Добавить проект",
-        "company": "Компания",
-        "searchCompany": "Поиск компаний",
-        "noCompanyMatches": "Нет подходящих компаний",
-        "selectCompany": "Выберите компанию",
-        "pickCompany": "Выберите компанию, чтобы продолжить."
+        "builder": "Застройщик",
+        "searchBuilder": "Поиск застройщиков",
+        "noBuilderMatches": "Нет подходящих застройщиков",
+        "selectBuilder": "Выберите застройщика",
+        "pickBuilder": "Выберите застройщика, чтобы продолжить."
       }
     },
     "buildings": {
@@ -3401,8 +3415,6 @@
       "subtitle": "Рендеры проекта, карты корпусов и поэтажные планы с навигационными точками",
       "loading": "Загрузка визуальных карт…",
       "empty": "Визуальных canvas пока нет. Создайте и добавьте точки.",
-      "newCanvas": "+ Новый canvas",
-      "cancelCreate": "Отмена",
       "untitled": "Canvas без названия",
       "primaryYes": "Основной",
       "primaryNo": "—",
@@ -3421,18 +3433,6 @@
         "status": "Статус",
         "hotspots": "Точки",
         "actions": "Действия"
-      },
-      "form": {
-        "contextType": "Тип контекста",
-        "contextEntity": "Объект контекста",
-        "contextProject": "Проект",
-        "contextBuilding": "Корпус",
-        "contextFloor": "Этаж",
-        "mediaAssetId": "Изображение canvas",
-        "title": "Название",
-        "create": "Создать canvas",
-        "creating": "Создание…",
-        "cancel": "Отмена"
       },
       "editor": {
         "loading": "Загрузка canvas…",

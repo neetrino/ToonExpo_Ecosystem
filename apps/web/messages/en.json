@@ -37,7 +37,19 @@
     "placeholders": {
       "url": "https://"
     },
-    "back": "Back"
+    "back": "Back",
+    "formErrors": {
+      "required": "{field} is required",
+      "requiredInLanguage": "{field} is required in {language}",
+      "invalid": "{field} is invalid",
+      "tooLong": "{field} is too long",
+      "generic": "Fill in the required fields and try again",
+      "languages": {
+        "hy": "Armenian",
+        "ru": "Russian",
+        "en": "English"
+      }
+    }
   },
   "ReadinessKpi": {
     "categories": {
@@ -782,6 +794,8 @@
       "breadcrumb": "Breadcrumb",
       "breadcrumbHome": "Home",
       "breadcrumbSearch": "Search",
+      "breadcrumbBuilding": "Building {name}",
+      "breadcrumbFloor": "Floor {number}",
       "inquireTitle": "Inquire about this home",
       "inquireSubtitle": "We'll connect you with the builder.",
       "inquireAgentRole": "ToonExpo listing partner",
@@ -1500,7 +1514,7 @@
       "projectMeta": "{districts} districts · {buildings} buildings · phase {phase}",
       "labLink": "Mapping lab (QA)",
       "backToProjects": "Projects",
-      "backToWizard": "Wizard",
+      "backToWizard": "Back",
       "activePhase": "Continue with phase {phase}",
       "allPhasesDone": "All phases are complete",
       "filters": {
@@ -1936,11 +1950,11 @@
       "create": {
         "cta": "+ Add Project",
         "title": "Add Project",
-        "company": "Company",
-        "searchCompany": "Search companies",
-        "noCompanyMatches": "No matching companies",
-        "selectCompany": "Select company",
-        "pickCompany": "Select a company to continue."
+        "builder": "Builder",
+        "searchBuilder": "Search builders",
+        "noBuilderMatches": "No matching builders",
+        "selectBuilder": "Select builder",
+        "pickBuilder": "Select a builder to continue."
       }
     },
     "buildings": {
@@ -3661,8 +3675,6 @@
       "subtitle": "Site renders, building maps, and floorplans with navigation hotspots",
       "loading": "Loading visual maps…",
       "empty": "No visual canvases yet. Create one to add hotspots.",
-      "newCanvas": "+ New Canvas",
-      "cancelCreate": "Cancel",
       "untitled": "Untitled canvas",
       "primaryYes": "Primary",
       "primaryNo": "—",
@@ -3681,18 +3693,6 @@
         "status": "Status",
         "hotspots": "Hotspots",
         "actions": "Actions"
-      },
-      "form": {
-        "contextType": "Context type",
-        "contextEntity": "Context entity",
-        "contextProject": "Project",
-        "contextBuilding": "Building",
-        "contextFloor": "Floor",
-        "mediaAssetId": "Canvas image",
-        "title": "Title",
-        "create": "Create canvas",
-        "creating": "Creating…",
-        "cancel": "Cancel"
       },
       "editor": {
         "loading": "Loading canvas…",

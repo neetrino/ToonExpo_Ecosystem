@@ -20,6 +20,7 @@ import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
 import { ListboxSelect } from '@/shared/ui/listbox-select';
+import { useFormErrorToast } from '@/shared/ui/use-form-error-toast';
 
 type AdminCreateFloorSheetProps = {
   open: boolean;
@@ -43,7 +44,9 @@ export const AdminCreateFloorSheet = ({
   const mutation = useAdminCreateFloorMutation();
   const [companyId, setCompanyId] = useState(defaultCompanyId ?? '');
   const [buildingId, setBuildingId] = useState(defaultBuildingId ?? '');
-  const [error, setError] = useState<string | null>(null);
+  const { showError, onInvalid, errorToast } = useFormErrorToast({
+    fieldLabels: { floorNumber: inventoryT('floorNumber') },
+  });
 
   const buildingsQuery = useAdminBuildingsQuery(
     1,
@@ -85,7 +88,6 @@ export const AdminCreateFloorSheet = ({
     }
     setCompanyId(defaultCompanyId ?? '');
     setBuildingId(defaultBuildingId ?? '');
-    setError(null);
     reset({
       floorNumber: '1',
       name: '',
@@ -96,10 +98,9 @@ export const AdminCreateFloorSheet = ({
 
   const onSubmit = handleSubmit(async (values) => {
     if (!companyId || !buildingId) {
-      setError(t('pickBuilding'));
+      showError(t('pickBuilding'));
       return;
     }
-    setError(null);
     try {
       const floorNumber = Number(values.floorNumber);
       await mutation.mutateAsync({
@@ -113,9 +114,9 @@ export const AdminCreateFloorSheet = ({
       });
       onClose();
     } catch {
-      setError(inventoryT('errors.generic'));
+      showError(inventoryT('errors.generic'));
     }
-  });
+  }, onInvalid);
 
   const busy = isSubmitting || mutation.isPending;
 
@@ -178,15 +179,10 @@ export const AdminCreateFloorSheet = ({
           </FormField>
         </div>
 
-        {error ? (
-          <p role="alert" className="text-sm text-danger">
-            {error}
-          </p>
-        ) : null}
-
         <Button type="submit" size="sm" variant="secondary" disabled={busy || !buildingId}>
           {busy ? inventoryT('adding') : t('submit')}
         </Button>
+        {errorToast}
       </form>
     </AdminCreateSheet>
   );

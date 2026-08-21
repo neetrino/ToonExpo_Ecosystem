@@ -1,5 +1,4 @@
 import type {
-  CreatePortalVisualCanvasRequest,
   CreatePortalVisualHotspotRequest,
   PortalVisualCanvasDetail,
   PortalVisualCanvasListResponse,
@@ -34,18 +33,6 @@ export const listPortalProjectVisualCanvases = (
       options.cookieHeader,
     ),
   );
-
-export const createPortalVisualCanvas = (
-  projectId: string,
-  body: CreatePortalVisualCanvasRequest,
-  options: PortalRequestOptions = {},
-): Promise<PortalVisualCanvasDetail> =>
-  apiFetch<PortalVisualCanvasDetail>({
-    path: catalogPath(`/portal/projects/${encodeURIComponent(projectId)}/visual-canvases`, options),
-    method: 'POST',
-    ...jsonCredentials,
-    body: JSON.stringify(body),
-  });
 
 export const getPortalVisualCanvas = (
   canvasId: string,

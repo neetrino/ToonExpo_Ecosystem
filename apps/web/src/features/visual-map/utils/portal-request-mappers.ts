@@ -1,41 +1,4 @@
 /**
- * Builds a create-canvas body omitting unset optional fields (exactOptionalPropertyTypes).
- */
-export const toCreateCanvasBody = (values: {
-  contextType: 'project' | 'district' | 'building' | 'floor';
-  contextId: string;
-  mediaAssetId: string;
-  title?: string | undefined;
-  description?: string | undefined;
-  isPrimary?: boolean | undefined;
-}) => {
-  const body: {
-    contextType: 'project' | 'district' | 'building' | 'floor';
-    contextId: string;
-    mediaAssetId: string;
-    title?: string;
-    description?: string;
-    isPrimary?: boolean;
-  } = {
-    contextType: values.contextType,
-    contextId: values.contextId,
-    mediaAssetId: values.mediaAssetId,
-  };
-
-  if (values.title) {
-    body.title = values.title;
-  }
-  if (values.description) {
-    body.description = values.description;
-  }
-  if (values.isPrimary != null) {
-    body.isPrimary = values.isPrimary;
-  }
-
-  return body;
-};
-
-/**
  * Builds a hotspot create/update body omitting unset optional fields.
  */
 export const toHotspotBody = (values: {

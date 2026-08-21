@@ -1,5 +1,6 @@
 'use client';
 
+import { AlertCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -14,6 +15,8 @@ type EphemeralToastProps = {
   tone?: 'danger' | 'neutral' | 'success' | undefined;
   /** Changes restart the show/hide cycle (same message text can replay). */
   id?: number | undefined;
+  /** How long the toast stays fully visible before fading. */
+  holdMs?: number | undefined;
 };
 
 /**
@@ -24,6 +27,7 @@ export const EphemeralToast = ({
   onDismiss,
   tone = 'danger',
   id,
+  holdMs = TOAST_VISIBLE_MS,
 }: EphemeralToastProps) => {
   const [mounted, setMounted] = useState(false);
   const [displayed, setDisplayed] = useState<string | null>(null);
@@ -55,10 +59,10 @@ export const EphemeralToast = ({
     });
     const hideTimer = window.setTimeout(() => {
       setVisible(false);
-    }, TOAST_VISIBLE_MS);
+    }, holdMs);
     const dismissTimer = window.setTimeout(() => {
       onDismiss();
-    }, TOAST_VISIBLE_MS + TOAST_FADE_MS);
+    }, holdMs + TOAST_FADE_MS);
 
     return () => {
       window.cancelAnimationFrame(enterFrame1);
@@ -66,7 +70,7 @@ export const EphemeralToast = ({
       window.clearTimeout(hideTimer);
       window.clearTimeout(dismissTimer);
     };
-  }, [message, id, onDismiss]);
+  }, [message, id, onDismiss, holdMs]);
 
   if (!mounted || !displayed) {
     return null;
@@ -88,19 +92,22 @@ export const EphemeralToast = ({
           : 'cubic-bezier(0.4, 0, 0.2, 1)',
       }}
     >
-      <p
+      <div
         className={cn(
-          'max-w-lg rounded-md px-6 py-4 text-center text-base font-medium shadow-card',
-          'ring-1 ring-border/70',
+          'flex max-w-lg items-start gap-3 rounded-md px-5 py-4 text-base font-medium shadow-card',
+          'ring-1',
           tone === 'danger'
-            ? 'bg-danger-soft text-danger'
+            ? 'bg-danger text-white ring-danger'
             : tone === 'success'
-              ? 'bg-surface-elevated text-success'
-              : 'bg-surface-elevated text-ink',
+              ? 'bg-surface-elevated text-success ring-border/70'
+              : 'bg-surface-elevated text-ink ring-border/70',
         )}
       >
-        {displayed}
-      </p>
+        {tone === 'danger' ? (
+          <AlertCircle className="mt-0.5 size-5 shrink-0" aria-hidden />
+        ) : null}
+        <p className={tone === 'danger' ? 'text-start' : 'text-center'}>{displayed}</p>
+      </div>
     </div>,
     document.body,
   );

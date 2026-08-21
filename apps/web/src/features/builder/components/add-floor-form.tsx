@@ -4,7 +4,6 @@ import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import { catalogMediaContext } from '@/features/builder/catalog-scope';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { useCreateFloorMutation } from '@/features/builder/hooks/use-portal-inventory';
@@ -17,6 +16,7 @@ import { toOptionalMediaId } from '@/features/media/schemas/media-fields.schema'
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
+import { useFormErrorToast } from '@/shared/ui/use-form-error-toast';
 
 type AddFloorFormProps = {
   projectId: string;
@@ -32,7 +32,9 @@ export const AddFloorForm = ({ projectId, buildingId, onSuccess }: AddFloorFormP
   const mediaContext = catalogMediaContext(scope);
   const t = useTranslations('Builder.inventory');
   const mutation = useCreateFloorMutation(projectId, buildingId);
-  const [error, setError] = useState<string | null>(null);
+  const { showError, onInvalid, errorToast } = useFormErrorToast({
+    fieldLabels: { floorNumber: t('floorNumber'), floorplanMediaId: t('floorplanMedia') },
+  });
   const {
     register,
     handleSubmit,
@@ -50,7 +52,6 @@ export const AddFloorForm = ({ projectId, buildingId, onSuccess }: AddFloorFormP
   });
 
   const onSubmit = handleSubmit(async (values) => {
-    setError(null);
     try {
       const floorNumber = Number(values.floorNumber);
       await mutation.mutateAsync({
@@ -69,9 +70,9 @@ export const AddFloorForm = ({ projectId, buildingId, onSuccess }: AddFloorFormP
       });
       onSuccess?.();
     } catch {
-      setError(t('errors.generic'));
+      showError(t('errors.generic'));
     }
-  });
+  }, onInvalid);
 
   const busy = isSubmitting || mutation.isPending;
 
@@ -106,14 +107,10 @@ export const AddFloorForm = ({ projectId, buildingId, onSuccess }: AddFloorFormP
           />
         )}
       />
-      {error ? (
-        <p role="alert" className="text-sm text-danger">
-          {error}
-        </p>
-      ) : null}
       <Button type="submit" variant="secondary" disabled={busy}>
         {busy ? t('adding') : t('addFloor')}
       </Button>
+      {errorToast}
     </form>
   );
 };

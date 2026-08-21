@@ -3,7 +3,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { CreateCompanyRequest } from '@toonexpo/contracts';
 import { useLocale, useTranslations } from 'next-intl';
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { useCreateAdminCompanyMutation } from '@/features/admin/hooks/use-admin-companies';
@@ -19,6 +18,7 @@ import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
 import { PhoneFormControl } from '@/shared/ui/phone-form-control';
 import { Textarea } from '@/shared/ui/textarea';
+import { useFormErrorToast } from '@/shared/ui/use-form-error-toast';
 
 type CreateCompanyFormProps = {
   onSuccess: (adminEmail: string) => void;
@@ -41,7 +41,14 @@ export const CreateCompanyForm = ({ onSuccess }: CreateCompanyFormProps) => {
   const t = useTranslations('Admin.companies');
   const locale = useLocale();
   const createMutation = useCreateAdminCompanyMutation();
-  const [formError, setFormError] = useState<string | null>(null);
+  const { showError, onInvalid, errorToast } = useFormErrorToast({
+    fieldLabels: {
+      name: t('form.name'),
+      adminName: t('form.adminName'),
+      adminEmail: t('form.adminEmail'),
+      adminPhone: t('form.adminPhone'),
+    },
+  });
 
   const {
     register,
@@ -62,7 +69,6 @@ export const CreateCompanyForm = ({ onSuccess }: CreateCompanyFormProps) => {
   });
 
   const onSubmit = handleSubmit(async (values) => {
-    setFormError(null);
     const adminPhone = toOptionalPhone(values.adminPhone);
     const body: CreateCompanyRequest = {
       name: values.name,
@@ -79,9 +85,9 @@ export const CreateCompanyForm = ({ onSuccess }: CreateCompanyFormProps) => {
       await createMutation.mutateAsync(body);
       onSuccess(values.adminEmail);
     } catch (error) {
-      setFormError(t(`errors.${mapCreateError(error)}`));
+      showError(t(`errors.${mapCreateError(error)}`));
     }
-  });
+  }, onInvalid);
 
   const busy = isSubmitting || createMutation.isPending;
 
@@ -179,15 +185,10 @@ export const CreateCompanyForm = ({ onSuccess }: CreateCompanyFormProps) => {
         </FormField>
       </fieldset>
 
-      {formError ? (
-        <p role="alert" className="rounded-sm bg-danger-soft px-3 py-2 text-sm text-danger">
-          {formError}
-        </p>
-      ) : null}
-
       <Button type="submit" variant="primary" disabled={busy}>
         {busy ? t('form.submitting') : t('form.submit')}
       </Button>
+      {errorToast}
     </form>
   );
 };

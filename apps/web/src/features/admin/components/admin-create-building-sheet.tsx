@@ -21,6 +21,7 @@ import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
 import { ListboxSelect } from '@/shared/ui/listbox-select';
+import { useFormErrorToast } from '@/shared/ui/use-form-error-toast';
 
 type AdminCreateBuildingSheetProps = {
   open: boolean;
@@ -42,7 +43,9 @@ export const AdminCreateBuildingSheet = ({
   const mutation = useAdminCreateBuildingMutation();
   const [companyId, setCompanyId] = useState(defaultCompanyId ?? '');
   const [projectId, setProjectId] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const { showError, onInvalid, errorToast } = useFormErrorToast({
+    fieldLabels: { name: inventoryT('buildingName') },
+  });
 
   const projectsQuery = useAdminCompanyProjectsQuery(companyId, open && companyId.length > 0);
 
@@ -68,16 +71,14 @@ export const AdminCreateBuildingSheet = ({
     }
     setCompanyId(defaultCompanyId ?? '');
     setProjectId('');
-    setError(null);
     reset({ name: '', description: '', coverMediaId: '', verified: false });
   }, [open, defaultCompanyId, reset]);
 
   const onSubmit = handleSubmit(async (values) => {
     if (!companyId || !projectId) {
-      setError(t('pickProject'));
+      showError(t('pickProject'));
       return;
     }
-    setError(null);
     try {
       await mutation.mutateAsync({
         companyId,
@@ -90,9 +91,9 @@ export const AdminCreateBuildingSheet = ({
       });
       onClose();
     } catch {
-      setError(inventoryT('errors.generic'));
+      showError(inventoryT('errors.generic'));
     }
-  });
+  }, onInvalid);
 
   const busy = isSubmitting || mutation.isPending;
 
@@ -151,15 +152,10 @@ export const AdminCreateBuildingSheet = ({
 
         <VerifiedStatusField id="create-building-verified" control={control} name="verified" />
 
-        {error ? (
-          <p role="alert" className="text-sm text-danger">
-            {error}
-          </p>
-        ) : null}
-
         <Button type="submit" size="sm" variant="secondary" disabled={busy || !projectId}>
           {busy ? inventoryT('adding') : t('submit')}
         </Button>
+        {errorToast}
       </form>
     </AdminCreateSheet>
   );

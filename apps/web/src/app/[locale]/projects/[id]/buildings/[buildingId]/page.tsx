@@ -1,17 +1,18 @@
 import type { Metadata } from 'next';
+import type { BuildingDetail } from '@toonexpo/contracts';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { cache } from 'react';
 
+import { getBuilding, getProject } from '@/features/catalog/api/catalog-api';
 import { BuildingFloorsList } from '@/features/catalog/components/building-floor-lists';
+import { CatalogPathBreadcrumb } from '@/features/catalog/components/catalog-path-breadcrumb';
 import { ProjectPricesOverlayScope } from '@/features/catalog/components/price-overlay-scope';
-import { getBuilding } from '@/features/catalog/api/catalog-api';
+import { SiteFooter } from '@/features/catalog/components/site-footer';
 import { listBuildingVisualCanvases } from '@/features/visual-map/api/public-visual-map-api';
 import { PublicVisualMap } from '@/features/visual-map/components/public-visual-map';
 import { pickPrimaryVisualCanvas } from '@/features/visual-map/utils/public-visual-map';
-import { BackLink } from '@/shared/ui/back-link';
-import { SiteFooter } from '@/features/catalog/components/site-footer';
 
 type BuildingPageProps = {
   params: Promise<{ locale: string; id: string; buildingId: string }>;
@@ -46,8 +47,26 @@ export default async function BuildingPage({ params }: BuildingPageProps) {
   }
 
   const t = await getTranslations('Catalog');
+  const project = await getProject(building.project.id, { locale });
+  const district = project?.district ?? null;
   const visualResponse = await listBuildingVisualCanvases(buildingId);
   const visualCanvas = pickPrimaryVisualCanvas(visualResponse?.data ?? []);
+  const pathShortcut = pickBuildingPathShortcut(building.floors, (floorNumber) =>
+    t('project.floor', { number: floorNumber }),
+    (apartmentNumber) => t('apartment.unit', { number: apartmentNumber }),
+  );
+
+  const pathBreadcrumb = (
+    <CatalogPathBreadcrumb
+      ariaLabel={t('apartment.breadcrumb')}
+      district={district}
+      project={building.project}
+      building={{ id: building.id, name: building.name }}
+      {...(pathShortcut?.floor ? { floor: pathShortcut.floor } : {})}
+      {...(pathShortcut?.apartment ? { apartment: pathShortcut.apartment } : {})}
+      current="building"
+    />
+  );
 
   return (
     <div className="min-h-screen bg-canvas">
@@ -64,12 +83,7 @@ export default async function BuildingPage({ params }: BuildingPageProps) {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/25 to-transparent" />
             <div className="page-container absolute inset-x-0 bottom-0 pb-6">
-              <BackLink
-                href={`/projects/${building.project.id}`}
-                label={t('building.backToProject')}
-                tone="onDark"
-              />
-              <h1 className="mt-2 font-brand text-2xl font-bold text-on-dark sm:text-3xl">
+              <h1 className="font-brand text-2xl font-bold text-on-dark sm:text-3xl">
                 {building.name}
               </h1>
               {building.verified ? (
@@ -81,12 +95,9 @@ export default async function BuildingPage({ params }: BuildingPageProps) {
             </div>
           </section>
         ) : (
-          <div className="page-container pt-[calc(5.5rem+env(safe-area-inset-top,0px))]">
-            <BackLink
-              href={`/projects/${building.project.id}`}
-              label={t('building.backToProject')}
-            />
-            <h1 className="mt-2 font-brand text-2xl font-bold text-ink">{building.name}</h1>
+          <div className="page-container pt-8">
+            {pathBreadcrumb}
+            <h1 className="font-brand text-2xl font-bold text-ink">{building.name}</h1>
             {building.verified ? (
               <p className="mt-1 text-[10px] font-bold tracking-widest text-brand-deep uppercase">
                 {t('badges.verified')}
@@ -97,6 +108,8 @@ export default async function BuildingPage({ params }: BuildingPageProps) {
         )}
 
         <div className="page-container section-pad">
+          {building.cover ? pathBreadcrumb : null}
+
           {visualCanvas ? (
             <div className="mb-8">
               <PublicVisualMap canvas={visualCanvas} projectId={building.project.id} />
@@ -115,3 +128,33 @@ export default async function BuildingPage({ params }: BuildingPageProps) {
     </div>
   );
 }
+
+const pickBuildingPathShortcut = (
+  floors: BuildingDetail['floors'],
+  formatFloor: (floorNumber: number) => string,
+  formatApartment: (apartmentNumber: string) => string,
+): {
+  floor: { id: string; label: string };
+  apartment?: { id: string; label: string };
+} | null => {
+  const floor = floors[0];
+  if (!floor) {
+    return null;
+  }
+
+  const apartment = floor.apartments[0];
+  return {
+    floor: {
+      id: floor.id,
+      label: floor.displayLabel?.trim() || formatFloor(floor.number),
+    },
+    ...(apartment
+      ? {
+          apartment: {
+            id: apartment.id,
+            label: formatApartment(apartment.number),
+          },
+        }
+      : {}),
+  };
+};

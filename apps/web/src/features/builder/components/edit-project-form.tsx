@@ -17,6 +17,7 @@ import { TranslationTabs } from '@/features/builder/components/translation-tabs'
 import { getProjectFormPlaceholder } from '@/features/builder/constants/project-content-placeholders';
 import { useAutoProjectSlug } from '@/features/builder/hooks/use-auto-project-slug';
 import { useUpdatePortalProjectMutation } from '@/features/builder/hooks/use-portal-projects';
+import { useProjectFormErrorToast } from '@/features/builder/hooks/use-project-form-error-toast';
 import { useSavedProjectCover } from '@/features/builder/hooks/use-saved-project-cover-url';
 import {
   updateProjectSchema,
@@ -71,9 +72,10 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
   const updateMutation = useUpdatePortalProjectMutation(project.id);
   const savedCover = useSavedProjectCover(project);
   const initialValues = toFormValues(project);
-  const [formError, setFormError] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(savedCover.url);
   const { showSuccess, successToast } = useSuccessToast();
+  const { showError, onInvalid, errorToast, focusLocale, focusTick } =
+    useProjectFormErrorToast();
 
   const {
     register,
@@ -100,7 +102,6 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
   const slugField = register('slug');
 
   const onSubmit = handleSubmit(async (values) => {
-    setFormError(null);
     try {
       const shouldSendCover =
         values.coverMediaId.length > 0 || Boolean(dirtyFields.coverMediaId);
@@ -115,9 +116,9 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
       setPreviewUrl(updated.cover?.thumbnailUrl ?? updated.cover?.fileUrl ?? previewUrl);
       showSuccess(t('detail.saveSuccess'));
     } catch {
-      setFormError(t('errors.generic'));
+      showError(t('errors.generic'));
     }
-  });
+  }, onInvalid);
 
   const busy = isSubmitting || updateMutation.isPending;
 
@@ -128,7 +129,7 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
       className={cn('flex flex-col gap-5', FORM_SAVE_BAR_SCROLL_CLEARANCE_CLASS)}
       noValidate
     >
-      <TranslationTabs>
+      <TranslationTabs focusLocale={focusLocale} focusTick={focusTick}>
         {(locale) => (
           <div className="flex flex-col gap-4">
             <FormField
@@ -271,11 +272,6 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
       />
 
       <FormSaveBar>
-          {formError ? (
-            <p role="alert" className="rounded-sm bg-danger-soft px-3 py-2 text-sm text-danger">
-              {formError}
-            </p>
-          ) : null}
           <Button
             type="submit"
             variant="secondary"
@@ -287,6 +283,7 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
       </FormSaveBar>
     </form>
     {successToast}
+    {errorToast}
     </>
   );
 };
