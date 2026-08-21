@@ -199,13 +199,15 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
                   )}
                 />
               </FormField>
-              <FormField id={`edit-district-${locale}`} label={t('form.district')}>
-                <Input
-                  id={`edit-district-${locale}`}
-                  placeholder={getProjectFormPlaceholder(locale, 'district')}
-                  {...register('district')}
-                />
-              </FormField>
+              <div className="sm:col-span-2">
+                <FormField id={`edit-district-${locale}`} label={t('form.district')}>
+                  <Input
+                    id={`edit-district-${locale}`}
+                    placeholder={getProjectFormPlaceholder(locale, 'district')}
+                    {...register('district')}
+                  />
+                </FormField>
+              </div>
             </div>
           </div>
         )}

@@ -1,8 +1,9 @@
 'use client';
 
 import type { PortalBuildingSummary } from '@toonexpo/contracts';
+import { ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useId, useState } from 'react';
 
 import { AddFloorSheet } from '@/features/builder/components/add-floor-sheet';
 import { BuildingPriceOnRequestToggle } from '@/features/builder/components/building-price-on-request-toggle';
@@ -11,6 +12,7 @@ import { EditBuildingMediaForm } from '@/features/builder/components/edit-buildi
 import { FloorInventoryRow } from '@/features/builder/components/floor-inventory-row';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
+import { cn } from '@/shared/ui/cn';
 
 type BuildingAccordionProps = {
   projectId: string;
@@ -22,7 +24,8 @@ type BuildingAccordionProps = {
  */
 export const BuildingAccordion = ({ projectId, building }: BuildingAccordionProps) => {
   const t = useTranslations('Builder.inventory');
-  const [open, setOpen] = useState(true);
+  const panelId = useId();
+  const [open, setOpen] = useState(false);
   const [addFloorOpen, setAddFloorOpen] = useState(false);
 
   return (
@@ -30,28 +33,41 @@ export const BuildingAccordion = ({ projectId, building }: BuildingAccordionProp
       <div className="flex flex-wrap items-center gap-3 px-4 py-3">
         <button
           type="button"
-          className="flex min-w-0 flex-1 items-center justify-between gap-3 text-left"
+          className="flex min-w-0 flex-1 items-center gap-3 text-left"
           aria-expanded={open}
+          aria-controls={panelId}
+          aria-label={
+            open
+              ? t('collapseBuilding', { name: building.name })
+              : t('expandBuilding', { name: building.name })
+          }
           onClick={() => {
             setOpen((value) => !value);
           }}
         >
-          <span>
+          <ChevronDown
+            className={cn(
+              'size-4 shrink-0 text-ink-muted transition-transform duration-[var(--duration-base)] ease-[var(--ease-out-premium)] motion-reduce:transition-none',
+              open ? 'rotate-0' : '-rotate-90',
+            )}
+            aria-hidden
+          />
+          <span className="min-w-0">
             <span className="block text-sm font-semibold text-ink">{building.name}</span>
             <span className="block text-xs text-ink-muted">
               {t('floorsCount', { count: building.floors.length })}
               {building.priceOnRequestEnabled ? ` · ${t('priceOnRequestOn')}` : ''}
             </span>
           </span>
-          <span className="text-ink-muted" aria-hidden>
-            {open ? '−' : '+'}
-          </span>
         </button>
         <BuildingPublicationActions projectId={projectId} building={building} />
       </div>
 
       {open ? (
-        <div className="flex flex-col gap-3 border-t border-border px-4 py-3">
+        <div
+          id={panelId}
+          className="flex flex-col gap-3 border-t border-border px-4 py-3"
+        >
           <BuildingPriceOnRequestToggle projectId={projectId} building={building} />
           {building.floors.length === 0 ? (
             <p className="text-sm text-ink-secondary">{t('noFloors')}</p>

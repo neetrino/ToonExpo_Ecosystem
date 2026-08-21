@@ -175,13 +175,15 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
                   )}
                 />
               </FormField>
-              <FormField id={`district-${locale}`} label={t('form.district')}>
-                <Input
-                  id={`district-${locale}`}
-                  placeholder={getProjectFormPlaceholder(locale, 'district')}
-                  {...register('district')}
-                />
-              </FormField>
+              <div className="sm:col-span-2">
+                <FormField id={`district-${locale}`} label={t('form.district')}>
+                  <Input
+                    id={`district-${locale}`}
+                    placeholder={getProjectFormPlaceholder(locale, 'district')}
+                    {...register('district')}
+                  />
+                </FormField>
+              </div>
             </div>
           </div>
         )}
