@@ -1,6 +1,6 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
 import type { PortalFloorSummary } from '@toonexpo/contracts';
-import { PublicationStatus, type Prisma } from '@toonexpo/db';
+import { Prisma, PublicationStatus } from '@toonexpo/db';
 
 import { WebRevalidationService } from '../../common/web-revalidation/web-revalidation.service.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
@@ -13,6 +13,26 @@ import { requireOwnedBuilding, requireOwnedFloor } from '../utils/ownership.js';
 const floorInclude = {
   _count: { select: { apartments: true } },
 } satisfies Prisma.FloorInclude;
+
+const FLOOR_NUMBER_CONFLICT_MESSAGE =
+  'This building already has a floor with this number. Enter a different number or open the existing floor.';
+
+const isFloorNumberUniqueViolation = (target: unknown): boolean => {
+  if (!Array.isArray(target)) {
+    return false;
+  }
+  const fields = new Set(target.map((field) => String(field)));
+  return fields.has('number') && (fields.has('buildingId') || fields.has('building_id'));
+};
+
+const rethrowFloorNumberConflict = (error: unknown): void => {
+  if (!(error instanceof Prisma.PrismaClientKnownRequestError) || error.code !== 'P2002') {
+    return;
+  }
+  if (isFloorNumberUniqueViolation(error.meta?.['target'])) {
+    throw new ConflictException(FLOOR_NUMBER_CONFLICT_MESSAGE);
+  }
+};
 
 @Injectable()
 export class PortalFloorsService {
@@ -38,22 +58,27 @@ export class PortalFloorsService {
     dto: CreatePortalFloorDto,
   ): Promise<PortalFloorSummary> {
     await requireOwnedBuilding(this.prisma, buildingId, companyId);
-    const floor = await this.prisma.db.floor.create({
-      data: {
-        buildingId,
-        number: dto.floorNumber,
-        publicationStatus: PublicationStatus.draft,
-        displayOrder: dto.displayOrder ?? 0,
-        createdByUserId: userId,
-        updatedByUserId: userId,
-        ...(dto.name !== undefined ? { name: dto.name } : {}),
-        ...(dto.displayLabel !== undefined ? { displayLabel: dto.displayLabel } : {}),
-        ...(dto.description !== undefined ? { description: dto.description } : {}),
-        ...(dto.floorplanMediaId !== undefined ? { floorplanMediaId: dto.floorplanMediaId } : {}),
-      },
-      include: floorInclude,
-    });
-    return mapPortalFloor(floor);
+    try {
+      const floor = await this.prisma.db.floor.create({
+        data: {
+          buildingId,
+          number: dto.floorNumber,
+          publicationStatus: PublicationStatus.draft,
+          displayOrder: dto.displayOrder ?? 0,
+          createdByUserId: userId,
+          updatedByUserId: userId,
+          ...(dto.name !== undefined ? { name: dto.name } : {}),
+          ...(dto.displayLabel !== undefined ? { displayLabel: dto.displayLabel } : {}),
+          ...(dto.description !== undefined ? { description: dto.description } : {}),
+          ...(dto.floorplanMediaId !== undefined ? { floorplanMediaId: dto.floorplanMediaId } : {}),
+        },
+        include: floorInclude,
+      });
+      return mapPortalFloor(floor);
+    } catch (error) {
+      rethrowFloorNumberConflict(error);
+      throw error;
+    }
   }
 
   async update(
@@ -63,20 +88,25 @@ export class PortalFloorsService {
     dto: UpdatePortalFloorDto,
   ): Promise<PortalFloorSummary> {
     await requireOwnedFloor(this.prisma, floorId, companyId);
-    const floor = await this.prisma.db.floor.update({
-      where: { id: floorId },
-      data: {
-        ...(dto.floorNumber !== undefined ? { number: dto.floorNumber } : {}),
-        ...(dto.name !== undefined ? { name: dto.name } : {}),
-        ...(dto.displayLabel !== undefined ? { displayLabel: dto.displayLabel } : {}),
-        ...(dto.displayOrder !== undefined ? { displayOrder: dto.displayOrder } : {}),
-        ...(dto.description !== undefined ? { description: dto.description } : {}),
-        ...(dto.floorplanMediaId !== undefined ? { floorplanMediaId: dto.floorplanMediaId } : {}),
-        updatedByUserId: userId,
-      },
-      include: floorInclude,
-    });
-    return mapPortalFloor(floor);
+    try {
+      const floor = await this.prisma.db.floor.update({
+        where: { id: floorId },
+        data: {
+          ...(dto.floorNumber !== undefined ? { number: dto.floorNumber } : {}),
+          ...(dto.name !== undefined ? { name: dto.name } : {}),
+          ...(dto.displayLabel !== undefined ? { displayLabel: dto.displayLabel } : {}),
+          ...(dto.displayOrder !== undefined ? { displayOrder: dto.displayOrder } : {}),
+          ...(dto.description !== undefined ? { description: dto.description } : {}),
+          ...(dto.floorplanMediaId !== undefined ? { floorplanMediaId: dto.floorplanMediaId } : {}),
+          updatedByUserId: userId,
+        },
+        include: floorInclude,
+      });
+      return mapPortalFloor(floor);
+    } catch (error) {
+      rethrowFloorNumberConflict(error);
+      throw error;
+    }
   }
 
   async updatePublication(

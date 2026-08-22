@@ -15,6 +15,7 @@ import {
   createFloorSchema,
   type CreateFloorFormValues,
 } from '@/features/builder/schemas/inventory.schema';
+import { isFloorNumberDuplicateApiError } from '@/shared/api/errors';
 import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
@@ -113,7 +114,11 @@ export const AdminCreateFloorSheet = ({
         },
       });
       onClose();
-    } catch {
+    } catch (caught) {
+      if (isFloorNumberDuplicateApiError(caught)) {
+        showError(inventoryT('errors.floorNumberExists', { number: values.floorNumber }));
+        return;
+      }
       showError(inventoryT('errors.generic'));
     }
   }, onInvalid);

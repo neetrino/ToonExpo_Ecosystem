@@ -1585,7 +1585,11 @@
         "planReady": "plan",
         "floorNeedsPolygon": "Նախ Building render-ում գծեք այս հարկի polygon-ը։ Հետո նոր կկարողանաք վերբեռնել հարկի նկարը։",
         "floorNeedsPolygonNamed": "Հարկ {name}-ը դեռ շենքի վրա polygon չունի։ Բացեք Building render, գծեք, հետո վերադարձեք։",
-        "goToBuildingRender": "Բացել Building render"
+        "goToBuildingRender": "Բացել Building render",
+        "errors": {
+          "generic": "Չհաջողվեց պահպանել։ Կրկին փորձեք։",
+          "floorNumberExists": "Այս շենքում {number} հարկն արդեն կա։ Մուտքագրեք այլ համար կամ բացեք գոյություն ունեցող հարկը։"
+        }
       },
       "pages": {
         "masterplan": "Masterplan · թաղամասեր",
@@ -3407,7 +3411,8 @@
         "count": "Մուտքագրեք վավեր քանակ"
       },
       "errors": {
-        "generic": "Ինչ-որ սխալ տեղի ունեցավ։ Կրկին փորձեք։"
+        "generic": "Ինչ-որ սխալ տեղի ունեցավ։ Կրկին փորձեք։",
+        "floorNumberExists": "Այս շենքում {number} հարկն արդեն կա։ Մուտքագրեք այլ համար կամ բացեք գոյություն ունեցող հարկը։"
       }
     },
     "visualMap": {

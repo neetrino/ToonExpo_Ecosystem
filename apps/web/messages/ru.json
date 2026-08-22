@@ -1585,7 +1585,11 @@
         "planReady": "plan",
         "floorNeedsPolygon": "Сначала нарисуйте polygon этого этажа на рендере здания. Затем можно загрузить план этажа.",
         "floorNeedsPolygonNamed": "У этажа {name} ещё нет polygon на здании. Откройте building render, нарисуйте его и вернитесь.",
-        "goToBuildingRender": "Открыть building render"
+        "goToBuildingRender": "Открыть building render",
+        "errors": {
+          "generic": "Не удалось сохранить. Попробуйте ещё раз.",
+          "floorNumberExists": "В этом здании этаж {number} уже есть. Укажите другой номер или откройте существующий этаж."
+        }
       },
       "pages": {
         "masterplan": "Masterplan · районы",
@@ -3407,7 +3411,8 @@
         "count": "Укажите корректное количество"
       },
       "errors": {
-        "generic": "Что-то пошло не так. Попробуйте ещё раз."
+        "generic": "Что-то пошло не так. Попробуйте ещё раз.",
+        "floorNumberExists": "В этом здании этаж {number} уже есть. Укажите другой номер или откройте существующий этаж."
       }
     },
     "visualMap": {

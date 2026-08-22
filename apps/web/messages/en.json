@@ -1585,7 +1585,11 @@
         "planReady": "plan",
         "floorNeedsPolygon": "Draw this floor’s polygon on the building render first. Then you can upload the floor plan.",
         "floorNeedsPolygonNamed": "Floor {name} has no building polygon yet. Open building render, draw it, then come back.",
-        "goToBuildingRender": "Open building render"
+        "goToBuildingRender": "Open building render",
+        "errors": {
+          "generic": "Something went wrong. Please try again.",
+          "floorNumberExists": "This building already has floor {number}. Enter a different number or open the existing floor."
+        }
       },
       "pages": {
         "masterplan": "Masterplan · districts",
@@ -3667,7 +3671,8 @@
         "count": "Enter a valid count"
       },
       "errors": {
-        "generic": "Something went wrong. Please try again."
+        "generic": "Something went wrong. Please try again.",
+        "floorNumberExists": "This building already has floor {number}. Enter a different number or open the existing floor."
       }
     },
     "visualMap": {

@@ -239,6 +239,7 @@ export const BuildingRenderPhasePage = ({
               nameLabel={t('forms.floorNumber')}
               namePlaceholder={t('forms.floorPlaceholder')}
               digitsOnly
+              submitErrorKind="floor"
               onSubmit={async (number) => {
                 const floorNumber = Number(number);
                 await createPortalFloor(buildingId, { floorNumber }, { scope: catalogScope });
