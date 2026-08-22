@@ -1580,6 +1580,9 @@
         "uploadFirst": "Сначала загрузите изображение.",
         "uploadAndSetupFloors": "Сначала загрузите рендер и настройте этажи.",
         "pickFloor": "Этажи",
+        "pickBuilding": "Выберите здание",
+        "noBuildings": "Зданий пока нет. Сначала создайте здания на этапе Buildings.",
+        "buildingFloorsMapped": "Этажей на карте: {mapped}/{total}",
         "noFloors": "Этажей пока нет.",
         "needsPolygon": "Сначала нарисуйте polygon",
         "planReady": "plan",
@@ -1594,6 +1597,7 @@
       "pages": {
         "masterplan": "Masterplan · районы",
         "district": "Район · {name}",
+        "floors": "Этажи · выбор здания",
         "buildingRender": "Здание · {name}",
         "floor": "Этаж · {name}"
       },

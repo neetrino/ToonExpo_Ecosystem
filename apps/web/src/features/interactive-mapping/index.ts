@@ -10,6 +10,7 @@ export { PhaseWizardPage } from './components/phase-wizard-page';
 export { MappingLabPage } from './components/mapping-lab-page';
 export { MasterplanPhasePage } from './components/pages/masterplan-phase-page';
 export { DistrictPhasePage } from './components/pages/district-phase-page';
+export { FloorsPhasePage } from './components/pages/floors-phase-page';
 export { BuildingRenderPhasePage } from './components/pages/building-render-phase-page';
 export { FloorPhasePage } from './components/pages/floor-phase-page';
 export { MappingCanvas } from './components/mapping-canvas/mapping-canvas';

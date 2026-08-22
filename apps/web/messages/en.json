@@ -1580,6 +1580,9 @@
         "uploadFirst": "Upload an image to start mapping.",
         "uploadAndSetupFloors": "Upload a render and set up floors first.",
         "pickFloor": "Floors",
+        "pickBuilding": "Choose building",
+        "noBuildings": "No buildings yet. Create buildings in the Buildings phase first.",
+        "buildingFloorsMapped": "{mapped}/{total} floors mapped",
         "noFloors": "No floors yet.",
         "needsPolygon": "Draw polygon first",
         "planReady": "plan",
@@ -1594,6 +1597,7 @@
       "pages": {
         "masterplan": "Masterplan · districts",
         "district": "District · {name}",
+        "floors": "Floors · choose building",
         "buildingRender": "Building render · {name}",
         "floor": "Floor · {name}"
       },

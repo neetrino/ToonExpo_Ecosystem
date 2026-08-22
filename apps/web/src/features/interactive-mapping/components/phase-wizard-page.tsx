@@ -125,9 +125,7 @@ export const PhaseWizardPage = ({ projectId }: PhaseWizardPageProps) => {
             total: Math.max(floors.length, 1),
           })}
           statusLabel={t(statusKey(phaseState(project.phases, 3)))}
-          addHref={
-            primaryBuilding ? `${base}/buildings/${primaryBuilding.id}/render` : undefined
-          }
+          addHref={buildings.length > 0 ? `${base}/phases/floors` : undefined}
           addLabel={t('cta.mapFloors')}
           doneLabel={t('cta.edit')}
           lockedLabel={t('cta.locked')}
