@@ -236,6 +236,7 @@ export const DistrictPhasePage = ({ projectId, districtId }: DistrictPhasePagePr
                   nameLabel={t('forms.floorNumber')}
                   namePlaceholder={t('forms.floorPlaceholder')}
                   digitsOnly
+                  submitErrorKind="floor"
                   onSubmit={async (number) => {
                     const floorNumber = Number(number);
                     await createPortalFloor(

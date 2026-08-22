@@ -13,6 +13,7 @@ import {
 } from '@/features/builder/schemas/inventory.schema';
 import { MediaUploadField } from '@/features/media/components/media-upload-field';
 import { toOptionalMediaId } from '@/features/media/schemas/media-fields.schema';
+import { isFloorNumberDuplicateApiError } from '@/shared/api/errors';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
@@ -69,7 +70,11 @@ export const AddFloorForm = ({ projectId, buildingId, onSuccess }: AddFloorFormP
         floorplanMediaId: '',
       });
       onSuccess?.();
-    } catch {
+    } catch (caught) {
+      if (isFloorNumberDuplicateApiError(caught)) {
+        showError(t('errors.floorNumberExists', { number: values.floorNumber }));
+        return;
+      }
       showError(t('errors.generic'));
     }
   }, onInvalid);

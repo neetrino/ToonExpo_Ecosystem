@@ -1541,6 +1541,7 @@
         "buildings": "Ստեղծիր շենքեր և տեղադրիր թաղամասի պլանի վրա։",
         "floors": "Նշիր հարկերի քանակը, upload արա շենքի նկարը, հետո գծիր հարկերը։",
         "apartments": "Ստեղծիր բնակարաններ և գծիր հատակագծի վրա։",
+        "pickApartmentFloor": "Ընտրիր շենք, ապա հարկը բնակարանների քարտեզավորման համար։",
         "setupFloors": "Գրիր հարկերի քանակը, հետո բացիր գծելու էջը։"
       },
       "progress": {
@@ -1580,16 +1581,27 @@
         "uploadFirst": "Նախ upload արա նկարը։",
         "uploadAndSetupFloors": "Նախ upload արա նկարը և setup արա հարկերը։",
         "pickFloor": "Հարկեր",
+        "pickBuilding": "Ընտրեք շենք",
+        "noBuildings": "Շենքեր դեռ չկան։ Նախ ստեղծեք շենքեր Buildings փուլում։",
+        "buildingFloorsMapped": "Քարտեզավորված հարկեր՝ {mapped}/{total}",
+        "buildingApartmentsCount": "{count, plural, =0 {Բնակարան չկա} one {# բնակարան} other {# բնակարան}}",
         "noFloors": "Հարկեր դեռ չկան։",
         "needsPolygon": "Նախ գծեք polygon",
         "planReady": "plan",
         "floorNeedsPolygon": "Նախ Building render-ում գծեք այս հարկի polygon-ը։ Հետո նոր կկարողանաք վերբեռնել հարկի նկարը։",
         "floorNeedsPolygonNamed": "Հարկ {name}-ը դեռ շենքի վրա polygon չունի։ Բացեք Building render, գծեք, հետո վերադարձեք։",
-        "goToBuildingRender": "Բացել Building render"
+        "goToBuildingRender": "Բացել Building render",
+        "errors": {
+          "generic": "Չհաջողվեց պահպանել։ Կրկին փորձեք։",
+          "floorNumberExists": "Այս շենքում {number} հարկն արդեն կա։ Մուտքագրեք այլ համար կամ բացեք գոյություն ունեցող հարկը։"
+        }
       },
       "pages": {
         "masterplan": "Masterplan · թաղամասեր",
         "district": "Թաղամաս · {name}",
+        "floors": "Հարկեր · շենքի ընտրություն",
+        "apartments": "Բնակարաններ · շենքի ընտրություն",
+        "apartmentsBuilding": "Բնակարաններ · {name}",
         "buildingRender": "Շենք · {name}",
         "floor": "Հարկ · {name}"
       },
@@ -1604,6 +1616,9 @@
         "editDrag": "Խմբագրել · քաշել",
         "newPolygon": "Նոր polygon",
         "deletePolygon": "Ջնջել polygon",
+        "deleteAllPolygons": "Ջնջել բոլոր polygon-ները",
+        "deleteAllPolygonsConfirm": "Հեռացնե՞լ բոլոր polygon-ները այս քարտեզից։ Օբյեկտները կմնան — կարող եք նորից գծել։",
+        "allPolygonsCleared": "Հեռացվել է {count} polygon",
         "saveDrawing": "Պահպանել գծագիրը ({count} կետ)",
         "saveDrawingAria": "Պահպանել գծագիրը, {count} կետ",
         "deleteSelectedPoint": "Ջնջել ընտրված կետը (Delete)",
@@ -3407,7 +3422,8 @@
         "count": "Մուտքագրեք վավեր քանակ"
       },
       "errors": {
-        "generic": "Ինչ-որ սխալ տեղի ունեցավ։ Կրկին փորձեք։"
+        "generic": "Ինչ-որ սխալ տեղի ունեցավ։ Կրկին փորձեք։",
+        "floorNumberExists": "Այս շենքում {number} հարկն արդեն կա։ Մուտքագրեք այլ համար կամ բացեք գոյություն ունեցող հարկը։"
       }
     },
     "visualMap": {

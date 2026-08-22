@@ -1541,6 +1541,7 @@
         "buildings": "Create buildings and place them on the district plan.",
         "floors": "Set floor count, upload a building render, then draw floor bands.",
         "apartments": "Create apartments and draw them on the floor plan.",
+        "pickApartmentFloor": "Choose a building, then pick a floor to map apartments.",
         "setupFloors": "Enter floor count, then open the render mapping page."
       },
       "progress": {
@@ -1580,16 +1581,27 @@
         "uploadFirst": "Upload an image to start mapping.",
         "uploadAndSetupFloors": "Upload a render and set up floors first.",
         "pickFloor": "Floors",
+        "pickBuilding": "Choose building",
+        "noBuildings": "No buildings yet. Create buildings in the Buildings phase first.",
+        "buildingFloorsMapped": "{mapped}/{total} floors mapped",
+        "buildingApartmentsCount": "{count, plural, =0 {No apartments} one {# apartment} other {# apartments}}",
         "noFloors": "No floors yet.",
         "needsPolygon": "Draw polygon first",
         "planReady": "plan",
         "floorNeedsPolygon": "Draw this floor’s polygon on the building render first. Then you can upload the floor plan.",
         "floorNeedsPolygonNamed": "Floor {name} has no building polygon yet. Open building render, draw it, then come back.",
-        "goToBuildingRender": "Open building render"
+        "goToBuildingRender": "Open building render",
+        "errors": {
+          "generic": "Something went wrong. Please try again.",
+          "floorNumberExists": "This building already has floor {number}. Enter a different number or open the existing floor."
+        }
       },
       "pages": {
         "masterplan": "Masterplan · districts",
         "district": "District · {name}",
+        "floors": "Floors · choose building",
+        "apartments": "Apartments · choose building",
+        "apartmentsBuilding": "Apartments · {name}",
         "buildingRender": "Building render · {name}",
         "floor": "Floor · {name}"
       },
@@ -1604,6 +1616,9 @@
         "editDrag": "Edit · drag",
         "newPolygon": "New polygon",
         "deletePolygon": "Delete polygon",
+        "deleteAllPolygons": "Delete all polygons",
+        "deleteAllPolygonsConfirm": "Remove all polygons from this map? Entities stay — you can draw again.",
+        "allPolygonsCleared": "Removed {count} polygons",
         "saveDrawing": "Save drawing ({count} points)",
         "saveDrawingAria": "Save drawing, {count} points",
         "deleteSelectedPoint": "Delete selected point (Delete)",
@@ -3667,7 +3682,8 @@
         "count": "Enter a valid count"
       },
       "errors": {
-        "generic": "Something went wrong. Please try again."
+        "generic": "Something went wrong. Please try again.",
+        "floorNumberExists": "This building already has floor {number}. Enter a different number or open the existing floor."
       }
     },
     "visualMap": {

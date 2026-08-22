@@ -57,16 +57,6 @@ export const PhaseWizardPage = ({ projectId }: PhaseWizardPageProps) => {
   const base = `${basePath}/${project.id}`;
 
   const primaryDistrict = districts[0];
-  const primaryBuilding =
-    buildings.find((item) => item.districtId === primaryDistrict?.id) ?? buildings[0];
-  const primaryFloor =
-    floors.find(
-      (item) =>
-        item.buildingId === primaryBuilding?.id && (item.hasBuildingPolygon || item.hasFloorPlan),
-    ) ??
-    floors.find((item) => item.hasBuildingPolygon || item.hasFloorPlan) ??
-    floors.find((item) => item.buildingId === primaryBuilding?.id) ??
-    floors[0];
 
   return (
     <div className="space-y-8">
@@ -125,9 +115,7 @@ export const PhaseWizardPage = ({ projectId }: PhaseWizardPageProps) => {
             total: Math.max(floors.length, 1),
           })}
           statusLabel={t(statusKey(phaseState(project.phases, 3)))}
-          addHref={
-            primaryBuilding ? `${base}/buildings/${primaryBuilding.id}/render` : undefined
-          }
+          addHref={buildings.length > 0 ? `${base}/phases/floors` : undefined}
           addLabel={t('cta.mapFloors')}
           doneLabel={t('cta.edit')}
           lockedLabel={t('cta.locked')}
@@ -143,7 +131,7 @@ export const PhaseWizardPage = ({ projectId }: PhaseWizardPageProps) => {
             total: Math.max(apartments.length, 1),
           })}
           statusLabel={t(statusKey(phaseState(project.phases, 4)))}
-          addHref={primaryFloor ? `${base}/floors/${primaryFloor.id}` : undefined}
+          addHref={buildings.length > 0 ? `${base}/phases/apartments` : undefined}
           addLabel={t('cta.mapApartments')}
           doneLabel={t('cta.edit')}
           lockedLabel={t('cta.locked')}

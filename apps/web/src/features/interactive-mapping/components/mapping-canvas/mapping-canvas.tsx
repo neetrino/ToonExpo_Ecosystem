@@ -7,6 +7,7 @@ import { bandPolygonFromEdge, pointerToNormalized, type NormPoint } from '../../
 import { type PolygonShape } from '../../utils/curved-polygon';
 import { getContainedImageBounds } from '../../utils/coordinates';
 import { Button } from '@/shared/ui/button';
+import { ConfirmDeleteModal } from '@/shared/ui/confirm-delete-modal';
 import { MappingCanvasStage } from './mapping-canvas-stage';
 import { MappingCanvasToolbar } from './mapping-canvas-toolbar';
 import { getMappingCanvasHintText } from './mapping-canvas-hints';
@@ -62,6 +63,9 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
     const replaceOnCommitRef = useRef(false);
     const toolPresetRef = useRef(toolPreset);
     const [cursorPoint, setCursorPoint] = useState<NormPoint | null>(null);
+    const [pendingPolygonConfirm, setPendingPolygonConfirm] = useState<'delete' | 'replace' | null>(
+      null,
+    );
 
     useEffect(() => {
       draftRef.current = draftPoints;
@@ -203,6 +207,8 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
       onCanvasClick,
       deletePolygon,
       startFreshPolygon,
+      executeDeletePolygon,
+      executeStartFreshPolygon,
       onMarkerPointerDown,
       onMarkerPointerMove,
       onMarkerPointerUp,
@@ -213,8 +219,7 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
       draftRef,
       dragRef,
       replaceOnCommitRef,
-      confirmDeletePolygon: tCanvas('confirmDeletePolygon'),
-      confirmReplacePolygon: tCanvas('confirmReplacePolygon'),
+      onRequestPolygonConfirm: setPendingPolygonConfirm,
       readNormalized,
       onSelect,
       onChangeEntity,
@@ -320,6 +325,26 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
         />
 
         {hintText ? <p className="text-xs text-muted-foreground">{hintText}</p> : null}
+
+        <ConfirmDeleteModal
+          open={pendingPolygonConfirm != null}
+          message={
+            pendingPolygonConfirm === 'delete'
+              ? tCanvas('confirmDeletePolygon')
+              : tCanvas('confirmReplacePolygon')
+          }
+          onCancel={() => {
+            setPendingPolygonConfirm(null);
+          }}
+          onConfirm={() => {
+            if (pendingPolygonConfirm === 'delete') {
+              executeDeletePolygon();
+            } else if (pendingPolygonConfirm === 'replace') {
+              executeStartFreshPolygon();
+            }
+            setPendingPolygonConfirm(null);
+          }}
+        />
       </div>
     );
   },

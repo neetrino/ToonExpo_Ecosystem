@@ -1541,6 +1541,7 @@
         "buildings": "Создайте здания и разместите их на плане района.",
         "floors": "Укажите число этажей, загрузите рендер и нарисуйте этажи.",
         "apartments": "Создайте квартиры и нарисуйте их на плане этажа.",
+        "pickApartmentFloor": "Выберите здание, затем этаж для разметки квартир.",
         "setupFloors": "Укажите число этажей, затем откройте страницу разметки."
       },
       "progress": {
@@ -1580,16 +1581,27 @@
         "uploadFirst": "Сначала загрузите изображение.",
         "uploadAndSetupFloors": "Сначала загрузите рендер и настройте этажи.",
         "pickFloor": "Этажи",
+        "pickBuilding": "Выберите здание",
+        "noBuildings": "Зданий пока нет. Сначала создайте здания на этапе Buildings.",
+        "buildingFloorsMapped": "Этажей на карте: {mapped}/{total}",
+        "buildingApartmentsCount": "{count, plural, =0 {Нет квартир} one {# квартира} few {# квартиры} many {# квартир} other {# квартир}}",
         "noFloors": "Этажей пока нет.",
         "needsPolygon": "Сначала нарисуйте polygon",
         "planReady": "plan",
         "floorNeedsPolygon": "Сначала нарисуйте polygon этого этажа на рендере здания. Затем можно загрузить план этажа.",
         "floorNeedsPolygonNamed": "У этажа {name} ещё нет polygon на здании. Откройте building render, нарисуйте его и вернитесь.",
-        "goToBuildingRender": "Открыть building render"
+        "goToBuildingRender": "Открыть building render",
+        "errors": {
+          "generic": "Не удалось сохранить. Попробуйте ещё раз.",
+          "floorNumberExists": "В этом здании этаж {number} уже есть. Укажите другой номер или откройте существующий этаж."
+        }
       },
       "pages": {
         "masterplan": "Masterplan · районы",
         "district": "Район · {name}",
+        "floors": "Этажи · выбор здания",
+        "apartments": "Квартиры · выбор здания",
+        "apartmentsBuilding": "Квартиры · {name}",
         "buildingRender": "Здание · {name}",
         "floor": "Этаж · {name}"
       },
@@ -1604,6 +1616,9 @@
         "editDrag": "Править · перетащить",
         "newPolygon": "Новый полигон",
         "deletePolygon": "Удалить полигон",
+        "deleteAllPolygons": "Удалить все полигоны",
+        "deleteAllPolygonsConfirm": "Удалить все полигоны с этой карты? Объекты останутся — можно нарисовать заново.",
+        "allPolygonsCleared": "Удалено полигонов: {count}",
         "saveDrawing": "Сохранить чертёж ({count} точек)",
         "saveDrawingAria": "Сохранить чертёж, {count} точек",
         "deleteSelectedPoint": "Удалить выбранную точку (Delete)",
@@ -3407,7 +3422,8 @@
         "count": "Укажите корректное количество"
       },
       "errors": {
-        "generic": "Что-то пошло не так. Попробуйте ещё раз."
+        "generic": "Что-то пошло не так. Попробуйте ещё раз.",
+        "floorNumberExists": "В этом здании этаж {number} уже есть. Укажите другой номер или откройте существующий этаж."
       }
     },
     "visualMap": {
