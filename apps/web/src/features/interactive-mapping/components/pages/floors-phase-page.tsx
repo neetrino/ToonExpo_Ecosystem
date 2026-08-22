@@ -35,7 +35,7 @@ export const FloorsPhasePage = ({ projectId }: FloorsPhasePageProps) => {
     );
   }
 
-  const { project, districts, buildings, floors } = detailQuery.data;
+  const { districts, buildings, floors } = detailQuery.data;
   const { basePath } = catalog;
 
   return (
