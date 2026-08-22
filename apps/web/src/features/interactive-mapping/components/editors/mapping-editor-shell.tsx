@@ -69,7 +69,9 @@ export const MappingEditorShell = ({
   const [fullscreen, setFullscreen] = useState(false);
   const [portalReady, setPortalReady] = useState(false);
   const [deletePending, setDeletePending] = useState(false);
-  const [pendingAction, setPendingAction] = useState<'entity' | 'mapping' | null>(null);
+  const [pendingAction, setPendingAction] = useState<'entity' | 'mapping' | 'allPolygons' | null>(
+    null,
+  );
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const editor = useMappingEditorState({
     companyId,
@@ -139,6 +141,11 @@ export const MappingEditorShell = ({
       void editor.onClear();
       return;
     }
+    if (pendingAction === 'allPolygons') {
+      setPendingAction(null);
+      void editor.onClearAllPolygons();
+      return;
+    }
     const id = pendingDeleteId;
     if (pendingAction !== 'entity' || !id || !onDeleteEntity) {
       return;
@@ -182,6 +189,14 @@ export const MappingEditorShell = ({
       onClear={() => {
         setPendingAction('mapping');
       }}
+      onClearAllPolygons={
+        editor.entities.some((entity) => entity.svgPath)
+          ? () => {
+              setPendingAction('allPolygons');
+            }
+          : undefined
+      }
+      deleteAllPolygonsLabel={t('deleteAllPolygons')}
       onDelete={onDeleteEntity ? handleDeleteEntity : undefined}
     />
   );
@@ -210,7 +225,9 @@ export const MappingEditorShell = ({
         message={
           pendingAction === 'mapping'
             ? t('removeMappingConfirm')
-            : (confirmDeleteMessage ?? t('confirmDeleteApartment'))
+            : pendingAction === 'allPolygons'
+              ? t('deleteAllPolygonsConfirm')
+              : (confirmDeleteMessage ?? t('confirmDeleteApartment'))
         }
         confirming={deletePending || editor.pending}
         onCancel={() => {

@@ -1541,6 +1541,7 @@
         "buildings": "Create buildings and place them on the district plan.",
         "floors": "Set floor count, upload a building render, then draw floor bands.",
         "apartments": "Create apartments and draw them on the floor plan.",
+        "pickApartmentFloor": "Choose a building, then pick a floor to map apartments.",
         "setupFloors": "Enter floor count, then open the render mapping page."
       },
       "progress": {
@@ -1583,6 +1584,7 @@
         "pickBuilding": "Choose building",
         "noBuildings": "No buildings yet. Create buildings in the Buildings phase first.",
         "buildingFloorsMapped": "{mapped}/{total} floors mapped",
+        "buildingApartmentsCount": "{count, plural, =0 {No apartments} one {# apartment} other {# apartments}}",
         "noFloors": "No floors yet.",
         "needsPolygon": "Draw polygon first",
         "planReady": "plan",
@@ -1598,6 +1600,8 @@
         "masterplan": "Masterplan · districts",
         "district": "District · {name}",
         "floors": "Floors · choose building",
+        "apartments": "Apartments · choose building",
+        "apartmentsBuilding": "Apartments · {name}",
         "buildingRender": "Building render · {name}",
         "floor": "Floor · {name}"
       },
@@ -1612,6 +1616,9 @@
         "editDrag": "Edit · drag",
         "newPolygon": "New polygon",
         "deletePolygon": "Delete polygon",
+        "deleteAllPolygons": "Delete all polygons",
+        "deleteAllPolygonsConfirm": "Remove all polygons from this map? Entities stay — you can draw again.",
+        "allPolygonsCleared": "Removed {count} polygons",
         "saveDrawing": "Save drawing ({count} points)",
         "saveDrawingAria": "Save drawing, {count} points",
         "deleteSelectedPoint": "Delete selected point (Delete)",

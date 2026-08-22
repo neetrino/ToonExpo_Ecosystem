@@ -26,6 +26,7 @@ import { FloorApartmentMappingEditor } from '../editors/floor-apartment-mapping-
 import { FloorPlanUploadPicker } from '../floor-plan-upload-picker';
 import { FloorPolygonRequiredGate } from '../floor-polygon-required-gate';
 import { CreateEntityInlineForm } from '../forms/create-entity-inline-form';
+import { MappingBuildingPicker } from '../mapping-building-picker';
 import { MappingImageUploader } from '../media/mapping-image-uploader';
 import { isFloorPlanMappingUnlocked } from '../../utils/is-floor-plan-mapping-unlocked';
 
@@ -121,7 +122,9 @@ export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
     (item) => item.buildingId === floor.buildingId,
   );
   const apartments = detailQuery.data.apartments.filter((item) => item.floorId === floorId);
+  const { districts, buildings } = detailQuery.data;
   const { mediaContext, basePath, mode } = catalog;
+  const apartmentsBuildingHref = `${basePath}/${projectId}/phases/apartments/buildings/${floor.buildingId}`;
   const buildingRenderHref = `${basePath}/${projectId}/buildings/${floor.buildingId}/render`;
   const floorUnlocked = isFloorPlanMappingUnlocked(floor);
   const floorLabel = floor.name ?? String(floor.number);
@@ -186,11 +189,30 @@ export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
   return (
     <div className="space-y-6">
       <div>
-        <BackLink href={`${basePath}/${projectId}`} label={t('backToWizard')} />
+        <BackLink href={apartmentsBuildingHref} label={t('backToWizard')} />
         <h1 className="mt-3 font-display text-3xl text-ink">
           {t('pages.floor', { name: floorLabel })}
         </h1>
       </div>
+
+      <MappingBuildingPicker
+        buildings={buildings}
+        districts={districts}
+        floors={detailQuery.data.floors}
+        apartments={detailQuery.data.apartments}
+        selectedBuildingId={floor.buildingId}
+        title={t('forms.pickBuilding')}
+        emptyLabel={t('forms.noBuildings')}
+        floorsMappedLabel={(values) => t('forms.buildingFloorsMapped', values)}
+        apartmentsCountLabel={(values) => t('forms.buildingApartmentsCount', values)}
+        onSelectBuilding={(nextBuildingId) => {
+          if (nextBuildingId === floor.buildingId) {
+            return;
+          }
+          setLockNotice(null);
+          router.push(`${basePath}/${projectId}/phases/apartments/buildings/${nextBuildingId}`);
+        }}
+      />
 
       <FloorPlanUploadPicker
         floors={siblingFloors}

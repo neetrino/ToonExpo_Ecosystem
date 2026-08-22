@@ -1,6 +1,7 @@
 'use client';
 
 import type {
+  InteractiveMappingApartmentSummary,
   InteractiveMappingBuildingSummary,
   InteractiveMappingDistrictSummary,
   InteractiveMappingFloorSummary,
@@ -12,10 +13,12 @@ export type MappingBuildingPickerProps = {
   buildings: InteractiveMappingBuildingSummary[];
   districts: InteractiveMappingDistrictSummary[];
   floors: InteractiveMappingFloorSummary[];
+  apartments?: InteractiveMappingApartmentSummary[] | undefined;
   selectedBuildingId: string | null;
   title: string;
   emptyLabel: string;
   floorsMappedLabel: (values: { mapped: number; total: number }) => string;
+  apartmentsCountLabel?: ((values: { count: number }) => string) | undefined;
   onSelectBuilding: (buildingId: string) => void;
 };
 
@@ -35,16 +38,18 @@ const buildingFloorStats = (
 };
 
 /**
- * Lists project buildings so the user can pick which one to map in phase 3.
+ * Lists project buildings so the user can pick which one to map.
  */
 export const MappingBuildingPicker = ({
   buildings,
   districts,
   floors,
+  apartments = [],
   selectedBuildingId,
   title,
   emptyLabel,
   floorsMappedLabel,
+  apartmentsCountLabel,
   onSelectBuilding,
 }: MappingBuildingPickerProps) => {
   const sorted = [...buildings].sort((a, b) => {
@@ -65,6 +70,12 @@ export const MappingBuildingPicker = ({
             const selected = building.id === selectedBuildingId;
             const stats = buildingFloorStats(building, floors);
             const districtLabel = districtName(districts, building.districtId);
+            const apartmentCount = apartments.filter(
+              (apartment) => apartment.buildingId === building.id,
+            ).length;
+            const trailingLabel = apartmentsCountLabel
+              ? apartmentsCountLabel({ count: apartmentCount })
+              : floorsMappedLabel(stats);
 
             return (
               <li key={building.id}>
@@ -82,9 +93,7 @@ export const MappingBuildingPicker = ({
                     <span className="block truncate font-medium">{building.name}</span>
                     <span className="block truncate text-xs text-ink-muted">{districtLabel}</span>
                   </span>
-                  <span className="shrink-0 text-xs text-ink-muted">
-                    {floorsMappedLabel(stats)}
-                  </span>
+                  <span className="shrink-0 text-xs text-ink-muted">{trailingLabel}</span>
                 </button>
               </li>
             );

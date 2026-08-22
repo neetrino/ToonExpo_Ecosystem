@@ -28,11 +28,13 @@ export type MappingEntitySidebarProps = {
   /** Restrict Label to ASCII digits (apartments). */
   labelDigitsOnly?: boolean | undefined;
   deleteLabel?: string | undefined;
+  deleteAllPolygonsLabel?: string | undefined;
   onSelect: (id: string) => void;
   onLabelChange: (id: string, label: string) => void;
   onSave: () => void;
   onClear: () => void;
   onDelete?: ((id: string) => void) | undefined;
+  onClearAllPolygons?: (() => void) | undefined;
 };
 
 type MappingEntityListItemProps = {
@@ -163,13 +165,16 @@ export const MappingEntitySidebar = ({
   footer,
   labelDigitsOnly = false,
   deleteLabel = 'Delete',
+  deleteAllPolygonsLabel,
   onSelect,
   onLabelChange,
   onSave,
   onClear,
   onDelete,
+  onClearAllPolygons,
 }: MappingEntitySidebarProps) => {
   const selected = entities.find((item) => item.id === selectedId) ?? null;
+  const polygonCount = entities.filter((entity) => entity.svgPath).length;
 
   return (
     <aside className="space-y-3">
@@ -204,6 +209,19 @@ export const MappingEntitySidebar = ({
           ))}
         </ul>
       )}
+
+      {polygonCount > 0 && onClearAllPolygons && deleteAllPolygonsLabel ? (
+        <Button
+          type="button"
+          size="sm"
+          variant="danger"
+          className="w-full"
+          disabled={pending}
+          onClick={onClearAllPolygons}
+        >
+          {deleteAllPolygonsLabel}
+        </Button>
+      ) : null}
 
       {selected ? (
         <MappingEntitySelectedPanel

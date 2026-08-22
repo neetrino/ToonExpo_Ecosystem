@@ -46,8 +46,7 @@ type UseMappingCanvasInteractionsParams = {
   draftRef: MutableRefObject<NormPoint[]>;
   dragRef: MutableRefObject<MarkerDragState | null>;
   replaceOnCommitRef: MutableRefObject<boolean>;
-  confirmDeletePolygon: string;
-  confirmReplacePolygon: string;
+  onRequestPolygonConfirm: (action: 'delete' | 'replace') => void;
   readNormalized: (
     event: { clientX: number; clientY: number },
     options?: { clamp?: boolean },
@@ -71,8 +70,7 @@ export const useMappingCanvasInteractions = ({
   mode,
   selectedId,
   selected,
-  confirmDeletePolygon,
-  confirmReplacePolygon,
+  onRequestPolygonConfirm,
   draftRef,
   dragRef,
   replaceOnCommitRef,
@@ -161,9 +159,8 @@ export const useMappingCanvasInteractions = ({
     ],
   );
 
-  const deletePolygon = useCallback(() => {
-    if (!selectedId || !selected?.svgPath) return;
-    if (!window.confirm(confirmDeletePolygon)) {
+  const executeDeletePolygon = useCallback(() => {
+    if (!selectedId || !selected?.svgPath) {
       return;
     }
     onChangeEntity(selectedId, { svgPath: null });
@@ -172,7 +169,6 @@ export const useMappingCanvasInteractions = ({
     setMode('select');
   }, [
     clearDraft,
-    confirmDeletePolygon,
     onChangeEntity,
     onPolygonDeleted,
     selected,
@@ -180,12 +176,11 @@ export const useMappingCanvasInteractions = ({
     setMode,
   ]);
 
-  const startFreshPolygon = useCallback(() => {
-    if (!selectedId) return;
+  const executeStartFreshPolygon = useCallback(() => {
+    if (!selectedId) {
+      return;
+    }
     if (selected?.svgPath) {
-      if (!window.confirm(confirmReplacePolygon)) {
-        return;
-      }
       onChangeEntity(selectedId, { svgPath: null });
       onPolygonDeleted?.(selectedId);
     }
@@ -194,7 +189,6 @@ export const useMappingCanvasInteractions = ({
     setMode('draw-polygon');
   }, [
     clearDraft,
-    confirmReplacePolygon,
     onChangeEntity,
     onPolygonDeleted,
     replaceOnCommitRef,
@@ -202,6 +196,24 @@ export const useMappingCanvasInteractions = ({
     selectedId,
     setMode,
   ]);
+
+  const deletePolygon = useCallback(() => {
+    if (!selectedId || !selected?.svgPath) {
+      return;
+    }
+    onRequestPolygonConfirm('delete');
+  }, [onRequestPolygonConfirm, selected, selectedId]);
+
+  const startFreshPolygon = useCallback(() => {
+    if (!selectedId) {
+      return;
+    }
+    if (selected?.svgPath) {
+      onRequestPolygonConfirm('replace');
+      return;
+    }
+    executeStartFreshPolygon();
+  }, [executeStartFreshPolygon, onRequestPolygonConfirm, selected, selectedId]);
 
   const onMarkerPointerDown = useCallback(
     (event: ReactPointerEvent<HTMLButtonElement>, id: string, markerX: number, markerY: number) => {
@@ -244,6 +256,8 @@ export const useMappingCanvasInteractions = ({
     onCanvasClick,
     deletePolygon,
     startFreshPolygon,
+    executeDeletePolygon,
+    executeStartFreshPolygon,
     onMarkerPointerDown,
     onMarkerPointerMove,
     onMarkerPointerUp,

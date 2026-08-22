@@ -287,6 +287,63 @@ export const useMappingEditorState = ({
     }
   };
 
+  const onClearAllPolygons = async () => {
+    const withPolygons = entitiesRef.current.filter((item) => item.svgPath);
+    if (withPolygons.length === 0) {
+      return;
+    }
+    setPending(true);
+    setMessage(null);
+    try {
+      const mergedById = new Map<string, MappingEditorEntity>();
+      for (const item of withPolygons) {
+        const next = { ...item, svgPath: null };
+        const geometry = {
+          markerX: next.markerX,
+          markerY: next.markerY,
+          svgPath: null,
+        };
+        const hotspot = item.hotspotId
+          ? await updateVisualHotspot(
+              catalogScope,
+              canvasId,
+              item.hotspotId,
+              toUpdateHotspotBody(geometry, item.label),
+            )
+          : await createVisualHotspot(
+              catalogScope,
+              canvasId,
+              toCreateHotspotBody({
+                targetType,
+                targetId: item.id,
+                label: item.label || item.title,
+                geometry,
+              }),
+            );
+        mergedById.set(item.id, mergeHotspot(next, hotspot));
+      }
+      setEntities((prev) =>
+        prev.map((item) => {
+          const merged = mergedById.get(item.id);
+          return merged ?? item;
+        }),
+      );
+      setDirtyIds((prev) => {
+        const next = new Set(prev);
+        for (const item of withPolygons) {
+          next.delete(item.id);
+        }
+        return next;
+      });
+      setMessage(t('allPolygonsCleared', { count: withPolygons.length }));
+      onAfterSaveRef.current?.();
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : t('deleteFailed'));
+    } finally {
+      setPending(false);
+    }
+  };
+
   const onLabelChange = (id: string, label: string) => {
     setEntities((prev) => prev.map((item) => (item.id === id ? { ...item, label } : item)));
     setDirtyIds((prev) => new Set(prev).add(id));
@@ -305,6 +362,7 @@ export const useMappingEditorState = ({
     onBulkPaths,
     onSave,
     onClear,
+    onClearAllPolygons,
     onLabelChange,
   };
 };
