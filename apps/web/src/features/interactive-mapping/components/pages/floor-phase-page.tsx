@@ -10,7 +10,6 @@ import {
   createPortalApartment,
   deletePortalApartment,
 } from '@/features/builder/api/portal-apartments-api';
-import { useRouter } from '@/i18n/navigation';
 import { BackLink } from '@/shared/ui/back-link';
 
 import {
@@ -24,7 +23,6 @@ import { interactiveMappingProjectQueryKey } from '../../constants';
 import { useInteractiveMappingProjectQuery } from '../../hooks/use-interactive-mapping';
 import { useMappingCatalog } from '../../hooks/use-mapping-catalog';
 import { FloorApartmentMappingEditor } from '../editors/floor-apartment-mapping-editor';
-import { FloorPlanUploadPicker } from '../floor-plan-upload-picker';
 import { FloorPolygonRequiredGate } from '../floor-polygon-required-gate';
 import { CreateEntityInlineForm } from '../forms/create-entity-inline-form';
 import { MappingImageUploader } from '../media/mapping-image-uploader';
@@ -41,7 +39,6 @@ export type FloorPhasePageProps = {
  */
 export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
   const t = useTranslations('Admin.interactiveMapping');
-  const router = useRouter();
   const queryClient = useQueryClient();
   const detailQuery = useInteractiveMappingProjectQuery(projectId);
   const [canvas, setCanvas] = useState<PortalVisualCanvasDetail | null>(null);
@@ -118,9 +115,6 @@ export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
     );
   }
 
-  const siblingFloors = detailQuery.data.floors.filter(
-    (item) => item.buildingId === floor.buildingId,
-  );
   const apartments = detailQuery.data.apartments.filter((item) => item.floorId === floorId);
   const building = detailQuery.data.buildings.find((item) => item.id === floor.buildingId);
   const district = detailQuery.data.districts.find((item) => item.id === building?.districtId);
@@ -207,27 +201,6 @@ export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
           ))}
         </h1>
       </div>
-
-      <FloorPlanUploadPicker
-        floors={siblingFloors}
-        selectedFloorId={floorId}
-        title={t('forms.pickFloor')}
-        emptyLabel={t('forms.noFloors')}
-        lockedHint={t('forms.floorNeedsPolygon')}
-        planReadyLabel={t('forms.planReady')}
-        needsPolygonLabel={t('forms.needsPolygon')}
-        onSelectFloor={(nextFloorId) => {
-          setLockNotice(null);
-          router.push(`${basePath}/${projectId}/floors/${nextFloorId}`);
-        }}
-        onSelectLockedFloor={(lockedFloor) => {
-          setLockNotice(
-            t('forms.floorNeedsPolygonNamed', {
-              name: lockedFloor.name ?? String(lockedFloor.number),
-            }),
-          );
-        }}
-      />
 
       {lockNotice ? (
         <p role="status" className="text-sm text-ink-muted">
