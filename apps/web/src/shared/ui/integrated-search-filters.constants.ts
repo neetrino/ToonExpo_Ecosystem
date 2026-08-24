@@ -7,3 +7,6 @@ export const INTEGRATED_SEARCH_FILTER_PANEL_SURFACE =
 
 /** Filter fields wrap so every control stays inside the panel. */
 export const INTEGRATED_SEARCH_FILTER_PANEL_GRID = 'grid grid-cols-1 gap-3 sm:grid-cols-2';
+
+/** Search field min width — keeps magnifier visible when chips are active. */
+export const INTEGRATED_SEARCH_BAR_FIELD_MIN_WIDTH_CLASS = 'min-w-[5.5rem]';

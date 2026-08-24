@@ -22,6 +22,7 @@ import {
 import {
   ADMIN_COMPANIES_MAX_PAGE_SIZE,
   ADMIN_INVENTORY_DEFAULT_PAGE_SIZE,
+  ADMIN_INVENTORY_SEARCH_WIDTH_CLASS,
 } from '@/features/admin/constants';
 import { useAdminBuilderCompaniesQuery } from '@/features/admin/hooks/use-admin-companies';
 import {
@@ -230,6 +231,7 @@ export const AdminInventoryListShell = ({
         search={search}
         searchPlaceholder={tCommon('searchPlaceholder')}
         searchAriaLabel={tCommon('searchLabel')}
+        searchClassName={ADMIN_INVENTORY_SEARCH_WIDTH_CLASS}
         filters={filterConfigs}
         filterValues={{
           [ADMIN_INVENTORY_FILTER_COMPANY_KEY]: encodeIntegratedFilterIds(companyIds),

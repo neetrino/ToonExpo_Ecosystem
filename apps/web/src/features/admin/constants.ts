@@ -11,6 +11,9 @@ export const ADMIN_COMPANIES_MAX_PAGE_SIZE = 50;
  */
 export const ADMIN_INVENTORY_DEFAULT_PAGE_SIZE = 18;
 
+/** Search bar width for inventory hubs (builder / building / floor chips). */
+export const ADMIN_INVENTORY_SEARCH_WIDTH_CLASS = 'md:max-w-2xl';
+
 export const COMPANY_TYPES = ['builder', 'partner', 'bank', 'service'] as const;
 
 export const COMPANY_STATUSES = ['active', 'inactive', 'pending'] as const;
