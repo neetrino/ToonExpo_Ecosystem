@@ -3617,9 +3617,7 @@
       "title": "Visual maps",
       "subtitle": "Site renders, building maps, and floorplans with navigation hotspots",
       "loading": "Loading visual maps…",
-      "empty": "No visual canvases yet. Create one to add hotspots.",
-      "newCanvas": "+ New Canvas",
-      "cancelCreate": "Cancel",
+      "empty": "No visual canvases yet.",
       "untitled": "Untitled canvas",
       "primaryYes": "Primary",
       "primaryNo": "—",
@@ -3638,19 +3636,6 @@
         "status": "Status",
         "hotspots": "Hotspots",
         "actions": "Actions"
-      },
-      "form": {
-        "contextType": "Context type",
-        "contextEntity": "Context entity",
-        "contextProject": "Project",
-        "contextBuilding": "Building",
-        "contextFloor": "Floor",
-        "mediaAssetId": "Canvas image",
-        "title": "Title",
-        "titlePlaceholder": "e.g. Site masterplan",
-        "create": "Create canvas",
-        "creating": "Creating…",
-        "cancel": "Cancel"
       },
       "editor": {
         "loading": "Loading canvas…",

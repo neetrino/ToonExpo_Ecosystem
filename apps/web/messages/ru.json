@@ -3357,9 +3357,7 @@
       "title": "Визуальные карты",
       "subtitle": "Рендеры проекта, карты корпусов и поэтажные планы с навигационными точками",
       "loading": "Загрузка визуальных карт…",
-      "empty": "Визуальных canvas пока нет. Создайте и добавьте точки.",
-      "newCanvas": "+ Новый canvas",
-      "cancelCreate": "Отмена",
+      "empty": "Визуальных canvas пока нет.",
       "untitled": "Canvas без названия",
       "primaryYes": "Основной",
       "primaryNo": "—",
@@ -3378,19 +3376,6 @@
         "status": "Статус",
         "hotspots": "Точки",
         "actions": "Действия"
-      },
-      "form": {
-        "contextType": "Тип контекста",
-        "contextEntity": "Объект контекста",
-        "contextProject": "Проект",
-        "contextBuilding": "Корпус",
-        "contextFloor": "Этаж",
-        "mediaAssetId": "Изображение canvas",
-        "title": "Название",
-        "titlePlaceholder": "напр. Генплан комплекса",
-        "create": "Создать canvas",
-        "creating": "Создание…",
-        "cancel": "Отмена"
       },
       "editor": {
         "loading": "Загрузка canvas…",

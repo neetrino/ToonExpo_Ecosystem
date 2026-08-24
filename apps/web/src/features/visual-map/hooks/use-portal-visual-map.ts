@@ -2,7 +2,6 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type {
-  CreatePortalVisualCanvasRequest,
   CreatePortalVisualHotspotRequest,
   UpdatePortalVisualCanvasRequest,
   UpdatePortalVisualHotspotRequest,
@@ -10,7 +9,6 @@ import type {
 
 import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import {
-  createPortalVisualCanvas,
   createPortalVisualHotspot,
   deletePortalVisualCanvas,
   deletePortalVisualHotspot,
@@ -39,21 +37,6 @@ export const usePortalVisualCanvasQuery = (canvasId: string) => {
     queryKey: [...portalVisualCanvasQueryKey(canvasId), scope],
     queryFn: () => getPortalVisualCanvas(canvasId, { scope }),
     enabled: canvasId.length > 0,
-  });
-};
-
-export const useCreatePortalVisualCanvasMutation = (projectId: string) => {
-  const queryClient = useQueryClient();
-  const scope = useCatalogScope();
-
-  return useMutation({
-    mutationFn: (body: CreatePortalVisualCanvasRequest) =>
-      createPortalVisualCanvas(projectId, body, { scope }),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({
-        queryKey: portalProjectVisualCanvasesQueryKey(projectId),
-      });
-    },
   });
 };
 

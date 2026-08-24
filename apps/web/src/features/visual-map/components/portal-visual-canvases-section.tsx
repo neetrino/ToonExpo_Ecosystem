@@ -2,33 +2,14 @@
 
 import { catalogVisualMapHref } from '@/features/builder/catalog-scope';
 import { useCatalogScope } from '@/features/builder/catalog-scope-context';
-import { zodResolver } from '@hookform/resolvers/zod';
 import type { PortalProjectDetail, VisualMapContextType } from '@toonexpo/contracts';
 import { SquarePen } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useMemo, useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
 
-import { MediaUploadField } from '@/features/media/components/media-upload-field';
-import {
-  useCreatePortalVisualCanvasMutation,
-  usePortalProjectVisualCanvasesQuery,
-} from '@/features/visual-map/hooks/use-portal-visual-map';
-import { toCreateCanvasBody } from '@/features/visual-map/utils/portal-request-mappers';
-import {
-  visualCanvasFormSchema,
-  type VisualCanvasFormInput,
-  type VisualCanvasFormValues,
-} from '@/features/visual-map/schemas/visual-map.schema';
+import { usePortalProjectVisualCanvasesQuery } from '@/features/visual-map/hooks/use-portal-visual-map';
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
 import { Link } from '@/i18n/navigation';
-import { AddActionLabel } from '@/shared/ui/add-action-label';
-import { Button } from '@/shared/ui/button';
-import { Card } from '@/shared/ui/card';
 import { cn } from '@/shared/ui/cn';
-import { FormField } from '@/shared/ui/form-field';
-import { Input } from '@/shared/ui/input';
-import { Select } from '@/shared/ui/select';
 import { LIST_STATUS_BADGE_COMPACT_CLASS } from '@/shared/ui/list-status-badge';
 
 type PortalVisualCanvasesSectionProps = {
@@ -39,45 +20,21 @@ const META_COL_CLASS = 'w-28 px-3 py-3 text-center align-middle';
 const ACTIONS_COL_CLASS = 'w-40 px-3 py-3 text-center align-middle whitespace-nowrap';
 
 /**
- * Visual canvas list and create form on the builder project page.
+ * Visual canvas list on the builder project page.
  */
 export const PortalVisualCanvasesSection = ({ project }: PortalVisualCanvasesSectionProps) => {
   const scope = useCatalogScope();
   const t = useTranslations('Builder.visualMap');
   const canvasesQuery = usePortalProjectVisualCanvasesQuery(project.id);
-  const createMutation = useCreatePortalVisualCanvasMutation(project.id);
-  const [showCreate, setShowCreate] = useState(false);
 
   const canvases = canvasesQuery.data?.data ?? [];
 
   return (
     <section className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h2 className="text-lg font-semibold text-ink">{t('title')}</h2>
-          <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
-        </div>
-        <Button
-          type="button"
-          size="sm"
-          variant="secondary"
-          onClick={() => setShowCreate((open) => !open)}
-        >
-          {showCreate ? t('cancelCreate') : <AddActionLabel>{t('newCanvas')}</AddActionLabel>}
-        </Button>
+      <div>
+        <h2 className="text-lg font-semibold text-ink">{t('title')}</h2>
+        <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
       </div>
-
-      {showCreate ? (
-        <PortalVisualCanvasCreateForm
-          project={project}
-          isBusy={createMutation.isPending}
-          onCancel={() => setShowCreate(false)}
-          onSubmit={async (values) => {
-            await createMutation.mutateAsync(toCreateCanvasBody(values));
-            setShowCreate(false);
-          }}
-        />
-      ) : null}
 
       {canvasesQuery.isLoading ? (
         <p className="text-sm text-ink-secondary">{t('loading')}</p>
@@ -142,146 +99,6 @@ export const PortalVisualCanvasesSection = ({ project }: PortalVisualCanvasesSec
         </div>
       )}
     </section>
-  );
-};
-
-type CreateFormProps = {
-  project: PortalProjectDetail;
-  isBusy: boolean;
-  onCancel: () => void;
-  onSubmit: (values: VisualCanvasFormValues) => Promise<void>;
-};
-
-const PortalVisualCanvasCreateForm = ({ project, isBusy, onCancel, onSubmit }: CreateFormProps) => {
-  const t = useTranslations('Builder.visualMap.form');
-  const form = useForm<VisualCanvasFormInput, unknown, VisualCanvasFormValues>({
-    resolver: zodResolver(visualCanvasFormSchema),
-    defaultValues: {
-      contextType: 'project',
-      contextId: project.id,
-      mediaAssetId: '',
-      title: '',
-      description: '',
-      isPrimary: true,
-    },
-  });
-
-  const contextType = form.watch('contextType');
-  const contextOptions = useMemo(
-    () => buildContextOptions(project, contextType),
-    [project, contextType],
-  );
-
-  return (
-    <Card className="flex flex-col gap-3">
-      <form
-        className="flex flex-col gap-3"
-        onSubmit={form.handleSubmit(async (values) => {
-          await onSubmit(values);
-        })}
-        noValidate
-      >
-        <div className="grid gap-3 sm:grid-cols-2">
-          <FormField id="canvas-context-type" label={t('contextType')}>
-            <Controller
-              control={form.control}
-              name="contextType"
-              render={({ field }) => (
-                <Select
-                  id="canvas-context-type"
-                  name={field.name}
-                  value={field.value}
-                  aria-label={t('contextType')}
-                  onBlur={field.onBlur}
-                  onChange={(event) => {
-                    const nextType = event.target.value as VisualMapContextType;
-                    field.onChange(nextType);
-                    const options = buildContextOptions(project, nextType);
-                    form.setValue('contextId', options[0]?.value ?? project.id);
-                  }}
-                >
-                  <option value="project">{t('contextProject')}</option>
-                  <option value="building">{t('contextBuilding')}</option>
-                  <option value="floor">{t('contextFloor')}</option>
-                </Select>
-              )}
-            />
-          </FormField>
-          <FormField id="canvas-context-id" label={t('contextEntity')}>
-            <Controller
-              control={form.control}
-              name="contextId"
-              render={({ field }) => (
-                <Select
-                  id="canvas-context-id"
-                  name={field.name}
-                  value={field.value}
-                  aria-label={t('contextEntity')}
-                  onBlur={field.onBlur}
-                  onChange={field.onChange}
-                >
-                  {contextOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </Select>
-              )}
-            />
-          </FormField>
-        </div>
-        <Controller
-          control={form.control}
-          name="mediaAssetId"
-          render={({ field, fieldState }) => (
-            <MediaUploadField
-              id="canvas-media"
-              label={t('mediaAssetId')}
-              context="portal"
-              value={field.value}
-              onChange={field.onChange}
-              error={fieldState.error?.message}
-            />
-          )}
-        />
-        <FormField id="canvas-title" label={t('title')}>
-          <Input id="canvas-title" placeholder={t('titlePlaceholder')} {...form.register('title')} />
-        </FormField>
-        <div className="flex flex-wrap gap-2">
-          <Button type="submit" variant="secondary" disabled={isBusy}>
-            {isBusy ? t('creating') : t('create')}
-          </Button>
-          <Button type="button" variant="ghost" onClick={onCancel}>
-            {t('cancel')}
-          </Button>
-        </div>
-      </form>
-    </Card>
-  );
-};
-
-type ContextOption = { value: string; label: string };
-
-const buildContextOptions = (
-  project: PortalProjectDetail,
-  contextType: VisualMapContextType,
-): ContextOption[] => {
-  if (contextType === 'project') {
-    return [{ value: project.id, label: project.name }];
-  }
-
-  if (contextType === 'building') {
-    return project.buildings.map((building) => ({
-      value: building.id,
-      label: building.name,
-    }));
-  }
-
-  return project.buildings.flatMap((building) =>
-    building.floors.map((floor) => ({
-      value: floor.id,
-      label: `${building.name} · ${floor.displayLabel ?? floor.number}`,
-    })),
   );
 };
 

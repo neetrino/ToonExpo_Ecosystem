@@ -1,6 +1,4 @@
-import type { VisualHotspotTargetType, VisualMapContextType } from '@toonexpo/contracts';
-
-export const VISUAL_MAP_CONTEXT_TYPES: VisualMapContextType[] = ['project', 'building', 'floor'];
+import type { VisualHotspotTargetType } from '@toonexpo/contracts';
 
 export const VISUAL_HOTSPOT_TARGET_TYPES: VisualHotspotTargetType[] = [
   'building',
