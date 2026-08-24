@@ -8,17 +8,18 @@ import { getProject } from '@/features/catalog/api/catalog-api';
 import { ProjectDetailView } from '@/features/catalog/components/project-detail-view';
 import { ProjectPricesOverlayScope } from '@/features/catalog/components/price-overlay-scope';
 import { SiteFooter } from '@/features/catalog/components/site-footer';
+import { ensureCanonicalProjectSlug } from '@/features/catalog/utils/ensure-canonical-project-slug';
 
 type ProjectPageProps = {
   params: Promise<{ locale: string; id: string }>;
 };
 
-const loadProject = cache((id: string, locale: string) => getProject(id, { locale }));
+const loadProject = cache((projectSlug: string, locale: string) => getProject(projectSlug, { locale }));
 
 export const generateMetadata = async ({ params }: ProjectPageProps): Promise<Metadata> => {
-  const { locale, id } = await params;
+  const { locale, id: projectSlug } = await params;
   const t = await getTranslations({ locale, namespace: 'Catalog' });
-  const project = await loadProject(id, locale);
+  const project = await loadProject(projectSlug, locale);
 
   if (!project) {
     return { title: t('project.notFoundTitle') };
@@ -34,13 +35,15 @@ export const generateMetadata = async ({ params }: ProjectPageProps): Promise<Me
  * Public project detail — Figma `89:876`.
  */
 export default async function ProjectPage({ params }: ProjectPageProps) {
-  const { locale, id } = await params;
+  const { locale, id: projectSlug } = await params;
   setRequestLocale(locale);
 
-  const project = await loadProject(id, locale);
+  const project = await loadProject(projectSlug, locale);
   if (!project) {
     notFound();
   }
+
+  ensureCanonicalProjectSlug(project, projectSlug, locale);
 
   return (
     <div className="min-h-screen bg-canvas">
