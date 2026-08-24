@@ -6,12 +6,12 @@ import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 
 import {
-  useApplyProjectBankPartnerOffersMutation,
   useDeleteProjectBankPartnerOfferMutation,
   useProjectBankPartnerOffersQuery,
   useSelectableTemplatesQuery,
 } from '@/features/admin/hooks/use-project-bank-partner-offers';
 import { useCatalogScope } from '@/features/builder/catalog-scope-context';
+import { useProjectEditSubForms } from '@/features/builder/context/project-edit-subforms-context';
 import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
 import { AdminListCardLogo } from '@/shared/ui/admin-list-card-logo';
 import { Button } from '@/shared/ui/button';
@@ -30,6 +30,7 @@ const LIST_PANEL_CLASS =
 
 /**
  * Multi-select import of published Template/Partner Offers onto a project.
+ * Staged locally until Save changes on the project form.
  */
 export const ProjectBankPartnerOfferImportSheet = ({
   projectId,
@@ -41,10 +42,14 @@ export const ProjectBankPartnerOfferImportSheet = ({
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const templatesQuery = useSelectableTemplatesQuery(scope);
   const offersQuery = useProjectBankPartnerOffersQuery(scope, projectId);
-  const applyMutation = useApplyProjectBankPartnerOffersMutation(scope, projectId);
   const deleteMutation = useDeleteProjectBankPartnerOfferMutation(scope, projectId);
+  const {
+    stagePendingImports,
+    unstagePendingImport,
+    isPendingImportTemplate,
+  } = useProjectEditSubForms();
 
-  const appliedTemplateIds = useMemo(
+  const savedTemplateIds = useMemo(
     () =>
       new Set(
         (offersQuery.data?.data ?? [])
@@ -65,13 +70,17 @@ export const ProjectBankPartnerOfferImportSheet = ({
   }, [offersQuery.data?.data]);
 
   const templates = templatesQuery.data?.data ?? [];
-  const importable = templates.filter((template) => !appliedTemplateIds.has(template.id));
+
+  const isAppliedTemplate = (templateId: string): boolean =>
+    savedTemplateIds.has(templateId) || isPendingImportTemplate(templateId);
+
+  const importable = templates.filter((template) => !isAppliedTemplate(template.id));
   const importableIds = importable.map((template) => template.id);
   const allImportableSelected =
     importableIds.length > 0 && importableIds.every((id) => selectedIds.includes(id));
 
   const toggleTemplateSelection = (templateId: string): void => {
-    if (appliedTemplateIds.has(templateId)) {
+    if (isAppliedTemplate(templateId)) {
       return;
     }
     setSelectedIds((current) =>
@@ -82,6 +91,10 @@ export const ProjectBankPartnerOfferImportSheet = ({
   };
 
   const removeAppliedTemplate = async (templateId: string): Promise<void> => {
+    if (isPendingImportTemplate(templateId)) {
+      unstagePendingImport(templateId);
+      return;
+    }
     const offerId = appliedOfferIdByTemplateId.get(templateId);
     if (!offerId) {
       return;
@@ -93,11 +106,14 @@ export const ProjectBankPartnerOfferImportSheet = ({
     setSelectedIds(allImportableSelected ? [] : importableIds);
   };
 
-  const handleImport = async (): Promise<void> => {
+  const handleImport = (): void => {
     if (selectedIds.length === 0) {
       return;
     }
-    await applyMutation.mutateAsync({ templateIds: selectedIds });
+    const selectedTemplates = selectedIds
+      .map((id) => templates.find((template) => template.id === id))
+      .filter((template): template is BankPartnerOfferTemplateItem => template != null);
+    stagePendingImports(selectedTemplates);
     setSelectedIds([]);
     onClose();
   };
@@ -161,7 +177,8 @@ export const ProjectBankPartnerOfferImportSheet = ({
                 <TemplateImportRow
                   key={template.id}
                   template={template}
-                  applied={appliedTemplateIds.has(template.id)}
+                  applied={isAppliedTemplate(template.id)}
+                  pending={isPendingImportTemplate(template.id)}
                   selected={selectedIds.includes(template.id)}
                   busy={deleteMutation.isPending}
                   onToggleSelection={() => toggleTemplateSelection(template.id)}
@@ -177,8 +194,8 @@ export const ProjectBankPartnerOfferImportSheet = ({
             type="button"
             variant="secondary"
             className="inline-flex w-full items-center justify-center gap-2"
-            disabled={selectedIds.length === 0 || applyMutation.isPending}
-            onClick={() => void handleImport()}
+            disabled={selectedIds.length === 0}
+            onClick={handleImport}
           >
             <Import className="size-4 shrink-0" strokeWidth={2} aria-hidden />
             {t('importSelected', { count: selectedIds.length })}
@@ -195,6 +212,7 @@ export const ProjectBankPartnerOfferImportSheet = ({
 type TemplateImportRowProps = {
   template: BankPartnerOfferTemplateItem;
   applied: boolean;
+  pending: boolean;
   selected: boolean;
   busy: boolean;
   onToggleSelection: () => void;
@@ -204,6 +222,7 @@ type TemplateImportRowProps = {
 const TemplateImportRow = ({
   template,
   applied,
+  pending,
   selected,
   busy,
   onToggleSelection,
@@ -277,7 +296,9 @@ const TemplateImportRow = ({
               {template.name}
             </span>
             {applied ? (
-              <span className="text-xs text-ink-muted">{t('tapToRemove')}</span>
+              <span className="text-xs text-ink-muted">
+                {pending ? t('pendingOnProject') : t('tapToRemove')}
+              </span>
             ) : partnerName.length > 0 ? (
               <span className="truncate text-xs text-ink-secondary">{partnerName}</span>
             ) : null}

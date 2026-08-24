@@ -2,12 +2,14 @@
 
 import { Import } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { useCatalogScope } from '@/features/builder/catalog-scope-context';
+import { useProjectEditSubForms } from '@/features/builder/context/project-edit-subforms-context';
 import { useProjectBankPartnerOffersQuery } from '@/features/admin/hooks/use-project-bank-partner-offers';
 import { ProjectBankPartnerOfferCard } from '@/features/builder/components/project-bank-partner-offer-card';
 import { ProjectBankPartnerOfferImportSheet } from '@/features/builder/components/project-bank-partner-offer-import-sheet';
+import { templateToPendingBankPartnerOffer } from '@/features/builder/utils/pending-bank-partner-offer';
 import { ProjectCatalogSectionCard } from '@/features/catalog/components/project-catalog-section-card';
 import { Button } from '@/shared/ui/button';
 
@@ -26,7 +28,13 @@ export const ProjectBankPartnerOffersSection = ({
   const scope = useCatalogScope();
   const [importOpen, setImportOpen] = useState(false);
   const offersQuery = useProjectBankPartnerOffersQuery(scope, projectId);
-  const offers = offersQuery.data?.data ?? [];
+  const { pendingImportTemplates } = useProjectEditSubForms();
+  const savedOffers = offersQuery.data?.data ?? [];
+  const pendingOffers = useMemo(
+    () => pendingImportTemplates.map((template) => templateToPendingBankPartnerOffer(template, projectId)),
+    [pendingImportTemplates, projectId],
+  );
+  const hasOffers = savedOffers.length > 0 || pendingOffers.length > 0;
 
   return (
     <div className="space-y-5 sm:space-y-6">
@@ -56,13 +64,24 @@ export const ProjectBankPartnerOffersSection = ({
           </p>
         ) : null}
 
-        {!offersQuery.isLoading && offers.length === 0 ? (
+        {!offersQuery.isLoading && !hasOffers ? (
           <p className="text-sm text-ink-secondary">{t('empty')}</p>
+        ) : hasOffers ? (
+          <p className="text-sm text-ink-secondary">{t('sectionHint')}</p>
         ) : null}
       </ProjectCatalogSectionCard>
 
-      {offers.map((offer) => (
+      {savedOffers.map((offer) => (
         <ProjectBankPartnerOfferCard key={offer.id} projectId={projectId} offer={offer} />
+      ))}
+
+      {pendingOffers.map((offer) => (
+        <ProjectBankPartnerOfferCard
+          key={offer.id}
+          projectId={projectId}
+          offer={offer}
+          isPending
+        />
       ))}
 
       <ProjectBankPartnerOfferImportSheet

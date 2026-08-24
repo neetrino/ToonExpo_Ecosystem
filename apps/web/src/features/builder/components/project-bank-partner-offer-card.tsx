@@ -5,10 +5,11 @@ import {
   BANK_PARTNER_OFFER_FINANCE_KEYS,
   type BankPartnerOfferFinanceFields,
   type ProjectBankPartnerOfferItem,
+  type UpdateProjectBankPartnerOfferBody,
 } from '@toonexpo/contracts';
 import { Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { BankPartnerOfferFinanceFieldsEditor } from '@/features/admin/components/bank-partner-offer-finance-fields-editor';
@@ -20,22 +21,25 @@ import {
 } from '@/features/admin/schemas/bank-partner-offer-template.schema';
 import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import {
+  useProjectEditSubForms,
+  useRegisterProjectEditSubForm,
+} from '@/features/builder/context/project-edit-subforms-context';
+import {
   useDeleteProjectBankPartnerOfferMutation,
   useUpdateProjectBankPartnerOfferMutation,
 } from '@/features/admin/hooks/use-project-bank-partner-offers';
 import { ProjectCatalogSectionCard } from '@/features/catalog/components/project-catalog-section-card';
 import { AdminDeleteModal } from '@/shared/ui/admin-delete-modal';
 import { AdminListCardLogo } from '@/shared/ui/admin-list-card-logo';
-import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { IconButton } from '@/shared/ui/icon-button';
 import { Input } from '@/shared/ui/input';
 import { resolvePublicAssetUrl } from '@/shared/lib/static-asset-url';
-import { useSuccessToast } from '@/shared/ui/use-success-toast';
 
 type ProjectBankPartnerOfferCardProps = {
   projectId: string;
   offer: ProjectBankPartnerOfferItem;
+  isPending?: boolean;
 };
 
 const toFormFields = (
@@ -51,18 +55,33 @@ const toFormFields = (
   return next;
 };
 
+const readOfferFormValues = (
+  form: ReturnType<typeof useForm<ProjectBankPartnerOfferFormValues>>,
+): Promise<UpdateProjectBankPartnerOfferBody> =>
+  new Promise((resolve, reject) => {
+    void form.handleSubmit(
+      (values) =>
+        resolve({
+          name: values.name,
+          fields: values.fields,
+        }),
+      () => reject(new Error('Offer validation failed')),
+    )();
+  });
+
 /**
  * Editable project-scoped bank partner offer card (save + delete).
  */
 export const ProjectBankPartnerOfferCard = ({
   projectId,
   offer,
+  isPending = false,
 }: ProjectBankPartnerOfferCardProps) => {
   const t = useTranslations('Builder.projects.catalog.bankPartnerOffers');
   const scope = useCatalogScope();
+  const { unstagePendingImport } = useProjectEditSubForms();
   const updateMutation = useUpdateProjectBankPartnerOfferMutation(scope, projectId);
   const deleteMutation = useDeleteProjectBankPartnerOfferMutation(scope, projectId);
-  const { showSuccess, successToast } = useSuccessToast();
   const [pendingDelete, setPendingDelete] = useState(false);
 
   const form = useForm<ProjectBankPartnerOfferFormValues>({
@@ -74,18 +93,47 @@ export const ProjectBankPartnerOfferCard = ({
     },
   });
 
-  const handleSubmit = form.handleSubmit(async (values) => {
+  useEffect(() => {
+    form.reset({
+      name: offer.name,
+      fields: toFormFields(offer.fields),
+      sortOrder: offer.sortOrder,
+    });
+  }, [form, offer.id, offer.updatedAt]);
+
+  const { isDirty } = form.formState;
+
+  const getValues = useCallback(
+    () => readOfferFormValues(form),
+    [form],
+  );
+
+  const saveOffer = useCallback(async (): Promise<void> => {
+    const values = await getValues();
     await updateMutation.mutateAsync({
       offerId: offer.id,
-      body: {
-        name: values.name,
-        fields: values.fields,
-      },
+      body: values,
     });
-    showSuccess(t('saved'));
+    form.reset({
+      ...values,
+      sortOrder: offer.sortOrder,
+    });
+  }, [form, getValues, offer.id, offer.sortOrder, updateMutation]);
+
+  useRegisterProjectEditSubForm({
+    id: offer.id,
+    isDirty: isPending || isDirty,
+    isPendingImport: isPending,
+    getValues,
+    save: isPending ? async () => undefined : saveOffer,
   });
 
   const handleDelete = async (): Promise<void> => {
+    if (isPending && offer.templateId != null) {
+      unstagePendingImport(offer.templateId);
+      setPendingDelete(false);
+      return;
+    }
     await deleteMutation.mutateAsync(offer.id);
     setPendingDelete(false);
   };
@@ -111,6 +159,10 @@ export const ProjectBankPartnerOfferCard = ({
         }
       >
         <div className="flex flex-col gap-4">
+          {isPending ? (
+            <p className="text-xs font-medium text-brand">{t('pendingImport')}</p>
+          ) : null}
+
           {offer.partnerCompanyName ? (
             <div className="flex items-center gap-2">
               <AdminListCardLogo
@@ -132,16 +184,6 @@ export const ProjectBankPartnerOfferCard = ({
           </FormField>
 
           <BankPartnerOfferFinanceFieldsEditor register={form.register} />
-
-          <Button
-            type="button"
-            variant="secondary"
-            size="sm"
-            disabled={busy || !form.formState.isDirty}
-            onClick={() => void handleSubmit()}
-          >
-            {busy ? t('saving') : t('save')}
-          </Button>
         </div>
       </ProjectCatalogSectionCard>
 
@@ -155,7 +197,6 @@ export const ProjectBankPartnerOfferCard = ({
         onConfirm={() => void handleDelete()}
         onCancel={() => setPendingDelete(false)}
       />
-      {successToast}
     </>
   );
 };

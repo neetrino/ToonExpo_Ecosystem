@@ -5,8 +5,13 @@ import { catalogMediaContext } from '@/features/builder/catalog-scope';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { PortalProjectDetail } from '@toonexpo/contracts';
 import { useLocale, useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+
+import {
+  useApplyProjectBankPartnerOffersMutation,
+  useUpdateProjectBankPartnerOfferMutation,
+} from '@/features/admin/hooks/use-project-bank-partner-offers';
 
 import {
   FORM_SAVE_BAR_SCROLL_CLEARANCE_CLASS,
@@ -14,6 +19,10 @@ import {
 } from '@/features/builder/components/form-save-bar';
 import { ProjectCatalogEditor } from '@/features/builder/components/project-catalog-editor';
 import { TranslationTabs } from '@/features/builder/components/translation-tabs';
+import {
+  ProjectEditSubFormsProvider,
+  useProjectEditSubForms,
+} from '@/features/builder/context/project-edit-subforms-context';
 import { getProjectFormPlaceholder } from '@/features/builder/constants/project-content-placeholders';
 import { useAutoProjectSlug } from '@/features/builder/hooks/use-auto-project-slug';
 import { useUpdatePortalProjectMutation } from '@/features/builder/hooks/use-portal-projects';
@@ -66,6 +75,32 @@ const toFormValues = (project: PortalProjectDetail): UpdateProjectFormValues => 
  */
 export const EditProjectForm = ({ project }: EditProjectFormProps) => {
   const scope = useCatalogScope();
+  const applyOffersMutation = useApplyProjectBankPartnerOffersMutation(scope, project.id);
+  const updateOfferMutation = useUpdateProjectBankPartnerOfferMutation(scope, project.id);
+
+  const offerSaveAdapters = useMemo(
+    () => ({
+      applyTemplates: async (templateIds: string[]) => {
+        const response = await applyOffersMutation.mutateAsync({ templateIds });
+        return response.data;
+      },
+      updateOffer: async (
+        offerId: string,
+        body: Parameters<typeof updateOfferMutation.mutateAsync>[0]['body'],
+      ) => updateOfferMutation.mutateAsync({ offerId, body }),
+    }),
+    [applyOffersMutation, updateOfferMutation],
+  );
+
+  return (
+    <ProjectEditSubFormsProvider offerSaveAdapters={offerSaveAdapters}>
+      <EditProjectFormInner project={project} />
+    </ProjectEditSubFormsProvider>
+  );
+};
+
+const EditProjectFormInner = ({ project }: EditProjectFormProps) => {
+  const scope = useCatalogScope();
   const mediaContext = catalogMediaContext(scope);
   const t = useTranslations('Builder.projects');
   const siteLocale = useLocale();
@@ -76,6 +111,8 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
   const { showSuccess, successToast } = useSuccessToast();
   const { showError, onInvalid, errorToast, focusLocale, focusTick } =
     useProjectFormErrorToast();
+  const { hasUnsavedOfferChanges, isSavingSubForms, saveAllOfferChanges } =
+    useProjectEditSubForms();
 
   const {
     register,
@@ -103,24 +140,38 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
 
   const onSubmit = handleSubmit(async (values) => {
     try {
-      const shouldSendCover =
-        values.coverMediaId.length > 0 || Boolean(dirtyFields.coverMediaId);
-      const updated = await updateMutation.mutateAsync(
-        toUpdateProjectRequest(values, { includeCoverMediaId: shouldSendCover }),
-      );
-      const nextValues = toFormValues(updated);
-      if (!nextValues.coverMediaId && values.coverMediaId) {
-        nextValues.coverMediaId = values.coverMediaId;
+      const shouldSaveProject = isDirty;
+      const shouldSaveOffers = hasUnsavedOfferChanges;
+      if (!shouldSaveProject && !shouldSaveOffers) {
+        return;
       }
-      reset(nextValues, { keepDirty: false });
-      setPreviewUrl(updated.cover?.thumbnailUrl ?? updated.cover?.fileUrl ?? previewUrl);
+
+      if (shouldSaveProject) {
+        const shouldSendCover =
+          values.coverMediaId.length > 0 || Boolean(dirtyFields.coverMediaId);
+        const updated = await updateMutation.mutateAsync(
+          toUpdateProjectRequest(values, { includeCoverMediaId: shouldSendCover }),
+        );
+        const nextValues = toFormValues(updated);
+        if (!nextValues.coverMediaId && values.coverMediaId) {
+          nextValues.coverMediaId = values.coverMediaId;
+        }
+        reset(nextValues, { keepDirty: false });
+        setPreviewUrl(updated.cover?.thumbnailUrl ?? updated.cover?.fileUrl ?? previewUrl);
+      }
+
+      if (shouldSaveOffers) {
+        await saveAllOfferChanges();
+      }
+
       showSuccess(t('detail.saveSuccess'));
     } catch {
       showError(t('errors.generic'));
     }
   }, onInvalid);
 
-  const busy = isSubmitting || updateMutation.isPending;
+  const busy = isSubmitting || updateMutation.isPending || isSavingSubForms;
+  const canSave = isDirty || hasUnsavedOfferChanges;
 
   return (
     <>
@@ -276,7 +327,7 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
             type="submit"
             variant="secondary"
             className="w-full"
-            disabled={busy || !isDirty}
+            disabled={busy || !canSave}
           >
             {busy ? t('detail.saving') : t('detail.save')}
           </Button>
