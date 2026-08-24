@@ -56,8 +56,6 @@ export const PhaseWizardPage = ({ projectId }: PhaseWizardPageProps) => {
   const { project, districts, buildings, floors, apartments } = detail;
   const base = `${basePath}/${project.id}`;
 
-  const primaryDistrict = districts[0];
-
   return (
     <div className="space-y-8">
       <Reveal force>
@@ -99,7 +97,7 @@ export const PhaseWizardPage = ({ projectId }: PhaseWizardPageProps) => {
             total: Math.max(buildings.length, 1),
           })}
           statusLabel={t(statusKey(phaseState(project.phases, 2)))}
-          addHref={primaryDistrict ? `${base}/districts/${primaryDistrict.id}` : undefined}
+          addHref={districts.length > 0 ? `${base}/phases/buildings` : undefined}
           addLabel={t('cta.mapBuildings')}
           doneLabel={t('cta.edit')}
           lockedLabel={t('cta.locked')}

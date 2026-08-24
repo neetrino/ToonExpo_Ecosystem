@@ -174,7 +174,10 @@ export const DistrictPhasePage = ({ projectId, districtId }: DistrictPhasePagePr
   return (
     <div className="space-y-6">
       <div>
-        <BackLink href={`${basePath}/${projectId}`} label={t('backToWizard')} />
+        <BackLink
+          href={`${basePath}/${projectId}/phases/buildings`}
+          label={t('backToDistricts')}
+        />
         <h1 className="mt-3 font-display text-3xl text-ink">
           {t('pages.district', { name: district.name })}
         </h1>
