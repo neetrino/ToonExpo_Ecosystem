@@ -66,45 +66,47 @@ export const ApartmentsBuildingPhasePage = ({
         <p className="mt-2 max-w-2xl text-sm text-ink-muted">{t('hints.pickApartmentFloor')}</p>
       </div>
 
-      <MappingBuildingPicker
-        buildings={buildings}
-        districts={districts}
-        floors={floors}
-        apartments={apartments}
-        selectedBuildingId={buildingId}
-        title={t('forms.pickBuilding')}
-        emptyLabel={t('forms.noBuildings')}
-        floorsMappedLabel={(values) => t('forms.buildingFloorsMapped', values)}
-        apartmentsCountLabel={(values) => t('forms.buildingApartmentsCount', values)}
-        onSelectBuilding={(nextBuildingId) => {
-          if (nextBuildingId === buildingId) {
-            return;
-          }
-          setLockNotice(null);
-          router.push(`${basePath}/${projectId}/phases/apartments/buildings/${nextBuildingId}`);
-        }}
-      />
+      <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
+        <MappingBuildingPicker
+          buildings={buildings}
+          districts={districts}
+          floors={floors}
+          apartments={apartments}
+          selectedBuildingId={buildingId}
+          title={t('forms.pickBuilding')}
+          emptyLabel={t('forms.noBuildings')}
+          floorsMappedLabel={(values) => t('forms.buildingFloorsMapped', values)}
+          apartmentsCountLabel={(values) => t('forms.buildingApartmentsCount', values)}
+          onSelectBuilding={(nextBuildingId) => {
+            if (nextBuildingId === buildingId) {
+              return;
+            }
+            setLockNotice(null);
+            router.push(`${basePath}/${projectId}/phases/apartments/buildings/${nextBuildingId}`);
+          }}
+        />
 
-      <FloorPlanUploadPicker
-        floors={buildingFloors}
-        selectedFloorId={null}
-        title={t('forms.pickFloor')}
-        emptyLabel={t('forms.noFloors')}
-        lockedHint={t('forms.floorNeedsPolygon')}
-        planReadyLabel={t('forms.planReady')}
-        needsPolygonLabel={t('forms.needsPolygon')}
-        onSelectFloor={(floorId) => {
-          setLockNotice(null);
-          router.push(`${basePath}/${projectId}/floors/${floorId}`);
-        }}
-        onSelectLockedFloor={(lockedFloor) => {
-          setLockNotice(
-            t('forms.floorNeedsPolygonNamed', {
-              name: lockedFloor.name ?? String(lockedFloor.number),
-            }),
-          );
-        }}
-      />
+        <FloorPlanUploadPicker
+          floors={buildingFloors}
+          selectedFloorId={null}
+          title={t('forms.pickFloor')}
+          emptyLabel={t('forms.noFloors')}
+          lockedHint={t('forms.floorNeedsPolygon')}
+          planReadyLabel={t('forms.planReady')}
+          needsPolygonLabel={t('forms.needsPolygon')}
+          onSelectFloor={(floorId) => {
+            setLockNotice(null);
+            router.push(`${basePath}/${projectId}/floors/${floorId}`);
+          }}
+          onSelectLockedFloor={(lockedFloor) => {
+            setLockNotice(
+              t('forms.floorNeedsPolygonNamed', {
+                name: lockedFloor.name ?? String(lockedFloor.number),
+              }),
+            );
+          }}
+        />
+      </div>
 
       {lockNotice ? (
         <p role="status" className="text-sm text-ink-muted">
