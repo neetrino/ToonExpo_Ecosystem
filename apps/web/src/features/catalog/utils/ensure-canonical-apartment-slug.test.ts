@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 
-const redirect = vi.fn();
+const { redirect } = vi.hoisted(() => ({
+  redirect: vi.fn(),
+}));
 
 vi.mock('@/i18n/navigation', () => ({
   redirect,
@@ -10,6 +12,7 @@ import { ensureCanonicalApartmentSlug } from '@/features/catalog/utils/ensure-ca
 
 describe('ensureCanonicalApartmentSlug', () => {
   it('does nothing when slug already matches', () => {
+    redirect.mockClear();
     ensureCanonicalApartmentSlug({ slug: 'project-unit-1-abc123' }, 'project-unit-1-abc123', 'en');
 
     expect(redirect).not.toHaveBeenCalled();
