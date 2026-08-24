@@ -20,7 +20,7 @@ type FloorOwned = {
   buildingId: string;
   building: {
     projectId: string;
-    project: { builderCompanyId: string; publicationStatus: PublicationStatus };
+    project: { builderCompanyId: string; publicationStatus: PublicationStatus; slug: string };
   };
 };
 

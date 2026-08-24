@@ -97,6 +97,7 @@ type ProjectDetailSource = Omit<ProjectListSource, 'buildings'> & {
       displayOrder: number;
       apartments: Array<{
         id: string;
+        slug: string;
         number: string;
         salesStatus: ApartmentSalesStatus;
         rooms: number | null;

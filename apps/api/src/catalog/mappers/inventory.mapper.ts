@@ -78,6 +78,7 @@ export const mapBuildingDetail = (
       displayOrder: number;
       apartments: Array<{
         id: string;
+        slug: string;
         number: string;
         salesStatus: ApartmentSalesStatus;
         rooms: number | null;
@@ -146,6 +147,7 @@ export const mapFloorDetail = (
     project: { id: string; name: string; slug: string };
     apartments: Array<{
       id: string;
+      slug: string;
       number: string;
       salesStatus: ApartmentSalesStatus;
       rooms: number | null;

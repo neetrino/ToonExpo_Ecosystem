@@ -155,7 +155,7 @@ const pickBuildingPathShortcut = (
   formatApartment: (apartmentNumber: string) => string,
 ): {
   floor: { id: string; label: string };
-  apartment?: { id: string; label: string };
+  apartment?: { id: string; slug: string; label: string };
 } | null => {
   const floor = floors[0];
   if (!floor) {
