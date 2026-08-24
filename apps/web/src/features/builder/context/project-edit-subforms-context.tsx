@@ -247,15 +247,21 @@ export const useRegisterProjectEditSubForm = (
   getValuesRef.current = registration.getValues;
 
   useEffect(() => {
-    setEntry({
+    const entry: ProjectEditSubFormRegistration = {
       id: registration.id,
       isDirty: registration.isDirty,
-      isPendingImport: registration.isPendingImport,
       save: () => saveRef.current(),
-      getValues: getValuesRef.current
-        ? () => getValuesRef.current!()
-        : undefined,
-    });
+    };
+
+    if (registration.isPendingImport === true) {
+      entry.isPendingImport = true;
+    }
+
+    if (getValuesRef.current != null) {
+      entry.getValues = () => getValuesRef.current!();
+    }
+
+    setEntry(entry);
   }, [
     registration.id,
     registration.isDirty,
