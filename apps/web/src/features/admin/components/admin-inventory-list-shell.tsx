@@ -299,6 +299,29 @@ export const AdminInventoryListShell = ({
             setPanelDraftFilters(null);
           }
         }}
+        onApplyFilters={(draft) => {
+          const nextCompanyIds = draft[ADMIN_INVENTORY_FILTER_COMPANY_KEY]
+            ?.split(',')
+            .map((id) => id.trim())
+            .filter(Boolean) ?? [];
+          const nextBuildingIds = draft[ADMIN_INVENTORY_FILTER_BUILDING_KEY]
+            ?.split(',')
+            .map((id) => id.trim())
+            .filter(Boolean) ?? [];
+          const nextFloorIds = draft[ADMIN_INVENTORY_FILTER_FLOOR_KEY]
+            ?.split(',')
+            .map((id) => id.trim())
+            .filter(Boolean) ?? [];
+          router.replace(
+            buildListHref({
+              page: FIRST_PAGE,
+              companyIds: nextCompanyIds,
+              buildingIds: showBuildingFilter ? nextBuildingIds : [],
+              floorIds: showFloorFilter ? nextFloorIds : [],
+              projectId: null,
+            }),
+          );
+        }}
         onFilterChange={(key, value) => {
           const ids = value
             .split(',')

@@ -91,6 +91,7 @@ export const ListPageHeader = ({
                 panelAlign="end"
                 onSearchChange={onSearchChange}
                 onFilterChange={onFilterChange}
+                onApplyFilters={onApplyFilters}
                 onDraftFilterChange={onDraftFilterChange}
                 onPanelOpenChange={onPanelOpenChange}
                 onClearAll={onClearAll}
