@@ -110,7 +110,7 @@ export const ProjectBankPartnerOfferCard = ({
           </IconButton>
         }
       >
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
+        <div className="flex flex-col gap-4">
           {offer.partnerCompanyName ? (
             <div className="flex items-center gap-2">
               <AdminListCardLogo
@@ -133,10 +133,16 @@ export const ProjectBankPartnerOfferCard = ({
 
           <BankPartnerOfferFinanceFieldsEditor register={form.register} />
 
-          <Button type="submit" variant="secondary" size="sm" disabled={busy || !form.formState.isDirty}>
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            disabled={busy || !form.formState.isDirty}
+            onClick={() => void handleSubmit()}
+          >
             {busy ? t('saving') : t('save')}
           </Button>
-        </form>
+        </div>
       </ProjectCatalogSectionCard>
 
       <AdminDeleteModal
