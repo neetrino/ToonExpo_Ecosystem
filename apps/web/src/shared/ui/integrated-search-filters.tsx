@@ -194,17 +194,6 @@ const applyDraftFilters = (
   }
 };
 
-const clearDraftToBaseline = (
-  filters: readonly IntegratedSearchFilterConfig[] | undefined,
-  setDraftFilters: (next: Record<string, string>) => void,
-): void => {
-  const cleared: Record<string, string> = {};
-  filters?.forEach((filter) => {
-    cleared[filter.key] = INTEGRATED_SEARCH_FILTER_ALL_VALUE;
-  });
-  setDraftFilters(cleared);
-};
-
 const useOutsideClose = (
   open: boolean,
   containerRef: RefObject<HTMLDivElement | null>,
