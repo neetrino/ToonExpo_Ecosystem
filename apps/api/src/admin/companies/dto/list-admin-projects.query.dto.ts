@@ -1,6 +1,15 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsInt, IsOptional, IsString, Max, MaxLength, Min, MinLength } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import {
+  IsArray,
+  IsInt,
+  IsOptional,
+  IsString,
+  Max,
+  MaxLength,
+  Min,
+  MinLength,
+} from 'class-validator';
 
 import {
   ADMIN_COMPANIES_DEFAULT_PAGE_SIZE,
@@ -10,8 +19,27 @@ import {
 
 const PROJECT_SEARCH_MAX_LENGTH = 120;
 
+const toStringArray = (value: unknown): string[] | undefined => {
+  if (value == null || value === '') {
+    return undefined;
+  }
+  if (Array.isArray(value)) {
+    const items = value
+      .map(String)
+      .map((item) => item.trim())
+      .filter(Boolean);
+    return items.length > 0 ? items : undefined;
+  }
+  const items = String(value)
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
+  return items.length > 0 ? items : undefined;
+};
+
 /**
- * Query for the cross-company admin projects list.
+ * Query for the cross-company admin projects / inventory lists.
+ * `companyId` / `buildingId` / `floorId` accept one id, comma-separated, or repeated params.
  */
 export class ListAdminProjectsQueryDto {
   @ApiPropertyOptional({ default: LIST_MIN_PAGE, minimum: LIST_MIN_PAGE })
@@ -33,23 +61,38 @@ export class ListAdminProjectsQueryDto {
   @Max(ADMIN_COMPANIES_MAX_PAGE_SIZE)
   pageSize: number = ADMIN_COMPANIES_DEFAULT_PAGE_SIZE;
 
-  @ApiPropertyOptional({ description: 'Filter projects by builder company id' })
+  @ApiPropertyOptional({
+    description: 'Filter by one or more builder company ids (comma-separated or repeated)',
+    type: [String],
+  })
   @IsOptional()
-  @IsString()
-  @MinLength(1)
-  companyId?: string;
+  @Transform(({ value }) => toStringArray(value))
+  @IsArray()
+  @IsString({ each: true })
+  @MinLength(1, { each: true })
+  companyId?: string[];
 
-  @ApiPropertyOptional({ description: 'Filter floors/apartments by building id' })
+  @ApiPropertyOptional({
+    description: 'Filter floors/apartments by one or more building ids',
+    type: [String],
+  })
   @IsOptional()
-  @IsString()
-  @MinLength(1)
-  buildingId?: string;
+  @Transform(({ value }) => toStringArray(value))
+  @IsArray()
+  @IsString({ each: true })
+  @MinLength(1, { each: true })
+  buildingId?: string[];
 
-  @ApiPropertyOptional({ description: 'Filter apartments by floor id' })
+  @ApiPropertyOptional({
+    description: 'Filter apartments by one or more floor ids',
+    type: [String],
+  })
   @IsOptional()
-  @IsString()
-  @MinLength(1)
-  floorId?: string;
+  @Transform(({ value }) => toStringArray(value))
+  @IsArray()
+  @IsString({ each: true })
+  @MinLength(1, { each: true })
+  floorId?: string[];
 
   @ApiPropertyOptional({ description: 'Filter buildings by project id' })
   @IsOptional()

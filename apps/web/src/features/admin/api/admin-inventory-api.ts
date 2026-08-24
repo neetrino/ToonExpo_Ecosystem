@@ -25,20 +25,31 @@ const withCookie = (options: ApiFetchOptions, cookieHeader?: string): ApiFetchOp
   };
 };
 
+const appendIdParam = (
+  search: URLSearchParams,
+  key: string,
+  value: string | readonly string[] | undefined,
+): void => {
+  if (value == null) {
+    return;
+  }
+  const ids = (Array.isArray(value) ? value : [value])
+    .map((id) => id.trim())
+    .filter((id) => id.length > 0);
+  if (ids.length === 0) {
+    return;
+  }
+  search.set(key, ids.join(','));
+};
+
 const toSearch = (params: ListAdminProjectsParams): string => {
   const search = new URLSearchParams({
     page: String(params.page),
     pageSize: String(params.pageSize),
   });
-  if (params.companyId) {
-    search.set('companyId', params.companyId);
-  }
-  if (params.buildingId) {
-    search.set('buildingId', params.buildingId);
-  }
-  if (params.floorId) {
-    search.set('floorId', params.floorId);
-  }
+  appendIdParam(search, 'companyId', params.companyId);
+  appendIdParam(search, 'buildingId', params.buildingId);
+  appendIdParam(search, 'floorId', params.floorId);
   if (params.projectId) {
     search.set('projectId', params.projectId);
   }

@@ -31,4 +31,23 @@ describe('buildActiveIntegratedFilterChips', () => {
       }),
     ).toEqual([{ key: 'source', label: 'Source: Manual' }]);
   });
+
+  it('builds multi-select chips with count label', () => {
+    const multi: readonly IntegratedSearchFilterConfig[] = [
+      {
+        key: 'companyId',
+        label: 'Builder',
+        allOptionLabel: 'All',
+        multiple: true,
+        selectedCountLabel: (count) => `${count} selected`,
+        options: [
+          { value: 'a', label: 'A' },
+          { value: 'b', label: 'B' },
+        ],
+      },
+    ];
+    expect(buildActiveIntegratedFilterChips(multi, { companyId: 'a,b' })).toEqual([
+      { key: 'companyId', label: 'Builder: 2 selected' },
+    ]);
+  });
 });

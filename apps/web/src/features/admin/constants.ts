@@ -65,7 +65,7 @@ export const adminBuildingInventoryGlanceQueryKey = (buildingId: string) =>
 export const adminBuildingsQueryKey = (params: {
   page: number;
   pageSize: number;
-  companyId?: string;
+  companyId?: string | readonly string[];
   projectId?: string;
   search?: string;
 }) => [...ADMIN_BUILDINGS_QUERY_KEY, params] as const;
@@ -73,17 +73,17 @@ export const adminBuildingsQueryKey = (params: {
 export const adminFloorsQueryKey = (params: {
   page: number;
   pageSize: number;
-  companyId?: string;
-  buildingId?: string;
+  companyId?: string | readonly string[];
+  buildingId?: string | readonly string[];
   search?: string;
 }) => [...ADMIN_FLOORS_QUERY_KEY, params] as const;
 
 export const adminApartmentsQueryKey = (params: {
   page: number;
   pageSize: number;
-  companyId?: string;
-  buildingId?: string;
-  floorId?: string;
+  companyId?: string | readonly string[];
+  buildingId?: string | readonly string[];
+  floorId?: string | readonly string[];
   search?: string;
 }) => [...ADMIN_APARTMENTS_QUERY_KEY, params] as const;
 

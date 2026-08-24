@@ -7,6 +7,10 @@ import {
   INTEGRATED_SEARCH_FILTER_PANEL_GRID,
 } from '@/shared/ui/integrated-search-filters.constants';
 import type { IntegratedSearchFilterConfig } from '@/shared/ui/integrated-search-filters.types';
+import {
+  decodeIntegratedFilterIds,
+  encodeIntegratedFilterIds,
+} from '@/shared/ui/integrated-search-filters.types';
 import { Button } from '@/shared/ui/button';
 import { ListboxSelect } from '@/shared/ui/listbox-select';
 
@@ -65,6 +69,41 @@ type FilterFieldProps = {
 const FilterField = ({ filter, value, menuAlign, onFilterChange }: FilterFieldProps) => {
   const tCommon = useTranslations('Common.integratedSearch');
   const isDisabled = Boolean(filter.disabled);
+  const isMultiple = Boolean(filter.multiple);
+  const selectedCountLabel =
+    filter.selectedCountLabel ?? ((count: number) => tCommon('selectedCount', { count }));
+
+  if (isMultiple) {
+    const selectedIds = isDisabled ? [] : decodeIntegratedFilterIds(value);
+    return (
+      <label className="flex min-w-0 w-full flex-col gap-1.5">
+        <span className="text-xs font-medium uppercase tracking-wide text-ink-muted">
+          {filter.label}
+        </span>
+        <ListboxSelect
+          variant="field"
+          size="full"
+          className="h-10 w-full min-w-0"
+          aria-label={filter.label}
+          multiple
+          values={selectedIds}
+          options={isDisabled ? [] : [...filter.options]}
+          searchable={filter.searchable && !isDisabled}
+          searchPlaceholder={tCommon('searchPlaceholder')}
+          emptyLabel={tCommon('noMatches')}
+          placeholder={isDisabled ? filter.disabledPlaceholder : filter.allOptionLabel}
+          selectedCountLabel={selectedCountLabel}
+          disabled={isDisabled}
+          menuAlign={menuAlign}
+          menuExactWidth={false}
+          onValuesChange={(next) => {
+            onFilterChange(filter.key, encodeIntegratedFilterIds(next));
+          }}
+        />
+      </label>
+    );
+  }
+
   const options = isDisabled
     ? []
     : [

@@ -9,6 +9,14 @@ import type {
 import { InventoryHubService } from '../../inventory/inventory-hub.service.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 
+const toIdList = (value: string | readonly string[] | undefined): string[] => {
+  if (value == null) {
+    return [];
+  }
+  const list = Array.isArray(value) ? [...value] : [value];
+  return list.map((id) => id.trim()).filter((id) => id.length > 0);
+};
+
 /**
  * Cross-company inventory lists for the admin Projects hub.
  */
@@ -22,64 +30,70 @@ export class AdminInventoryService {
   async listBuildings(
     page: number,
     pageSize: number,
-    companyId?: string,
+    companyId?: string | readonly string[],
     projectId?: string,
     search?: string,
   ): Promise<AdminBuildingListResponse> {
-    if (companyId) {
-      await this.assertCompanyExists(companyId);
+    const companyIds = toIdList(companyId);
+    if (companyIds.length === 1) {
+      await this.assertCompanyExists(companyIds[0]!);
     }
     if (projectId) {
-      await this.assertProjectInScope(projectId, companyId);
+      await this.assertProjectInScope(projectId, companyIds[0]);
     }
-    return this.inventoryHub.listBuildings(page, pageSize, companyId, projectId, search);
+    return this.inventoryHub.listBuildings(page, pageSize, companyIds, projectId, search);
   }
 
   async listFloors(
     page: number,
     pageSize: number,
-    companyId?: string,
-    buildingId?: string,
+    companyId?: string | readonly string[],
+    buildingId?: string | readonly string[],
     search?: string,
   ): Promise<AdminFloorListResponse> {
-    if (companyId) {
-      await this.assertCompanyExists(companyId);
+    const companyIds = toIdList(companyId);
+    const buildingIds = toIdList(buildingId);
+    if (companyIds.length === 1) {
+      await this.assertCompanyExists(companyIds[0]!);
     }
-    if (buildingId) {
-      await this.assertBuildingInScope(buildingId, companyId);
+    if (buildingIds.length === 1) {
+      await this.assertBuildingInScope(buildingIds[0]!, companyIds[0]);
     }
-    return this.inventoryHub.listFloors(page, pageSize, companyId, buildingId, search);
+    return this.inventoryHub.listFloors(page, pageSize, companyIds, buildingIds, search);
   }
 
   async listApartments(
     page: number,
     pageSize: number,
-    companyId?: string,
-    buildingId?: string,
-    floorId?: string,
+    companyId?: string | readonly string[],
+    buildingId?: string | readonly string[],
+    floorId?: string | readonly string[],
     search?: string,
   ): Promise<AdminApartmentListResponse> {
-    if (companyId) {
-      await this.assertCompanyExists(companyId);
+    const companyIds = toIdList(companyId);
+    const buildingIds = toIdList(buildingId);
+    const floorIds = toIdList(floorId);
+    if (companyIds.length === 1) {
+      await this.assertCompanyExists(companyIds[0]!);
     }
-    if (buildingId) {
-      await this.assertBuildingInScope(buildingId, companyId);
+    if (buildingIds.length === 1) {
+      await this.assertBuildingInScope(buildingIds[0]!, companyIds[0]);
     }
-    if (floorId) {
-      await this.assertFloorInScope(floorId, buildingId, companyId);
+    if (floorIds.length === 1) {
+      await this.assertFloorInScope(floorIds[0]!, buildingIds[0], companyIds[0]);
     }
     return this.inventoryHub.listApartments(
       page,
       pageSize,
-      companyId,
-      buildingId,
-      floorId,
+      companyIds,
+      buildingIds,
+      floorIds,
       search,
     );
   }
 
   /**
-   * Inventory-at-a-glance for one building (totals + per-floor sales bars).
+   * Inventory-at-a-glance for one building (admin Buildings hub sheet).
    */
   getBuildingInventoryGlance(buildingId: string): Promise<AdminBuildingInventoryGlance> {
     return this.inventoryHub.getBuildingInventoryGlance(buildingId);

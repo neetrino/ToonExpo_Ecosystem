@@ -14,7 +14,8 @@
       "removeChip": "Remove filter {label}",
       "searchPlaceholder": "Search…",
       "searchLabel": "Search",
-      "noMatches": "No matches"
+      "noMatches": "No matches",
+      "selectedCount": "{count} selected"
     },
     "viewMode": {
       "label": "View mode",

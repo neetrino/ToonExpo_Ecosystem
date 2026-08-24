@@ -60,18 +60,22 @@ import {
 const toListParams = (
   page: number,
   pageSize: number,
-  companyId?: string,
-  buildingId?: string,
+  companyId?: string | readonly string[],
+  buildingId?: string | readonly string[],
   projectId?: string,
   search?: string,
-  floorId?: string,
+  floorId?: string | readonly string[],
 ): ListAdminProjectsParams => ({
   page,
   pageSize,
-  ...(companyId ? { companyId } : {}),
-  ...(buildingId ? { buildingId } : {}),
+  ...(companyId && (Array.isArray(companyId) ? companyId.length > 0 : companyId)
+    ? { companyId }
+    : {}),
+  ...(buildingId && (Array.isArray(buildingId) ? buildingId.length > 0 : buildingId)
+    ? { buildingId }
+    : {}),
   ...(projectId ? { projectId } : {}),
-  ...(floorId ? { floorId } : {}),
+  ...(floorId && (Array.isArray(floorId) ? floorId.length > 0 : floorId) ? { floorId } : {}),
   ...(search ? { search } : {}),
 });
 
@@ -86,7 +90,7 @@ const adminCatalogScope = (companyId: string): CatalogScope => ({
 export const useAdminBuildingsQuery = (
   page: number,
   pageSize: number,
-  companyId?: string,
+  companyId?: string | readonly string[],
   projectId?: string,
   options?: { enabled?: boolean; search?: string },
 ) => {
@@ -112,8 +116,8 @@ export const useAdminBuildingsQuery = (
 export const useAdminFloorsQuery = (
   page: number,
   pageSize: number,
-  companyId?: string,
-  buildingId?: string,
+  companyId?: string | readonly string[],
+  buildingId?: string | readonly string[],
   search?: string,
   options?: { enabled?: boolean },
 ) => {
@@ -132,10 +136,10 @@ export const useAdminFloorsQuery = (
 export const useAdminApartmentsQuery = (
   page: number,
   pageSize: number,
-  companyId?: string,
-  buildingId?: string,
+  companyId?: string | readonly string[],
+  buildingId?: string | readonly string[],
   search?: string,
-  floorId?: string,
+  floorId?: string | readonly string[],
 ) => {
   const params = toListParams(page, pageSize, companyId, buildingId, undefined, search, floorId);
   return useQuery({

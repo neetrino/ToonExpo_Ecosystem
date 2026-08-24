@@ -14,7 +14,8 @@
       "removeChip": "Հեռացնել ֆիլտրը {label}",
       "searchPlaceholder": "Որոնել…",
       "searchLabel": "Որոնում",
-      "noMatches": "Համընկնում չկա"
+      "noMatches": "Համընկնում չկա",
+      "selectedCount": "{count} ընտրված"
     },
     "viewMode": {
       "label": "Տեսք",

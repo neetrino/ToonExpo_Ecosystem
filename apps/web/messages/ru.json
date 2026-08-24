@@ -14,7 +14,8 @@
       "removeChip": "Убрать фильтр {label}",
       "searchPlaceholder": "Поиск…",
       "searchLabel": "Поиск",
-      "noMatches": "Нет совпадений"
+      "noMatches": "Нет совпадений",
+      "selectedCount": "{count} выбрано"
     },
     "viewMode": {
       "label": "Вид",
