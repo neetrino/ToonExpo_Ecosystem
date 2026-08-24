@@ -467,7 +467,7 @@
       "sold": "Sold",
       "summary": "Availability",
       "availableCount": "{count} free",
-      "availShort": "Avail",
+      "availShort": "Availability",
       "unitsShort": "Units",
       "soldShort": "Sold"
     },

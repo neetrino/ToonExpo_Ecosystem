@@ -467,7 +467,7 @@
       "sold": "Продано",
       "summary": "Наличие",
       "availableCount": "{count} своб.",
-      "availShort": "Своб.",
+      "availShort": "Наличие",
       "unitsShort": "Юниты",
       "soldShort": "Прод."
     },
