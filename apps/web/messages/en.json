@@ -1970,6 +1970,7 @@
         "allBuildings": "All buildings",
         "floor": "Floor",
         "allFloors": "All floors",
+        "selectBuildingFirst": "Select a building first",
         "searchPlaceholder": "Search by project, company, or city"
       },
       "openBuildings": "View buildings for {name}",

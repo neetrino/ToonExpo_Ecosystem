@@ -1970,6 +1970,7 @@
         "allBuildings": "Все здания",
         "floor": "Этаж",
         "allFloors": "Все этажи",
+        "selectBuildingFirst": "Сначала выберите здание",
         "searchPlaceholder": "Поиск по проекту, компании или городу"
       },
       "openBuildings": "Показать здания проекта {name}",

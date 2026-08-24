@@ -120,7 +120,7 @@ export const AdminInventoryListShell = ({
     effectiveCompanyId,
     effectiveBuildingId,
     undefined,
-    { enabled: showFloorFilter },
+    { enabled: showFloorFilter && Boolean(effectiveBuildingId) },
   );
 
   const builderCompanies = useMemo(() => {
@@ -217,24 +217,35 @@ export const AdminInventoryListShell = ({
       });
     }
     if (showFloorFilter) {
+      const floorRequiresBuilding = !effectiveBuildingId;
       configs.push({
         key: ADMIN_INVENTORY_FILTER_FLOOR_KEY,
         label: t('filters.floor'),
         allOptionLabel: t('filters.allFloors'),
         searchable: true,
-        options: floorOptions.map((floor) => ({
-          value: floor.id,
-          label: formatFloorOptionLabel(floor),
-        })),
+        disabled: floorRequiresBuilding,
+        disabledPlaceholder: t('filters.selectBuildingFirst'),
+        options: floorRequiresBuilding
+          ? []
+          : floorOptions.map((floor) => ({
+              value: floor.id,
+              label: formatFloorOptionLabel(floor),
+            })),
       });
     }
     return configs;
-  }, [builderCompanies, buildingOptions, floorOptions, showBuildingFilter, showFloorFilter, t]);
+  }, [
+    builderCompanies,
+    buildingOptions,
+    effectiveBuildingId,
+    floorOptions,
+    showBuildingFilter,
+    showFloorFilter,
+    t,
+  ]);
 
-  const filtersLoading =
-    companiesQuery.isLoading ||
-    (showBuildingFilter && buildingsQuery.isLoading) ||
-    (showFloorFilter && floorsQuery.isLoading);
+  /** Only block on the first companies fetch — cascade refetches must not blank the list. */
+  const filtersLoading = companiesQuery.isLoading && !companiesQuery.data;
 
   if (isLoading || filtersLoading) {
     return <p className="text-sm text-ink-secondary">{loading}</p>;

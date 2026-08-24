@@ -1970,6 +1970,7 @@
         "allBuildings": "Բոլոր շենքերը",
         "floor": "Հարկ",
         "allFloors": "Բոլոր հարկերը",
+        "selectBuildingFirst": "Նախ ընտրեք շենքը",
         "searchPlaceholder": "Փնտրել ըստ նախագծի, ընկերության կամ քաղաքի"
       },
       "openBuildings": "Դիտել շենքերը՝ {name}",

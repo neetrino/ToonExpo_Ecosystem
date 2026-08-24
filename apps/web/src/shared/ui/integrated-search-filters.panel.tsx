@@ -64,10 +64,13 @@ type FilterFieldProps = {
 
 const FilterField = ({ filter, value, menuAlign, onFilterChange }: FilterFieldProps) => {
   const tCommon = useTranslations('Common.integratedSearch');
-  const options = [
-    { value: INTEGRATED_SEARCH_FILTER_ALL_VALUE, label: filter.allOptionLabel },
-    ...filter.options,
-  ];
+  const isDisabled = Boolean(filter.disabled);
+  const options = isDisabled
+    ? []
+    : [
+        { value: INTEGRATED_SEARCH_FILTER_ALL_VALUE, label: filter.allOptionLabel },
+        ...filter.options,
+      ];
 
   return (
     <label className="flex min-w-0 w-full flex-col gap-1.5">
@@ -79,11 +82,13 @@ const FilterField = ({ filter, value, menuAlign, onFilterChange }: FilterFieldPr
         size="full"
         className="h-10 w-full min-w-0"
         aria-label={filter.label}
-        value={value}
+        value={isDisabled ? INTEGRATED_SEARCH_FILTER_ALL_VALUE : value}
         options={options}
-        searchable={filter.searchable}
+        searchable={filter.searchable && !isDisabled}
         searchPlaceholder={tCommon('searchPlaceholder')}
         emptyLabel={tCommon('noMatches')}
+        placeholder={isDisabled ? filter.disabledPlaceholder : undefined}
+        disabled={isDisabled}
         menuAlign={menuAlign}
         menuExactWidth={false}
         onChange={(next) => {

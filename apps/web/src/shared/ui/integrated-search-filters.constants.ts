@@ -3,7 +3,7 @@ export const INTEGRATED_SEARCH_FILTER_ALL_VALUE = '';
 
 /** Portaled filter panel surface — fixed width so end-aligned portals don’t clip. */
 export const INTEGRATED_SEARCH_FILTER_PANEL_SURFACE =
-  'box-border w-80 rounded-xl border border-border bg-surface-elevated p-4 sm:w-[26rem]';
+  'box-border w-80 rounded-xl border border-border bg-surface-elevated p-4 sm:w-[30rem]';
 
 /** Filter fields wrap so every control stays inside the panel. */
 export const INTEGRATED_SEARCH_FILTER_PANEL_GRID = 'grid grid-cols-1 gap-3 sm:grid-cols-2';
