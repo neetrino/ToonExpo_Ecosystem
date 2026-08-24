@@ -66,12 +66,31 @@ export const IntegratedSearchFilters = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const [panelOpen, setPanelOpen] = useState(false);
   const [draftFilters, setDraftFilters] = useState(filterValues);
+  const [optimisticFilterValues, setOptimisticFilterValues] = useState<Record<
+    string,
+    string
+  > | null>(null);
   const hasFilters = Boolean(filters?.length);
+  const displayedFilterValues = optimisticFilterValues ?? filterValues;
   const chips = useMemo(
-    () => buildActiveIntegratedFilterChips(filters, filterValues),
-    [filters, filterValues],
+    () => buildActiveIntegratedFilterChips(filters, displayedFilterValues),
+    [filters, displayedFilterValues],
   );
   const hasQuery = search.trim().length > 0 || chips.length > 0;
+
+  useEffect(() => {
+    if (!optimisticFilterValues) {
+      return;
+    }
+    const allCleared = filters?.every(
+      (filter) =>
+        (filterValues[filter.key] ?? INTEGRATED_SEARCH_FILTER_ALL_VALUE) ===
+        INTEGRATED_SEARCH_FILTER_ALL_VALUE,
+    );
+    if (allCleared) {
+      setOptimisticFilterValues(null);
+    }
+  }, [filterValues, filters, optimisticFilterValues]);
 
   const closePanel = useCallback(() => {
     setPanelOpen(false);
@@ -85,19 +104,20 @@ export const IntegratedSearchFilters = ({
     filters?.forEach((filter) => {
       cleared[filter.key] = INTEGRATED_SEARCH_FILTER_ALL_VALUE;
     });
+    setOptimisticFilterValues(cleared);
     setDraftFilters(cleared);
     onDraftFilterChange?.(cleared);
-    if (onApplyFilters) {
-      onApplyFilters(cleared);
-    } else if (onClearAll) {
+    onSearchChange('');
+    closePanel();
+    if (onClearAll) {
       onClearAll();
+    } else if (onApplyFilters) {
+      onApplyFilters(cleared);
     } else {
       filters?.forEach((filter) => {
         onFilterChange?.(filter.key, INTEGRATED_SEARCH_FILTER_ALL_VALUE);
       });
     }
-    onSearchChange('');
-    closePanel();
   };
 
   const openPanel = () => {
