@@ -1,12 +1,18 @@
 'use client';
 
-import type { AdminFloorListItem } from '@toonexpo/contracts';
 import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
 
+import {
+  ADMIN_INVENTORY_FILTER_BUILDING_KEY,
+  ADMIN_INVENTORY_FILTER_COMPANY_KEY,
+  ADMIN_INVENTORY_FILTER_FLOOR_KEY,
+  formatFloorOptionLabel,
+  resolveDraftOrApplied,
+} from '@/features/admin/components/admin-inventory-list-filters';
 import {
   ADMIN_COMPANIES_MAX_PAGE_SIZE,
   ADMIN_INVENTORY_DEFAULT_PAGE_SIZE,
@@ -23,9 +29,6 @@ import { ListPageHeader } from '@/shared/ui/list-page-header';
 import type { ViewMode } from '@/shared/ui/view-mode';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
-const ADMIN_INVENTORY_FILTER_COMPANY_KEY = 'companyId';
-const ADMIN_INVENTORY_FILTER_BUILDING_KEY = 'buildingId';
-const ADMIN_INVENTORY_FILTER_FLOOR_KEY = 'floorId';
 const FIRST_PAGE = 1;
 
 type AdminInventoryListShellProps = {
@@ -58,24 +61,6 @@ const parsePage = (raw: string | null): number => {
     return FIRST_PAGE;
   }
   return Math.floor(parsed);
-};
-
-const resolveDraftOrApplied = (
-  draft: Record<string, string> | null,
-  key: string,
-  applied: string | undefined,
-): string | undefined => {
-  if (draft && key in draft) {
-    const value = draft[key]?.trim();
-    return value || undefined;
-  }
-  return applied;
-};
-
-const formatFloorOptionLabel = (floor: AdminFloorListItem): string => {
-  const label =
-    floor.displayLabel?.trim() || floor.name?.trim() || `Floor ${floor.number}`;
-  return `${label} · ${floor.buildingName}`;
 };
 
 /**
