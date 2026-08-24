@@ -2,10 +2,14 @@
 
 import type { InteractiveMappingFloorSummary } from '@toonexpo/contracts';
 import { Lock } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { useMemo, useState } from 'react';
 
 import { cn } from '@/shared/ui/cn';
+import { SearchField } from '@/shared/ui/search-field';
 
 import { isFloorPlanMappingUnlocked } from '../utils/is-floor-plan-mapping-unlocked';
+import { matchesMappingSearch } from '../utils/matches-mapping-search';
 
 export type FloorPlanUploadPickerProps = {
   floors: InteractiveMappingFloorSummary[];
@@ -18,6 +22,9 @@ export type FloorPlanUploadPickerProps = {
   onSelectFloor: (floorId: string) => void;
   onSelectLockedFloor: (floor: InteractiveMappingFloorSummary) => void;
 };
+
+const floorLabel = (floor: InteractiveMappingFloorSummary): string =>
+  floor.name ?? `Floor ${floor.number}`;
 
 /**
  * Lists floors for plan upload. Floors without a building-render polygon stay locked
@@ -34,19 +41,40 @@ export const FloorPlanUploadPicker = ({
   onSelectFloor,
   onSelectLockedFloor,
 }: FloorPlanUploadPickerProps) => {
-  const sorted = [...floors].sort((a, b) => a.number - b.number);
+  const t = useTranslations('Admin.interactiveMapping.forms');
+  const [query, setQuery] = useState('');
+
+  const sorted = useMemo(() => [...floors].sort((a, b) => a.number - b.number), [floors]);
+  const filtered = useMemo(
+    () =>
+      sorted.filter((floor) => matchesMappingSearch(query, floorLabel(floor), floor.number)),
+    [query, sorted],
+  );
 
   return (
-    <div className="space-y-2 rounded-sm border border-border bg-background p-3">
-      <h3 className="text-sm font-semibold text-ink">{title}</h3>
-      {sorted.length === 0 ? (
+    <section className="rounded-lg border border-border bg-surface p-4 shadow-xs sm:p-5">
+      <h3 className="mb-3 text-sm font-semibold text-ink">{title}</h3>
+      {floors.length > 0 ? (
+        <SearchField
+          className="mb-3"
+          value={query}
+          placeholder={t('searchFloors')}
+          aria-label={t('searchFloors')}
+          onChange={(event) => {
+            setQuery(event.target.value);
+          }}
+        />
+      ) : null}
+      {floors.length === 0 ? (
         <p className="text-sm text-ink-muted">{emptyLabel}</p>
+      ) : filtered.length === 0 ? (
+        <p className="text-sm text-ink-muted">{t('searchNoResults', { query })}</p>
       ) : (
-        <ul className="divide-y divide-border border border-border">
-          {sorted.map((floor) => {
+        <ul className="divide-y divide-border overflow-hidden rounded-md border border-border">
+          {filtered.map((floor) => {
             const unlocked = isFloorPlanMappingUnlocked(floor);
             const selected = floor.id === selectedFloorId;
-            const label = floor.name ?? `Floor ${floor.number}`;
+            const label = floorLabel(floor);
 
             return (
               <li key={floor.id}>
@@ -55,11 +83,12 @@ export const FloorPlanUploadPicker = ({
                   aria-disabled={!unlocked}
                   title={!unlocked ? lockedHint : undefined}
                   className={cn(
-                    'flex w-full items-center justify-between gap-3 border-l-2 border-transparent px-3 py-2.5 text-left text-sm transition-colors',
+                    'flex w-full items-center justify-between gap-4 border-l-[3px] px-4 py-3.5 text-left text-sm transition-colors',
                     !unlocked
-                      ? 'cursor-not-allowed bg-surface/60 text-ink-muted'
-                      : 'text-ink hover:bg-surface',
-                    selected && 'border-ink',
+                      ? 'cursor-not-allowed border-transparent bg-surface/60 text-ink-muted'
+                      : selected
+                        ? 'border-ink bg-surface-elevated text-ink'
+                        : 'border-transparent bg-surface text-ink hover:bg-surface-elevated/70',
                   )}
                   onClick={() => {
                     if (!unlocked) {
@@ -73,7 +102,7 @@ export const FloorPlanUploadPicker = ({
                     {!unlocked ? (
                       <Lock className="size-3.5 shrink-0 text-ink-muted" aria-hidden />
                     ) : null}
-                    <span className="truncate">{label}</span>
+                    <span className="truncate font-medium">{label}</span>
                   </span>
                   <span className="shrink-0 text-xs text-ink-muted">
                     {!unlocked
@@ -88,6 +117,6 @@ export const FloorPlanUploadPicker = ({
           })}
         </ul>
       )}
-    </div>
+    </section>
   );
 };

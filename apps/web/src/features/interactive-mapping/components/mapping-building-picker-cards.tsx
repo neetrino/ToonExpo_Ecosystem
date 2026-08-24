@@ -17,14 +17,16 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import type { ReactNode } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 
 import { resolvePublicAssetUrl } from '@/shared/lib/static-asset-url';
 import { cn } from '@/shared/ui/cn';
 import { LIST_CARD_LIFT_CLASS } from '@/shared/ui/motion';
+import { SearchField } from '@/shared/ui/search-field';
 
 import { mappingBuildingAccentTone } from './mapping-building-accent-tones';
 import { formatMappingRelativeUpdated } from '../utils/format-mapping-relative-updated';
+import { matchesMappingSearch } from '../utils/matches-mapping-search';
 import { resolveMappingBuildingPickerStats } from '../utils/mapping-building-picker-stats';
 
 const BUILDING_INDEX_PAD = 2;
@@ -81,13 +83,27 @@ export const MappingBuildingPickerCards = ({
   onSelectBuilding,
 }: MappingBuildingPickerCardsProps) => {
   const t = useTranslations('Admin.interactiveMapping.forms.buildingPicker');
+  const tForms = useTranslations('Admin.interactiveMapping.forms');
+  const [query, setQuery] = useState('');
 
-  const sorted = [...buildings].sort((a, b) => {
-    const byDistrict = districtName(districts, a.districtId).localeCompare(
-      districtName(districts, b.districtId),
-    );
-    return byDistrict !== 0 ? byDistrict : a.name.localeCompare(b.name);
-  });
+  const sorted = useMemo(
+    () =>
+      [...buildings].sort((a, b) => {
+        const byDistrict = districtName(districts, a.districtId).localeCompare(
+          districtName(districts, b.districtId),
+        );
+        return byDistrict !== 0 ? byDistrict : a.name.localeCompare(b.name);
+      }),
+    [buildings, districts],
+  );
+
+  const filtered = useMemo(
+    () =>
+      sorted.filter((building) =>
+        matchesMappingSearch(query, building.name, districtName(districts, building.districtId)),
+      ),
+    [districts, query, sorted],
+  );
 
   return (
     <section className="rounded-lg border border-border bg-surface-elevated p-4 shadow-xs sm:p-5">
@@ -96,11 +112,25 @@ export const MappingBuildingPickerCards = ({
         <h3 className="text-sm font-semibold text-ink">{title}</h3>
       </header>
 
-      {sorted.length === 0 ? (
+      {buildings.length > 0 ? (
+        <SearchField
+          className="mb-4"
+          value={query}
+          placeholder={tForms('searchBuildings')}
+          aria-label={tForms('searchBuildings')}
+          onChange={(event) => {
+            setQuery(event.target.value);
+          }}
+        />
+      ) : null}
+
+      {buildings.length === 0 ? (
         <p className="text-sm text-ink-muted">{emptyLabel}</p>
+      ) : filtered.length === 0 ? (
+        <p className="text-sm text-ink-muted">{tForms('searchNoResults', { query })}</p>
       ) : (
         <ul className="space-y-3">
-          {sorted.map((building, index) => {
+          {filtered.map((building, index) => {
             const tone = mappingBuildingAccentTone(index);
             const stats = resolveMappingBuildingPickerStats(
               building.id,

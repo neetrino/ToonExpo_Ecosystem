@@ -7,9 +7,13 @@ import type {
   InteractiveMappingDistrictSummary,
   InteractiveMappingFloorSummary,
 } from '@toonexpo/contracts';
+import { useTranslations } from 'next-intl';
+import { useMemo, useState } from 'react';
 
 import { cn } from '@/shared/ui/cn';
+import { SearchField } from '@/shared/ui/search-field';
 
+import { matchesMappingSearch } from '../utils/matches-mapping-search';
 import { MappingBuildingPickerCards } from './mapping-building-picker-cards';
 
 export type MappingBuildingPickerVariant = 'list' | 'cards';
@@ -44,6 +48,17 @@ const buildingFloorStats = (
   return { mapped, total };
 };
 
+const sortBuildings = (
+  buildings: InteractiveMappingBuildingSummary[],
+  districts: InteractiveMappingDistrictSummary[],
+): InteractiveMappingBuildingSummary[] =>
+  [...buildings].sort((a, b) => {
+    const byDistrict = districtName(districts, a.districtId).localeCompare(
+      districtName(districts, b.districtId),
+    );
+    return byDistrict !== 0 ? byDistrict : a.name.localeCompare(b.name);
+  });
+
 const MappingBuildingPickerList = ({
   buildings,
   districts,
@@ -56,21 +71,39 @@ const MappingBuildingPickerList = ({
   apartmentsCountLabel,
   onSelectBuilding,
 }: MappingBuildingPickerProps) => {
-  const sorted = [...buildings].sort((a, b) => {
-    const byDistrict = districtName(districts, a.districtId).localeCompare(
-      districtName(districts, b.districtId),
-    );
-    return byDistrict !== 0 ? byDistrict : a.name.localeCompare(b.name);
-  });
+  const t = useTranslations('Admin.interactiveMapping.forms');
+  const [query, setQuery] = useState('');
+
+  const sorted = useMemo(() => sortBuildings(buildings, districts), [buildings, districts]);
+  const filtered = useMemo(
+    () =>
+      sorted.filter((building) =>
+        matchesMappingSearch(query, building.name, districtName(districts, building.districtId)),
+      ),
+    [districts, query, sorted],
+  );
 
   return (
     <section className="rounded-lg border border-border bg-surface p-4 shadow-xs sm:p-5">
       <h3 className="mb-3 text-sm font-semibold text-ink">{title}</h3>
-      {sorted.length === 0 ? (
+      {buildings.length > 0 ? (
+        <SearchField
+          className="mb-3"
+          value={query}
+          placeholder={t('searchBuildings')}
+          aria-label={t('searchBuildings')}
+          onChange={(event) => {
+            setQuery(event.target.value);
+          }}
+        />
+      ) : null}
+      {buildings.length === 0 ? (
         <p className="text-sm text-ink-muted">{emptyLabel}</p>
+      ) : filtered.length === 0 ? (
+        <p className="text-sm text-ink-muted">{t('searchNoResults', { query })}</p>
       ) : (
-        <ul className="overflow-hidden rounded-md border border-border divide-y divide-border">
-          {sorted.map((building) => {
+        <ul className="divide-y divide-border overflow-hidden rounded-md border border-border">
+          {filtered.map((building) => {
             const selected = building.id === selectedBuildingId;
             const stats = buildingFloorStats(building, floors);
             const districtLabel = districtName(districts, building.districtId);

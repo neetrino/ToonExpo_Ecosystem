@@ -26,6 +26,7 @@ export type MappingEditorShellProps = {
   listTitle: string;
   toolPreset?: 'basic' | 'floors' | undefined;
   emptyHint?: string | undefined;
+  searchPlaceholder?: string | undefined;
   sidebarFooter?: ReactNode | undefined;
   labelDigitsOnly?: boolean | undefined;
   deleteEntityLabel?: string | undefined;
@@ -57,6 +58,7 @@ export const MappingEditorShell = ({
   listTitle,
   toolPreset = 'basic',
   emptyHint,
+  searchPlaceholder,
   sidebarFooter,
   labelDigitsOnly = false,
   deleteEntityLabel,
@@ -175,6 +177,7 @@ export const MappingEditorShell = ({
       pending={editor.pending || deletePending}
       message={editor.message}
       emptyHint={emptyHint}
+      searchPlaceholder={searchPlaceholder}
       footer={sidebarFooter}
       labelDigitsOnly={labelDigitsOnly}
       deleteLabel={deleteEntityLabel ?? t('deleteDefault')}

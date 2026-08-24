@@ -1,12 +1,15 @@
 'use client';
 
 import { Trash2 } from 'lucide-react';
-import type { ReactNode } from 'react';
+import { useTranslations } from 'next-intl';
+import { useMemo, useState, type ReactNode } from 'react';
 
 import { Button } from '@/shared/ui/button';
 import { cn } from '@/shared/ui/cn';
 import { IconButton } from '@/shared/ui/icon-button';
+import { SearchField } from '@/shared/ui/search-field';
 
+import { matchesMappingSearch } from '../../utils/matches-mapping-search';
 import type { MappingEntity } from '../mapping-canvas/mapping-canvas';
 
 const NON_DIGIT = /\D/g;
@@ -24,6 +27,7 @@ export type MappingEntitySidebarProps = {
   pending: boolean;
   message: string | null;
   emptyHint?: string | undefined;
+  searchPlaceholder?: string | undefined;
   footer?: ReactNode | undefined;
   /** Restrict Label to ASCII digits (apartments). */
   labelDigitsOnly?: boolean | undefined;
@@ -162,6 +166,7 @@ export const MappingEntitySidebar = ({
   pending,
   message,
   emptyHint,
+  searchPlaceholder,
   footer,
   labelDigitsOnly = false,
   deleteLabel = 'Delete',
@@ -173,12 +178,30 @@ export const MappingEntitySidebar = ({
   onDelete,
   onClearAllPolygons,
 }: MappingEntitySidebarProps) => {
+  const t = useTranslations('Admin.interactiveMapping.forms');
+  const [query, setQuery] = useState('');
   const selected = entities.find((item) => item.id === selectedId) ?? null;
   const polygonCount = entities.filter((entity) => entity.svgPath).length;
+  const resolvedSearchPlaceholder = searchPlaceholder ?? t('searchEntities');
+
+  const filtered = useMemo(
+    () => entities.filter((entity) => matchesMappingSearch(query, entity.label, entity.title)),
+    [entities, query],
+  );
 
   return (
     <aside className="space-y-3">
       <h2 className="font-display text-xl text-ink">{listTitle}</h2>
+      {entities.length > 0 ? (
+        <SearchField
+          value={query}
+          placeholder={resolvedSearchPlaceholder}
+          aria-label={resolvedSearchPlaceholder}
+          onChange={(event) => {
+            setQuery(event.target.value);
+          }}
+        />
+      ) : null}
       {entities.length === 0 ? (
         <p
           className={cn(
@@ -188,6 +211,8 @@ export const MappingEntitySidebar = ({
         >
           {emptyHint ?? 'No items yet. Create one first, then draw a polygon.'}
         </p>
+      ) : filtered.length === 0 ? (
+        <p className="text-sm text-ink-muted">{t('searchNoResults', { query })}</p>
       ) : (
         <ul
           className={cn(
@@ -195,7 +220,7 @@ export const MappingEntitySidebar = ({
             'divide-y divide-border overflow-hidden border border-border bg-background',
           )}
         >
-          {entities.map((entity) => (
+          {filtered.map((entity) => (
             <MappingEntityListItem
               key={entity.id}
               entity={entity}
