@@ -81,8 +81,21 @@ export const IntegratedSearchFilters = ({
   useOutsideClose(panelOpen, containerRef, closePanel);
 
   const handleReset = () => {
-    clearDraftToBaseline(filters, setDraftFilters);
-    onClearAll?.();
+    const cleared: Record<string, string> = {};
+    filters?.forEach((filter) => {
+      cleared[filter.key] = INTEGRATED_SEARCH_FILTER_ALL_VALUE;
+    });
+    setDraftFilters(cleared);
+    onDraftFilterChange?.(cleared);
+    if (onApplyFilters) {
+      onApplyFilters(cleared);
+    } else if (onClearAll) {
+      onClearAll();
+    } else {
+      filters?.forEach((filter) => {
+        onFilterChange?.(filter.key, INTEGRATED_SEARCH_FILTER_ALL_VALUE);
+      });
+    }
     onSearchChange('');
     closePanel();
   };

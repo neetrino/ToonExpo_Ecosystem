@@ -99,9 +99,14 @@ export const IntegratedSearchBar = ({
           size="sm"
           variant="ghost"
           className="size-7 shrink-0 rounded-[15px]"
-          onClick={() => {
+          onMouseDown={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+          }}
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
             onReset();
-            inputRef.current?.focus();
           }}
         >
           <X className="size-3.5" aria-hidden />
