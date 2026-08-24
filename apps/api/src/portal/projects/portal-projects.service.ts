@@ -92,9 +92,10 @@ export class PortalProjectsService {
     };
   }
 
-  async getById(companyId: string, projectId: string): Promise<PortalProjectDetail> {
+  async getById(companyId: string, projectRef: string): Promise<PortalProjectDetail> {
+    const owned = await requireOwnedProject(this.prisma, projectRef, companyId);
     const project = await this.prisma.db.project.findFirst({
-      where: { id: projectId, builderCompanyId: companyId },
+      where: { id: owned.id, builderCompanyId: companyId },
       include: projectDetailInclude,
     });
     if (!project) {
@@ -164,13 +165,13 @@ export class PortalProjectsService {
   async update(
     companyId: string,
     userId: string,
-    projectId: string,
+    projectRef: string,
     dto: UpdatePortalProjectDto,
   ): Promise<PortalProjectDetail> {
-    await requireOwnedProject(this.prisma, projectId, companyId);
+    const owned = await requireOwnedProject(this.prisma, projectRef, companyId);
 
     const project = await this.prisma.db.project.update({
-      where: { id: projectId },
+      where: { id: owned.id },
       data: {
         ...(dto.name !== undefined ? { name: dto.name } : {}),
         ...(dto.slug !== undefined ? { slug: dto.slug } : {}),
@@ -220,7 +221,7 @@ export class PortalProjectsService {
 
     // Published project copy must appear on the public site immediately after Admin/portal save.
     if (project.publicationStatus === PublicationStatus.published) {
-      this.webRevalidation.revalidateCatalog(projectId);
+      this.webRevalidation.revalidateCatalog(owned.id);
     }
 
     return this.toProjectDetail(project);
@@ -229,14 +230,14 @@ export class PortalProjectsService {
   async updatePublication(
     companyId: string,
     userId: string,
-    projectId: string,
+    projectRef: string,
     dto: UpdatePortalPublicationDto,
   ): Promise<PortalProjectDetail> {
-    await requireOwnedProject(this.prisma, projectId, companyId);
+    const owned = await requireOwnedProject(this.prisma, projectRef, companyId);
     const nextStatus = dto.publicationStatus as PublicationStatus;
 
     const project = await this.prisma.db.project.update({
-      where: { id: projectId },
+      where: { id: owned.id },
       data: {
         publicationStatus: nextStatus,
         updatedByUserId: userId,
@@ -245,16 +246,17 @@ export class PortalProjectsService {
     });
 
     if (nextStatus === PublicationStatus.published) {
-      await cascadePublishProjectInventory(this.prisma, projectId);
+      await cascadePublishProjectInventory(this.prisma, owned.id);
     }
 
-    this.webRevalidation.revalidateCatalog(projectId);
+    this.webRevalidation.revalidateCatalog(owned.id);
     return this.toProjectDetail(project);
   }
 
-  async remove(companyId: string, projectId: string): Promise<void> {
+  async remove(companyId: string, projectRef: string): Promise<void> {
+    const owned = await requireOwnedProject(this.prisma, projectRef, companyId);
     const project = await this.prisma.db.project.findFirst({
-      where: { id: projectId, builderCompanyId: companyId },
+      where: { id: owned.id, builderCompanyId: companyId },
       select: { id: true, publicationStatus: true },
     });
     if (!project) {
@@ -263,7 +265,7 @@ export class PortalProjectsService {
     if (project.publicationStatus !== PublicationStatus.draft) {
       throw new BadRequestException('Only draft projects can be deleted');
     }
-    await this.prisma.db.project.delete({ where: { id: projectId } });
+    await this.prisma.db.project.delete({ where: { id: owned.id } });
   }
 
   private async toProjectDetail(

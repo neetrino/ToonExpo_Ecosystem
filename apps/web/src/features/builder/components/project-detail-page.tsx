@@ -2,9 +2,9 @@
 
 import { QrCode } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { catalogProjectsListHref } from '@/features/builder/catalog-scope';
+import { catalogProjectDetailHref, catalogProjectsListHref } from '@/features/builder/catalog-scope';
 import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import { EditProjectForm } from '@/features/builder/components/edit-project-form';
 import { ProjectInventorySection } from '@/features/builder/components/project-inventory-section';
@@ -12,6 +12,7 @@ import { ProjectPublicationActions } from '@/features/builder/components/project
 import { ProjectQrDialog } from '@/features/builder/components/project-qr-dialog';
 import { usePortalProjectQuery } from '@/features/builder/hooks/use-portal-projects';
 import { PortalVisualCanvasesSection } from '@/features/visual-map/components/portal-visual-canvases-section';
+import { useRouter } from '@/i18n/navigation';
 import { AdminListCardLogo } from '@/shared/ui/admin-list-card-logo';
 import { BackLink } from '@/shared/ui/back-link';
 import { Card } from '@/shared/ui/card';
@@ -82,9 +83,18 @@ export const ProjectDetailPage = ({
   const t = useTranslations('Builder.projects');
   const tQr = useTranslations('Builder.projects.qr');
   const scope = useCatalogScope();
+  const router = useRouter();
   const query = usePortalProjectQuery(projectId);
   const listHref = catalogProjectsListHref(scope);
   const [qrOpen, setQrOpen] = useState(false);
+
+  useEffect(() => {
+    const project = query.data;
+    if (scope.mode !== 'portal' || !project || projectId === project.slug) {
+      return;
+    }
+    router.replace(catalogProjectDetailHref(scope, project.slug));
+  }, [projectId, query.data, router, scope]);
 
   if (query.isLoading) {
     return <p className="text-sm text-ink-secondary">{t('loading')}</p>;

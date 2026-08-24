@@ -194,7 +194,7 @@ export const AdminProjectCard = ({ project, onOpenBuildings }: AdminProjectCardP
           </div>
           <div className="flex items-start justify-between gap-2">
             <Link
-              href={`/admin/projects/${project.id}`}
+              href={`/admin/projects/${encodeURIComponent(project.slug)}`}
               className={cn(
                 'min-w-0 flex-1 text-lg font-semibold tracking-tight text-ink sm:text-xl',
                 'transition-colors duration-[var(--duration-fast)] group-hover:text-brand-deep',
@@ -217,7 +217,7 @@ export const AdminProjectCard = ({ project, onOpenBuildings }: AdminProjectCardP
         </header>
 
         <Link
-          href={`/admin/projects/${project.id}`}
+          href={`/admin/projects/${encodeURIComponent(project.slug)}`}
           className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30"
         >
           <AdminProjectImage key={project.cover?.id ?? 'fallback'} project={project} />

@@ -50,7 +50,7 @@ const emptyValues = (): CreateProjectFormValues => ({
 
 type CreateProjectFormProps = {
   /** When set, called after create instead of navigating (sheet flow). */
-  onCreated?: ((projectId: string) => void) | undefined;
+  onCreated?: ((project: { id: string; slug: string }) => void) | undefined;
 };
 
 /**
@@ -90,10 +90,10 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
     try {
       const project = await createMutation.mutateAsync(toCreateProjectRequest(values));
       if (onCreated) {
-        onCreated(project.id);
+        onCreated({ id: project.id, slug: project.slug });
         return;
       }
-      router.push(catalogProjectDetailHref(scope, project.id));
+      router.push(catalogProjectDetailHref(scope, project.slug));
     } catch {
       showError(t('errors.generic'));
     }

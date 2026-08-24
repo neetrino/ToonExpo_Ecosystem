@@ -21,7 +21,8 @@ type AdminProjectsTableProps = {
   onOpenBuildings?: ((project: AdminProjectListItem) => void) | undefined;
 };
 
-const projectHref = (project: AdminProjectListItem): string => `/admin/projects/${project.id}`;
+const projectHref = (project: AdminProjectListItem): string =>
+  `/admin/projects/${encodeURIComponent(project.slug)}`;
 
 /**
  * Admin cross-company projects collection as cards or table.

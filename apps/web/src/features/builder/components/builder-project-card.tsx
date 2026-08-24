@@ -120,7 +120,7 @@ export const BuilderProjectCard = ({ project }: BuilderProjectCardProps) => {
   const t = useTranslations('Builder.projects');
   const tQr = useTranslations('Builder.projects.qr');
   const scope = useCatalogScope();
-  const detailHref = catalogProjectDetailHref(scope, project.id);
+  const detailHref = catalogProjectDetailHref(scope, project.slug);
   const catalogStatus = toCatalogPublicationStatus(project.publicationStatus);
   const StatusIcon = catalogStatus === 'published' ? CheckCircle2 : CircleDashed;
   const [qrOpen, setQrOpen] = useState(false);

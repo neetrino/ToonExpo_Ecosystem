@@ -4,19 +4,19 @@ import { AdminProjectDetailPage as AdminProjectDetailView } from '@/features/adm
 import { AdminProjectScopeShell } from '@/features/admin/components/admin-project-scope-shell';
 
 type PageProps = {
-  params: Promise<{ locale: string; projectId: string }>;
+  params: Promise<{ locale: string; projectSlug: string }>;
 };
 
 /**
- * Admin project detail under the Projects hub.
+ * Admin project detail under the Projects hub (slug in URL).
  */
 export default async function AdminProjectDetailPage({ params }: PageProps) {
-  const { locale, projectId } = await params;
+  const { locale, projectSlug } = await params;
   setRequestLocale(locale);
 
   return (
-    <AdminProjectScopeShell projectId={projectId}>
-      <AdminProjectDetailView projectId={projectId} />
+    <AdminProjectScopeShell projectSlug={projectSlug}>
+      <AdminProjectDetailView />
     </AdminProjectScopeShell>
   );
 }

@@ -37,7 +37,7 @@ const ProjectRow = ({ project }: ProjectRowProps) => {
   return (
     <li>
       <Link
-        href={`/admin/projects/${project.id}`}
+        href={`/admin/projects/${encodeURIComponent(project.slug)}`}
         className={cn(
           'flex h-full items-start gap-2 rounded-md border border-border bg-surface px-3 py-3',
           'transition-colors hover:border-border-strong hover:bg-surface-elevated',

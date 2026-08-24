@@ -184,6 +184,7 @@ export type CompanyListResponse = PaginatedResponse<CompanyResponse>;
  */
 export type AdminCompanyProjectListItem = {
   id: string;
+  slug: string;
   name: string;
   publicationStatus: PublicationStatus;
   createdAt: string;
@@ -198,6 +199,7 @@ export type AdminCompanyProjectListResponse = {
  */
 export type AdminProjectListItem = {
   id: string;
+  slug: string;
   name: string;
   publicationStatus: PublicationStatus;
   createdAt: string;
@@ -234,6 +236,8 @@ export type AdminProjectListResponse = {
  */
 export type AdminProjectScope = {
   builderCompanyId: string;
+  projectId: string;
+  slug: string;
 };
 
 /**

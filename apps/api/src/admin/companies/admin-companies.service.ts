@@ -19,6 +19,7 @@ import {
 } from '@toonexpo/db';
 
 import { toMediaSummary } from '../../catalog/mappers/catalog.mapper.js';
+import { findProjectByRef } from '../../common/utils/resolve-project-ref.js';
 import { TRANSLATION_ENTITY } from '../../catalog/utils/resolve-translation.js';
 import { toPublicFileUrl } from '../../media/public-file-url.js';
 import { resolveOptionalCompanyLogoMediaId } from '../../media/utils/media-ownership.js';
@@ -202,6 +203,7 @@ export class AdminCompaniesService {
       orderBy: [{ createdAt: 'desc' }],
       select: {
         id: true,
+        slug: true,
         name: true,
         publicationStatus: true,
         createdAt: true,
@@ -211,6 +213,7 @@ export class AdminCompaniesService {
     return {
       data: projects.map((project) => ({
         id: project.id,
+        slug: project.slug,
         name: project.name,
         publicationStatus: project.publicationStatus,
         createdAt: project.createdAt.toISOString(),
@@ -243,6 +246,7 @@ export class AdminCompaniesService {
         take: pageSize,
         select: {
           id: true,
+          slug: true,
           name: true,
           publicationStatus: true,
           createdAt: true,
@@ -274,6 +278,7 @@ export class AdminCompaniesService {
     return {
       data: projects.map((project) => ({
         id: project.id,
+        slug: project.slug,
         name: project.name,
         publicationStatus: project.publicationStatus,
         createdAt: project.createdAt.toISOString(),
@@ -302,17 +307,22 @@ export class AdminCompaniesService {
   }
 
   /**
-   * Resolves the builder company for an admin project UI route.
+   * Resolves the builder company for an admin project UI route (id or slug).
    */
-  async getProjectScope(projectId: string): Promise<AdminProjectScope> {
-    const project = await this.prisma.db.project.findUnique({
-      where: { id: projectId },
-      select: { builderCompanyId: true },
+  async getProjectScope(projectRef: string): Promise<AdminProjectScope> {
+    const project = await findProjectByRef(this.prisma, projectRef, {
+      id: true,
+      slug: true,
+      builderCompanyId: true,
     });
     if (!project) {
       throw new NotFoundException('Project not found');
     }
-    return { builderCompanyId: project.builderCompanyId };
+    return {
+      builderCompanyId: project.builderCompanyId,
+      projectId: project.id,
+      slug: project.slug,
+    };
   }
 
   async update(id: string, input: UpdateCompanyInput): Promise<CompanyResponse> {
