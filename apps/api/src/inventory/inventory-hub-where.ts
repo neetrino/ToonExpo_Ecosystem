@@ -20,9 +20,11 @@ export const buildInventoryBuildingsWhere = (
   const scope: Prisma.BuildingWhereInput = {
     ...(projectId ? { projectId } : {}),
     ...(companyIds.length > 0 && !projectId
-      ? companyIds.length === 1
-        ? { project: { builderCompanyId: companyIds[0] } }
-        : { project: { builderCompanyId: { in: companyIds } } }
+      ? {
+          project: {
+            builderCompanyId: companyIds.length === 1 ? companyIds[0]! : { in: companyIds },
+          },
+        }
       : {}),
   };
   const needle = search?.trim();
@@ -54,16 +56,18 @@ export const buildInventoryFloorsWhere = (
   const companyIds = toIdList(companyId);
   const buildingIds = toIdList(buildingId);
   const scope: Prisma.FloorWhereInput = {
-    ...(companyIds.length === 1
-      ? { building: { project: { builderCompanyId: companyIds[0] } } }
-      : companyIds.length > 1
-        ? { building: { project: { builderCompanyId: { in: companyIds } } } }
-        : {}),
-    ...(buildingIds.length === 1
-      ? { buildingId: buildingIds[0] }
-      : buildingIds.length > 1
-        ? { buildingId: { in: buildingIds } }
-        : {}),
+    ...(companyIds.length > 0
+      ? {
+          building: {
+            project: {
+              builderCompanyId: companyIds.length === 1 ? companyIds[0]! : { in: companyIds },
+            },
+          },
+        }
+      : {}),
+    ...(buildingIds.length > 0
+      ? { buildingId: buildingIds.length === 1 ? buildingIds[0]! : { in: buildingIds } }
+      : {}),
   };
   const needle = search?.trim();
   if (!needle) {
@@ -108,21 +112,19 @@ export const buildInventoryApartmentsWhere = (
   const buildingIds = toIdList(buildingId);
   const floorIds = toIdList(floorId);
   const scope: Prisma.ApartmentWhereInput = {
-    ...(companyIds.length === 1
-      ? { project: { builderCompanyId: companyIds[0] } }
-      : companyIds.length > 1
-        ? { project: { builderCompanyId: { in: companyIds } } }
-        : {}),
-    ...(buildingIds.length === 1
-      ? { buildingId: buildingIds[0] }
-      : buildingIds.length > 1
-        ? { buildingId: { in: buildingIds } }
-        : {}),
-    ...(floorIds.length === 1
-      ? { floorId: floorIds[0] }
-      : floorIds.length > 1
-        ? { floorId: { in: floorIds } }
-        : {}),
+    ...(companyIds.length > 0
+      ? {
+          project: {
+            builderCompanyId: companyIds.length === 1 ? companyIds[0]! : { in: companyIds },
+          },
+        }
+      : {}),
+    ...(buildingIds.length > 0
+      ? { buildingId: buildingIds.length === 1 ? buildingIds[0]! : { in: buildingIds } }
+      : {}),
+    ...(floorIds.length > 0
+      ? { floorId: floorIds.length === 1 ? floorIds[0]! : { in: floorIds } }
+      : {}),
   };
   const needle = search?.trim();
   if (!needle) {

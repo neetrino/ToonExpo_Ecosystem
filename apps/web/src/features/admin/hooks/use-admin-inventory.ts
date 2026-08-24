@@ -9,7 +9,7 @@ import type {
   UpdatePortalFloorRequest,
 } from '@toonexpo/contracts';
 
-import type { ListAdminProjectsParams } from '@/features/admin/api/admin-companies-api';
+import type { ListAdminInventoryParams } from '@/features/admin/api/admin-companies-api';
 import {
   getAdminBuildingInventoryGlance,
   listAdminApartments,
@@ -65,7 +65,7 @@ const toListParams = (
   projectId?: string,
   search?: string,
   floorId?: string | readonly string[],
-): ListAdminProjectsParams => ({
+): ListAdminInventoryParams => ({
   page,
   pageSize,
   ...(companyId && (Array.isArray(companyId) ? companyId.length > 0 : companyId)

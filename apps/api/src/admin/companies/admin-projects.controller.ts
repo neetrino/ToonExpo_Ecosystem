@@ -31,7 +31,7 @@ export class AdminProjectsController {
     return this.companiesService.listAllProjects(
       query.page,
       query.pageSize,
-      query.companyId,
+      query.companyId?.[0],
       query.search,
     );
   }

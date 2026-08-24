@@ -109,6 +109,13 @@ export const listAdminCompanyProjects = (
 export type ListAdminProjectsParams = {
   page: number;
   pageSize: number;
+  companyId?: string;
+  search?: string;
+};
+
+export type ListAdminInventoryParams = {
+  page: number;
+  pageSize: number;
   companyId?: string | readonly string[];
   buildingId?: string | readonly string[];
   floorId?: string | readonly string[];
