@@ -59,52 +59,56 @@ export const ApartmentsBuildingPhasePage = ({
   return (
     <div className="space-y-6">
       <div>
-        <BackLink href={`${basePath}/${projectId}/phases/apartments`} label={t('backToWizard')} />
+        <BackLink href={`${basePath}/${projectId}/phases/apartments`} label={t('backToDistricts')} />
         <h1 className="mt-3 font-display text-3xl text-ink">
           {t('pages.apartmentsBuilding', { name: building.name })}
         </h1>
         <p className="mt-2 max-w-2xl text-sm text-ink-muted">{t('hints.pickApartmentFloor')}</p>
       </div>
 
-      <MappingBuildingPicker
-        buildings={buildings}
-        districts={districts}
-        floors={floors}
-        apartments={apartments}
-        selectedBuildingId={buildingId}
-        title={t('forms.pickBuilding')}
-        emptyLabel={t('forms.noBuildings')}
-        floorsMappedLabel={(values) => t('forms.buildingFloorsMapped', values)}
-        apartmentsCountLabel={(values) => t('forms.buildingApartmentsCount', values)}
-        onSelectBuilding={(nextBuildingId) => {
-          if (nextBuildingId === buildingId) {
-            return;
-          }
-          setLockNotice(null);
-          router.push(`${basePath}/${projectId}/phases/apartments/buildings/${nextBuildingId}`);
-        }}
-      />
+      <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
+        <MappingBuildingPicker
+          buildings={buildings.filter(
+            (item) => item.districtId === building.districtId || item.id === buildingId,
+          )}
+          districts={districts}
+          floors={floors}
+          apartments={apartments}
+          selectedBuildingId={buildingId}
+          title={t('forms.pickBuilding')}
+          emptyLabel={t('forms.noBuildings')}
+          floorsMappedLabel={(values) => t('forms.buildingFloorsMapped', values)}
+          apartmentsCountLabel={(values) => t('forms.buildingApartmentsCount', values)}
+          onSelectBuilding={(nextBuildingId) => {
+            if (nextBuildingId === buildingId) {
+              return;
+            }
+            setLockNotice(null);
+            router.push(`${basePath}/${projectId}/phases/apartments/buildings/${nextBuildingId}`);
+          }}
+        />
 
-      <FloorPlanUploadPicker
-        floors={buildingFloors}
-        selectedFloorId={null}
-        title={t('forms.pickFloor')}
-        emptyLabel={t('forms.noFloors')}
-        lockedHint={t('forms.floorNeedsPolygon')}
-        planReadyLabel={t('forms.planReady')}
-        needsPolygonLabel={t('forms.needsPolygon')}
-        onSelectFloor={(floorId) => {
-          setLockNotice(null);
-          router.push(`${basePath}/${projectId}/floors/${floorId}`);
-        }}
-        onSelectLockedFloor={(lockedFloor) => {
-          setLockNotice(
-            t('forms.floorNeedsPolygonNamed', {
-              name: lockedFloor.name ?? String(lockedFloor.number),
-            }),
-          );
-        }}
-      />
+        <FloorPlanUploadPicker
+          floors={buildingFloors}
+          selectedFloorId={null}
+          title={t('forms.pickFloor')}
+          emptyLabel={t('forms.noFloors')}
+          lockedHint={t('forms.floorNeedsPolygon')}
+          planReadyLabel={t('forms.planReady')}
+          needsPolygonLabel={t('forms.needsPolygon')}
+          onSelectFloor={(floorId) => {
+            setLockNotice(null);
+            router.push(`${basePath}/${projectId}/floors/${floorId}`);
+          }}
+          onSelectLockedFloor={(lockedFloor) => {
+            setLockNotice(
+              t('forms.floorNeedsPolygonNamed', {
+                name: lockedFloor.name ?? String(lockedFloor.number),
+              }),
+            );
+          }}
+        />
+      </div>
 
       {lockNotice ? (
         <p role="status" className="text-sm text-ink-muted">

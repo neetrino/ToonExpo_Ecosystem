@@ -60,6 +60,7 @@ export const BuildingFloorMappingEditor = ({
   onAfterSave,
 }: BuildingFloorMappingEditorProps) => {
   const t = useTranslations('Admin.interactiveMapping.canvas');
+  const tForms = useTranslations('Admin.interactiveMapping.forms');
 
   return (
     <MappingEditorShell
@@ -68,6 +69,7 @@ export const BuildingFloorMappingEditor = ({
       targetType="floor"
       toolPreset="floors"
       listTitle={t('floorsListTitle')}
+      searchPlaceholder={tForms('searchFloors')}
       sidebarFooter={createForm}
       deleteEntityLabel={t('deleteFloor')}
       confirmDeleteMessage={t('confirmDeleteFloor')}

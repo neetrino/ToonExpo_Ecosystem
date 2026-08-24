@@ -1515,6 +1515,7 @@
       "labLink": "Mapping lab (QA)",
       "backToProjects": "Проекты",
       "backToWizard": "Назад",
+      "backToDistricts": "Районы",
       "activePhase": "Сейчас фаза {phase}",
       "allPhasesDone": "Все фазы завершены",
       "filters": {
@@ -1541,6 +1542,7 @@
         "buildings": "Создайте здания и разместите их на плане района.",
         "floors": "Укажите число этажей, загрузите рендер и нарисуйте этажи.",
         "apartments": "Создайте квартиры и нарисуйте их на плане этажа.",
+        "pickDistrict": "Сначала выберите район, затем продолжите.",
         "pickApartmentFloor": "Выберите здание, затем этаж для разметки квартир.",
         "setupFloors": "Укажите число этажей, затем откройте страницу разметки."
       },
@@ -1581,10 +1583,36 @@
         "uploadFirst": "Сначала загрузите изображение.",
         "uploadAndSetupFloors": "Сначала загрузите рендер и настройте этажи.",
         "pickFloor": "Этажи",
+        "pickDistrict": "Выберите район",
         "pickBuilding": "Выберите здание",
+        "searchBuildings": "Поиск зданий…",
+        "searchFloors": "Поиск этажей…",
+        "searchApartments": "Поиск квартир…",
+        "searchEntities": "Поиск…",
+        "searchNoResults": "Нет результатов по «{query}».",
+        "noDistricts": "Районов пока нет. Сначала создайте районы на этапе Districts.",
         "noBuildings": "Зданий пока нет. Сначала создайте здания на этапе Buildings.",
+        "noBuildingsInDistrict": "В этом районе зданий пока нет.",
         "buildingFloorsMapped": "Этажей на карте: {mapped}/{total}",
         "buildingApartmentsCount": "{count, plural, =0 {Нет квартир} one {# квартира} few {# квартиры} many {# квартир} other {# квартир}}",
+        "districtPicker": {
+          "districtIndex": "Район",
+          "buildingsCount": "{count, plural, =0 {0 зданий} one {# здание} few {# здания} many {# зданий} other {# зданий}}"
+        },
+        "buildingPicker": {
+          "buildingIndex": "Здание",
+          "floorIndex": "Этаж",
+          "floorsMapped": "{count, plural, =0 {0 этажей на карте} one {# этаж на карте} few {# этажа на карте} many {# этажей на карте} other {# этажей на карте}}",
+          "totalArea": "{area} m² общая площадь",
+          "zones": "{count, plural, =0 {0 зон} one {# зона} few {# зоны} many {# зон} other {# зон}}",
+          "lastUpdated": "последнее обновление",
+          "lastUpdatedUnknown": "—",
+          "lastUpdatedToday": "Сегодня",
+          "lastUpdatedDaysAgo": "{count, plural, one {# день назад} few {# дня назад} many {# дней назад} other {# дней назад}}"
+        },
+        "floorPicker": {
+          "floorIndex": "Этаж"
+        },
         "noFloors": "Этажей пока нет.",
         "needsPolygon": "Сначала нарисуйте polygon",
         "planReady": "plan",
@@ -1599,8 +1627,13 @@
       "pages": {
         "masterplan": "Masterplan · районы",
         "district": "Район · {name}",
+        "buildingsDistrict": "Здания · выбор района",
         "floors": "Этажи · выбор здания",
+        "floorsDistrict": "Этажи · выбор района",
+        "floorsChooseBuilding": "Этажи · {district}",
         "apartments": "Квартиры · выбор здания",
+        "apartmentsDistrict": "Квартиры · выбор района",
+        "apartmentsChooseBuilding": "Квартиры · {district}",
         "apartmentsBuilding": "Квартиры · {name}",
         "buildingRender": "Здание · {name}",
         "floor": "Этаж · {name}"

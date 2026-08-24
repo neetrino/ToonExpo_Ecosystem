@@ -53,10 +53,8 @@ export const PhaseWizardPage = ({ projectId }: PhaseWizardPageProps) => {
   }
 
   const detail = detailQuery.data;
-  const { project, districts, buildings, floors, apartments } = detail;
+  const { project, districts, buildings } = detail;
   const base = `${basePath}/${project.id}`;
-
-  const primaryDistrict = districts[0];
 
   return (
     <div className="space-y-8">
@@ -78,10 +76,6 @@ export const PhaseWizardPage = ({ projectId }: PhaseWizardPageProps) => {
           title={t('phases.districts')}
           hint={t('hints.districts')}
           state={phaseState(project.phases, 1)}
-          progressLabel={t('progress.districts', {
-            done: districts.length,
-            total: Math.max(districts.length, 1),
-          })}
           statusLabel={t(statusKey(phaseState(project.phases, 1)))}
           addHref={`${base}/phases/masterplan`}
           addLabel={t('cta.mapDistricts')}
@@ -94,12 +88,8 @@ export const PhaseWizardPage = ({ projectId }: PhaseWizardPageProps) => {
           title={t('phases.buildings')}
           hint={t('hints.buildings')}
           state={phaseState(project.phases, 2)}
-          progressLabel={t('progress.buildings', {
-            done: buildings.length,
-            total: Math.max(buildings.length, 1),
-          })}
           statusLabel={t(statusKey(phaseState(project.phases, 2)))}
-          addHref={primaryDistrict ? `${base}/districts/${primaryDistrict.id}` : undefined}
+          addHref={districts.length > 0 ? `${base}/phases/buildings` : undefined}
           addLabel={t('cta.mapBuildings')}
           doneLabel={t('cta.edit')}
           lockedLabel={t('cta.locked')}
@@ -110,10 +100,6 @@ export const PhaseWizardPage = ({ projectId }: PhaseWizardPageProps) => {
           title={t('phases.floors')}
           hint={t('hints.floors')}
           state={phaseState(project.phases, 3)}
-          progressLabel={t('progress.floors', {
-            done: floors.length,
-            total: Math.max(floors.length, 1),
-          })}
           statusLabel={t(statusKey(phaseState(project.phases, 3)))}
           addHref={buildings.length > 0 ? `${base}/phases/floors` : undefined}
           addLabel={t('cta.mapFloors')}
@@ -126,10 +112,6 @@ export const PhaseWizardPage = ({ projectId }: PhaseWizardPageProps) => {
           title={t('phases.apartments')}
           hint={t('hints.apartments')}
           state={phaseState(project.phases, 4)}
-          progressLabel={t('progress.apartments', {
-            done: apartments.length,
-            total: Math.max(apartments.length, 1),
-          })}
           statusLabel={t(statusKey(phaseState(project.phases, 4)))}
           addHref={buildings.length > 0 ? `${base}/phases/apartments` : undefined}
           addLabel={t('cta.mapApartments')}

@@ -58,6 +58,7 @@ export const DistrictBuildingEditor = ({
   onAfterSave,
 }: DistrictBuildingEditorProps) => {
   const t = useTranslations('Admin.interactiveMapping.canvas');
+  const tForms = useTranslations('Admin.interactiveMapping.forms');
 
   return (
     <MappingEditorShell
@@ -66,6 +67,7 @@ export const DistrictBuildingEditor = ({
       targetType="building"
       toolPreset="basic"
       listTitle={t('buildingsListTitle')}
+      searchPlaceholder={tForms('searchBuildings')}
       sidebarFooter={createForm}
       deleteEntityLabel={t('deleteBuilding')}
       confirmDeleteMessage={t('confirmDeleteBuilding')}
