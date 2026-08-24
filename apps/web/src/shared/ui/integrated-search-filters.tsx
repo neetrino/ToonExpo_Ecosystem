@@ -23,6 +23,8 @@ export type IntegratedSearchFiltersProps = {
   filters?: readonly IntegratedSearchFilterConfig[] | undefined;
   filterValues?: Record<string, string> | undefined;
   onFilterChange?: ((key: string, value: string) => void) | undefined;
+  /** Prefer over per-key onFilterChange when Apply commits several filters at once. */
+  onApplyFilters?: ((draftFilters: Record<string, string>) => void) | undefined;
   /** Fires while the panel is open whenever draft filter values change. */
   onDraftFilterChange?: ((draftFilters: Record<string, string>) => void) | undefined;
   /** Fires when the filter panel opens or closes. */
@@ -49,6 +51,7 @@ export const IntegratedSearchFilters = ({
   filters,
   filterValues = EMPTY_FILTER_VALUES,
   onFilterChange,
+  onApplyFilters,
   onDraftFilterChange,
   onPanelOpenChange,
   onClearAll,
@@ -130,7 +133,11 @@ export const IntegratedSearchFilters = ({
               onDraftFilterChange?.(next);
             }}
             onApply={() => {
-              applyDraftFilters(filters, draftFilters, filterValues, onFilterChange);
+              if (onApplyFilters) {
+                onApplyFilters(draftFilters);
+              } else {
+                applyDraftFilters(filters, draftFilters, filterValues, onFilterChange);
+              }
               closePanel();
             }}
             onReset={handleReset}

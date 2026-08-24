@@ -23,6 +23,7 @@ export type ListPageHeaderProps = {
   filters?: readonly IntegratedSearchFilterConfig[] | undefined;
   filterValues?: Record<string, string> | undefined;
   onFilterChange?: ((key: string, value: string) => void) | undefined;
+  onApplyFilters?: ((draftFilters: Record<string, string>) => void) | undefined;
   onDraftFilterChange?: ((draftFilters: Record<string, string>) => void) | undefined;
   onPanelOpenChange?: ((open: boolean) => void) | undefined;
   onClearAll?: (() => void) | undefined;
@@ -48,6 +49,7 @@ export const ListPageHeader = ({
   filters,
   filterValues,
   onFilterChange,
+  onApplyFilters,
   onDraftFilterChange,
   onPanelOpenChange,
   onClearAll,
