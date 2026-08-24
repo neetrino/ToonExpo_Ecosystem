@@ -10,12 +10,15 @@ import {
   ADMIN_INVENTORY_FILTER_BUILDING_KEY,
   ADMIN_INVENTORY_FILTER_COMPANY_KEY,
   ADMIN_INVENTORY_FILTER_FLOOR_KEY,
+  decodeIntegratedFilterIds,
   encodeIntegratedFilterIds,
-  formatFloorOptionLabel,
   parseIdListParam,
   resolveDraftOrAppliedIds,
-  decodeIntegratedFilterIds,
 } from '@/features/admin/components/admin-inventory-list-filters';
+import {
+  buildAdminInventoryFilterConfigs,
+  buildAdminInventoryListHref,
+} from '@/features/admin/components/admin-inventory-list-href';
 import {
   ADMIN_COMPANIES_MAX_PAGE_SIZE,
   ADMIN_INVENTORY_DEFAULT_PAGE_SIZE,
@@ -27,7 +30,6 @@ import {
 } from '@/features/admin/hooks/use-admin-inventory';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
 import { usePathname, useRouter } from '@/i18n/navigation';
-import type { IntegratedSearchFilterConfig } from '@/shared/ui/integrated-search-filters.types';
 import { ListPageHeader } from '@/shared/ui/list-page-header';
 import type { ViewMode } from '@/shared/ui/view-mode';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
@@ -154,115 +156,56 @@ export const AdminInventoryListShell = ({
     });
   }, [floorsQuery.data]);
 
+  const hrefContext = {
+    pathname,
+    page,
+    companyIds,
+    buildingIds,
+    floorIds,
+    projectId,
+    showBuildingFilter,
+    showFloorFilter,
+  };
+
   const buildListHref = (next: {
     page?: number;
     companyIds?: string[] | null;
     buildingIds?: string[] | null;
     floorIds?: string[] | null;
     projectId?: string | null;
-  }): string => {
-    const params = new URLSearchParams();
-    const nextCompanyIds =
-      next.companyIds === undefined ? companyIds : (next.companyIds ?? []);
-    const nextBuildingIds =
-      next.buildingIds === undefined ? buildingIds : (next.buildingIds ?? []);
-    const nextFloorIds = next.floorIds === undefined ? floorIds : (next.floorIds ?? []);
-    const nextProjectId = next.projectId === undefined ? projectId : next.projectId || undefined;
-    const nextPage = next.page ?? page;
+  }): string => buildAdminInventoryListHref({ ...hrefContext, next });
 
-    const companyEncoded = encodeIntegratedFilterIds(nextCompanyIds);
-    if (companyEncoded) {
-      params.set('companyId', companyEncoded);
-    }
-    if (showBuildingFilter) {
-      const buildingEncoded = encodeIntegratedFilterIds(nextBuildingIds);
-      if (buildingEncoded) {
-        params.set('buildingId', buildingEncoded);
-      }
-    }
-    if (showFloorFilter) {
-      const floorEncoded = encodeIntegratedFilterIds(nextFloorIds);
-      if (floorEncoded) {
-        params.set('floorId', floorEncoded);
-      }
-    }
-    if (nextProjectId) {
-      params.set('projectId', nextProjectId);
-    }
-    if (nextPage > FIRST_PAGE) {
-      params.set('page', String(nextPage));
-    }
-    const query = params.toString();
-    return query.length > 0 ? `${pathname}?${query}` : pathname;
-  };
-
-  const filterConfigs = useMemo((): IntegratedSearchFilterConfig[] => {
-    const countLabel = (count: number): string => tCommon('selectedCount', { count });
-    const configs: IntegratedSearchFilterConfig[] = [
-      {
-        key: ADMIN_INVENTORY_FILTER_COMPANY_KEY,
-        label: t('filters.builder'),
-        allOptionLabel: t('filters.allBuilders'),
-        searchable: true,
-        multiple: true,
-        selectedCountLabel: countLabel,
-        resetsKeys: showBuildingFilter
-          ? [
-              ADMIN_INVENTORY_FILTER_BUILDING_KEY,
-              ...(showFloorFilter ? [ADMIN_INVENTORY_FILTER_FLOOR_KEY] : []),
-            ]
-          : undefined,
-        options: builderCompanies.map((company) => ({
-          value: company.id,
-          label: company.name,
-        })),
-      },
-    ];
-    if (showBuildingFilter) {
-      configs.push({
-        key: ADMIN_INVENTORY_FILTER_BUILDING_KEY,
-        label: t('filters.building'),
-        allOptionLabel: t('filters.allBuildings'),
-        searchable: true,
-        multiple: true,
-        selectedCountLabel: countLabel,
-        resetsKeys: showFloorFilter ? [ADMIN_INVENTORY_FILTER_FLOOR_KEY] : undefined,
-        options: buildingOptions.map((building) => ({
-          value: building.id,
-          label: `${building.name} · ${building.projectName}`,
-        })),
-      });
-    }
-    if (showFloorFilter) {
-      const floorRequiresBuilding = effectiveBuildingIds.length === 0;
-      configs.push({
-        key: ADMIN_INVENTORY_FILTER_FLOOR_KEY,
-        label: t('filters.floor'),
-        allOptionLabel: t('filters.allFloors'),
-        searchable: true,
-        multiple: true,
-        selectedCountLabel: countLabel,
-        disabled: floorRequiresBuilding,
-        disabledPlaceholder: t('filters.selectBuildingFirst'),
-        options: floorRequiresBuilding
-          ? []
-          : floorOptions.map((floor) => ({
-              value: floor.id,
-              label: formatFloorOptionLabel(floor),
-            })),
-      });
-    }
-    return configs;
-  }, [
-    builderCompanies,
-    buildingOptions,
-    effectiveBuildingIds.length,
-    floorOptions,
-    showBuildingFilter,
-    showFloorFilter,
-    t,
-    tCommon,
-  ]);
+  const filterConfigs = useMemo(
+    () =>
+      buildAdminInventoryFilterConfigs({
+        builderCompanies,
+        buildingOptions,
+        floorOptions,
+        effectiveBuildingIds,
+        showBuildingFilter,
+        showFloorFilter,
+        labels: {
+          builder: t('filters.builder'),
+          allBuilders: t('filters.allBuilders'),
+          building: t('filters.building'),
+          allBuildings: t('filters.allBuildings'),
+          floor: t('filters.floor'),
+          allFloors: t('filters.allFloors'),
+          selectBuildingFirst: t('filters.selectBuildingFirst'),
+          selectedCount: (count) => tCommon('selectedCount', { count }),
+        },
+      }),
+    [
+      builderCompanies,
+      buildingOptions,
+      effectiveBuildingIds,
+      floorOptions,
+      showBuildingFilter,
+      showFloorFilter,
+      t,
+      tCommon,
+    ],
+  );
 
   const filtersLoading = companiesQuery.isLoading && !companiesQuery.data;
 
@@ -331,11 +274,7 @@ export const AdminInventoryListShell = ({
           }
           if (key === ADMIN_INVENTORY_FILTER_BUILDING_KEY) {
             router.replace(
-              buildListHref({
-                page: FIRST_PAGE,
-                buildingIds: ids,
-                floorIds: [],
-              }),
+              buildListHref({ page: FIRST_PAGE, buildingIds: ids, floorIds: [] }),
             );
             return;
           }
@@ -386,7 +325,6 @@ export const useAdminInventoryListParams = (): {
   companyIds: string[];
   buildingIds: string[];
   floorIds: string[];
-  /** First selected company (create-sheet defaults). */
   companyId?: string;
   buildingId?: string;
   floorId?: string;
