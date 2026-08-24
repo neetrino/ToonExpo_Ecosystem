@@ -14,6 +14,7 @@ import {
   formatFloorOptionLabel,
   parseIdListParam,
   resolveDraftOrAppliedIds,
+  decodeIntegratedFilterIds,
 } from '@/features/admin/components/admin-inventory-list-filters';
 import {
   ADMIN_COMPANIES_MAX_PAGE_SIZE,
@@ -300,33 +301,22 @@ export const AdminInventoryListShell = ({
           }
         }}
         onApplyFilters={(draft) => {
-          const nextCompanyIds = draft[ADMIN_INVENTORY_FILTER_COMPANY_KEY]
-            ?.split(',')
-            .map((id) => id.trim())
-            .filter(Boolean) ?? [];
-          const nextBuildingIds = draft[ADMIN_INVENTORY_FILTER_BUILDING_KEY]
-            ?.split(',')
-            .map((id) => id.trim())
-            .filter(Boolean) ?? [];
-          const nextFloorIds = draft[ADMIN_INVENTORY_FILTER_FLOOR_KEY]
-            ?.split(',')
-            .map((id) => id.trim())
-            .filter(Boolean) ?? [];
           router.replace(
             buildListHref({
               page: FIRST_PAGE,
-              companyIds: nextCompanyIds,
-              buildingIds: showBuildingFilter ? nextBuildingIds : [],
-              floorIds: showFloorFilter ? nextFloorIds : [],
+              companyIds: decodeIntegratedFilterIds(draft[ADMIN_INVENTORY_FILTER_COMPANY_KEY]),
+              buildingIds: showBuildingFilter
+                ? decodeIntegratedFilterIds(draft[ADMIN_INVENTORY_FILTER_BUILDING_KEY])
+                : [],
+              floorIds: showFloorFilter
+                ? decodeIntegratedFilterIds(draft[ADMIN_INVENTORY_FILTER_FLOOR_KEY])
+                : [],
               projectId: null,
             }),
           );
         }}
         onFilterChange={(key, value) => {
-          const ids = value
-            .split(',')
-            .map((id) => id.trim())
-            .filter(Boolean);
+          const ids = decodeIntegratedFilterIds(value);
           if (key === ADMIN_INVENTORY_FILTER_COMPANY_KEY) {
             router.replace(
               buildListHref({
