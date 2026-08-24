@@ -53,12 +53,19 @@ export const ProjectBuildings = async ({ projectId, buildings }: ProjectBuilding
 
             <div className="p-4 sm:p-6">
               <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
-                <Link
-                  href={`/projects/${projectId}/buildings/${building.id}`}
-                  className="font-brand text-lg font-semibold text-ink transition-colors hover:text-brand"
-                >
-                  {building.name}
-                </Link>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Link
+                    href={`/projects/${projectId}/buildings/${building.id}`}
+                    className="font-brand text-lg font-semibold text-ink transition-colors hover:text-brand"
+                  >
+                    {building.name}
+                  </Link>
+                  {building.verified ? (
+                    <span className="rounded-sm bg-band-mist px-2 py-0.5 text-[10px] font-bold tracking-widest text-brand-deep uppercase">
+                      {t('badges.verified')}
+                    </span>
+                  ) : null}
+                </div>
                 <AvailabilityLine
                   label={t('availability.summary')}
                   availability={building.availability}
@@ -130,7 +137,10 @@ const ApartmentRow = ({
 }) => {
   return (
     <li className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-sm hover:bg-surface">
-      <Link href={`/apartments/${apartment.id}`} className="flex min-w-0 flex-1 flex-wrap items-center gap-3">
+      <Link
+        href={`/apartments/${apartment.id}`}
+        className="flex min-w-0 flex-1 flex-wrap items-center gap-3"
+      >
         <div className="flex flex-wrap items-center gap-3">
           <span className="font-medium text-ink">
             {t('apartment.unit', { number: apartment.number })}

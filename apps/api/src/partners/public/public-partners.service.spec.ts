@@ -73,6 +73,18 @@ describe('PublicPartnersService visibility rules', () => {
     expect(where.featured).toBe(true);
   });
 
+  it('adds a case-insensitive keyword filter when q is provided', () => {
+    const query = Object.assign(new ListPublicPartnersQueryDto(), { q: 'Ameria' });
+
+    const where = service.buildPublicWhere(query);
+
+    expect(where.OR).toEqual([
+      { name: { contains: 'Ameria', mode: 'insensitive' } },
+      { slug: { contains: 'Ameria', mode: 'insensitive' } },
+      { shortDescription: { contains: 'Ameria', mode: 'insensitive' } },
+    ]);
+  });
+
   it('queries public detail with active+published gate and published offers only', async () => {
     partnerCompanyFindFirst.mockResolvedValue(null);
 

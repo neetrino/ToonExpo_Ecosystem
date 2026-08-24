@@ -77,6 +77,31 @@ describe('Builder portal inventory CRUD (e2e)', () => {
 
     expect(bulkRes.body).toHaveLength(2);
 
+    const buildingsHub = await request(app.getHttpServer())
+      .get(`${API_V1_PREFIX}/portal/buildings`)
+      .set('Cookie', admin.cookieHeader)
+      .expect(200);
+    expect(buildingsHub.body.data.some((row: { id: string }) => row.id === buildingId)).toBe(true);
+
+    const floorsHub = await request(app.getHttpServer())
+      .get(`${API_V1_PREFIX}/portal/floors`)
+      .set('Cookie', admin.cookieHeader)
+      .expect(200);
+    expect(floorsHub.body.data.some((row: { id: string }) => row.id === floorId)).toBe(true);
+
+    const apartmentsHub = await request(app.getHttpServer())
+      .get(`${API_V1_PREFIX}/portal/apartments`)
+      .set('Cookie', admin.cookieHeader)
+      .expect(200);
+    expect(apartmentsHub.body.data).toHaveLength(2);
+
+    const glanceRes = await request(app.getHttpServer())
+      .get(`${API_V1_PREFIX}/portal/buildings/${buildingId}/inventory-glance`)
+      .set('Cookie', admin.cookieHeader)
+      .expect(200);
+    expect(glanceRes.body.id).toBe(buildingId);
+    expect(glanceRes.body.floors).toHaveLength(1);
+
     await request(app.getHttpServer())
       .get(`${API_V1_PREFIX}/projects`)
       .query({ builderId: fixtures.companyAId })

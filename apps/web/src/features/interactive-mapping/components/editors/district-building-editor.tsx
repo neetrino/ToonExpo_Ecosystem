@@ -1,6 +1,8 @@
 'use client';
 
 import type { PortalVisualHotspotItem } from '@toonexpo/contracts';
+import { useTranslations } from 'next-intl';
+import type { ReactNode } from 'react';
 
 import { MappingEditorShell, type MappingEditorEntity } from './mapping-editor-shell';
 
@@ -14,6 +16,8 @@ export type DistrictBuildingEditorProps = {
   viewBoxHeight: number;
   buildings: { id: string; name: string; label?: string }[];
   hotspots: PortalVisualHotspotItem[];
+  createForm?: ReactNode;
+  onDeleteBuilding?: ((id: string) => Promise<void>) | undefined;
   onAfterSave?: () => void;
 };
 
@@ -49,20 +53,32 @@ export const DistrictBuildingEditor = ({
   viewBoxHeight,
   buildings,
   hotspots,
+  createForm,
+  onDeleteBuilding,
   onAfterSave,
-}: DistrictBuildingEditorProps) => (
-  <MappingEditorShell
-    companyId={companyId}
-    canvasId={canvasId}
-    targetType="building"
-    toolPreset="basic"
-    listTitle="Buildings"
-    imageUrl={imageUrl}
-    imageWidth={imageWidth}
-    imageHeight={imageHeight}
-    viewBoxWidth={viewBoxWidth}
-    viewBoxHeight={viewBoxHeight}
-    initialEntities={buildEntities(buildings, hotspots)}
-    onAfterSave={onAfterSave}
-  />
-);
+}: DistrictBuildingEditorProps) => {
+  const t = useTranslations('Admin.interactiveMapping.canvas');
+  const tForms = useTranslations('Admin.interactiveMapping.forms');
+
+  return (
+    <MappingEditorShell
+      companyId={companyId}
+      canvasId={canvasId}
+      targetType="building"
+      toolPreset="basic"
+      listTitle={t('buildingsListTitle')}
+      searchPlaceholder={tForms('searchBuildings')}
+      sidebarFooter={createForm}
+      deleteEntityLabel={t('deleteBuilding')}
+      confirmDeleteMessage={t('confirmDeleteBuilding')}
+      imageUrl={imageUrl}
+      imageWidth={imageWidth}
+      imageHeight={imageHeight}
+      viewBoxWidth={viewBoxWidth}
+      viewBoxHeight={viewBoxHeight}
+      initialEntities={buildEntities(buildings, hotspots)}
+      onDeleteEntity={onDeleteBuilding}
+      onAfterSave={onAfterSave}
+    />
+  );
+};

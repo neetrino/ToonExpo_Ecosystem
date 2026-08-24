@@ -14,7 +14,7 @@ export const PORTAL_MAX_PAGE_SIZE = 50;
 /** Kanban board fetch size (mirrors API CRM_BOARD_PAGE_SIZE). */
 export const PORTAL_CRM_BOARD_PAGE_SIZE = 100;
 
-export const PUBLICATION_STATUSES = ['draft', 'published', 'archived'] as const;
+export const PUBLICATION_STATUSES = ['draft', 'published'] as const;
 
 export const APARTMENT_SALES_STATUSES = ['available', 'reserved', 'sold'] as const;
 
@@ -27,6 +27,31 @@ export const COMPANY_MEMBER_STATUSES = ['active', 'inactive', 'removed'] as cons
 export const TRANSLATION_LOCALES = ['hy', 'ru', 'en'] as const;
 
 export const PORTAL_PROJECTS_QUERY_KEY = ['portal', 'projects'] as const;
+
+export const PORTAL_INVENTORY_BUILDINGS_QUERY_KEY = ['portal', 'inventory', 'buildings'] as const;
+export const PORTAL_INVENTORY_FLOORS_QUERY_KEY = ['portal', 'inventory', 'floors'] as const;
+export const PORTAL_INVENTORY_APARTMENTS_QUERY_KEY = ['portal', 'inventory', 'apartments'] as const;
+
+export const portalInventoryBuildingsQueryKey = (params: {
+  page: number;
+  pageSize: number;
+  projectId?: string;
+  search?: string;
+}) => [...PORTAL_INVENTORY_BUILDINGS_QUERY_KEY, params] as const;
+
+export const portalInventoryFloorsQueryKey = (params: {
+  page: number;
+  pageSize: number;
+  buildingId?: string;
+  search?: string;
+}) => [...PORTAL_INVENTORY_FLOORS_QUERY_KEY, params] as const;
+
+export const portalInventoryApartmentsQueryKey = (params: {
+  page: number;
+  pageSize: number;
+  buildingId?: string;
+  search?: string;
+}) => [...PORTAL_INVENTORY_APARTMENTS_QUERY_KEY, params] as const;
 
 export const portalProjectQueryKey = (id: string) => [...PORTAL_PROJECTS_QUERY_KEY, id] as const;
 
@@ -55,6 +80,11 @@ export const portalAnalyticsQueryKey = (from: string, to: string) =>
 
 /** localStorage key for projects list/cards view preference. */
 export const PROJECTS_VIEW_MODE_KEY = 'portal-projects';
+
+/** localStorage keys for inventory hub list/cards view preference. */
+export const BUILDINGS_VIEW_MODE_KEY = 'portal-buildings';
+export const FLOORS_VIEW_MODE_KEY = 'portal-floors';
+export const APARTMENTS_VIEW_MODE_KEY = 'portal-apartments';
 
 /** localStorage key for team list/cards view preference. */
 export const TEAM_VIEW_MODE_KEY = 'portal-team';

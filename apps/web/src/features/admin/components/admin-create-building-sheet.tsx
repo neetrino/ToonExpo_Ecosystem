@@ -11,6 +11,7 @@ import {
   useAdminCompanyProjectsQuery,
 } from '@/features/admin/hooks/use-admin-companies';
 import { useAdminCreateBuildingMutation } from '@/features/admin/hooks/use-admin-inventory';
+import { VerifiedStatusField } from '@/features/builder/components/verified-status-field';
 import {
   createBuildingSchema,
   type CreateBuildingFormValues,
@@ -20,6 +21,7 @@ import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
 import { ListboxSelect } from '@/shared/ui/listbox-select';
+import { useFormErrorToast } from '@/shared/ui/use-form-error-toast';
 
 type AdminCreateBuildingSheetProps = {
   open: boolean;
@@ -28,7 +30,7 @@ type AdminCreateBuildingSheetProps = {
 };
 
 /**
- * Admin sheet: pick company + project, then create a building.
+ * Admin sheet: pick builder + project, then create a building.
  */
 export const AdminCreateBuildingSheet = ({
   open,
@@ -41,7 +43,9 @@ export const AdminCreateBuildingSheet = ({
   const mutation = useAdminCreateBuildingMutation();
   const [companyId, setCompanyId] = useState(defaultCompanyId ?? '');
   const [projectId, setProjectId] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const { showError, onInvalid, errorToast } = useFormErrorToast({
+    fieldLabels: { name: inventoryT('buildingName') },
+  });
 
   const projectsQuery = useAdminCompanyProjectsQuery(companyId, open && companyId.length > 0);
 
@@ -53,11 +57,12 @@ export const AdminCreateBuildingSheet = ({
   const {
     register,
     handleSubmit,
+    control,
     reset,
     formState: { errors, isSubmitting },
   } = useForm<CreateBuildingFormValues>({
     resolver: zodResolver(createBuildingSchema),
-    defaultValues: { name: '', description: '', coverMediaId: '' },
+    defaultValues: { name: '', description: '', coverMediaId: '', verified: false },
   });
 
   useEffect(() => {
@@ -66,16 +71,14 @@ export const AdminCreateBuildingSheet = ({
     }
     setCompanyId(defaultCompanyId ?? '');
     setProjectId('');
-    setError(null);
-    reset({ name: '', description: '', coverMediaId: '' });
+    reset({ name: '', description: '', coverMediaId: '', verified: false });
   }, [open, defaultCompanyId, reset]);
 
   const onSubmit = handleSubmit(async (values) => {
     if (!companyId || !projectId) {
-      setError(t('pickProject'));
+      showError(t('pickProject'));
       return;
     }
-    setError(null);
     try {
       await mutation.mutateAsync({
         companyId,
@@ -83,22 +86,23 @@ export const AdminCreateBuildingSheet = ({
         body: {
           name: values.name,
           ...(values.description.length > 0 ? { description: values.description } : {}),
+          verified: values.verified,
         },
       });
       onClose();
     } catch {
-      setError(inventoryT('errors.generic'));
+      showError(inventoryT('errors.generic'));
     }
-  });
+  }, onInvalid);
 
   const busy = isSubmitting || mutation.isPending;
 
   return (
     <AdminCreateSheet open={open} onClose={onClose} title={t('title')} size="comfortable">
       <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
-        <FormField id="create-building-company" label={t('company')}>
+        <FormField id="create-building-builder" label={t('builder')}>
           <ListboxSelect
-            id="create-building-company"
+            id="create-building-builder"
             variant="field"
             searchable
             value={companyId}
@@ -106,9 +110,9 @@ export const AdminCreateBuildingSheet = ({
               value: company.id,
               label: company.name,
             }))}
-            placeholder={t('searchCompany')}
-            emptyLabel={t('noCompanyMatches')}
-            aria-label={t('company')}
+            placeholder={t('searchBuilder')}
+            emptyLabel={t('noBuilderMatches')}
+            aria-label={t('builder')}
             onChange={(next) => {
               setCompanyId(next);
               setProjectId('');
@@ -146,15 +150,12 @@ export const AdminCreateBuildingSheet = ({
           <Input id="create-building-description" {...register('description')} />
         </FormField>
 
-        {error ? (
-          <p role="alert" className="text-sm text-danger">
-            {error}
-          </p>
-        ) : null}
+        <VerifiedStatusField id="create-building-verified" control={control} name="verified" />
 
         <Button type="submit" size="sm" variant="secondary" disabled={busy || !projectId}>
           {busy ? inventoryT('adding') : t('submit')}
         </Button>
+        {errorToast}
       </form>
     </AdminCreateSheet>
   );

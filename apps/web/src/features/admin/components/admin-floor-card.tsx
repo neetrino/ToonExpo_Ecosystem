@@ -15,12 +15,13 @@ import { cn } from '@/shared/ui/cn';
 type AdminFloorCardProps = {
   floor: AdminFloorListItem;
   onSelect: (floor: AdminFloorListItem) => void;
+  showCompany?: boolean | undefined;
 };
 
 /**
  * Floor hub card — same layout language as admin project cards.
  */
-export const AdminFloorCard = ({ floor, onSelect }: AdminFloorCardProps) => {
+export const AdminFloorCard = ({ floor, onSelect, showCompany = true }: AdminFloorCardProps) => {
   const t = useTranslations('Admin.floors');
   const label =
     floor.displayLabel?.trim() || floor.name?.trim() || t('floorNumber', { number: floor.number });
@@ -45,9 +46,11 @@ export const AdminFloorCard = ({ floor, onSelect }: AdminFloorCardProps) => {
           <AdminInventoryCardMetaRow icon={<Building className="size-3.5" strokeWidth={2} />}>
             {floor.buildingName}
           </AdminInventoryCardMetaRow>
-          <AdminInventoryCardMetaRow icon={<Building2 className="size-3.5" strokeWidth={2} />}>
-            {floor.companyName}
-          </AdminInventoryCardMetaRow>
+          {showCompany ? (
+            <AdminInventoryCardMetaRow icon={<Building2 className="size-3.5" strokeWidth={2} />}>
+              {floor.companyName}
+            </AdminInventoryCardMetaRow>
+          ) : null}
           <AdminInventoryCardMetaRow icon={<Layers className="size-3.5" strokeWidth={2} />}>
             {floor.projectName}
           </AdminInventoryCardMetaRow>

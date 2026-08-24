@@ -24,6 +24,31 @@ export const isApiErrorStatus = (error: unknown, status: number): error is ApiEr
   return error instanceof ApiError && error.status === status;
 };
 
+const TECHNICAL_API_MESSAGE = /prisma|unique constraint|invocation/i;
+
+/**
+ * True when Nest/Prisma rejected a duplicate floor number for one building.
+ */
+export const isFloorNumberDuplicateApiError = (error: unknown): error is ApiError => {
+  if (!(error instanceof ApiError)) {
+    return false;
+  }
+  if (error.status === 409) {
+    return true;
+  }
+  const message = error.message.toLowerCase();
+  return (
+    message.includes('unique constraint') &&
+    message.includes('number') &&
+    (message.includes('building_id') || message.includes('buildingid'))
+  );
+};
+
+/**
+ * Raw Prisma / DB errors should not be shown in product UI.
+ */
+export const isTechnicalApiMessage = (message: string): boolean => TECHNICAL_API_MESSAGE.test(message);
+
 const NETWORK_FETCH_MESSAGE = /fetch failed|failed to fetch|networkerror|load failed/i;
 const NETWORK_CAUSE_CODE = /ECONNREFUSED|ENOTFOUND|ECONNRESET|ETIMEDOUT|UND_ERR/i;
 

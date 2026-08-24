@@ -39,6 +39,7 @@ describe("createProjectSchema", () => {
       constructionStatus: "",
       completionDate: "",
       coverMediaId: "",
+      verified: false,
     });
 
     expect(result.success).toBe(false);
@@ -66,6 +67,7 @@ describe("createProjectSchema", () => {
       constructionStatus: "under_construction",
       completionDate: "2027-06-01",
       coverMediaId: "",
+      verified: false,
     });
 
     expect(result.success).toBe(true);
@@ -79,6 +81,7 @@ describe("createBuildingSchema", () => {
         name: "  ",
         description: "",
         coverMediaId: "",
+        verified: false,
       }).success,
     ).toBe(false);
   });

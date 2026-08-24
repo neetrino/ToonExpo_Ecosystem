@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { getLocale, getTranslations } from 'next-intl/server';
 
 import { ApartmentAboutSection } from '@/features/catalog/components/apartment-about-section';
+import { CatalogPathBreadcrumb } from '@/features/catalog/components/catalog-path-breadcrumb';
 import { ApartmentDetailCriteriaPanel } from '@/features/catalog/components/apartment-detail-criteria-panel';
 import { ApartmentDetailPrice } from '@/features/catalog/components/apartment-price-label';
 import { ApartmentInquireCard } from '@/features/catalog/components/apartment-inquire-card';
@@ -90,33 +91,37 @@ export const ApartmentDetailView = async ({
     },
   ];
 
+  const floorLabel =
+    apartment.floor.displayLabel?.trim() ||
+    t('project.floor', { number: apartment.floor.number });
+
   return (
     <div className="page-container pb-16 pt-8">
-      <nav className="mb-6 text-xs text-header-muted" aria-label={t('apartment.breadcrumb')}>
-        <Link href="/" className="transition-colors hover:text-ink-navy">
-          {t('apartment.breadcrumbHome')}
-        </Link>
-        <span className="mx-1.5">/</span>
-        <Link href="/projects" className="transition-colors hover:text-ink-navy">
-          {t('apartment.breadcrumbSearch')}
-        </Link>
-        <span className="mx-1.5">/</span>
-        <span className="text-ink-navy">{title}</span>
-      </nav>
+      <CatalogPathBreadcrumb
+        ariaLabel={t('apartment.breadcrumb')}
+        district={district}
+        project={apartment.project}
+        building={apartment.building}
+        floor={{ id: apartment.floor.id, label: floorLabel }}
+        apartment={{ id: apartment.id, label: title }}
+        current="apartment"
+      />
 
       <ApartmentPhotoGallery images={galleryImages} />
 
       <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start xl:gap-14">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <span
-              className={cn(
-                'rounded-[10px] bg-band-mist px-2 py-1',
-                'text-[10px] font-bold tracking-widest text-brand-deep uppercase',
-              )}
-            >
-              {t('apartment.verifiedBadge')}
-            </span>
+            {apartment.verified ? (
+              <span
+                className={cn(
+                  'rounded-[10px] bg-band-mist px-2 py-1',
+                  'text-[10px] font-bold tracking-widest text-brand-deep uppercase',
+                )}
+              >
+                {t('apartment.verifiedBadge')}
+              </span>
+            ) : null}
             <span
               className={cn(
                 'rounded-[10px] bg-surface px-2 py-1',

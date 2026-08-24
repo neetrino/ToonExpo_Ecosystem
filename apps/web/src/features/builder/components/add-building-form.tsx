@@ -4,7 +4,6 @@ import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import { catalogMediaContext } from '@/features/builder/catalog-scope';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { useCreateBuildingMutation } from '@/features/builder/hooks/use-portal-inventory';
@@ -12,11 +11,13 @@ import {
   createBuildingSchema,
   type CreateBuildingFormValues,
 } from '@/features/builder/schemas/inventory.schema';
+import { VerifiedStatusField } from '@/features/builder/components/verified-status-field';
 import { MediaUploadField } from '@/features/media/components/media-upload-field';
 import { toOptionalMediaId } from '@/features/media/schemas/media-fields.schema';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
+import { useFormErrorToast } from '@/shared/ui/use-form-error-toast';
 
 type AddBuildingFormProps = {
   projectId: string;
@@ -31,7 +32,9 @@ export const AddBuildingForm = ({ projectId, onSuccess }: AddBuildingFormProps) 
   const mediaContext = catalogMediaContext(scope);
   const t = useTranslations('Builder.inventory');
   const mutation = useCreateBuildingMutation(projectId);
-  const [error, setError] = useState<string | null>(null);
+  const { showError, onInvalid, errorToast } = useFormErrorToast({
+    fieldLabels: { name: t('buildingName'), coverMediaId: t('coverMedia') },
+  });
   const {
     register,
     handleSubmit,
@@ -40,23 +43,23 @@ export const AddBuildingForm = ({ projectId, onSuccess }: AddBuildingFormProps) 
     formState: { errors, isSubmitting },
   } = useForm<CreateBuildingFormValues>({
     resolver: zodResolver(createBuildingSchema),
-    defaultValues: { name: '', description: '', coverMediaId: '' },
+    defaultValues: { name: '', description: '', coverMediaId: '', verified: false },
   });
 
   const onSubmit = handleSubmit(async (values) => {
-    setError(null);
     try {
       await mutation.mutateAsync({
         name: values.name,
         ...(values.description.length > 0 ? { description: values.description } : {}),
         ...(toOptionalMediaId(values.coverMediaId) ? { coverMediaId: values.coverMediaId } : {}),
+        verified: values.verified,
       });
       reset();
       onSuccess?.();
     } catch {
-      setError(t('errors.generic'));
+      showError(t('errors.generic'));
     }
-  });
+  }, onInvalid);
 
   const busy = isSubmitting || mutation.isPending;
 
@@ -86,14 +89,11 @@ export const AddBuildingForm = ({ projectId, onSuccess }: AddBuildingFormProps) 
           />
         )}
       />
-      {error ? (
-        <p role="alert" className="text-sm text-danger">
-          {error}
-        </p>
-      ) : null}
+      <VerifiedStatusField id="building-verified-new" control={control} name="verified" />
       <Button type="submit" variant="secondary" disabled={busy}>
         {busy ? t('adding') : t('addBuilding')}
       </Button>
+      {errorToast}
     </form>
   );
 };

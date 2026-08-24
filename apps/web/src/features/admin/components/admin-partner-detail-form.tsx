@@ -3,7 +3,6 @@
 import type { AdminPartnerDetail } from '@toonexpo/contracts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
 import { Controller, useForm, type Control } from 'react-hook-form';
 
 import {
@@ -34,6 +33,7 @@ import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
 import { Select } from '@/shared/ui/select';
+import { useFormErrorToast } from '@/shared/ui/use-form-error-toast';
 import { useSuccessToast } from '@/shared/ui/use-success-toast';
 
 type AdminPartnerDetailFormProps = {
@@ -55,8 +55,13 @@ export const AdminPartnerDetailForm = ({
   const createOfferMutation = useCreatePartnerOfferMutation(partnerId);
   const updateOfferMutation = useUpdatePartnerOfferMutation(partnerId);
   const deleteOfferMutation = useDeletePartnerOfferMutation(partnerId);
-  const [saveError, setSaveError] = useState<string | null>(null);
   const { showSuccess, successToast } = useSuccessToast();
+  const { showError, onInvalid, errorToast } = useFormErrorToast({
+    fieldLabels: {
+      name: t('form.name'),
+      slug: t('form.slug'),
+    },
+  });
 
   const form = useForm<UpdatePartnerFormValues>({
     resolver: zodResolver(updatePartnerSchema),
@@ -70,15 +75,14 @@ export const AdminPartnerDetailForm = ({
     deleteOfferMutation.isPending;
 
   const onSubmit = form.handleSubmit(async (values) => {
-    setSaveError(null);
     try {
       await updateMutation.mutateAsync(toUpdatePartnerBody(values));
       showSuccess(t('saveSuccess'));
       onSaved?.();
     } catch {
-      setSaveError(t('errors.generic'));
+      showError(t('errors.generic'));
     }
-  });
+  }, onInvalid);
 
   return (
     <div className="flex flex-col gap-8">
@@ -186,12 +190,6 @@ export const AdminPartnerDetailForm = ({
           coverPreviewUrl={partner.coverUrl}
         />
 
-        {saveError ? (
-          <p role="alert" className="text-sm text-danger">
-            {saveError}
-          </p>
-        ) : null}
-
         <Button type="submit" variant="secondary" disabled={busy || !form.formState.isDirty}>
           {busy ? t('saving') : t('save')}
         </Button>
@@ -211,6 +209,7 @@ export const AdminPartnerDetailForm = ({
         }}
       />
       {successToast}
+      {errorToast}
     </div>
   );
 };

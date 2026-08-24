@@ -195,8 +195,10 @@ const OverviewField = ({
   );
 };
 
+type CatalogKvSectionId = 'details' | 'finance' | 'bankPartner';
+
 type KvEditorProps = {
-  sectionId: 'details' | 'finance';
+  sectionId: CatalogKvSectionId;
   keys: readonly (keyof ProjectCatalogDetails)[];
   locale: TranslationLocale;
   control: Control<UpdateProjectFormValues>;
@@ -204,7 +206,7 @@ type KvEditorProps = {
 };
 
 type CatalogKvItemProps = {
-  sectionId: 'details' | 'finance';
+  sectionId: CatalogKvSectionId;
   fieldKey: keyof ProjectCatalogDetails;
   locale: TranslationLocale;
   control: Control<UpdateProjectFormValues>;
@@ -219,7 +221,8 @@ const CatalogKvItem = ({
   register,
 }: CatalogKvItemProps) => {
   const fieldId = `catalog-${sectionId}-${fieldKey}-${locale}`;
-  const wide = isProjectCatalogTextareaKey(fieldKey);
+  const useTextarea = isProjectCatalogTextareaKey(fieldKey);
+  const wide = sectionId === 'bankPartner' ? fieldKey === 'specialTerms' : useTextarea;
   const dateField = isProjectCatalogDateKey(fieldKey);
   const Icon = PROJECT_CATALOG_CRITERION_ICON[catalogDetailKeyToCriterionId(fieldKey)];
   const label = useCatalogFieldLabel(fieldKey);
@@ -235,12 +238,12 @@ const CatalogKvItem = ({
         htmlFor={fieldId}
         className="flex shrink-0 items-start gap-2 pt-2.5 text-sm text-ink-muted"
       >
-        {sectionId === 'details' ? (
+        {sectionId !== 'bankPartner' ? (
           <Icon className="mt-0.5 size-4 shrink-0 text-brand" strokeWidth={1.75} aria-hidden />
         ) : null}
         {label}
       </label>
-      {wide ? (
+      {useTextarea ? (
         <Textarea
           id={fieldId}
           rows={3}

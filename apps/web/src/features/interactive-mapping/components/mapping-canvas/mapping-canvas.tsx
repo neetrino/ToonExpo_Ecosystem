@@ -1,10 +1,13 @@
 'use client';
 
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { Maximize2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { bandPolygonFromEdge, pointerToNormalized, type NormPoint } from '../../utils/mapping-math';
 import { type PolygonShape } from '../../utils/curved-polygon';
 import { getContainedImageBounds } from '../../utils/coordinates';
+import { Button } from '@/shared/ui/button';
+import { ConfirmDeleteModal } from '@/shared/ui/confirm-delete-modal';
 import { MappingCanvasStage } from './mapping-canvas-stage';
 import { MappingCanvasToolbar } from './mapping-canvas-toolbar';
 import { getMappingCanvasHintText } from './mapping-canvas-hints';
@@ -38,6 +41,8 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
       toolPreset = 'basic',
       viewportClassName,
       onBulkPaths,
+      onExitFullscreen,
+      onOpenFullscreen,
     },
     ref,
   ) {
@@ -58,6 +63,9 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
     const replaceOnCommitRef = useRef(false);
     const toolPresetRef = useRef(toolPreset);
     const [cursorPoint, setCursorPoint] = useState<NormPoint | null>(null);
+    const [pendingPolygonConfirm, setPendingPolygonConfirm] = useState<'delete' | 'replace' | null>(
+      null,
+    );
 
     useEffect(() => {
       draftRef.current = draftPoints;
@@ -199,6 +207,8 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
       onCanvasClick,
       deletePolygon,
       startFreshPolygon,
+      executeDeletePolygon,
+      executeStartFreshPolygon,
       onMarkerPointerDown,
       onMarkerPointerMove,
       onMarkerPointerUp,
@@ -209,8 +219,7 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
       draftRef,
       dragRef,
       replaceOnCommitRef,
-      confirmDeletePolygon: tCanvas('confirmDeletePolygon'),
-      confirmReplacePolygon: tCanvas('confirmReplacePolygon'),
+      onRequestPolygonConfirm: setPendingPolygonConfirm,
       readNormalized,
       onSelect,
       onChangeEntity,
@@ -218,6 +227,7 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
       updateDraftPoints,
       commitAutoStack,
       commitBand,
+      closePolygon,
       clearDraft,
       setMode,
       setSelectedDraftIndex,
@@ -264,6 +274,7 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
           modeIsEditPolygon={mode === 'edit-polygon'}
           modeIsDrawBand={mode === 'draw-band'}
           modeIsAutoStack={mode === 'auto-stack'}
+          onExitFullscreen={onExitFullscreen}
         />
 
         <MappingCanvasStage
@@ -291,9 +302,49 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
           onMarkerPointerMove={onMarkerPointerMove}
           onMarkerPointerUp={onMarkerPointerUp}
           setCursorPoint={setCursorPoint}
+          viewportOverlay={
+            onOpenFullscreen ? (
+              <Button
+                type="button"
+                size="sm"
+                variant="secondary"
+                className="absolute top-3 right-3 z-20 shadow-sm"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onOpenFullscreen();
+                }}
+                onPointerDown={(event) => {
+                  event.stopPropagation();
+                }}
+              >
+                <Maximize2 className="size-4" aria-hidden />
+                {tCanvas('openFullscreen')}
+              </Button>
+            ) : null
+          }
         />
 
-        <p className="text-xs text-muted-foreground">{hintText}</p>
+        {hintText ? <p className="text-xs text-muted-foreground">{hintText}</p> : null}
+
+        <ConfirmDeleteModal
+          open={pendingPolygonConfirm != null}
+          message={
+            pendingPolygonConfirm === 'delete'
+              ? tCanvas('confirmDeletePolygon')
+              : tCanvas('confirmReplacePolygon')
+          }
+          onCancel={() => {
+            setPendingPolygonConfirm(null);
+          }}
+          onConfirm={() => {
+            if (pendingPolygonConfirm === 'delete') {
+              executeDeletePolygon();
+            } else if (pendingPolygonConfirm === 'replace') {
+              executeStartFreshPolygon();
+            }
+            setPendingPolygonConfirm(null);
+          }}
+        />
       </div>
     );
   },

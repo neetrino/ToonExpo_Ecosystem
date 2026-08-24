@@ -15,9 +15,14 @@ import {
   updateVisualCanvas,
 } from '../../api/interactive-mapping-api';
 import { interactiveMappingProjectQueryKey } from '../../constants';
-import { useInteractiveMappingProjectQuery } from '../../hooks/use-interactive-mapping';
+import {
+  useCreateDistrictMutation,
+  useDeleteDistrictMutation,
+  useInteractiveMappingProjectQuery,
+} from '../../hooks/use-interactive-mapping';
 import { useMappingCatalog } from '../../hooks/use-mapping-catalog';
 import { MasterplanMappingEditor } from '../editors/masterplan-mapping-editor';
+import { CreateEntityInlineForm } from '../forms/create-entity-inline-form';
 import { MappingImageUploader } from '../media/mapping-image-uploader';
 
 export type MasterplanPhasePageProps = {
@@ -31,6 +36,8 @@ export const MasterplanPhasePage = ({ projectId }: MasterplanPhasePageProps) => 
   const t = useTranslations('Admin.interactiveMapping');
   const queryClient = useQueryClient();
   const detailQuery = useInteractiveMappingProjectQuery(projectId);
+  const createDistrict = useCreateDistrictMutation(projectId);
+  const deleteDistrict = useDeleteDistrictMutation(projectId);
   const [canvas, setCanvas] = useState<PortalVisualCanvasDetail | null>(null);
   const [loadingCanvas, setLoadingCanvas] = useState(true);
   const [mediaId, setMediaId] = useState('');
@@ -182,6 +189,21 @@ export const MasterplanPhasePage = ({ projectId }: MasterplanPhasePageProps) => 
           viewBoxHeight={height}
           districts={districts}
           hotspots={canvas.hotspots}
+          createForm={
+            <CreateEntityInlineForm
+              title={t('forms.createDistrict')}
+              submitLabel={t('forms.createDistrict')}
+              pendingLabel={t('forms.saving')}
+              nameLabel={t('forms.name')}
+              namePlaceholder={t('forms.districtPlaceholder')}
+              onSubmit={async (name) => {
+                await createDistrict.mutateAsync({ name });
+              }}
+            />
+          }
+          onDeleteDistrict={async (districtId) => {
+            await deleteDistrict.mutateAsync(districtId);
+          }}
           onAfterSave={() => {
             void queryClient.invalidateQueries({
               queryKey: interactiveMappingProjectQueryKey(projectId, mode),

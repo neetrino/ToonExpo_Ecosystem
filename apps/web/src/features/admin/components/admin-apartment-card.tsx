@@ -12,6 +12,7 @@ import {
   AdminInventoryPublicationBadge,
 } from '@/features/admin/components/admin-inventory-card';
 import { useSetAdminApartmentFeaturedOnHomeMutation } from '@/features/admin/hooks/use-admin-inventory';
+import type { CatalogScope } from '@/features/builder/catalog-scope';
 import { catalogApartmentDetailHref } from '@/features/builder/catalog-scope';
 import { HOME_FEATURED_APARTMENT_LIMIT } from '@/features/catalog/constants/home-featured';
 import { Link } from '@/i18n/navigation';
@@ -27,6 +28,9 @@ const MEDIA_ASPECT_CLASS = 'aspect-[16/10]';
 type AdminApartmentCardProps = {
   apartment: AdminApartmentListItem;
   returnTo: string;
+  showCompany?: boolean | undefined;
+  showFeatured?: boolean | undefined;
+  catalogScope?: CatalogScope | undefined;
 };
 
 const toSafeImageSource = (value: string | null | undefined): string | undefined => {
@@ -95,13 +99,19 @@ const AdminApartmentImage = ({ apartment }: AdminApartmentImageProps) => {
 /**
  * Apartment hub card — same size/chrome as builder readiness cards.
  */
-export const AdminApartmentCard = ({ apartment, returnTo }: AdminApartmentCardProps) => {
+export const AdminApartmentCard = ({
+  apartment,
+  returnTo,
+  showCompany = true,
+  showFeatured = true,
+  catalogScope,
+}: AdminApartmentCardProps) => {
   const t = useTranslations('Admin.apartments');
   const tFeatured = useTranslations('Admin.featuredOnHome');
   const salesStatus = apartment.salesStatus as ApartmentSalesStatus;
   const featuredMutation = useSetAdminApartmentFeaturedOnHomeMutation();
   const detailHref = catalogApartmentDetailHref(
-    { mode: 'admin', companyId: apartment.builderCompanyId },
+    catalogScope ?? { mode: 'admin', companyId: apartment.builderCompanyId },
     apartment.id,
     { returnTo },
   );
@@ -143,9 +153,11 @@ export const AdminApartmentCard = ({ apartment, returnTo }: AdminApartmentCardPr
         <AdminInventoryCardMetaRow icon={<Building className="size-3.5" strokeWidth={2} />}>
           {apartment.buildingName} · {t('floorNumber', { number: apartment.floorNumber })}
         </AdminInventoryCardMetaRow>
-        <AdminInventoryCardMetaRow icon={<Building2 className="size-3.5" strokeWidth={2} />}>
-          {apartment.companyName}
-        </AdminInventoryCardMetaRow>
+        {showCompany ? (
+          <AdminInventoryCardMetaRow icon={<Building2 className="size-3.5" strokeWidth={2} />}>
+            {apartment.companyName}
+          </AdminInventoryCardMetaRow>
+        ) : null}
         <AdminInventoryCardMetaRow icon={<Layers className="size-3.5" strokeWidth={2} />}>
           {apartment.projectName}
         </AdminInventoryCardMetaRow>
@@ -153,18 +165,20 @@ export const AdminApartmentCard = ({ apartment, returnTo }: AdminApartmentCardPr
 
       <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-border pt-3">
         <ApartmentSalesStatusBadge status={salesStatus} label={t(`sales.${salesStatus}`)} />
-        <div className="ml-auto">
-          <AdminFeaturedOnHomeButton
-            featuredOnHome={apartment.featuredOnHome}
-            limitLabel={tFeatured('apartmentLimit', { count: HOME_FEATURED_APARTMENT_LIMIT })}
-            onToggle={async (next) =>
-              featuredMutation.mutateAsync({
-                apartmentId: apartment.id,
-                featuredOnHome: next,
-              })
-            }
-          />
-        </div>
+        {showFeatured ? (
+          <div className="ml-auto">
+            <AdminFeaturedOnHomeButton
+              featuredOnHome={apartment.featuredOnHome}
+              limitLabel={tFeatured('apartmentLimit', { count: HOME_FEATURED_APARTMENT_LIMIT })}
+              onToggle={async (next) =>
+                featuredMutation.mutateAsync({
+                  apartmentId: apartment.id,
+                  featuredOnHome: next,
+                })
+              }
+            />
+          </div>
+        ) : null}
       </div>
     </article>
   );

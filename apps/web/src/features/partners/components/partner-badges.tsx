@@ -1,6 +1,7 @@
 import type { PartnerCompanyStatus, PublicationStatus } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 
+import { toCatalogPublicationStatus } from '@/features/catalog/utils/catalog-publication-status';
 import { cn } from '@/shared/ui/cn';
 import { LIST_STATUS_BADGE_CLASS } from '@/shared/ui/list-status-badge';
 
@@ -31,10 +32,9 @@ type PublicationStatusBadgeProps = {
   className?: string | undefined;
 };
 
-const publicationClassName: Record<PublicationStatus, string> = {
+const publicationClassName: Record<'draft' | 'published', string> = {
   draft: 'bg-surface text-ink-muted',
   published: 'bg-brand/10 text-brand',
-  archived: 'bg-warning/10 text-warning',
 };
 
 /**
@@ -42,10 +42,11 @@ const publicationClassName: Record<PublicationStatus, string> = {
  */
 export const PublicationStatusBadge = ({ status, className }: PublicationStatusBadgeProps) => {
   const t = useTranslations('Partners');
+  const catalogStatus = toCatalogPublicationStatus(status);
 
   return (
-    <span className={cn(LIST_STATUS_BADGE_CLASS, publicationClassName[status], className)}>
-      {t(`publication.${status}`)}
+    <span className={cn(LIST_STATUS_BADGE_CLASS, publicationClassName[catalogStatus], className)}>
+      {t(`publication.${catalogStatus}`)}
     </span>
   );
 };

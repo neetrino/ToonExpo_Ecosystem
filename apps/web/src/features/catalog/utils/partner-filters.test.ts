@@ -18,6 +18,14 @@ describe('parsePartnerFilters', () => {
     });
   });
 
+  it('parses and trims a keyword query', () => {
+    expect(parsePartnerFilters({ type: 'bank', q: '  Ameria  ' })).toEqual({
+      page: 1,
+      tab: 'bank',
+      q: 'Ameria',
+    });
+  });
+
   it('falls back to builders for unknown types', () => {
     expect(parsePartnerFilters({ type: 'unknown' }).tab).toBe('builder');
   });
@@ -35,6 +43,10 @@ describe('buildPartnerSearchParams', () => {
     expect(buildPartnerSearchParams({ page: 1, tab: 'bank' }, 3)).toEqual({
       type: 'bank',
       page: '3',
+    });
+    expect(buildPartnerSearchParams({ page: 1, tab: 'bank', q: 'Ameria' }, 1)).toEqual({
+      type: 'bank',
+      q: 'Ameria',
     });
   });
 });

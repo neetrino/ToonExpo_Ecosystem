@@ -95,6 +95,8 @@ model Project {
   nearbyPlaces        Json?             @map("nearby_places")
   /// Curated homepage developments band (admin-selected; max 3 platform-wide).
   featuredOnHome      Boolean           @default(false) @map("featured_on_home")
+  /// Public "Verified" badge — set from Admin/builder project form.
+  verified            Boolean           @default(false)
   createdByUserId     String?           @map("created_by_user_id")
   updatedByUserId     String?           @map("updated_by_user_id")
   createdAt           DateTime          @default(now()) @map("created_at")
@@ -117,6 +119,7 @@ model Project {
   @@index([publicationStatus])
   @@index([city])
   @@index([featuredOnHome])
+  @@index([verified])
   @@map("projects")
 }
 
@@ -153,6 +156,8 @@ model Building {
   displayOrder      Int               @default(0) @map("display_order")
   floorsCount       Int?              @map("floors_count")
   coverMediaId      String?           @map("cover_media_id")
+  /// Public "Verified" badge — set from Admin/builder building form.
+  verified          Boolean           @default(false)
   internalCode      String?           @map("internal_code")
   /// When true, public catalog hides this building's prices and shows a request CTA.
   priceOnRequestEnabled Boolean       @default(false) @map("price_on_request_enabled")
@@ -171,6 +176,7 @@ model Building {
   @@index([projectId])
   @@index([districtId])
   @@index([publicationStatus])
+  @@index([verified])
   @@map("buildings")
 }
 
@@ -237,6 +243,8 @@ model Apartment {
   importExternalId        String?              @map("import_external_id")
   /// Curated homepage featured listings (admin-selected; max 6 platform-wide).
   featuredOnHome          Boolean              @default(false) @map("featured_on_home")
+  /// Public "Verified" badge — set from Admin/builder apartment form.
+  verified                Boolean              @default(false)
   createdByUserId         String?              @map("created_by_user_id")
   updatedByUserId         String?              @map("updated_by_user_id")
   createdAt               DateTime             @default(now()) @map("created_at")
@@ -264,6 +272,7 @@ model Apartment {
   @@index([publicationStatus, salesStatus])
   @@index([projectId, publicationStatus])
   @@index([featuredOnHome])
+  @@index([verified])
   @@map("apartments")
 }
 

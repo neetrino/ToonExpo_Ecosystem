@@ -77,7 +77,7 @@ export const ApartmentDetailPage = ({ apartmentId }: ApartmentDetailPageProps) =
               />
             </p>
           </div>
-          <ApartmentPublicationActions apartment={apartment} />
+          <ApartmentPublicationActions apartment={apartment} listHref={backHref} />
         </div>
       </div>
 

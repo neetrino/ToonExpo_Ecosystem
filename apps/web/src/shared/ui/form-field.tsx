@@ -24,7 +24,10 @@ export const FormField = ({
 }: FormFieldProps) => {
   return (
     <div className={cn('flex flex-col gap-2', className)}>
-      <label htmlFor={id} className={cn('text-sm font-medium text-ink', labelClassName)}>
+      <label
+        htmlFor={id}
+        className={cn('form-field-label text-sm font-medium text-ink', labelClassName)}
+      >
         {label}
       </label>
       {children}

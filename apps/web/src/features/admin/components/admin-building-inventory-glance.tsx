@@ -7,11 +7,16 @@ import type {
 import { useTranslations } from 'next-intl';
 
 import { FloorPlanGlanceIcon } from '@/features/admin/components/floor-plan-glance-icon';
+import {
+  PLATFORM_INVENTORY_SHEET_SCOPE,
+  type InventorySheetScope,
+} from '@/features/admin/inventory-sheet-scope';
 import { cn } from '@/shared/ui/cn';
 
 type AdminBuildingInventoryGlanceProps = {
   glance: AdminBuildingInventoryGlance;
   onSelectFloor: (floorId: string) => void;
+  sheetScope?: InventorySheetScope | undefined;
 };
 
 const segmentPercent = (count: number, total: number): number => {
@@ -27,6 +32,7 @@ const segmentPercent = (count: number, total: number): number => {
 export const AdminBuildingInventoryGlanceCard = ({
   glance,
   onSelectFloor,
+  sheetScope = PLATFORM_INVENTORY_SHEET_SCOPE,
 }: AdminBuildingInventoryGlanceProps) => {
   const t = useTranslations('Admin.buildings.inventory');
 
@@ -86,6 +92,7 @@ export const AdminBuildingInventoryGlanceCard = ({
                       companyId={glance.builderCompanyId}
                       buildingId={glance.id}
                       floorId={floor.id}
+                      sheetScope={sheetScope}
                     />
                   </span>
                 </div>

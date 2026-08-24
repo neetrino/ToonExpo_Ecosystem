@@ -1,9 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-  hasVisibleCatalogPrice,
-  shouldShowPriceOnRequestCta,
-} from './price-on-request-cta';
+import { hasVisibleCatalogPrice, shouldShowPriceOnRequestCta } from './price-on-request-cta';
 
 describe('shouldShowPriceOnRequestCta', () => {
   it('shows the button when the builder enabled price-on-request', () => {

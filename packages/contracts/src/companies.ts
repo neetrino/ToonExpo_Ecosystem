@@ -333,6 +333,7 @@ export type AdminBuildingInventoryFloor = {
   number: number;
   name: string | null;
   displayLabel: string | null;
+  publicationStatus: PublicationStatus;
   floorplanMediaId: string | null;
   floorplan: MediaAssetSummary | null;
   availability: ApartmentAvailabilitySummary;

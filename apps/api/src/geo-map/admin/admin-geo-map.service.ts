@@ -37,7 +37,7 @@ export class AdminGeoMapService {
   async list(): Promise<AdminGeoMapModelListResponse> {
     const rows = await this.prisma.db.projectMapModel.findMany({
       include: adminInclude,
-      orderBy: [{ updatedAt: 'desc' }],
+      orderBy: [{ createdAt: 'desc' }],
     });
 
     return { data: rows.map(toAdminGeoMapModelItem) };

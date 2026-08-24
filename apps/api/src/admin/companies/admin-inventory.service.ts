@@ -5,111 +5,19 @@ import type {
   AdminBuildingListResponse,
   AdminFloorListResponse,
 } from '@toonexpo/contracts';
-import type { Prisma } from '@toonexpo/db';
 
-import { summarizeSalesStatuses, toMediaSummary } from '../../catalog/mappers/catalog.mapper.js';
+import { InventoryHubService } from '../../inventory/inventory-hub.service.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
-
-const buildAdminBuildingsWhere = (
-  companyId: string | undefined,
-  projectId: string | undefined,
-  search: string | undefined,
-): Prisma.BuildingWhereInput => {
-  const scope: Prisma.BuildingWhereInput = {
-    ...(projectId ? { projectId } : {}),
-    ...(companyId && !projectId ? { project: { builderCompanyId: companyId } } : {}),
-  };
-  const needle = search?.trim();
-  if (!needle) {
-    return scope;
-  }
-  return {
-    AND: [
-      scope,
-      {
-        OR: [
-          { name: { contains: needle, mode: 'insensitive' } },
-          { project: { name: { contains: needle, mode: 'insensitive' } } },
-          { project: { builderCompany: { name: { contains: needle, mode: 'insensitive' } } } },
-        ],
-      },
-    ],
-  };
-};
-
-const buildAdminFloorsWhere = (
-  companyId: string | undefined,
-  buildingId: string | undefined,
-  search: string | undefined,
-): Prisma.FloorWhereInput => {
-  const scope: Prisma.FloorWhereInput = {
-    ...(companyId ? { building: { project: { builderCompanyId: companyId } } } : {}),
-    ...(buildingId ? { buildingId } : {}),
-  };
-  const needle = search?.trim();
-  if (!needle) {
-    return scope;
-  }
-  const floorNumber = Number(needle);
-  const numberFilter =
-    Number.isInteger(floorNumber) && String(floorNumber) === needle
-      ? [{ number: floorNumber }]
-      : [];
-  return {
-    AND: [
-      scope,
-      {
-        OR: [
-          ...numberFilter,
-          { name: { contains: needle, mode: 'insensitive' } },
-          { displayLabel: { contains: needle, mode: 'insensitive' } },
-          { building: { name: { contains: needle, mode: 'insensitive' } } },
-          { building: { project: { name: { contains: needle, mode: 'insensitive' } } } },
-          {
-            building: {
-              project: { builderCompany: { name: { contains: needle, mode: 'insensitive' } } },
-            },
-          },
-        ],
-      },
-    ],
-  };
-};
-
-const buildAdminApartmentsWhere = (
-  companyId: string | undefined,
-  buildingId: string | undefined,
-  search: string | undefined,
-): Prisma.ApartmentWhereInput => {
-  const scope: Prisma.ApartmentWhereInput = {
-    ...(companyId ? { project: { builderCompanyId: companyId } } : {}),
-    ...(buildingId ? { buildingId } : {}),
-  };
-  const needle = search?.trim();
-  if (!needle) {
-    return scope;
-  }
-  return {
-    AND: [
-      scope,
-      {
-        OR: [
-          { number: { contains: needle, mode: 'insensitive' } },
-          { building: { name: { contains: needle, mode: 'insensitive' } } },
-          { project: { name: { contains: needle, mode: 'insensitive' } } },
-          { project: { builderCompany: { name: { contains: needle, mode: 'insensitive' } } } },
-        ],
-      },
-    ],
-  };
-};
 
 /**
  * Cross-company inventory lists for the admin Projects hub.
  */
 @Injectable()
 export class AdminInventoryService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly inventoryHub: InventoryHubService,
+  ) {}
 
   async listBuildings(
     page: number,
@@ -124,49 +32,7 @@ export class AdminInventoryService {
     if (projectId) {
       await this.assertProjectInScope(projectId, companyId);
     }
-
-    const where = buildAdminBuildingsWhere(companyId, projectId, search);
-
-    const [total, buildings] = await Promise.all([
-      this.prisma.db.building.count({ where }),
-      this.prisma.db.building.findMany({
-        where,
-        orderBy: [{ updatedAt: 'desc' }],
-        skip: (page - 1) * pageSize,
-        take: pageSize,
-        select: {
-          id: true,
-          name: true,
-          publicationStatus: true,
-          createdAt: true,
-          projectId: true,
-          project: {
-            select: {
-              name: true,
-              builderCompanyId: true,
-              builderCompany: { select: { name: true } },
-            },
-          },
-          _count: { select: { floors: true, apartments: true } },
-        },
-      }),
-    ]);
-
-    return {
-      data: buildings.map((building) => ({
-        id: building.id,
-        name: building.name,
-        publicationStatus: building.publicationStatus,
-        createdAt: building.createdAt.toISOString(),
-        projectId: building.projectId,
-        projectName: building.project.name,
-        builderCompanyId: building.project.builderCompanyId,
-        companyName: building.project.builderCompany.name,
-        floorsCount: building._count.floors,
-        apartmentsCount: building._count.apartments,
-      })),
-      meta: this.toMeta(page, pageSize, total),
-    };
+    return this.inventoryHub.listBuildings(page, pageSize, companyId, projectId, search);
   }
 
   async listFloors(
@@ -182,60 +48,7 @@ export class AdminInventoryService {
     if (buildingId) {
       await this.assertBuildingInScope(buildingId, companyId);
     }
-
-    const where = buildAdminFloorsWhere(companyId, buildingId, search);
-
-    const [total, floors] = await Promise.all([
-      this.prisma.db.floor.count({ where }),
-      this.prisma.db.floor.findMany({
-        where,
-        orderBy: [{ updatedAt: 'desc' }],
-        skip: (page - 1) * pageSize,
-        take: pageSize,
-        select: {
-          id: true,
-          number: true,
-          name: true,
-          displayLabel: true,
-          publicationStatus: true,
-          createdAt: true,
-          buildingId: true,
-          building: {
-            select: {
-              name: true,
-              projectId: true,
-              project: {
-                select: {
-                  name: true,
-                  builderCompanyId: true,
-                  builderCompany: { select: { name: true } },
-                },
-              },
-            },
-          },
-          _count: { select: { apartments: true } },
-        },
-      }),
-    ]);
-
-    return {
-      data: floors.map((floor) => ({
-        id: floor.id,
-        number: floor.number,
-        name: floor.name,
-        displayLabel: floor.displayLabel,
-        publicationStatus: floor.publicationStatus,
-        createdAt: floor.createdAt.toISOString(),
-        buildingId: floor.buildingId,
-        buildingName: floor.building.name,
-        projectId: floor.building.projectId,
-        projectName: floor.building.project.name,
-        builderCompanyId: floor.building.project.builderCompanyId,
-        companyName: floor.building.project.builderCompany.name,
-        apartmentsCount: floor._count.apartments,
-      })),
-      meta: this.toMeta(page, pageSize, total),
-    };
+    return this.inventoryHub.listFloors(page, pageSize, companyId, buildingId, search);
   }
 
   async listApartments(
@@ -251,152 +64,14 @@ export class AdminInventoryService {
     if (buildingId) {
       await this.assertBuildingInScope(buildingId, companyId);
     }
-
-    const where = buildAdminApartmentsWhere(companyId, buildingId, search);
-
-    const [total, featuredOnHomeTotal, apartments] = await Promise.all([
-      this.prisma.db.apartment.count({ where }),
-      this.prisma.db.apartment.count({ where: { featuredOnHome: true } }),
-      this.prisma.db.apartment.findMany({
-        where,
-        orderBy: [{ featuredOnHome: 'desc' }, { updatedAt: 'desc' }],
-        skip: (page - 1) * pageSize,
-        take: pageSize,
-        select: {
-          id: true,
-          number: true,
-          publicationStatus: true,
-          salesStatus: true,
-          createdAt: true,
-          floorId: true,
-          buildingId: true,
-          projectId: true,
-          featuredOnHome: true,
-          floor: { select: { number: true } },
-          coverMedia: {
-            select: {
-              id: true,
-              fileUrl: true,
-              thumbnailUrl: true,
-              altText: true,
-            },
-          },
-          building: {
-            select: {
-              name: true,
-            },
-          },
-          project: {
-            select: {
-              name: true,
-              builderCompanyId: true,
-              builderCompany: { select: { name: true } },
-            },
-          },
-        },
-      }),
-    ]);
-
-    return {
-      data: apartments.map((apartment) => ({
-        id: apartment.id,
-        number: apartment.number,
-        publicationStatus: apartment.publicationStatus,
-        salesStatus: apartment.salesStatus,
-        createdAt: apartment.createdAt.toISOString(),
-        floorId: apartment.floorId,
-        floorNumber: apartment.floor.number,
-        buildingId: apartment.buildingId,
-        buildingName: apartment.building.name,
-        projectId: apartment.projectId,
-        projectName: apartment.project.name,
-        builderCompanyId: apartment.project.builderCompanyId,
-        companyName: apartment.project.builderCompany.name,
-        featuredOnHome: apartment.featuredOnHome,
-        cover: toMediaSummary(apartment.coverMedia),
-      })),
-      meta: {
-        ...this.toMeta(page, pageSize, total),
-        featuredOnHomeTotal,
-      },
-    };
+    return this.inventoryHub.listApartments(page, pageSize, companyId, buildingId, search);
   }
 
   /**
    * Inventory-at-a-glance for one building (totals + per-floor sales bars).
    */
-  async getBuildingInventoryGlance(buildingId: string): Promise<AdminBuildingInventoryGlance> {
-    const building = await this.prisma.db.building.findUnique({
-      where: { id: buildingId },
-      select: {
-        id: true,
-        name: true,
-        publicationStatus: true,
-        floorsCount: true,
-        projectId: true,
-        project: {
-          select: {
-            name: true,
-            builderCompanyId: true,
-          },
-        },
-        floors: {
-          orderBy: [{ number: 'desc' }, { displayOrder: 'asc' }],
-          select: {
-            id: true,
-            number: true,
-            name: true,
-            displayLabel: true,
-            floorplanMediaId: true,
-            floorplanMedia: {
-              select: {
-                id: true,
-                fileUrl: true,
-                thumbnailUrl: true,
-                altText: true,
-              },
-            },
-            apartments: { select: { salesStatus: true } },
-          },
-        },
-        apartments: { select: { salesStatus: true } },
-      },
-    });
-
-    if (!building) {
-      throw new NotFoundException('Building not found');
-    }
-
-    return {
-      id: building.id,
-      name: building.name,
-      publicationStatus: building.publicationStatus,
-      floorsCount: building.floorsCount,
-      projectId: building.projectId,
-      projectName: building.project.name,
-      builderCompanyId: building.project.builderCompanyId,
-      availability: summarizeSalesStatuses(
-        building.apartments.map((apartment) => apartment.salesStatus),
-      ),
-      floors: building.floors.map((floor) => ({
-        id: floor.id,
-        number: floor.number,
-        name: floor.name,
-        displayLabel: floor.displayLabel,
-        floorplanMediaId: floor.floorplanMediaId,
-        floorplan: floor.floorplanMedia
-          ? {
-              id: floor.floorplanMedia.id,
-              fileUrl: floor.floorplanMedia.fileUrl,
-              thumbnailUrl: floor.floorplanMedia.thumbnailUrl,
-              altText: floor.floorplanMedia.altText,
-            }
-          : null,
-        availability: summarizeSalesStatuses(
-          floor.apartments.map((apartment) => apartment.salesStatus),
-        ),
-      })),
-    };
+  getBuildingInventoryGlance(buildingId: string): Promise<AdminBuildingInventoryGlance> {
+    return this.inventoryHub.getBuildingInventoryGlance(buildingId);
   }
 
   private async assertCompanyExists(companyId: string): Promise<void> {
@@ -436,14 +111,5 @@ export class AdminInventoryService {
     if (companyId && building.project.builderCompanyId !== companyId) {
       throw new NotFoundException('Building not found');
     }
-  }
-
-  private toMeta(page: number, pageSize: number, total: number) {
-    return {
-      page,
-      pageSize,
-      total,
-      totalPages: total === 0 ? 0 : Math.ceil(total / pageSize),
-    };
   }
 }

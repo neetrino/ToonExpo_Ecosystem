@@ -8,6 +8,7 @@ import type {
 } from '@toonexpo/contracts';
 
 import { MARKER_TO_PERCENT } from '../constants';
+import { DEFAULT_MARKER_POINT } from './mapping-math';
 
 export type MappingGeometryInput = {
   markerX: number | null;
@@ -33,8 +34,8 @@ export const toHotspotGeometry = (input: MappingGeometryInput): MappingHotspotGe
   return {
     shapeType,
     interactionType,
-    xPercent: (input.markerX ?? 0) * MARKER_TO_PERCENT,
-    yPercent: (input.markerY ?? 0) * MARKER_TO_PERCENT,
+    xPercent: (input.markerX ?? DEFAULT_MARKER_POINT.x) * MARKER_TO_PERCENT,
+    yPercent: (input.markerY ?? DEFAULT_MARKER_POINT.y) * MARKER_TO_PERCENT,
     svgPath: input.svgPath,
   };
 };

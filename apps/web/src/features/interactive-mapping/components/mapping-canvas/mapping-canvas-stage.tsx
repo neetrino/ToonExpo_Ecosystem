@@ -3,6 +3,7 @@
 import type {
   MouseEvent as ReactMouseEvent,
   PointerEvent as ReactPointerEvent,
+  ReactNode,
   RefObject,
 } from 'react';
 import { useTranslations } from 'next-intl';
@@ -11,6 +12,7 @@ import { polygonShapeToSvgPath, type PolygonShape } from '../../utils/curved-pol
 import { formatMarkerLabel } from '../../utils/format-marker-label';
 import { PolygonEditHandles } from './polygon-edit-handles';
 import type { EditorMode, MappingEntity } from './mapping-canvas.types';
+import { snapPolygonCloseCursor } from './use-mapping-canvas-interactions';
 
 type ImageBounds = {
   x: number;
@@ -52,6 +54,7 @@ type MappingCanvasStageProps = {
   onMarkerPointerMove: (event: ReactPointerEvent<HTMLButtonElement>) => void;
   onMarkerPointerUp: () => void;
   setCursorPoint: (point: NormPoint | null) => void;
+  viewportOverlay?: ReactNode | undefined;
 };
 
 export const MappingCanvasStage = ({
@@ -79,15 +82,25 @@ export const MappingCanvasStage = ({
   onMarkerPointerMove,
   onMarkerPointerUp,
   setCursorPoint,
+  viewportOverlay,
 }: MappingCanvasStageProps) => {
   const t = useTranslations('Admin.interactiveMapping.canvas');
+  const canPickOnCanvas = mode === 'select';
+
+  const handlePolygonClick = (event: ReactMouseEvent<SVGPathElement>, id: string): void => {
+    if (!canPickOnCanvas) {
+      return;
+    }
+    event.stopPropagation();
+    onSelect(id);
+  };
 
   return (
     <div
       ref={viewportRef}
       className={
         viewportClassName ??
-        'relative h-[min(70dvh,720px)] w-full cursor-crosshair touch-none select-none overflow-hidden border border-border bg-[hsl(var(--muted))]'
+        'relative h-[min(70dvh,720px)] w-full cursor-crosshair touch-none select-none overflow-hidden rounded-[15px] border border-border bg-[hsl(var(--muted))]'
       }
       onClick={onCanvasClick}
       onDragStart={(event) => event.preventDefault()}
@@ -97,6 +110,14 @@ export const MappingCanvasStage = ({
           return;
         }
         const point = readNormalized(event, { clamp: true });
+        if (!point) {
+          setCursorPoint(null);
+          return;
+        }
+        if (mode === 'draw-polygon') {
+          setCursorPoint(snapPolygonCloseCursor(point, draftPoints));
+          return;
+        }
         setCursorPoint(point);
       }}
       onPointerLeave={() => setCursorPoint(null)}
@@ -135,9 +156,13 @@ export const MappingCanvasStage = ({
               <path
                 key={`poly-${entity.id}`}
                 d={entity.svgPath}
+                className={canPickOnCanvas ? 'pointer-events-auto cursor-pointer' : undefined}
                 fill={entity.id === selectedId ? 'rgba(232,140,72,0.32)' : 'rgba(232,140,72,0.16)'}
                 stroke={entity.id === selectedId ? '#c45c26' : '#d4894a'}
                 strokeWidth={entity.id === selectedId ? 3 : 1.5}
+                onClick={(event) => {
+                  handlePolygonClick(event, entity.id);
+                }}
               />
             ) : null,
           )}
@@ -233,6 +258,7 @@ export const MappingCanvasStage = ({
           );
         })}
       </div>
+      {viewportOverlay}
     </div>
   );
 };

@@ -70,9 +70,11 @@ export const BuyApartmentCard = ({
             </div>
           )}
           <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
-            <span className="rounded-[10px] bg-canvas/95 px-2 py-1 text-[10px] font-bold tracking-widest text-brand-deep uppercase">
-              {t('badgeVerified')}
-            </span>
+            {listing.verified ? (
+              <span className="rounded-[10px] bg-canvas/95 px-2 py-1 text-[10px] font-bold tracking-widest text-brand-deep uppercase">
+                {t('badgeVerified')}
+              </span>
+            ) : null}
             {listing.salesStatus === 'available' ? (
               <span className="rounded-[10px] bg-brand-secondary px-2 py-1 text-[10px] font-bold tracking-widest text-on-dark uppercase">
                 {t('badgeNew')}
@@ -85,7 +87,10 @@ export const BuyApartmentCard = ({
       <div className="flex flex-1 flex-col px-3 pt-4 pb-3">
         <div className="mb-1 flex flex-col gap-1">
           <h3 className="min-w-0 truncate font-brand text-sm font-semibold tracking-[-0.02em] text-ink-navy">
-            <Link href={`/apartments/${listing.id}`} className="transition-colors hover:text-brand-deep">
+            <Link
+              href={`/apartments/${listing.id}`}
+              className="transition-colors hover:text-brand-deep"
+            >
               {t('unitTitle', {
                 number: listing.title,
                 project: listing.projectName,

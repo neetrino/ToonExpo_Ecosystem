@@ -1,7 +1,6 @@
 'use client';
 
 import type { InteractiveMappingPhaseStatus } from '@toonexpo/contracts';
-import type { ReactNode } from 'react';
 
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
@@ -12,15 +11,11 @@ export type PhaseCardProps = {
   title: string;
   hint: string;
   state: InteractiveMappingPhaseStatus;
-  progressLabel: string;
   statusLabel: string;
   addHref?: string | undefined;
   addLabel?: string | undefined;
   doneLabel?: string | undefined;
   lockedLabel?: string | undefined;
-  extras?: { href: string; label: string }[] | undefined;
-  extrasTitle?: string | undefined;
-  children?: ReactNode | undefined;
 };
 
 /**
@@ -31,15 +26,11 @@ export const PhaseCard = ({
   title,
   hint,
   state,
-  progressLabel,
   statusLabel,
   addHref,
   addLabel,
   doneLabel,
   lockedLabel,
-  extras = [],
-  extrasTitle,
-  children,
 }: PhaseCardProps) => {
   const locked = state === 'locked';
   const done = state === 'done';
@@ -75,15 +66,13 @@ export const PhaseCard = ({
             </div>
           </div>
           <p className="mt-3 max-w-xl text-sm text-ink-muted">{hint}</p>
-          <p className="mt-2 text-xs text-ink-muted">{progressLabel}</p>
-          {active ? children : null}
         </div>
 
         <div className="flex w-full flex-col gap-2 sm:w-auto sm:min-w-[220px]">
           {active && addHref && addLabel ? (
             <Link
               href={addHref}
-              className="inline-flex items-center justify-center rounded-sm border border-ink bg-ink px-4 py-3 text-center text-xs uppercase tracking-[0.16em] text-on-dark transition hover:bg-transparent hover:text-ink"
+              className="inline-flex items-center justify-center rounded-[15px] border border-ink bg-ink px-4 py-3 text-center text-xs uppercase tracking-[0.16em] text-on-dark transition hover:bg-transparent hover:text-ink"
             >
               {addLabel}
             </Link>
@@ -92,35 +81,16 @@ export const PhaseCard = ({
           {done && addHref ? (
             <Link
               href={addHref}
-              className="inline-flex items-center justify-center rounded-sm border border-border px-4 py-3 text-center text-xs uppercase tracking-[0.16em] text-ink transition hover:bg-surface"
+              className="inline-flex items-center justify-center rounded-[15px] border border-border px-4 py-3 text-center text-xs uppercase tracking-[0.16em] text-ink transition hover:bg-surface"
             >
               {doneLabel ?? addLabel}
             </Link>
           ) : null}
 
           {locked ? (
-            <span className="inline-flex items-center justify-center rounded-sm border border-dashed border-border px-4 py-3 text-center text-xs uppercase tracking-[0.16em] text-ink-muted">
+            <span className="inline-flex items-center justify-center rounded-[15px] border border-dashed border-border px-4 py-3 text-center text-xs uppercase tracking-[0.16em] text-ink-muted">
               {lockedLabel}
             </span>
-          ) : null}
-
-          {active && extras.length > 0 ? (
-            <div className="space-y-1.5 pt-1">
-              {extrasTitle ? (
-                <p className="text-[10px] uppercase tracking-[0.14em] text-ink-muted">
-                  {extrasTitle}
-                </p>
-              ) : null}
-              {extras.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="block rounded-sm border border-border px-3 py-2 text-center text-[11px] uppercase tracking-[0.12em] text-ink transition hover:bg-surface"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
           ) : null}
         </div>
       </div>

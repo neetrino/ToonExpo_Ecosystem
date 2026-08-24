@@ -1,6 +1,6 @@
 'use client';
 
-import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
+import { CalendarDays } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import {
   forwardRef,
@@ -22,6 +22,7 @@ import {
   toIsoDate,
   weekdayLabels,
 } from '@/shared/ui/date-picker-utils';
+import { DatePickerNav } from '@/shared/ui/date-picker-nav';
 import { DropdownPortal } from '@/shared/ui/dropdown-portal';
 import {
   isInsideDropdownSurface,
@@ -150,6 +151,10 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(functio
     setViewMonth(next.getMonth());
   };
 
+  const goYear = (delta: number): void => {
+    setViewYear(viewYear + delta);
+  };
+
   return (
     <div ref={rootRef} className="relative block w-full min-w-0">
       {name ? <input type="hidden" name={name} value={value} disabled={disabled} /> : null}
@@ -160,7 +165,7 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(functio
         disabled={disabled}
         className={cn(
           'flex h-11 w-full min-w-0 items-center justify-between gap-2 px-4 text-left',
-          'rounded-sm border border-border bg-surface-elevated',
+          'rounded-[15px] border border-border bg-surface-elevated',
           'text-base text-ink lg:text-sm',
           'transition-[border-color,box-shadow,background-color] duration-[var(--duration-fast)]',
           'hover:border-border-strong',
@@ -184,7 +189,7 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(functio
         <CalendarDays className="size-4 shrink-0 text-brand" aria-hidden />
       </button>
 
-      <DropdownPortal open={open && !disabled} anchorRef={buttonRef} matchWidth>
+      <DropdownPortal open={open && !disabled} anchorRef={buttonRef} matchWidth fitContent>
         <div
           ref={panelRef}
           id={panelId}
@@ -195,25 +200,17 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(functio
             'rounded-[12px] border border-header-border bg-surface-elevated shadow-md',
           )}
         >
-          <div className="mb-2 flex items-center justify-between gap-2">
-            <button
-              type="button"
-              className="flex size-8 items-center justify-center rounded-sm text-ink-muted transition-colors hover:bg-surface hover:text-brand-deep"
-              aria-label={t('previousMonth')}
-              onClick={() => goMonth(-1)}
-            >
-              <ChevronLeft className="size-4" aria-hidden />
-            </button>
-            <p className="text-sm font-semibold capitalize text-ink">{monthTitle}</p>
-            <button
-              type="button"
-              className="flex size-8 items-center justify-center rounded-sm text-ink-muted transition-colors hover:bg-surface hover:text-brand-deep"
-              aria-label={t('nextMonth')}
-              onClick={() => goMonth(1)}
-            >
-              <ChevronRight className="size-4" aria-hidden />
-            </button>
-          </div>
+          <DatePickerNav
+            title={monthTitle}
+            labels={{
+              previousYear: t('previousYear'),
+              previousMonth: t('previousMonth'),
+              nextMonth: t('nextMonth'),
+              nextYear: t('nextYear'),
+            }}
+            onYearDelta={goYear}
+            onMonthDelta={goMonth}
+          />
 
           <div className="mb-1 grid grid-cols-7 gap-0.5">
             {weekdays.map((label, index) => (

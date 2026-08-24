@@ -9,6 +9,7 @@ import type {
   PartnerProfileFormValues,
   UpdatePartnerFormValues,
 } from "@/features/partners/schemas/partner.schema";
+import { toCatalogPublicationStatus } from '@/features/catalog/utils/catalog-publication-status';
 import { sanitizePhoneInput } from "@/shared/lib/phone";
 
 const readSocial = (
@@ -23,7 +24,7 @@ export const toUpdatePartnerFormValues = (
   name: partner.name,
   slug: partner.slug,
   status: partner.status,
-  publicationStatus: partner.publicationStatus,
+  publicationStatus: toCatalogPublicationStatus(partner.publicationStatus),
   featured: partner.featured,
   shortDescriptionHy:
     partner.translations?.shortDescription?.hy ?? partner.shortDescription ?? "",
@@ -73,6 +74,6 @@ export const toPartnerOfferFormValues = (
   descriptionHy: offer.translations?.description?.hy ?? offer.description ?? "",
   descriptionRu: offer.translations?.description?.ru ?? "",
   descriptionEn: offer.translations?.description?.en ?? "",
-  publicationStatus: offer.publicationStatus,
+  publicationStatus: toCatalogPublicationStatus(offer.publicationStatus),
   sortOrder: offer.sortOrder,
 });

@@ -12,6 +12,26 @@ import { clampNormalized } from '../../utils/coordinates';
 import type { NormPoint } from '../../utils/mapping-math';
 import type { EditorMode, MappingEntity } from './mapping-canvas.types';
 
+/** Normalized hit radius for draft vertices and closing the first point. */
+const DRAFT_POINT_HIT_DISTANCE = 0.02;
+const MIN_POLYGON_VERTICES = 3;
+
+const isNearPoint = (point: NormPoint, target: NormPoint): boolean =>
+  Math.hypot(target.x - point.x, target.y - point.y) <= DRAFT_POINT_HIT_DISTANCE;
+
+const shouldClosePolygonAtCursor = (
+  point: NormPoint,
+  draft: readonly NormPoint[],
+): boolean => {
+  const first = draft[0];
+  return Boolean(first && draft.length >= MIN_POLYGON_VERTICES && isNearPoint(point, first));
+};
+
+export const snapPolygonCloseCursor = (
+  point: NormPoint,
+  draft: readonly NormPoint[],
+): NormPoint => (shouldClosePolygonAtCursor(point, draft) ? (draft[0] ?? point) : point);
+
 type MarkerDragState = {
   id: string;
   /** Cursor − marker center at pointer-down — keeps the grab point stable. */
@@ -26,8 +46,7 @@ type UseMappingCanvasInteractionsParams = {
   draftRef: MutableRefObject<NormPoint[]>;
   dragRef: MutableRefObject<MarkerDragState | null>;
   replaceOnCommitRef: MutableRefObject<boolean>;
-  confirmDeletePolygon: string;
-  confirmReplacePolygon: string;
+  onRequestPolygonConfirm: (action: 'delete' | 'replace') => void;
   readNormalized: (
     event: { clientX: number; clientY: number },
     options?: { clamp?: boolean },
@@ -41,6 +60,7 @@ type UseMappingCanvasInteractionsParams = {
   updateDraftPoints: (updater: (prev: NormPoint[]) => NormPoint[]) => void;
   commitAutoStack: (points: NormPoint[]) => boolean;
   commitBand: (points: NormPoint[], entityId: string) => string | null;
+  closePolygon: () => void;
   clearDraft: () => void;
   setMode: (mode: EditorMode) => void;
   setSelectedDraftIndex: Dispatch<SetStateAction<number | null>>;
@@ -50,8 +70,7 @@ export const useMappingCanvasInteractions = ({
   mode,
   selectedId,
   selected,
-  confirmDeletePolygon,
-  confirmReplacePolygon,
+  onRequestPolygonConfirm,
   draftRef,
   dragRef,
   replaceOnCommitRef,
@@ -62,6 +81,7 @@ export const useMappingCanvasInteractions = ({
   updateDraftPoints,
   commitAutoStack,
   commitBand,
+  closePolygon,
   clearDraft,
   setMode,
   setSelectedDraftIndex,
@@ -109,11 +129,12 @@ export const useMappingCanvasInteractions = ({
       }
 
       if (mode === 'draw-polygon') {
+        if (shouldClosePolygonAtCursor(point, draftRef.current)) {
+          closePolygon();
+          return;
+        }
         if (event.altKey) {
-          const threshold = 0.02;
-          const nearIndex = draftRef.current.findIndex(
-            (existing) => Math.hypot(existing.x - point.x, existing.y - point.y) <= threshold,
-          );
+          const nearIndex = draftRef.current.findIndex((existing) => isNearPoint(point, existing));
           if (nearIndex >= 0) {
             setSelectedDraftIndex((current) => (current === nearIndex ? null : nearIndex));
             return;
@@ -124,6 +145,7 @@ export const useMappingCanvasInteractions = ({
       }
     },
     [
+      closePolygon,
       commitAutoStack,
       commitBand,
       draftRef,
@@ -137,9 +159,8 @@ export const useMappingCanvasInteractions = ({
     ],
   );
 
-  const deletePolygon = useCallback(() => {
-    if (!selectedId || !selected?.svgPath) return;
-    if (!window.confirm(confirmDeletePolygon)) {
+  const executeDeletePolygon = useCallback(() => {
+    if (!selectedId || !selected?.svgPath) {
       return;
     }
     onChangeEntity(selectedId, { svgPath: null });
@@ -148,7 +169,6 @@ export const useMappingCanvasInteractions = ({
     setMode('select');
   }, [
     clearDraft,
-    confirmDeletePolygon,
     onChangeEntity,
     onPolygonDeleted,
     selected,
@@ -156,12 +176,11 @@ export const useMappingCanvasInteractions = ({
     setMode,
   ]);
 
-  const startFreshPolygon = useCallback(() => {
-    if (!selectedId) return;
+  const executeStartFreshPolygon = useCallback(() => {
+    if (!selectedId) {
+      return;
+    }
     if (selected?.svgPath) {
-      if (!window.confirm(confirmReplacePolygon)) {
-        return;
-      }
       onChangeEntity(selectedId, { svgPath: null });
       onPolygonDeleted?.(selectedId);
     }
@@ -170,7 +189,6 @@ export const useMappingCanvasInteractions = ({
     setMode('draw-polygon');
   }, [
     clearDraft,
-    confirmReplacePolygon,
     onChangeEntity,
     onPolygonDeleted,
     replaceOnCommitRef,
@@ -178,6 +196,24 @@ export const useMappingCanvasInteractions = ({
     selectedId,
     setMode,
   ]);
+
+  const deletePolygon = useCallback(() => {
+    if (!selectedId || !selected?.svgPath) {
+      return;
+    }
+    onRequestPolygonConfirm('delete');
+  }, [onRequestPolygonConfirm, selected, selectedId]);
+
+  const startFreshPolygon = useCallback(() => {
+    if (!selectedId) {
+      return;
+    }
+    if (selected?.svgPath) {
+      onRequestPolygonConfirm('replace');
+      return;
+    }
+    executeStartFreshPolygon();
+  }, [executeStartFreshPolygon, onRequestPolygonConfirm, selected, selectedId]);
 
   const onMarkerPointerDown = useCallback(
     (event: ReactPointerEvent<HTMLButtonElement>, id: string, markerX: number, markerY: number) => {
@@ -220,6 +256,8 @@ export const useMappingCanvasInteractions = ({
     onCanvasClick,
     deletePolygon,
     startFreshPolygon,
+    executeDeletePolygon,
+    executeStartFreshPolygon,
     onMarkerPointerDown,
     onMarkerPointerMove,
     onMarkerPointerUp,

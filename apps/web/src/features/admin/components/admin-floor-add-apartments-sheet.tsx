@@ -2,10 +2,15 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { useAdminBulkCreateApartmentsMutation } from '@/features/admin/hooks/use-admin-inventory';
+import {
+  PLATFORM_INVENTORY_SHEET_SCOPE,
+  toCatalogMutationScope,
+  type InventorySheetScope,
+} from '@/features/admin/inventory-sheet-scope';
 import {
   bulkApartmentsSchema,
   type BulkApartmentsFormValues,
@@ -15,6 +20,7 @@ import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
+import { useFormErrorToast } from '@/shared/ui/use-form-error-toast';
 
 type AdminFloorAddApartmentsSheetProps = {
   open: boolean;
@@ -23,6 +29,7 @@ type AdminFloorAddApartmentsSheetProps = {
   buildingId: string;
   floorId: string;
   floorLabel: string;
+  sheetScope?: InventorySheetScope | undefined;
 };
 
 const DEFAULT_FORM_VALUES: BulkApartmentsFormValues = {
@@ -46,11 +53,15 @@ export const AdminFloorAddApartmentsSheet = ({
   buildingId,
   floorId,
   floorLabel,
+  sheetScope = PLATFORM_INVENTORY_SHEET_SCOPE,
 }: AdminFloorAddApartmentsSheetProps) => {
   const t = useTranslations('Admin.apartments.create');
   const inventoryT = useTranslations('Builder.inventory');
   const mutation = useAdminBulkCreateApartmentsMutation();
-  const [error, setError] = useState<string | null>(null);
+  const mutationScope = toCatalogMutationScope(sheetScope, companyId);
+  const { showError, onInvalid, errorToast } = useFormErrorToast({
+    fieldLabels: { count: inventoryT('count'), startNumber: inventoryT('startNumber') },
+  });
 
   const {
     register,
@@ -66,24 +77,23 @@ export const AdminFloorAddApartmentsSheet = ({
     if (!open) {
       return;
     }
-    setError(null);
     reset(DEFAULT_FORM_VALUES);
   }, [open, reset]);
 
   const onSubmit = handleSubmit(async (values) => {
-    setError(null);
     try {
       await mutation.mutateAsync({
         companyId,
         buildingId,
         floorId,
         body: { apartments: buildBulkApartments(values) },
+        scope: mutationScope,
       });
       onClose();
     } catch {
-      setError(inventoryT('errors.generic'));
+      showError(inventoryT('errors.generic'));
     }
-  });
+  }, onInvalid);
 
   const busy = isSubmitting || mutation.isPending;
 
@@ -122,15 +132,10 @@ export const AdminFloorAddApartmentsSheet = ({
           </FormField>
         </div>
 
-        {error ? (
-          <p role="alert" className="text-sm text-danger">
-            {error}
-          </p>
-        ) : null}
-
         <Button type="submit" size="sm" variant="secondary" disabled={busy}>
           {busy ? inventoryT('adding') : t('submit')}
         </Button>
+        {errorToast}
       </form>
     </AdminCreateSheet>
   );

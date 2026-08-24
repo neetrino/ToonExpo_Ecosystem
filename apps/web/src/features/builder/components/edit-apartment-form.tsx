@@ -3,7 +3,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { PortalApartmentDetail } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import {
@@ -28,6 +27,7 @@ import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
 import { Select } from '@/shared/ui/select';
 import { Textarea } from '@/shared/ui/textarea';
+import { useFormErrorToast } from '@/shared/ui/use-form-error-toast';
 import { useSuccessToast } from '@/shared/ui/use-success-toast';
 
 type EditApartmentFormProps = {
@@ -40,8 +40,15 @@ type EditApartmentFormProps = {
 export const EditApartmentForm = ({ apartment }: EditApartmentFormProps) => {
   const t = useTranslations('Builder.apartments');
   const mutation = useUpdateApartmentMutation(apartment.id);
-  const [formError, setFormError] = useState<string | null>(null);
   const { showSuccess, successToast } = useSuccessToast();
+  const { showError, onInvalid, errorToast } = useFormErrorToast({
+    fieldLabels: {
+      number: t('form.number'),
+      matterportUrl: t('form.matterportUrl'),
+      external3dUrl: t('form.external3dUrl'),
+      description: t('form.description'),
+    },
+  });
 
   const {
     register,
@@ -54,14 +61,13 @@ export const EditApartmentForm = ({ apartment }: EditApartmentFormProps) => {
   });
 
   const onSubmit = handleSubmit(async (values) => {
-    setFormError(null);
     try {
       await mutation.mutateAsync(toApartmentUpdateRequest(values, apartment));
       showSuccess(t('saveSuccess'));
     } catch {
-      setFormError(t('errors.generic'));
+      showError(t('errors.generic'));
     }
-  });
+  }, onInvalid);
 
   const busy = isSubmitting || mutation.isPending;
 
@@ -204,17 +210,13 @@ export const EditApartmentForm = ({ apartment }: EditApartmentFormProps) => {
       </div>
 
       <FormSaveBar>
-        {formError ? (
-          <p role="alert" className="rounded-sm bg-danger-soft px-3 py-2 text-sm text-danger">
-            {formError}
-          </p>
-        ) : null}
         <Button type="submit" variant="secondary" className="w-full" disabled={busy || !isDirty}>
           {busy ? t('saving') : t('save')}
         </Button>
       </FormSaveBar>
     </form>
     {successToast}
+    {errorToast}
     </>
   );
 };

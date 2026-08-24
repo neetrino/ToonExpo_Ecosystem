@@ -6,6 +6,7 @@ import {
   bandPolygonFromEdge,
   normalizedPointsToSvgPath,
   offsetNormalizedPath,
+  DEFAULT_MARKER_POINT,
   pathCentroid,
   stackBandsFromQuad,
   type NormPoint,
@@ -92,7 +93,7 @@ export const useMappingCanvasCommits = ({
       setDraftPoints([]);
       setEditShape(null);
       setSelectedDraftIndex(null);
-      setMode(editing ? 'select' : 'draw-polygon');
+      setMode('select');
       return svgPath;
     },
     [
@@ -130,7 +131,7 @@ export const useMappingCanvasCommits = ({
       draftRef.current = [];
       setDraftPoints([]);
       setSelectedDraftIndex(null);
-      setMode('draw-band');
+      setMode('select');
       return svgPath;
     },
     [
@@ -264,6 +265,18 @@ export const useMappingCanvasCommits = ({
       if (next === mode) return;
       if (!resolveOpenDraft()) return;
       setMode(next);
+      if (next === 'place-marker') {
+        const entityId = selectedIdRef.current;
+        const entity = entityId
+          ? entitiesRef.current.find((item) => item.id === entityId)
+          : undefined;
+        if (entity && entity.markerX == null && entity.markerY == null) {
+          onChangeEntity(entity.id, {
+            markerX: DEFAULT_MARKER_POINT.x,
+            markerY: DEFAULT_MARKER_POINT.y,
+          });
+        }
+      }
       if (
         next === 'draw-polygon' ||
         next === 'edit-polygon' ||
@@ -274,7 +287,16 @@ export const useMappingCanvasCommits = ({
         if (next !== 'edit-polygon') clearDraft();
       }
     },
-    [clearDraft, mode, replaceOnCommitRef, resolveOpenDraft, setMode],
+    [
+      clearDraft,
+      entitiesRef,
+      mode,
+      onChangeEntity,
+      replaceOnCommitRef,
+      resolveOpenDraft,
+      selectedIdRef,
+      setMode,
+    ],
   );
 
   const nudgeSelection = useCallback(

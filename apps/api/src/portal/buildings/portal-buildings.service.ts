@@ -73,6 +73,7 @@ export class PortalBuildingsService {
         ...(dto.description !== undefined ? { description: dto.description } : {}),
         ...(dto.floorsCount !== undefined ? { floorsCount: dto.floorsCount } : {}),
         ...(dto.coverMediaId !== undefined ? { coverMediaId: dto.coverMediaId } : {}),
+        ...(dto.verified !== undefined ? { verified: dto.verified } : {}),
         ...(dto.internalCode !== undefined ? { internalCode: dto.internalCode } : {}),
         ...(dto.districtId !== undefined ? { districtId: dto.districtId } : {}),
       },
@@ -96,6 +97,7 @@ export class PortalBuildingsService {
         ...(dto.displayOrder !== undefined ? { displayOrder: dto.displayOrder } : {}),
         ...(dto.floorsCount !== undefined ? { floorsCount: dto.floorsCount } : {}),
         ...(dto.coverMediaId !== undefined ? { coverMediaId: dto.coverMediaId } : {}),
+        ...(dto.verified !== undefined ? { verified: dto.verified } : {}),
         ...(dto.internalCode !== undefined ? { internalCode: dto.internalCode } : {}),
         updatedByUserId: userId,
       },
@@ -148,14 +150,12 @@ export class PortalBuildingsService {
         id: buildingId,
         project: { builderCompanyId: companyId },
       },
-      select: { id: true, publicationStatus: true },
+      select: { id: true, projectId: true },
     });
     if (!building) {
       throw entityNotFound('Building');
     }
-    if (building.publicationStatus !== PublicationStatus.draft) {
-      throw new BadRequestException('Only draft buildings can be deleted');
-    }
     await this.prisma.db.building.delete({ where: { id: buildingId } });
+    this.webRevalidation.revalidateCatalog(building.projectId);
   }
 }

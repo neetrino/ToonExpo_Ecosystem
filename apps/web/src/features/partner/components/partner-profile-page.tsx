@@ -3,9 +3,9 @@
 import type { PortalPartnerDetail } from '@toonexpo/contracts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
 import { useForm, type Control } from 'react-hook-form';
 
+import { toCatalogPublicationStatus } from '@/features/catalog/utils/catalog-publication-status';
 import {
   usePortalPartnerQuery,
   useUpdatePortalPartnerMutation,
@@ -29,6 +29,7 @@ import {
 import { toPartnerProfileFormValues } from '@/features/partners/utils/partner-form-values';
 import { toUpdatePortalPartnerBody } from '@/features/partners/utils/partner-mappers';
 import { Button } from '@/shared/ui/button';
+import { useFormErrorToast } from '@/shared/ui/use-form-error-toast';
 import { useSuccessToast } from '@/shared/ui/use-success-toast';
 
 /**
@@ -61,8 +62,15 @@ const PartnerProfileForm = ({ partner }: PartnerProfileFormProps) => {
   const t = useTranslations('Partner.profile');
   const tPartners = useTranslations('Partners');
   const updateMutation = useUpdatePortalPartnerMutation();
-  const [saveError, setSaveError] = useState<string | null>(null);
   const { showSuccess, successToast } = useSuccessToast();
+  const { showError, onInvalid, errorToast } = useFormErrorToast({
+    fieldLabels: {
+      shortDescription: tPartners('form.shortDescription'),
+      fullDescription: tPartners('form.fullDescription'),
+      contactPhone: tPartners('form.contactPhone'),
+      contactEmail: tPartners('form.contactEmail'),
+    },
+  });
 
   const form = useForm<PartnerProfileFormValues>({
     resolver: zodResolver(partnerProfileSchema),
@@ -70,14 +78,13 @@ const PartnerProfileForm = ({ partner }: PartnerProfileFormProps) => {
   });
 
   const onSubmit = form.handleSubmit(async (values) => {
-    setSaveError(null);
     try {
       await updateMutation.mutateAsync(toUpdatePortalPartnerBody(values));
       showSuccess(t('saveSuccess'));
     } catch {
-      setSaveError(t('errors.generic'));
+      showError(t('errors.generic'));
     }
-  });
+  }, onInvalid);
 
   return (
     <div className="flex flex-col gap-6">
@@ -104,7 +111,9 @@ const PartnerProfileForm = ({ partner }: PartnerProfileFormProps) => {
             type: tPartners(`types.${partner.type}`),
             slug: partner.slug,
             status: tPartners(`companyStatus.${partner.status}`),
-            publicationStatus: tPartners(`publication.${partner.publicationStatus}`),
+            publicationStatus: tPartners(
+              `publication.${toCatalogPublicationStatus(partner.publicationStatus)}`,
+            ),
             featured: partner.featured,
           }}
         />
@@ -114,17 +123,12 @@ const PartnerProfileForm = ({ partner }: PartnerProfileFormProps) => {
           context="portal"
         />
 
-        {saveError ? (
-          <p role="alert" className="text-sm text-danger">
-            {saveError}
-          </p>
-        ) : null}
-
         <Button type="submit" disabled={updateMutation.isPending || !form.formState.isDirty}>
           {updateMutation.isPending ? t('saving') : t('save')}
         </Button>
       </form>
       {successToast}
+      {errorToast}
     </div>
   );
 };

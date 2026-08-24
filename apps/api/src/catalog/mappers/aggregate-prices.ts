@@ -1,11 +1,11 @@
-import type { ApartmentSalesStatus, Prisma } from "@toonexpo/db";
+import type { ApartmentSalesStatus, Prisma } from '@toonexpo/db';
 
-import { DEFAULT_CATALOG_CURRENCY } from "../catalog.constants.js";
+import { DEFAULT_CATALOG_CURRENCY } from '../catalog.constants.js';
 import {
   decimalToString,
   isPriceOnRequestEnabled,
   shouldRevealCatalogPrice,
-} from "./catalog.mapper.js";
+} from './catalog.mapper.js';
 
 type ApartmentPriceRow = {
   salesStatus: ApartmentSalesStatus;

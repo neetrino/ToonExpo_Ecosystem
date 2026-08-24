@@ -25,7 +25,7 @@ export class AdminEventsService {
 
   async list(): Promise<EventListResponse> {
     const events = await this.prisma.db.event.findMany({
-      orderBy: [{ updatedAt: "desc" }],
+      orderBy: [{ createdAt: "desc" }],
     });
     return { data: events.map(toEventSummary) };
   }

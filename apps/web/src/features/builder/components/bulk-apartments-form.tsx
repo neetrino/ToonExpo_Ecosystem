@@ -1,7 +1,6 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -14,6 +13,7 @@ import { buildBulkApartments } from '@/features/builder/utils/project-mappers';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
+import { useFormErrorToast } from '@/shared/ui/use-form-error-toast';
 
 type BulkApartmentsFormProps = {
   projectId: string;
@@ -27,7 +27,9 @@ type BulkApartmentsFormProps = {
 export const BulkApartmentsForm = ({ projectId, floorId, onSuccess }: BulkApartmentsFormProps) => {
   const t = useTranslations('Builder.inventory');
   const mutation = useBulkCreateApartmentsMutation(projectId, floorId);
-  const [error, setError] = useState<string | null>(null);
+  const { showError, onInvalid, errorToast } = useFormErrorToast({
+    fieldLabels: { count: t('count'), startNumber: t('startNumber') },
+  });
   const {
     register,
     handleSubmit,
@@ -47,14 +49,13 @@ export const BulkApartmentsForm = ({ projectId, floorId, onSuccess }: BulkApartm
   });
 
   const onSubmit = handleSubmit(async (values) => {
-    setError(null);
     try {
       await mutation.mutateAsync({ apartments: buildBulkApartments(values) });
       onSuccess?.();
     } catch {
-      setError(t('errors.generic'));
+      showError(t('errors.generic'));
     }
-  });
+  }, onInvalid);
 
   const busy = isSubmitting || mutation.isPending;
 
@@ -84,14 +85,10 @@ export const BulkApartmentsForm = ({ projectId, floorId, onSuccess }: BulkApartm
           <Input id={`bulk-price-${floorId}`} {...register('price')} />
         </FormField>
       </div>
-      {error ? (
-        <p role="alert" className="text-sm text-danger">
-          {error}
-        </p>
-      ) : null}
       <Button type="submit" variant="secondary" disabled={busy}>
         {busy ? t('adding') : t('createApartments')}
       </Button>
+      {errorToast}
     </form>
   );
 };

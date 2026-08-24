@@ -8,6 +8,8 @@ import { CatalogEntityQrOverlay } from '@/features/catalog/components/catalog-en
 import { cn } from '@/shared/ui/cn';
 import { IconButton } from '@/shared/ui/icon-button';
 
+const QR_ICON_CLASS = 'size-6';
+
 type CatalogEntityQrProps = {
   payloadUrl: string;
   /** Accessible title for the QR SVG inside the modal. */
@@ -39,7 +41,7 @@ export const CatalogEntityQr = ({
           setOpen(true);
         }}
       >
-        <QrCode className="size-5" aria-hidden />
+        <QrCode className={QR_ICON_CLASS} aria-hidden />
       </IconButton>
 
       <CatalogEntityQrOverlay

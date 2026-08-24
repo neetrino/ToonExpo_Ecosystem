@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import {
+  IsBoolean,
   IsDateString,
   IsNumber,
   IsObject,
@@ -110,6 +111,11 @@ export class CreatePortalProjectDto {
   @IsOptional()
   @IsString()
   coverMediaId?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  verified?: boolean;
 
   @ApiPropertyOptional({ type: PortalTranslationsDto })
   @IsOptional()

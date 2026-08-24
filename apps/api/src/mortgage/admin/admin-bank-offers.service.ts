@@ -45,11 +45,7 @@ export class AdminBankOffersService {
         ? { where: { partnerCompanyId: query.partnerCompanyId } }
         : {}),
       include: bankOfferInclude,
-      orderBy: [
-        { featured: "desc" },
-        { sortOrder: "asc" },
-        { createdAt: "desc" },
-      ],
+      orderBy: [{ createdAt: "desc" }],
     });
 
     return {

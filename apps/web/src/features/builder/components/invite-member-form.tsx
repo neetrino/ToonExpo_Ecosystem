@@ -2,7 +2,6 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useLocale, useTranslations } from 'next-intl';
-import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { COMPANY_MEMBER_ROLES } from '@/features/builder/constants';
@@ -18,6 +17,7 @@ import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
 import { PhoneFormControl } from '@/shared/ui/phone-form-control';
 import { Select } from '@/shared/ui/select';
+import { useFormErrorToast } from '@/shared/ui/use-form-error-toast';
 
 type InviteMemberFormProps = {
   onSuccess: (email: string) => void;
@@ -37,7 +37,13 @@ export const InviteMemberForm = ({ onSuccess }: InviteMemberFormProps) => {
   const t = useTranslations('Builder.team');
   const locale = useLocale();
   const mutation = useInviteMemberMutation();
-  const [formError, setFormError] = useState<string | null>(null);
+  const { showError, onInvalid, errorToast } = useFormErrorToast({
+    fieldLabels: {
+      name: t('form.name'),
+      email: t('form.email'),
+      phone: t('form.phone'),
+    },
+  });
 
   const {
     register,
@@ -56,7 +62,6 @@ export const InviteMemberForm = ({ onSuccess }: InviteMemberFormProps) => {
   });
 
   const onSubmit = handleSubmit(async (values) => {
-    setFormError(null);
     const phone = toOptionalPhone(values.phone);
     try {
       await mutation.mutateAsync({
@@ -69,9 +74,9 @@ export const InviteMemberForm = ({ onSuccess }: InviteMemberFormProps) => {
       reset();
       onSuccess(values.email);
     } catch (error) {
-      setFormError(t(`errors.${mapInviteError(error)}`));
+      showError(t(`errors.${mapInviteError(error)}`));
     }
-  });
+  }, onInvalid);
 
   const busy = isSubmitting || mutation.isPending;
 
@@ -122,14 +127,10 @@ export const InviteMemberForm = ({ onSuccess }: InviteMemberFormProps) => {
           )}
         />
       </FormField>
-      {formError ? (
-        <p role="alert" className="rounded-sm bg-danger-soft px-3 py-2 text-sm text-danger">
-          {formError}
-        </p>
-      ) : null}
       <Button type="submit" variant="secondary" disabled={busy}>
         {busy ? t('form.submitting') : t('form.submit')}
       </Button>
+      {errorToast}
     </form>
   );
 };

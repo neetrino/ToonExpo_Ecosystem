@@ -17,6 +17,8 @@ import { TranslationTabs } from '@/features/builder/components/translation-tabs'
 import { getProjectFormPlaceholder } from '@/features/builder/constants/project-content-placeholders';
 import { useAutoProjectSlug } from '@/features/builder/hooks/use-auto-project-slug';
 import { useUpdatePortalProjectMutation } from '@/features/builder/hooks/use-portal-projects';
+import { useProjectFormErrorToast } from '@/features/builder/hooks/use-project-form-error-toast';
+import { useSavedProjectCover } from '@/features/builder/hooks/use-saved-project-cover-url';
 import {
   updateProjectSchema,
   type UpdateProjectFormValues,
@@ -55,8 +57,8 @@ const toFormValues = (project: PortalProjectDetail): UpdateProjectFormValues => 
   projectType: project.projectType ?? '',
   constructionStatus: project.constructionStatus ?? '',
   completionDate: project.completionDate ?? '',
-  coverMediaId: project.coverMediaId ?? '',
   ...catalogJsonToFormSlice(project.amenities, project.nearbyPlaces),
+  coverMediaId: project.coverMediaId ?? project.cover?.id ?? '',
 });
 
 /**
@@ -68,19 +70,27 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
   const t = useTranslations('Builder.projects');
   const siteLocale = useLocale();
   const updateMutation = useUpdatePortalProjectMutation(project.id);
-  const [formError, setFormError] = useState<string | null>(null);
+  const savedCover = useSavedProjectCover(project);
+  const initialValues = toFormValues(project);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(savedCover.url);
   const { showSuccess, successToast } = useSuccessToast();
+  const { showError, onInvalid, errorToast, focusLocale, focusTick } =
+    useProjectFormErrorToast();
 
   const {
     register,
     handleSubmit,
     control,
+    reset,
     setValue,
     getValues,
-    formState: { errors, isSubmitting, isDirty },
+    formState: { errors, isSubmitting, isDirty, dirtyFields },
   } = useForm<UpdateProjectFormValues>({
     resolver: zodResolver(updateProjectSchema),
-    defaultValues: toFormValues(project),
+    defaultValues: {
+      ...initialValues,
+      coverMediaId: initialValues.coverMediaId || savedCover.mediaId || '',
+    },
   });
 
   const { lockSlugAuto } = useAutoProjectSlug({
@@ -92,14 +102,23 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
   const slugField = register('slug');
 
   const onSubmit = handleSubmit(async (values) => {
-    setFormError(null);
     try {
-      await updateMutation.mutateAsync(toUpdateProjectRequest(values));
+      const shouldSendCover =
+        values.coverMediaId.length > 0 || Boolean(dirtyFields.coverMediaId);
+      const updated = await updateMutation.mutateAsync(
+        toUpdateProjectRequest(values, { includeCoverMediaId: shouldSendCover }),
+      );
+      const nextValues = toFormValues(updated);
+      if (!nextValues.coverMediaId && values.coverMediaId) {
+        nextValues.coverMediaId = values.coverMediaId;
+      }
+      reset(nextValues, { keepDirty: false });
+      setPreviewUrl(updated.cover?.thumbnailUrl ?? updated.cover?.fileUrl ?? previewUrl);
       showSuccess(t('detail.saveSuccess'));
     } catch {
-      setFormError(t('errors.generic'));
+      showError(t('errors.generic'));
     }
-  });
+  }, onInvalid);
 
   const busy = isSubmitting || updateMutation.isPending;
 
@@ -110,7 +129,7 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
       className={cn('flex flex-col gap-5', FORM_SAVE_BAR_SCROLL_CLEARANCE_CLASS)}
       noValidate
     >
-      <TranslationTabs>
+      <TranslationTabs focusLocale={focusLocale} focusTick={focusTick}>
         {(locale) => (
           <div className="flex flex-col gap-4">
             <FormField
@@ -154,7 +173,7 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
                 )}
               />
             </FormField>
-            <div className="grid gap-4 sm:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2">
               <FormField id={`edit-slug-${locale}`} label={t('form.slug')}>
                 <Input
                   id={`edit-slug-${locale}`}
@@ -181,13 +200,15 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
                   )}
                 />
               </FormField>
-              <FormField id={`edit-district-${locale}`} label={t('form.district')}>
-                <Input
-                  id={`edit-district-${locale}`}
-                  placeholder={getProjectFormPlaceholder(locale, 'district')}
-                  {...register('district')}
-                />
-              </FormField>
+              <div className="sm:col-span-2">
+                <FormField id={`edit-district-${locale}`} label={t('form.district')}>
+                  <Input
+                    id={`edit-district-${locale}`}
+                    placeholder={getProjectFormPlaceholder(locale, 'district')}
+                    {...register('district')}
+                  />
+                </FormField>
+              </div>
             </div>
           </div>
         )}
@@ -228,7 +249,17 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
             label={t('form.coverMedia')}
             context={mediaContext}
             value={field.value}
-            onChange={field.onChange}
+            onChange={(mediaAssetId) => {
+              field.onChange(mediaAssetId);
+              if (mediaAssetId.trim().length === 0) {
+                setPreviewUrl(null);
+              }
+            }}
+            onAssetSelected={(asset) => {
+              field.onChange(asset.id);
+              setPreviewUrl(asset.fileUrl);
+            }}
+            previewUrl={previewUrl ?? savedCover.url}
             error={fieldState.error?.message}
           />
         )}
@@ -241,11 +272,6 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
       />
 
       <FormSaveBar>
-          {formError ? (
-            <p role="alert" className="rounded-sm bg-danger-soft px-3 py-2 text-sm text-danger">
-              {formError}
-            </p>
-          ) : null}
           <Button
             type="submit"
             variant="secondary"
@@ -257,6 +283,7 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
       </FormSaveBar>
     </form>
     {successToast}
+    {errorToast}
     </>
   );
 };

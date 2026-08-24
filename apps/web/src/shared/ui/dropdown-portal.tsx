@@ -36,6 +36,11 @@ type DropdownPortalProps = {
   matchWidth?: boolean | undefined;
   /** Force menu width to equal the trigger (no wider overflow). */
   exactWidth?: boolean | undefined;
+  /**
+   * Skip the listbox height cap so fixed-size panels (e.g. calendars) show fully
+   * without an inner scrollbar when viewport space allows.
+   */
+  fitContent?: boolean | undefined;
 };
 
 type Align = 'start' | 'end';
@@ -114,12 +119,26 @@ const computeMenuCoords = (
   menu: HTMLDivElement | null,
   align: Align,
   lockWidthToAnchor: boolean,
+  fitContent: boolean,
 ): { host: HTMLElement; coords: MenuCoords } | null => {
   const stage = findStage(anchor);
   const anchorRect = anchor.getBoundingClientRect();
   const anchorWidth = anchor.offsetWidth;
   const menuWidth = lockWidthToAnchor ? anchorWidth : (menu?.offsetWidth ?? 0);
   const menuHeight = measureMenuHeight(menu);
+  const heightForPlacement =
+    menuHeight > 0 ? menuHeight : fitContent ? 360 : MENU_HEIGHT_ESTIMATE_PX;
+  const resolveMaxHeight = (space: number): number => {
+    const available = Math.max(MENU_MIN_HEIGHT_PX, space);
+    if (fitContent) {
+      // Prefer the natural panel height when it fits — avoids an inner scrollbar.
+      if (menuHeight > 0 && menuHeight <= available) {
+        return menuHeight;
+      }
+      return available;
+    }
+    return Math.min(MENU_MAX_HEIGHT_PX, available);
+  };
 
   // In-flow / sheet triggers: portal into the zoomed stage in design px.
   // Keep stage coords even when the trigger sits under fixed sheet chrome so
@@ -138,11 +157,8 @@ const computeMenuCoords = (
     const spaceAboveViewport = anchorRect.top / local.scale - MENU_GAP_PX - VIEWPORT_EDGE_PAD_PX;
     const spaceBelow = Math.min(spaceBelowStage, spaceBelowViewport);
     const spaceAbove = Math.min(spaceAboveStage, spaceAboveViewport);
-    const openUp = shouldOpenUpward(spaceBelow, spaceAbove, menuHeight);
-    const maxHeight = Math.min(
-      MENU_MAX_HEIGHT_PX,
-      Math.max(MENU_MIN_HEIGHT_PX, openUp ? spaceAbove : spaceBelow),
-    );
+    const openUp = shouldOpenUpward(spaceBelow, spaceAbove, heightForPlacement);
+    const maxHeight = resolveMaxHeight(openUp ? spaceAbove : spaceBelow);
     let left = align === 'end' ? local.right - menuWidth : local.left;
     if (!lockWidthToAnchor) {
       const stageLayoutWidth = stage.offsetWidth;
@@ -152,7 +168,7 @@ const computeMenuCoords = (
       );
     }
     const top = openUp
-      ? local.top - MENU_GAP_PX - Math.min(menuHeight || MENU_HEIGHT_ESTIMATE_PX, maxHeight)
+      ? local.top - MENU_GAP_PX - Math.min(heightForPlacement, maxHeight)
       : local.bottom + MENU_GAP_PX;
 
     return {
@@ -174,31 +190,28 @@ const computeMenuCoords = (
   const viewW = document.documentElement.clientWidth || window.innerWidth;
   const spaceBelow = viewH - anchorRect.bottom - MENU_GAP_PX - VIEWPORT_EDGE_PAD_PX;
   const spaceAbove = anchorRect.top - MENU_GAP_PX - VIEWPORT_EDGE_PAD_PX;
-  const openUp = shouldOpenUpward(spaceBelow, spaceAbove, menuHeight);
-  const maxHeight = Math.min(
-    MENU_MAX_HEIGHT_PX,
-    Math.max(MENU_MIN_HEIGHT_PX, openUp ? spaceAbove : spaceBelow),
-  );
+  const openUp = shouldOpenUpward(spaceBelow, spaceAbove, heightForPlacement);
+  const maxHeight = resolveMaxHeight(openUp ? spaceAbove : spaceBelow);
   let left = align === 'end' ? anchorRect.right - menuWidth : anchorRect.left;
   if (!lockWidthToAnchor) {
     left = Math.max(VIEWPORT_EDGE_PAD_PX, Math.min(left, viewW - VIEWPORT_EDGE_PAD_PX - menuWidth));
   }
   const top = openUp
-    ? anchorRect.top - MENU_GAP_PX - Math.min(menuHeight || MENU_HEIGHT_ESTIMATE_PX, maxHeight)
+    ? anchorRect.top - MENU_GAP_PX - Math.min(heightForPlacement, maxHeight)
     : anchorRect.bottom + MENU_GAP_PX;
 
-    return {
-      host: document.body,
-      coords: {
-        position: 'fixed',
-        top,
-        left,
-        width: anchorWidth,
-        maxWidth: resolveMenuMaxWidth(lockWidthToAnchor, anchorWidth, left, viewW),
-        maxHeight,
-        placement: openUp ? 'top' : 'bottom',
-      },
-    };
+  return {
+    host: document.body,
+    coords: {
+      position: 'fixed',
+      top,
+      left,
+      width: anchorWidth,
+      maxWidth: resolveMenuMaxWidth(lockWidthToAnchor, anchorWidth, left, viewW),
+      maxHeight,
+      placement: openUp ? 'top' : 'bottom',
+    },
+  };
 };
 
 const isSamePlacement = (
@@ -232,6 +245,7 @@ export const DropdownPortal = ({
   align = 'start',
   matchWidth = false,
   exactWidth = false,
+  fitContent = false,
 }: DropdownPortalProps) => {
   const [mounted, setMounted] = useState(false);
   const [placement, setPlacement] = useState<{ host: HTMLElement; coords: MenuCoords } | null>(
@@ -262,7 +276,7 @@ export const DropdownPortal = ({
       if (!anchor) {
         return;
       }
-      const next = computeMenuCoords(anchor, portalRef.current, align, exactWidth);
+      const next = computeMenuCoords(anchor, portalRef.current, align, exactWidth, fitContent);
       if (!next) {
         return;
       }
@@ -289,7 +303,7 @@ export const DropdownPortal = ({
       window.removeEventListener('scroll', update, true);
       window.removeEventListener('resize', update);
     };
-  }, [isVisible, isExiting, anchorRef, align, exactWidth]);
+  }, [isVisible, isExiting, anchorRef, align, exactWidth, fitContent]);
 
   if (!mounted || !isVisible) {
     return null;

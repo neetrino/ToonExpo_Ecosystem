@@ -5,6 +5,12 @@ import { useTranslations } from 'next-intl';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
+import {
+  createPortalBuilding,
+  deletePortalBuilding,
+  updatePortalBuilding,
+} from '@/features/builder/api/portal-buildings-api';
+import { createPortalFloor } from '@/features/builder/api/portal-floors-api';
 import { BackLink } from '@/shared/ui/back-link';
 
 import {
@@ -18,6 +24,7 @@ import { interactiveMappingProjectQueryKey } from '../../constants';
 import { useInteractiveMappingProjectQuery } from '../../hooks/use-interactive-mapping';
 import { useMappingCatalog } from '../../hooks/use-mapping-catalog';
 import { DistrictBuildingEditor } from '../editors/district-building-editor';
+import { CreateEntityInlineForm } from '../forms/create-entity-inline-form';
 import { MappingImageUploader } from '../media/mapping-image-uploader';
 
 export type DistrictPhasePageProps = {
@@ -96,6 +103,10 @@ export const DistrictPhasePage = ({ projectId, districtId }: DistrictPhasePagePr
   const buildings = detailQuery.data.buildings.filter(
     (item) => item.districtId === districtId || item.districtId == null,
   );
+  const floorBuilding = buildings[0];
+  const floorBuildingFloors = floorBuilding
+    ? detailQuery.data.floors.filter((item) => item.buildingId === floorBuilding.id)
+    : [];
 
   if (!district) {
     return (
@@ -163,7 +174,10 @@ export const DistrictPhasePage = ({ projectId, districtId }: DistrictPhasePagePr
   return (
     <div className="space-y-6">
       <div>
-        <BackLink href={`${basePath}/${projectId}`} label={t('backToWizard')} />
+        <BackLink
+          href={`${basePath}/${projectId}/phases/buildings`}
+          label={t('backToDistricts')}
+        />
         <h1 className="mt-3 font-display text-3xl text-ink">
           {t('pages.district', { name: district.name })}
         </h1>
@@ -198,6 +212,66 @@ export const DistrictPhasePage = ({ projectId, districtId }: DistrictPhasePagePr
           viewBoxHeight={height}
           buildings={buildings}
           hotspots={canvas.hotspots}
+          createForm={
+            <>
+              <CreateEntityInlineForm
+                title={t('forms.createBuilding')}
+                submitLabel={t('forms.createBuilding')}
+                pendingLabel={t('forms.saving')}
+                nameLabel={t('forms.name')}
+                namePlaceholder={t('forms.buildingPlaceholder')}
+                onSubmit={async (name) => {
+                  await createPortalBuilding(
+                    projectId,
+                    { name, districtId },
+                    { scope: catalogScope },
+                  );
+                  void queryClient.invalidateQueries({
+                    queryKey: interactiveMappingProjectQueryKey(projectId, mode),
+                  });
+                }}
+              />
+              {floorBuilding ? (
+                <CreateEntityInlineForm
+                  title={t('forms.createFloor')}
+                  submitLabel={t('forms.createFloor')}
+                  pendingLabel={t('forms.saving')}
+                  nameLabel={t('forms.floorNumber')}
+                  namePlaceholder={t('forms.floorPlaceholder')}
+                  digitsOnly
+                  submitErrorKind="floor"
+                  onSubmit={async (number) => {
+                    const floorNumber = Number(number);
+                    await createPortalFloor(
+                      floorBuilding.id,
+                      { floorNumber },
+                      { scope: catalogScope },
+                    );
+                    await updatePortalBuilding(
+                      floorBuilding.id,
+                      {
+                        floorsCount: Math.max(
+                          floorBuilding.floorsCount ?? 0,
+                          floorBuildingFloors.length + 1,
+                          floorNumber,
+                        ),
+                      },
+                      { scope: catalogScope },
+                    );
+                    void queryClient.invalidateQueries({
+                      queryKey: interactiveMappingProjectQueryKey(projectId, mode),
+                    });
+                  }}
+                />
+              ) : null}
+            </>
+          }
+          onDeleteBuilding={async (buildingId) => {
+            await deletePortalBuilding(buildingId, { scope: catalogScope });
+            void queryClient.invalidateQueries({
+              queryKey: interactiveMappingProjectQueryKey(projectId, mode),
+            });
+          }}
           onAfterSave={() => {
             void queryClient.invalidateQueries({
               queryKey: interactiveMappingProjectQueryKey(projectId, mode),

@@ -6,6 +6,7 @@ import { useState } from 'react';
 
 import { catalogApartmentDetailHref } from '@/features/builder/catalog-scope';
 import { useCatalogScope } from '@/features/builder/catalog-scope-context';
+import { toCatalogPublicationStatus } from '@/features/catalog/utils/catalog-publication-status';
 import { AddApartmentsSheet } from '@/features/builder/components/add-apartments-sheet';
 import { EditFloorMediaForm } from '@/features/builder/components/edit-floor-media-form';
 import { usePortalFloorApartmentsQuery } from '@/features/builder/hooks/use-portal-inventory';
@@ -41,7 +42,7 @@ export const FloorInventoryRow = ({ projectId, floor }: FloorInventoryRowProps) 
           </p>
           <p className="text-xs text-ink-muted">
             {t('apartmentsCount', { count: floor.apartmentsCount })} ·{' '}
-            {t(`publication.${floor.publicationStatus}`)}
+            {t(`publication.${toCatalogPublicationStatus(floor.publicationStatus)}`)}
           </p>
         </div>
         <Button

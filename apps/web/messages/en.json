@@ -22,17 +22,34 @@
       "cards": "Cards",
       "board": "Board"
     },
+    "publicationStatus": {
+      "label": "Publication status"
+    },
     "datePicker": {
       "placeholder": "Select date",
       "clear": "Clear",
       "today": "Today",
       "previousMonth": "Previous month",
-      "nextMonth": "Next month"
+      "nextMonth": "Next month",
+      "previousYear": "Previous year",
+      "nextYear": "Next year"
     },
     "placeholders": {
       "url": "https://"
     },
-    "back": "Back"
+    "back": "Back",
+    "formErrors": {
+      "required": "{field} is required",
+      "requiredInLanguage": "{field} is required in {language}",
+      "invalid": "{field} is invalid",
+      "tooLong": "{field} is too long",
+      "generic": "Fill in the required fields and try again",
+      "languages": {
+        "hy": "Armenian",
+        "ru": "Russian",
+        "en": "English"
+      }
+    }
   },
   "ReadinessKpi": {
     "categories": {
@@ -587,6 +604,7 @@
         "overview": "Overview",
         "details": "Details",
         "finance": "Finance",
+        "bankPartner": "Bank partner",
         "facts": "Key facts",
         "amenities": "Features",
         "nearby": "Nearby",
@@ -776,6 +794,8 @@
       "breadcrumb": "Breadcrumb",
       "breadcrumbHome": "Home",
       "breadcrumbSearch": "Search",
+      "breadcrumbBuilding": "Building {name}",
+      "breadcrumbFloor": "Floor {number}",
       "inquireTitle": "Inquire about this home",
       "inquireSubtitle": "We'll connect you with the builder.",
       "inquireAgentRole": "ToonExpo listing partner",
@@ -893,6 +913,7 @@
       "title": "Exhibitors",
       "subtitle": "{count, plural, =0 {No exhibitors} one {# exhibitor} other {# exhibitors}}",
       "empty": "No published exhibitors in this category yet.",
+      "searchEmpty": "No exhibitors match “{query}”.",
       "notFoundTitle": "Partner not found",
       "metaFallback": "Partner profile for {name}",
       "meta": {
@@ -916,6 +937,8 @@
         "type": "Partner type",
         "allTypes": "All types",
         "typesSelectedCount": "{count} selected",
+        "search": "Search",
+        "searchPlaceholder": "Search exhibitors…",
         "apply": "Apply filters",
         "reset": "Reset"
       },
@@ -1491,7 +1514,8 @@
       "projectMeta": "{districts} districts · {buildings} buildings · phase {phase}",
       "labLink": "Mapping lab (QA)",
       "backToProjects": "Projects",
-      "backToWizard": "Wizard",
+      "backToWizard": "Back",
+      "backToDistricts": "Districts",
       "activePhase": "Continue with phase {phase}",
       "allPhasesDone": "All phases are complete",
       "filters": {
@@ -1518,6 +1542,8 @@
         "buildings": "Create buildings and place them on the district plan.",
         "floors": "Set floor count, upload a building render, then draw floor bands.",
         "apartments": "Create apartments and draw them on the floor plan.",
+        "pickDistrict": "Choose a district first, then continue.",
+        "pickApartmentFloor": "Choose a building, then pick a floor to map apartments.",
         "setupFloors": "Enter floor count, then open the render mapping page."
       },
       "progress": {
@@ -1539,10 +1565,13 @@
         "name": "Name",
         "createDistrict": "Create district",
         "createBuilding": "Create building",
+        "createFloor": "Create floor",
         "createApartment": "Create apartment",
         "apartmentNumber": "Number",
+        "floorNumber": "Floor number",
         "districtPlaceholder": "e.g. District A",
         "buildingPlaceholder": "e.g. Building 01",
+        "floorPlaceholder": "1",
         "apartmentPlaceholder": "101",
         "saving": "Saving…",
         "setupFloors": "Start floor mapping",
@@ -1554,16 +1583,58 @@
         "uploadFirst": "Upload an image to start mapping.",
         "uploadAndSetupFloors": "Upload a render and set up floors first.",
         "pickFloor": "Floors",
+        "pickDistrict": "Choose district",
+        "pickBuilding": "Choose building",
+        "searchBuildings": "Search buildings…",
+        "searchFloors": "Search floors…",
+        "searchApartments": "Search apartments…",
+        "searchEntities": "Search…",
+        "searchNoResults": "No results for “{query}”.",
+        "noDistricts": "No districts yet. Create districts in the Districts phase first.",
+        "noBuildings": "No buildings yet. Create buildings in the Buildings phase first.",
+        "noBuildingsInDistrict": "No buildings in this district yet.",
+        "buildingFloorsMapped": "{mapped}/{total} floors mapped",
+        "buildingApartmentsCount": "{count, plural, =0 {No apartments} one {# apartment} other {# apartments}}",
+        "districtPicker": {
+          "districtIndex": "District",
+          "buildingsCount": "{count, plural, =0 {0 buildings} one {# building} other {# buildings}}"
+        },
+        "buildingPicker": {
+          "buildingIndex": "Building",
+          "floorIndex": "Floor",
+          "floorsMapped": "{count, plural, =0 {0 floors mapped} one {# floor mapped} other {# floors mapped}}",
+          "totalArea": "{area} m² total area",
+          "zones": "{count, plural, =0 {0 zones} one {# zone} other {# zones}}",
+          "lastUpdated": "last updated",
+          "lastUpdatedUnknown": "—",
+          "lastUpdatedToday": "Today",
+          "lastUpdatedDaysAgo": "{count, plural, one {# day ago} other {# days ago}}"
+        },
+        "floorPicker": {
+          "floorIndex": "Floor"
+        },
         "noFloors": "No floors yet.",
         "needsPolygon": "Draw polygon first",
         "planReady": "plan",
         "floorNeedsPolygon": "Draw this floor’s polygon on the building render first. Then you can upload the floor plan.",
         "floorNeedsPolygonNamed": "Floor {name} has no building polygon yet. Open building render, draw it, then come back.",
-        "goToBuildingRender": "Open building render"
+        "goToBuildingRender": "Open building render",
+        "errors": {
+          "generic": "Something went wrong. Please try again.",
+          "floorNumberExists": "This building already has floor {number}. Enter a different number or open the existing floor."
+        }
       },
       "pages": {
         "masterplan": "Masterplan · districts",
         "district": "District · {name}",
+        "buildingsDistrict": "Buildings · choose district",
+        "floors": "Floors · choose building",
+        "floorsDistrict": "Floors · choose district",
+        "floorsChooseBuilding": "Floors · {district}",
+        "apartments": "Apartments · choose building",
+        "apartmentsDistrict": "Apartments · choose district",
+        "apartmentsChooseBuilding": "Apartments · {district}",
+        "apartmentsBuilding": "Apartments · {name}",
         "buildingRender": "Building render · {name}",
         "floor": "Floor · {name}"
       },
@@ -1578,6 +1649,9 @@
         "editDrag": "Edit · drag",
         "newPolygon": "New polygon",
         "deletePolygon": "Delete polygon",
+        "deleteAllPolygons": "Delete all polygons",
+        "deleteAllPolygonsConfirm": "Remove all polygons from this map? Entities stay — you can draw again.",
+        "allPolygonsCleared": "Removed {count} polygons",
         "saveDrawing": "Save drawing ({count} points)",
         "saveDrawingAria": "Save drawing, {count} points",
         "deleteSelectedPoint": "Delete selected point (Delete)",
@@ -1597,10 +1671,12 @@
         "hintEmpty": "Create or select an entity in the left list, then draw with the Polygon tool.",
         "hintSelectEntity": "Select an entity from the left list, then press Polygon and draw points.",
         "hintFloorsReady": "Quick: Auto / Band. Edit · drag to reshape.",
-        "hintAfterSave": "After Save, the next click starts a new line (the old one stays). Edit · drag to reshape.",
         "confirmDeletePolygon": "Delete this drawing? You can draw a new polygon later.",
         "confirmReplacePolygon": "Delete the old drawing and start a new one? The old one will be kept as deleted.",
         "confirmDeleteApartment": "Delete this apartment?",
+        "confirmDeleteDistrict": "Delete this district?",
+        "confirmDeleteBuilding": "Delete this building?",
+        "confirmDeleteFloor": "Delete this floor?",
         "emptyFloorHint": "No apartments on this floor yet. Create at least one, select it from the list, then draw a Polygon.",
         "movePolygon": "Move polygon",
         "rotatePolygon": "Rotate polygon",
@@ -1621,7 +1697,13 @@
         "openFullscreen": "Open fullscreen map",
         "deleteFailed": "Delete failed",
         "apartmentsListTitle": "Apartments",
+        "districtsListTitle": "Districts",
+        "buildingsListTitle": "Buildings",
+        "floorsListTitle": "Floors",
         "deleteApartment": "Delete apartment",
+        "deleteDistrict": "Delete district",
+        "deleteBuilding": "Delete building",
+        "deleteFloor": "Delete floor",
         "removeMappingConfirm": "Remove mapping for this entity?",
         "fullscreenHint": "Fullscreen mapping · Esc to exit · Save keeps your work",
         "exitFullscreen": "Exit fullscreen",
@@ -1808,6 +1890,10 @@
         "resendSubmitting": "Sending…",
         "resendSuccess": "Invite resent successfully",
         "resendNotFound": "No invited admin found for this company",
+        "delete": "Delete company",
+        "deleteConfirmTitle": "Delete company",
+        "deleteConfirmMessage": "Are you sure you want to delete this company? This cannot be undone.",
+        "deleteBlocked": "This company still has projects, requests, deals, or visual maps. Remove those first.",
         "projects": {
           "title": "Projects",
           "count": "{count, plural, =0 {No projects} one {# project} other {# projects}}",
@@ -1912,11 +1998,11 @@
       "create": {
         "cta": "+ Add Project",
         "title": "Add Project",
-        "company": "Company",
-        "searchCompany": "Search companies",
-        "noCompanyMatches": "No matching companies",
-        "selectCompany": "Select company",
-        "pickCompany": "Select a company to continue."
+        "builder": "Builder",
+        "searchBuilder": "Search builders",
+        "noBuilderMatches": "No matching builders",
+        "selectBuilder": "Select builder",
+        "pickBuilder": "Select a builder to continue."
       }
     },
     "buildings": {
@@ -1938,15 +2024,15 @@
       "create": {
         "cta": "+ Add Building",
         "title": "Add Building",
-        "company": "Company",
-        "selectCompany": "Select company",
-        "searchCompany": "Search companies",
-        "noCompanyMatches": "No matching companies",
+        "builder": "Builder",
+        "selectBuilder": "Select builder",
+        "searchBuilder": "Search builders",
+        "noBuilderMatches": "No matching builders",
         "project": "Project",
         "selectProject": "Select project",
         "searchProject": "Search projects",
         "noProjectMatches": "No matching projects",
-        "pickProject": "Select a company and project.",
+        "pickProject": "Select a builder and project.",
         "submit": "Create building"
       },
       "inventory": {
@@ -1979,6 +2065,11 @@
         "apartmentsError": "Could not load apartments. Try again.",
         "noApartments": "No apartments on this floor yet.",
         "apartmentUnit": "Apt {number}",
+        "deleteBuildingTitle": "Delete building",
+        "deleteBuildingConfirm": "Delete this draft building? Floors and apartments in it will be removed. This cannot be undone.",
+        "deleteFloorTitle": "Delete floor",
+        "deleteFloorConfirm": "Delete this draft floor? Apartments on it will be removed. This cannot be undone.",
+        "deleteError": "Could not delete. Try again.",
         "sales": {
           "available": "Available",
           "reserved": "Reserved",
@@ -2025,15 +2116,15 @@
       "create": {
         "cta": "+ Add Floor",
         "title": "Add Floor",
-        "company": "Company",
-        "selectCompany": "Select company",
-        "searchCompany": "Search companies",
-        "noCompanyMatches": "No matching companies",
+        "builder": "Builder",
+        "selectBuilder": "Select builder",
+        "searchBuilder": "Search builders",
+        "noBuilderMatches": "No matching builders",
         "building": "Building",
         "selectBuilding": "Select building",
         "searchBuilding": "Search buildings",
         "noBuildingMatches": "No matching buildings",
-        "pickBuilding": "Select a company and building.",
+        "pickBuilding": "Select a builder and building.",
         "submit": "Create floor"
       }
     },
@@ -3219,6 +3310,13 @@
   },
   "Builder": {
     "badge": "Builder",
+    "verified": {
+      "label": "Verified",
+      "hint": "Show the Verified badge on the public listing.",
+      "placeholder": "Off — no public badge",
+      "on": "On — badge visible",
+      "saved": "Verified status updated"
+    },
     "profileLink": "Profile",
     "locales": {
       "label": "Translation language",
@@ -3232,6 +3330,9 @@
       "portalLabel": "Builder portal",
       "dashboard": "Dashboard",
       "projects": "Projects",
+      "buildings": "Building",
+      "floors": "Floor",
+      "apartments": "Apartment",
       "team": "Team",
       "interactiveMapping": "Interactive mapping",
       "visualMap": "Visual map",
@@ -3423,7 +3524,7 @@
       },
       "catalog": {
         "title": "Project details (public catalog)",
-        "subtitle": "Same layout as the public project page — edit Overview, Details, Finance, Features, and Nearby for each language.",
+        "subtitle": "Same layout as the public project page — edit Overview, Details, Finance, Bank partner, Features, and Nearby for each language.",
         "listHint": "One item per line.",
         "amenityLabels": "Features list",
         "nearbyPlaces": "Nearby places",
@@ -3436,7 +3537,7 @@
         "financeImport": {
           "button": "Import",
           "title": "Import partner offer",
-          "hint": "Choose a published template from Template/Partner Offers. Fields fill into Finance — edit and save as usual.",
+          "hint": "Choose a published template from Template/Partner Offers. Fields fill into Bank partner — edit and save as usual.",
           "loading": "Loading templates…",
           "error": "Could not load templates.",
           "empty": "No published templates yet. Create one under Template/Partner Offers.",
@@ -3522,6 +3623,7 @@
           "overview": "Overview",
           "details": "Details",
           "finance": "Finance",
+          "bankPartner": "Bank partner",
           "features": "Features",
           "nearby": "Nearby",
           "links": "Links",
@@ -3581,12 +3683,15 @@
       "saveFloorplan": "Save floor plan",
       "coverSaved": "Cover image saved",
       "floorplanSaved": "Floor plan saved",
+      "publicationSuccess": "Publication updated",
       "floorNumber": "Floor number",
       "floorName": "Floor name",
       "displayLabel": "Display label",
       "floorLabel": "Floor {number}",
       "floorLabelNamed": "Floor {number} · {name}",
       "floorsCount": "{count, plural, =0 {No floors} one {# floor} other {# floors}}",
+      "expandBuilding": "Show floors for {name}",
+      "collapseBuilding": "Hide floors for {name}",
       "apartmentsCount": "{count, plural, =0 {No apartments} one {# apartment} other {# apartments}}",
       "apartmentLink": "#{number} · {status}",
       "count": "Count",
@@ -3610,14 +3715,15 @@
         "count": "Enter a valid count"
       },
       "errors": {
-        "generic": "Something went wrong. Please try again."
+        "generic": "Something went wrong. Please try again.",
+        "floorNumberExists": "This building already has floor {number}. Enter a different number or open the existing floor."
       }
     },
     "visualMap": {
       "title": "Visual maps",
       "subtitle": "Site renders, building maps, and floorplans with navigation hotspots",
       "loading": "Loading visual maps…",
-      "empty": "No visual canvases yet.",
+      "empty": "No visual canvases yet. Create one to add hotspots.",
       "untitled": "Untitled canvas",
       "primaryYes": "Primary",
       "primaryNo": "—",
@@ -3701,10 +3807,10 @@
       "planViewHint": "View apartment plan fullscreen",
       "savePlan": "Save apartment plan",
       "planSaved": "Apartment plan saved as Main in gallery",
-      "tinderTitle": "Tinder photo",
+      "tinderTitle": "Swipe photo",
       "tinderHint": "Shown on the Discover swipe card. If empty, the project cover is used.",
-      "saveTinder": "Save Tinder photo",
-      "tinderSaved": "Tinder photo saved",
+      "saveTinder": "Save Swipe photo",
+      "tinderSaved": "Swipe photo saved",
       "floorplanTitle": "Floor plan",
       "floorplanHint": "Shared plan for this floor — same for all apartments on it.",
       "saveFloorplan": "Save floor plan",
@@ -3746,7 +3852,7 @@
         "coverMedia": "Cover image",
         "planMedia": "Apartment plan image",
         "floorplanMedia": "Floor plan image",
-        "tinderMedia": "Tinder photo",
+        "tinderMedia": "Swipe photo",
         "matterportUrl": "Matterport URL",
         "external3dUrl": "External 3D URL"
       },
@@ -3772,6 +3878,9 @@
       "detail": {
         "publish": "Publish",
         "unpublish": "Unpublish",
+        "delete": "Delete",
+        "deleteConfirm": "Delete this draft apartment? This cannot be undone.",
+        "deleteConfirmTitle": "Delete apartment",
         "publicationSuccess": "Publication updated"
       },
       "errors": {

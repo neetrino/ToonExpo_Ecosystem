@@ -1,6 +1,6 @@
 'use client';
 
-import type { AdminProjectListItem, PublicationStatus } from '@toonexpo/contracts';
+import type { AdminProjectListItem } from '@toonexpo/contracts';
 import type { LucideIcon } from 'lucide-react';
 import { Building, Building2, CheckCircle2, CircleDashed, Home, MapPin, QrCode } from 'lucide-react';
 import Image from 'next/image';
@@ -12,6 +12,7 @@ import { AdminInventoryCardMetaRow } from '@/features/admin/components/admin-inv
 import { useSetAdminProjectFeaturedOnHomeMutation } from '@/features/admin/hooks/use-admin-companies';
 import { ProjectQrDialog } from '@/features/builder/components/project-qr-dialog';
 import { HOME_FEATURED_PROJECT_LIMIT } from '@/features/catalog/constants/home-featured';
+import { toCatalogPublicationStatus } from '@/features/catalog/utils/catalog-publication-status';
 import { Link } from '@/i18n/navigation';
 import { resolvePublicAssetUrl } from '@/shared/lib/static-asset-url';
 import { AdminListCardLogo } from '@/shared/ui/admin-list-card-logo';
@@ -26,10 +27,9 @@ type AdminProjectCardProps = {
   onOpenBuildings?: ((project: AdminProjectListItem) => void) | undefined;
 };
 
-const STATUS_BADGE_CLASS: Record<PublicationStatus, string> = {
+const STATUS_BADGE_CLASS: Record<'published' | 'draft', string> = {
   published: 'bg-success-soft text-success',
   draft: 'bg-surface text-ink-muted',
-  archived: 'bg-warning-soft text-warning',
 };
 
 const toSafeImageSource = (value: string | null | undefined): string | undefined => {
@@ -153,7 +153,8 @@ export const AdminProjectCard = ({ project, onOpenBuildings }: AdminProjectCardP
   const t = useTranslations('Admin.projects');
   const tFeatured = useTranslations('Admin.featuredOnHome');
   const tQr = useTranslations('Builder.projects.qr');
-  const StatusIcon = project.publicationStatus === 'published' ? CheckCircle2 : CircleDashed;
+  const catalogStatus = toCatalogPublicationStatus(project.publicationStatus);
+  const StatusIcon = catalogStatus === 'published' ? CheckCircle2 : CircleDashed;
   const [qrOpen, setQrOpen] = useState(false);
   const featuredMutation = useSetAdminProjectFeaturedOnHomeMutation();
   const openBuildingsLabel = t('openBuildings', { name: project.name });
@@ -184,11 +185,11 @@ export const AdminProjectCard = ({ project, onOpenBuildings }: AdminProjectCardP
             <span
               className={cn(
                 'inline-flex shrink-0 items-center gap-1.5 rounded-pill px-2.5 py-1 text-xs font-medium',
-                STATUS_BADGE_CLASS[project.publicationStatus],
+                STATUS_BADGE_CLASS[catalogStatus],
               )}
             >
               <StatusIcon className="size-3.5" aria-hidden />
-              {t(`publication.${project.publicationStatus}`)}
+              {t(`publication.${catalogStatus}`)}
             </span>
           </div>
           <div className="flex items-start justify-between gap-2">

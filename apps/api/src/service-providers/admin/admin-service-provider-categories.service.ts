@@ -24,7 +24,7 @@ export class AdminServiceProviderCategoriesService {
   async list(): Promise<ServiceProviderCategoryListResponse> {
     const rows = await this.prisma.db.serviceProviderCategory.findMany({
       include: serviceProviderCategoryInclude,
-      orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
+      orderBy: [{ createdAt: 'desc' }],
     });
 
     return { data: rows.map(toServiceProviderCategoryItem) };

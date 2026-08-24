@@ -143,6 +143,7 @@ export const AdminFloorsListPage = () => {
           buildingId={selectedFloor.buildingId}
           floorId={selectedFloor.id}
           floorLabel={floorLabel}
+          publicationStatus={selectedFloor.publicationStatus}
           floorplan={floorplan}
           onClose={() => {
             setSelectedFloor(null);

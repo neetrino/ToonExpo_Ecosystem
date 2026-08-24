@@ -25,6 +25,7 @@ export type FavoriteApartmentCard = {
   priceVisibility: PriceVisibility;
   priceOnRequest: boolean;
   cover: MediaAssetSummary | null;
+  verified: boolean;
   city: string | null;
   district: string | null;
   locationText: string | null;

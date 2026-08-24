@@ -1,19 +1,19 @@
-import { setRequestLocale } from "next-intl/server";
+import { setRequestLocale } from 'next-intl/server';
 
-import { ProjectDetailPage } from "@/features/builder/components/project-detail-page";
+import { BuilderProjectDetailPage } from '@/features/builder/components/builder-project-detail-page';
 
-type BuilderProjectDetailPageProps = {
+type BuilderProjectDetailRouteProps = {
   params: Promise<{ locale: string; id: string }>;
 };
 
 /**
  * Project detail / inventory management route.
  */
-export default async function BuilderProjectDetailPage({
+export default async function BuilderProjectDetailRoute({
   params,
-}: BuilderProjectDetailPageProps) {
+}: BuilderProjectDetailRouteProps) {
   const { locale, id } = await params;
   setRequestLocale(locale);
 
-  return <ProjectDetailPage projectId={id} />;
+  return <BuilderProjectDetailPage projectId={id} />;
 }

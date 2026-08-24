@@ -29,11 +29,7 @@ const BuilderLogoBadge = ({ builderId, name, logoUrl }: BuilderLogoBadgeProps) =
     return null;
   }
   return (
-    <Link
-      href={`/builders/${builderId}`}
-      className={BUILDER_LOGO_BADGE_CLASS}
-      aria-label={name}
-    >
+    <Link href={`/builders/${builderId}`} className={BUILDER_LOGO_BADGE_CLASS} aria-label={name}>
       <Image
         src={src}
         alt=""
@@ -115,14 +111,16 @@ export const ProjectCard = ({
           )}
         </Link>
 
-        <span
-          className={cn(
-            'pointer-events-none absolute top-3 left-3 rounded-sm bg-canvas/95 px-2 py-1',
-            'text-[10px] font-bold tracking-widest text-brand-deep uppercase',
-          )}
-        >
-          {t('badges.verified')}
-        </span>
+        {project.verified ? (
+          <span
+            className={cn(
+              'pointer-events-none absolute top-3 left-3 rounded-sm bg-canvas/95 px-2 py-1',
+              'text-[10px] font-bold tracking-widest text-brand-deep uppercase',
+            )}
+          >
+            {t('badges.verified')}
+          </span>
+        ) : null}
 
         {showFavorite ? (
           <FavoriteToggleButton

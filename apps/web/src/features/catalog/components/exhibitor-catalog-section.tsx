@@ -1,4 +1,5 @@
 import type { BuilderSummary, PublicPartnerListItem } from '@toonexpo/contracts';
+import type { ReactNode } from 'react';
 
 import { ExhibitorCatalogPagination } from '@/features/catalog/components/exhibitor-catalog-pagination';
 import { ExhibitorCatalogResults } from '@/features/catalog/components/exhibitor-catalog-results';
@@ -19,6 +20,7 @@ type ExhibitorCatalogSectionProps = {
   showPagination: boolean;
   onSelectTab: (tab: ExhibitorTab) => void;
   onPageChange: (page: number) => void;
+  search: ReactNode;
 };
 
 /**
@@ -38,9 +40,11 @@ export const ExhibitorCatalogSection = ({
   showPagination,
   onSelectTab,
   onPageChange,
+  search,
 }: ExhibitorCatalogSectionProps) => {
   return (
     <div className="page-container section-pad pt-8 sm:pt-10">
+      {search}
       {visibleTabs.length > 1 ? (
         <ExhibitorTypeTabs
           activeTab={activeTab}

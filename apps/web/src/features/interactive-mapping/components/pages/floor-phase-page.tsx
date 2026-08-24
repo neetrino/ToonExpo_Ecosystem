@@ -1,15 +1,15 @@
 'use client';
 
 import type { MediaAssetItem, PortalVisualCanvasDetail } from '@toonexpo/contracts';
+import { ChevronRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useQueryClient } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 
 import {
   createPortalApartment,
   deletePortalApartment,
 } from '@/features/builder/api/portal-apartments-api';
-import { useRouter } from '@/i18n/navigation';
 import { BackLink } from '@/shared/ui/back-link';
 
 import {
@@ -23,7 +23,6 @@ import { interactiveMappingProjectQueryKey } from '../../constants';
 import { useInteractiveMappingProjectQuery } from '../../hooks/use-interactive-mapping';
 import { useMappingCatalog } from '../../hooks/use-mapping-catalog';
 import { FloorApartmentMappingEditor } from '../editors/floor-apartment-mapping-editor';
-import { FloorPlanUploadPicker } from '../floor-plan-upload-picker';
 import { FloorPolygonRequiredGate } from '../floor-polygon-required-gate';
 import { CreateEntityInlineForm } from '../forms/create-entity-inline-form';
 import { MappingImageUploader } from '../media/mapping-image-uploader';
@@ -40,7 +39,6 @@ export type FloorPhasePageProps = {
  */
 export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
   const t = useTranslations('Admin.interactiveMapping');
-  const router = useRouter();
   const queryClient = useQueryClient();
   const detailQuery = useInteractiveMappingProjectQuery(projectId);
   const [canvas, setCanvas] = useState<PortalVisualCanvasDetail | null>(null);
@@ -117,14 +115,15 @@ export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
     );
   }
 
-  const siblingFloors = detailQuery.data.floors.filter(
-    (item) => item.buildingId === floor.buildingId,
-  );
   const apartments = detailQuery.data.apartments.filter((item) => item.floorId === floorId);
+  const building = detailQuery.data.buildings.find((item) => item.id === floor.buildingId);
+  const district = detailQuery.data.districts.find((item) => item.id === building?.districtId);
   const { mediaContext, basePath, mode } = catalog;
+  const apartmentsBuildingHref = `${basePath}/${projectId}/phases/apartments/buildings/${floor.buildingId}`;
   const buildingRenderHref = `${basePath}/${projectId}/buildings/${floor.buildingId}/render`;
   const floorUnlocked = isFloorPlanMappingUnlocked(floor);
-  const floorLabel = floor.name ?? String(floor.number);
+  const floorLabel = floor.name ?? `Floor ${floor.number}`;
+  const pathSegments = [district?.name ?? '—', building?.name ?? '—', floorLabel];
 
   const attachMedia = async (asset: MediaAssetItem) => {
     if (!floorUnlocked) {
@@ -186,32 +185,22 @@ export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
   return (
     <div className="space-y-6">
       <div>
-        <BackLink href={`${basePath}/${projectId}`} label={t('backToWizard')} />
-        <h1 className="mt-3 font-display text-3xl text-ink">
-          {t('pages.floor', { name: floorLabel })}
+        <BackLink href={apartmentsBuildingHref} label={t('backToWizard')} />
+        <h1 className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 font-display text-3xl text-ink">
+          {pathSegments.map((segment, index) => (
+            <Fragment key={`${segment}-${index}`}>
+              {index > 0 ? (
+                <ChevronRight
+                  className="size-6 shrink-0 text-ink-muted"
+                  strokeWidth={2}
+                  aria-hidden
+                />
+              ) : null}
+              <span className="min-w-0">{segment}</span>
+            </Fragment>
+          ))}
         </h1>
       </div>
-
-      <FloorPlanUploadPicker
-        floors={siblingFloors}
-        selectedFloorId={floorId}
-        title={t('forms.pickFloor')}
-        emptyLabel={t('forms.noFloors')}
-        lockedHint={t('forms.floorNeedsPolygon')}
-        planReadyLabel={t('forms.planReady')}
-        needsPolygonLabel={t('forms.needsPolygon')}
-        onSelectFloor={(nextFloorId) => {
-          setLockNotice(null);
-          router.push(`${basePath}/${projectId}/floors/${nextFloorId}`);
-        }}
-        onSelectLockedFloor={(lockedFloor) => {
-          setLockNotice(
-            t('forms.floorNeedsPolygonNamed', {
-              name: lockedFloor.name ?? String(lockedFloor.number),
-            }),
-          );
-        }}
-      />
 
       {lockNotice ? (
         <p role="status" className="text-sm text-ink-muted">
@@ -221,7 +210,7 @@ export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
 
       {!floorUnlocked ? (
         <FloorPolygonRequiredGate
-          floorLabel={t('pages.floor', { name: floorLabel })}
+          floorLabel={floorLabel}
           message={t('forms.floorNeedsPolygon')}
           ctaLabel={t('forms.goToBuildingRender')}
           buildingRenderHref={buildingRenderHref}

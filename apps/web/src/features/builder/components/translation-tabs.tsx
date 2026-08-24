@@ -8,8 +8,13 @@ import { cn } from '@/shared/ui/cn';
 
 type TranslationLocale = (typeof TRANSLATION_LOCALES)[number];
 
+export type { TranslationLocale };
+
 type TranslationTabsProps = {
   children: (locale: TranslationLocale) => ReactNode;
+  /** Jump to this locale when `focusTick` changes (hidden-tab validation). */
+  focusLocale?: TranslationLocale | undefined;
+  focusTick?: number | undefined;
 };
 
 type IndicatorMetrics = {
@@ -30,7 +35,11 @@ const resolveTranslationLocale = (value: string): TranslationLocale =>
  * hy / ru / en tab switcher with a sliding underline and soft panel fade.
  * Defaults to (and follows) the site locale from the header language switcher.
  */
-export const TranslationTabs = ({ children }: TranslationTabsProps) => {
+export const TranslationTabs = ({
+  children,
+  focusLocale,
+  focusTick,
+}: TranslationTabsProps) => {
   const t = useTranslations('Builder.locales');
   const siteLocale = resolveTranslationLocale(useLocale());
   const [active, setActive] = useState<TranslationLocale>(siteLocale);
@@ -48,6 +57,14 @@ export const TranslationTabs = ({ children }: TranslationTabsProps) => {
     setActive(siteLocale);
     setPanelKey((key) => key + 1);
   }, [siteLocale]);
+
+  useEffect(() => {
+    if (!focusLocale) {
+      return;
+    }
+    setActive(focusLocale);
+    setPanelKey((key) => key + 1);
+  }, [focusLocale, focusTick]);
 
   useLayoutEffect(() => {
     const updateIndicator = (): void => {

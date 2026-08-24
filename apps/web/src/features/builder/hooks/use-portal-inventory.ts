@@ -13,6 +13,7 @@ import type {
 import { ADMIN_APARTMENTS_QUERY_KEY } from '@/features/admin/constants';
 import {
   bulkCreatePortalApartments,
+  deletePortalApartment,
   getPortalApartment,
   listPortalApartments,
   updatePortalApartment,
@@ -22,10 +23,14 @@ import {
   createPortalBuilding,
   updatePortalBuilding,
   updatePortalBuildingPriceOnRequest,
+  updatePortalBuildingPublication,
 } from '@/features/builder/api/portal-buildings-api';
 import { createPortalFloor, updatePortalFloor } from '@/features/builder/api/portal-floors-api';
 import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import {
+  PORTAL_INVENTORY_APARTMENTS_QUERY_KEY,
+  PORTAL_INVENTORY_BUILDINGS_QUERY_KEY,
+  PORTAL_INVENTORY_FLOORS_QUERY_KEY,
   PORTAL_PROJECTS_QUERY_KEY,
   portalApartmentQueryKey,
   portalFloorApartmentsQueryKey,
@@ -59,6 +64,9 @@ export const usePortalApartmentQuery = (id: string) => {
 const invalidateProject = (queryClient: ReturnType<typeof useQueryClient>, projectId: string) => {
   void queryClient.invalidateQueries({ queryKey: portalProjectQueryKey(projectId) });
   void queryClient.invalidateQueries({ queryKey: PORTAL_PROJECTS_QUERY_KEY });
+  void queryClient.invalidateQueries({ queryKey: PORTAL_INVENTORY_BUILDINGS_QUERY_KEY });
+  void queryClient.invalidateQueries({ queryKey: PORTAL_INVENTORY_FLOORS_QUERY_KEY });
+  void queryClient.invalidateQueries({ queryKey: PORTAL_INVENTORY_APARTMENTS_QUERY_KEY });
 };
 
 /**
@@ -128,14 +136,29 @@ export const useUpdateBuildingMutation = (projectId: string, buildingId: string)
 };
 
 /**
+ * Changes building publication status.
+ */
+export const useUpdateBuildingPublicationMutation = (projectId: string, buildingId: string) => {
+  const queryClient = useQueryClient();
+  const scope = useCatalogScope();
+
+  return useMutation({
+    mutationFn: (body: UpdatePortalPublicationRequest) =>
+      updatePortalBuildingPublication(buildingId, body, { scope }),
+    onSuccess: () => {
+      invalidateProject(queryClient, projectId);
+    },
+  });
+};
+
+/**
  * Toggles public price-on-request for a building (builder company_admin).
  */
 export const useUpdateBuildingPriceOnRequestMutation = (projectId: string, buildingId: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (enabled: boolean) =>
-      updatePortalBuildingPriceOnRequest(buildingId, { enabled }),
+    mutationFn: (enabled: boolean) => updatePortalBuildingPriceOnRequest(buildingId, { enabled }),
     onSuccess: () => {
       invalidateProject(queryClient, projectId);
     },
@@ -194,6 +217,31 @@ export const useUpdateApartmentPublicationMutation = (id: string) => {
       });
       void queryClient.invalidateQueries({ queryKey: ADMIN_APARTMENTS_QUERY_KEY });
       invalidateProject(queryClient, apartment.projectId);
+    },
+  });
+};
+
+type DeletePortalApartmentInput = {
+  id: string;
+  floorId: string;
+  projectId: string;
+};
+
+/**
+ * Deletes a draft apartment.
+ */
+export const useDeletePortalApartmentMutation = () => {
+  const queryClient = useQueryClient();
+  const scope = useCatalogScope();
+
+  return useMutation({
+    mutationFn: (input: DeletePortalApartmentInput) => deletePortalApartment(input.id, { scope }),
+    onSuccess: (_void, input) => {
+      void queryClient.invalidateQueries({
+        queryKey: portalFloorApartmentsQueryKey(input.floorId),
+      });
+      void queryClient.invalidateQueries({ queryKey: ADMIN_APARTMENTS_QUERY_KEY });
+      invalidateProject(queryClient, input.projectId);
     },
   });
 };

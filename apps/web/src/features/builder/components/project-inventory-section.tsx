@@ -24,7 +24,7 @@ export const ProjectInventorySection = ({ project }: ProjectInventorySectionProp
     <section className="flex flex-col gap-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex flex-col gap-1">
-          <h2 className="text-lg font-semibold text-ink">{t('title')}</h2>
+          <h2 className="text-2xl font-semibold tracking-tight text-ink">{t('title')}</h2>
           <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
         </div>
         <Button

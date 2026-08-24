@@ -1,6 +1,6 @@
 'use client';
 
-import { Check, ChevronDown, Search } from 'lucide-react';
+import { ChevronDown, Search } from 'lucide-react';
 import type { FocusEventHandler, ReactNode, RefObject } from 'react';
 
 import { cn } from '@/shared/ui/cn';
@@ -120,7 +120,6 @@ const ListboxOptionItem = ({
     >
       {multiple ? <SelectionMark checked={active} shape="circle" /> : null}
       <span className="min-w-0 flex-1 whitespace-normal break-words">{option.label}</span>
-      {!multiple && active ? <Check className="site-select-option__check" aria-hidden /> : null}
     </button>
   );
 

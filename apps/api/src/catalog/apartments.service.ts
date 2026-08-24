@@ -3,14 +3,15 @@ import type { ApartmentDetail, ApartmentListItem, PaginatedResponse } from '@too
 
 import { PrismaService } from '../prisma/prisma.service.js';
 import { AnalyticsService } from '../analytics/analytics.service.js';
-import {
-  CATALOG_DEFAULT_PAGE_SIZE,
-  PUBLIC_PUBLICATION_STATUS,
-} from './catalog.constants.js';
+import { CATALOG_DEFAULT_PAGE_SIZE, PUBLIC_PUBLICATION_STATUS } from './catalog.constants.js';
 import type { ListApartmentsQueryDto } from './dto/list-apartments.query.dto.js';
 import type { CatalogViewerContext } from './projects.service.js';
 import { toPublicFileUrl } from '../media/public-file-url.js';
-import { decimalToString, shouldRevealCatalogPrice, toMediaSummary } from './mappers/catalog.mapper.js';
+import {
+  decimalToString,
+  shouldRevealCatalogPrice,
+  toMediaSummary,
+} from './mappers/catalog.mapper.js';
 import { buildApartmentListWhere } from './utils/build-apartment-list-where.js';
 import { loadTranslations } from './utils/load-translations.js';
 import {
@@ -81,6 +82,7 @@ export class ApartmentsService {
           priceCurrency: true,
           priceVisibility: true,
           projectId: true,
+          verified: true,
           coverMedia: true,
           building: { select: { priceOnRequestEnabled: true } },
           project: {
@@ -141,6 +143,7 @@ export class ApartmentsService {
           latitude: decimalToString(apartment.project.latitude),
           longitude: decimalToString(apartment.project.longitude),
           cover: toMediaSummary(apartment.coverMedia),
+          verified: apartment.verified,
         };
       }),
       meta: {
@@ -254,10 +257,13 @@ export class ApartmentsService {
       features: apartment.features,
       plan: toMediaSummary(apartment.planMedia),
       cover: toMediaSummary(apartment.coverMedia),
+      verified: apartment.verified,
       gallery: orderApartmentGallery(
         apartment.galleryImages.map((row) => row.mediaAsset),
         apartment.coverMediaId,
-      ).map((media) => toMediaSummary(media)).filter((item): item is NonNullable<typeof item> => item != null),
+      )
+        .map((media) => toMediaSummary(media))
+        .filter((item): item is NonNullable<typeof item> => item != null),
       project: {
         id: apartment.project.id,
         name: projectName,

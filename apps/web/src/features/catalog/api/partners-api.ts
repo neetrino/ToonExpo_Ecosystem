@@ -16,6 +16,8 @@ export type ListPublicPartnersQuery = {
   types?: PartnerCompanyType[];
   featured?: boolean;
   locale?: string;
+  /** Keyword search (name / slug / short description). */
+  q?: string;
 };
 
 const toSearchParams = (query: ListPublicPartnersQuery): string => {
@@ -30,6 +32,9 @@ const toSearchParams = (query: ListPublicPartnersQuery): string => {
   }
   if (query.locale) {
     params.set("locale", query.locale);
+  }
+  if (query.q) {
+    params.set("q", query.q);
   }
   return `?${params.toString()}`;
 };
@@ -55,6 +60,9 @@ export const listPublicPartners = (
   }
   if (locale) {
     params.locale = locale;
+  }
+  if (query.q) {
+    params.q = query.q;
   }
 
   return apiFetch<PublicPartnerListResponse>({

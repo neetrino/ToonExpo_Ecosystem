@@ -38,6 +38,11 @@ export type PortalProjectListItem = {
   locationText: string | null;
   city: string | null;
   district: string | null;
+  companyName: string;
+  /** Builder company logo; initials shown when null. */
+  companyLogoUrl: string | null;
+  /** Project cover only (no building fallback). */
+  cover: MediaAssetSummary | null;
   buildingsCount: number;
   apartmentsCount: number;
   createdAt: string;
@@ -64,6 +69,8 @@ export type PortalProjectDetail = {
   amenities: unknown;
   nearbyPlaces: unknown;
   coverMediaId: string | null;
+  cover: MediaAssetSummary | null;
+  verified: boolean;
   createdAt: string;
   updatedAt: string;
   buildings: PortalBuildingSummary[];
@@ -80,6 +87,7 @@ export type PortalBuildingSummary = {
   displayOrder: number;
   floorsCount: number | null;
   coverMediaId: string | null;
+  verified: boolean;
   priceOnRequestEnabled: boolean;
   floors: PortalFloorSummary[];
   createdAt: string;
@@ -137,6 +145,7 @@ export type PortalApartmentDetail = {
   plan: MediaAssetSummary | null;
   coverMediaId: string | null;
   cover: MediaAssetSummary | null;
+  verified: boolean;
   /** Discover / Tinder swipe-card image. */
   tinderMediaId: string | null;
   tinder: MediaAssetSummary | null;
@@ -175,6 +184,7 @@ export type CreatePortalProjectRequest = {
   amenities?: unknown;
   nearbyPlaces?: unknown;
   coverMediaId?: string;
+  verified?: boolean;
   translations?: PortalTranslationsInput;
 };
 
@@ -195,6 +205,7 @@ export type UpdatePortalProjectRequest = {
   amenities?: unknown;
   nearbyPlaces?: unknown;
   coverMediaId?: string | null;
+  verified?: boolean;
   translations?: PortalTranslationsInput;
 };
 
@@ -212,6 +223,7 @@ export type CreatePortalBuildingRequest = {
   displayOrder?: number;
   floorsCount?: number;
   coverMediaId?: string;
+  verified?: boolean;
   internalCode?: string;
   districtId?: string;
 };
@@ -222,6 +234,7 @@ export type UpdatePortalBuildingRequest = {
   displayOrder?: number;
   floorsCount?: number | null;
   coverMediaId?: string | null;
+  verified?: boolean;
   internalCode?: string | null;
 };
 
@@ -265,6 +278,7 @@ export type CreatePortalApartmentRequest = {
   /** Ordered gallery media ids; when set with create, cover should be one of them (or first). */
   galleryMediaIds?: string[];
   salesStatus?: ApartmentSalesStatus;
+  verified?: boolean;
   translations?: PortalTranslationsInput;
 };
 
@@ -290,6 +304,7 @@ export type UpdatePortalApartmentRequest = {
   /** Replace ordered gallery; coverMediaId must be in this list when both are sent. */
   galleryMediaIds?: string[];
   salesStatus?: ApartmentSalesStatus;
+  verified?: boolean;
   translations?: PortalTranslationsInput;
 };
 

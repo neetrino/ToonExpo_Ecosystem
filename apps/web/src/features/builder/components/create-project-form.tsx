@@ -4,18 +4,19 @@ import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import { catalogMediaContext, catalogProjectDetailHref } from '@/features/builder/catalog-scope';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useLocale, useTranslations } from 'next-intl';
-import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { TranslationTabs } from '@/features/builder/components/translation-tabs';
 import { getProjectFormPlaceholder } from '@/features/builder/constants/project-content-placeholders';
 import { useAutoProjectSlug } from '@/features/builder/hooks/use-auto-project-slug';
 import { useCreatePortalProjectMutation } from '@/features/builder/hooks/use-portal-projects';
+import { useProjectFormErrorToast } from '@/features/builder/hooks/use-project-form-error-toast';
 import {
   createProjectSchema,
   type CreateProjectFormValues,
 } from '@/features/builder/schemas/project.schema';
 import { toCreateProjectRequest } from '@/features/builder/utils/project-mappers';
+import { VerifiedStatusField } from '@/features/builder/components/verified-status-field';
 import { MediaUploadField } from '@/features/media/components/media-upload-field';
 import { useRouter } from '@/i18n/navigation';
 import { Button } from '@/shared/ui/button';
@@ -44,6 +45,7 @@ const emptyValues = (): CreateProjectFormValues => ({
   constructionStatus: '',
   completionDate: '',
   coverMediaId: '',
+  verified: false,
 });
 
 type CreateProjectFormProps = {
@@ -61,7 +63,8 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
   const siteLocale = useLocale();
   const router = useRouter();
   const createMutation = useCreatePortalProjectMutation();
-  const [formError, setFormError] = useState<string | null>(null);
+  const { showError, onInvalid, errorToast, focusLocale, focusTick } =
+    useProjectFormErrorToast();
 
   const {
     register,
@@ -84,7 +87,6 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
   const slugField = register('slug');
 
   const onSubmit = handleSubmit(async (values) => {
-    setFormError(null);
     try {
       const project = await createMutation.mutateAsync(toCreateProjectRequest(values));
       if (onCreated) {
@@ -93,15 +95,15 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
       }
       router.push(catalogProjectDetailHref(scope, project.id));
     } catch {
-      setFormError(t('errors.generic'));
+      showError(t('errors.generic'));
     }
-  });
+  }, onInvalid);
 
   const busy = isSubmitting || createMutation.isPending;
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-5" noValidate>
-      <TranslationTabs>
+      <TranslationTabs focusLocale={focusLocale} focusTick={focusTick}>
         {(locale) => (
           <div className="flex flex-col gap-4">
             <FormField
@@ -146,7 +148,7 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
                 )}
               />
             </FormField>
-            <div className="grid gap-4 sm:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2">
               <FormField id={`slug-${locale}`} label={t('form.slug')}>
                 <Input
                   id={`slug-${locale}`}
@@ -173,13 +175,15 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
                   )}
                 />
               </FormField>
-              <FormField id={`district-${locale}`} label={t('form.district')}>
-                <Input
-                  id={`district-${locale}`}
-                  placeholder={getProjectFormPlaceholder(locale, 'district')}
-                  {...register('district')}
-                />
-              </FormField>
+              <div className="sm:col-span-2">
+                <FormField id={`district-${locale}`} label={t('form.district')}>
+                  <Input
+                    id={`district-${locale}`}
+                    placeholder={getProjectFormPlaceholder(locale, 'district')}
+                    {...register('district')}
+                  />
+                </FormField>
+              </div>
             </div>
           </div>
         )}
@@ -195,6 +199,7 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
               {...register('projectType')}
             />
           </FormField>
+          <VerifiedStatusField id="project-verified" control={control} name="verified" />
           <FormField id="completionDate" label={t('form.completionDate')}>
             <Controller
               name="completionDate"
@@ -229,15 +234,10 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
         )}
       />
 
-      {formError ? (
-        <p role="alert" className="rounded-sm bg-danger-soft px-3 py-2 text-sm text-danger">
-          {formError}
-        </p>
-      ) : null}
-
       <Button type="submit" variant="secondary" disabled={busy}>
         {busy ? t('form.submitting') : t('form.submit')}
       </Button>
+      {errorToast}
     </form>
   );
 };

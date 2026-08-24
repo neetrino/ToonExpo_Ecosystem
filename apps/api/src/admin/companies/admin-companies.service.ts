@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import type {
   AdminCompanyProjectListResponse,
   AdminProjectListResponse,
@@ -19,6 +19,7 @@ import {
 } from '@toonexpo/db';
 
 import { toMediaSummary } from '../../catalog/mappers/catalog.mapper.js';
+import { TRANSLATION_ENTITY } from '../../catalog/utils/resolve-translation.js';
 import { toPublicFileUrl } from '../../media/public-file-url.js';
 import { resolveOptionalCompanyLogoMediaId } from '../../media/utils/media-ownership.js';
 import { toUserResponse } from '../../auth/mappers/user.mapper.js';
@@ -30,6 +31,9 @@ import {
 import { CompanyProvisioningService } from '../../company/provisioning/company-provisioning.service.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { AdminReadinessAssessmentsService } from '../../readiness/admin/admin-readiness-assessments.service.js';
+
+const COMPANY_DELETE_BLOCKED_MESSAGE =
+  'Company cannot be deleted while it still has projects, requests, deals, or visual maps';
 
 type CreateCompanyInput = {
   name: string;
@@ -195,7 +199,7 @@ export class AdminCompaniesService {
 
     const projects = await this.prisma.db.project.findMany({
       where: { builderCompanyId: companyId },
-      orderBy: [{ updatedAt: 'desc' }],
+      orderBy: [{ createdAt: 'desc' }],
       select: {
         id: true,
         name: true,
@@ -234,7 +238,7 @@ export class AdminCompaniesService {
       this.prisma.db.project.count({ where: { featuredOnHome: true } }),
       this.prisma.db.project.findMany({
         where,
-        orderBy: [{ featuredOnHome: 'desc' }, { updatedAt: 'desc' }],
+        orderBy: [{ createdAt: 'desc' }],
         skip: (page - 1) * pageSize,
         take: pageSize,
         select: {
@@ -355,6 +359,35 @@ export class AdminCompaniesService {
       email: membership.user.email,
       name: membership.user.name,
       ...(locale ? { locale } : {}),
+    });
+  }
+
+  /**
+   * Deletes a company that has no catalog/CRM dependencies.
+   * Clears readiness assessments and translations first (Restrict FKs).
+   */
+  async remove(id: string): Promise<void> {
+    await this.getById(id);
+
+    const [projectsCount, requestsCount, dealsCount, canvasesCount] = await Promise.all([
+      this.prisma.db.project.count({ where: { builderCompanyId: id } }),
+      this.prisma.db.request.count({ where: { builderCompanyId: id } }),
+      this.prisma.db.crmDeal.count({ where: { companyId: id } }),
+      this.prisma.db.visualMapCanvas.count({ where: { ownerCompanyId: id } }),
+    ]);
+
+    if (projectsCount > 0 || requestsCount > 0 || dealsCount > 0 || canvasesCount > 0) {
+      throw new ConflictException(COMPANY_DELETE_BLOCKED_MESSAGE);
+    }
+
+    await this.prisma.db.$transaction(async (tx) => {
+      await tx.translation.deleteMany({
+        where: { entityType: TRANSLATION_ENTITY.company, entityId: id },
+      });
+      await tx.readinessAssessment.deleteMany({
+        where: { builderCompanyId: id },
+      });
+      await tx.company.delete({ where: { id } });
     });
   }
 }

@@ -12,6 +12,7 @@ import {
   createReadinessAssessmentSchema,
   type CreateReadinessAssessmentFormValues,
 } from '@/features/admin/schemas/readiness.schema';
+import { toCatalogPublicationStatus } from '@/features/catalog/utils/catalog-publication-status';
 import { READINESS_TARGET_TYPES } from '@/features/readiness/constants';
 import { useRouter } from '@/i18n/navigation';
 import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
@@ -163,7 +164,10 @@ export const ReadinessCreateAssessmentSheet = ({
                   </option>
                   {(projectsQuery.data?.data ?? []).map((project) => (
                     <option key={project.id} value={project.id}>
-                      {project.name} ({t(`create.publicationStatuses.${project.publicationStatus}`)}
+                      {project.name} (
+                      {t(
+                        `create.publicationStatuses.${toCatalogPublicationStatus(project.publicationStatus)}`,
+                      )}
                       )
                     </option>
                   ))}

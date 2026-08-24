@@ -188,8 +188,24 @@ export const ProjectCatalogDetailsList = ({ rows }: { rows: ProjectCatalogRow[] 
   );
 };
 
-export const ProjectCatalogCheckList = ({ items }: { items: string[] }) => (
-  <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+export const CATALOG_CHECKLIST_GRID_CLASS = {
+  2: 'sm:grid-cols-2',
+  3: 'sm:grid-cols-2 lg:grid-cols-3',
+  4: 'sm:grid-cols-2 lg:grid-cols-4',
+} as const;
+
+type CatalogChecklistColumns = keyof typeof CATALOG_CHECKLIST_GRID_CLASS;
+
+type ProjectCatalogCheckListProps = {
+  items: string[];
+  columns?: CatalogChecklistColumns | undefined;
+};
+
+export const ProjectCatalogCheckList = ({
+  items,
+  columns = 3,
+}: ProjectCatalogCheckListProps) => (
+  <ul className={cn('grid grid-cols-1 gap-3', CATALOG_CHECKLIST_GRID_CLASS[columns])}>
     {items.map((item) => (
       <li key={item} className="flex items-start gap-2.5 text-sm text-ink-navy">
         <Check className="mt-0.5 size-4 shrink-0 text-brand" strokeWidth={2.5} aria-hidden />

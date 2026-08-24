@@ -36,5 +36,5 @@ export const getMappingCanvasHintText = ({
   if (toolPreset === 'floors') {
     return t('hintFloorsReady');
   }
-  return t('hintAfterSave');
+  return '';
 };

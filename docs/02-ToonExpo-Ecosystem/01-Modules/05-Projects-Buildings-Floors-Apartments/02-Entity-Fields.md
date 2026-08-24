@@ -218,4 +218,3 @@ Translatable fields:
 - building/floor labels where public-facing;
 - apartment description;
 - media title/alt text (when galleries are enabled post-v1).
-

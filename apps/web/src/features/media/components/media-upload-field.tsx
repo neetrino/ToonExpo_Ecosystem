@@ -3,7 +3,7 @@
 import type { MediaAssetItem } from '@toonexpo/contracts';
 import { Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import {
   listMediaAssets,
@@ -12,6 +12,7 @@ import {
 } from '@/features/media/api/media-api';
 import { MediaLibraryPanel } from '@/features/media/components/media-library-panel';
 import { isAllowedMediaMimeType, MEDIA_UPLOAD_MAX_BYTES } from '@/features/media/constants';
+import { useMediaFieldPreview } from '@/features/media/hooks/use-media-field-preview';
 import { ApiError } from '@/shared/api/errors';
 import { AdminDeleteModal } from '@/shared/ui/admin-delete-modal';
 import { Button } from '@/shared/ui/button';
@@ -63,17 +64,13 @@ export const MediaUploadField = ({
   const inputId = `${id}-file`;
   const [busy, setBusy] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
-  const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(previewUrl?.trim() || null);
+  const [thumbnailUrl, setThumbnailUrl] = useMediaFieldPreview(context, value, previewUrl);
   const [showLibrary, setShowLibrary] = useState(false);
   const [libraryItems, setLibraryItems] = useState<MediaAssetItem[]>([]);
   const [libraryPage, setLibraryPage] = useState(1);
   const [libraryTotalPages, setLibraryTotalPages] = useState(0);
   const [libraryLoading, setLibraryLoading] = useState(false);
   const [confirmClearOpen, setConfirmClearOpen] = useState(false);
-
-  useEffect(() => {
-    setThumbnailUrl(previewUrl?.trim() || null);
-  }, [previewUrl]);
 
   const hasSelection = value.trim().length > 0 || Boolean(thumbnailUrl);
 
@@ -149,7 +146,7 @@ export const MediaUploadField = ({
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-sm font-medium text-ink">{label}</span>
+        <span className="form-field-label text-sm font-medium text-ink">{label}</span>
         {allowClear && hasSelection ? (
           <IconButton
             type="button"

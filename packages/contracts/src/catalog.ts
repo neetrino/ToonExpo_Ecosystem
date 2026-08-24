@@ -91,6 +91,7 @@ export type ProjectListItem = {
   latitude: string | null;
   longitude: string | null;
   cover: MediaAssetSummary | null;
+  verified: boolean;
   builder: {
     id: string;
     name: string;
@@ -147,6 +148,7 @@ export type ApartmentListItem = {
   latitude: string | null;
   longitude: string | null;
   cover: MediaAssetSummary | null;
+  verified: boolean;
   /** True when the parent building has price-on-request enabled. */
   priceOnRequest: boolean;
 };
@@ -168,6 +170,7 @@ export type BuildingSummary = {
   displayOrder: number;
   floorsCount: number | null;
   cover: MediaAssetSummary | null;
+  verified: boolean;
   floors: FloorSummary[];
   availability: ApartmentAvailabilitySummary;
   /** Builder status: public listings hide prices and show a request CTA. */
@@ -192,6 +195,7 @@ export type ProjectDetail = {
   amenities: unknown;
   nearbyPlaces: unknown;
   cover: MediaAssetSummary | null;
+  verified: boolean;
   builder: {
     id: string;
     name: string;
@@ -232,6 +236,7 @@ export type ApartmentDetail = {
   features: unknown;
   plan: MediaAssetSummary | null;
   cover: MediaAssetSummary | null;
+  verified: boolean;
   /** Ordered gallery photos for the public mosaic (cover first when set). */
   gallery: MediaAssetSummary[];
   project: {

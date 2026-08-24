@@ -58,11 +58,6 @@ const isBuilderDetailRoute = (pathname: string): boolean => {
   return /^\/builders\/[^/]+$/.test(pathname);
 };
 
-/** Building detail (`/projects/:id/buildings/:buildingId`) — cover under transparent header. */
-const isBuildingDetailRoute = (pathname: string): boolean => {
-  return /^\/projects\/[^/]+\/buildings\/[^/]+$/.test(pathname);
-};
-
 /** Public 3D map — full-bleed under overlay header + bottom nav. */
 const isGeoMapRoute = (pathname: string): boolean => {
   return pathname === '/map' || pathname.startsWith('/map/');
@@ -72,7 +67,7 @@ const isGeoMapRoute = (pathname: string): boolean => {
  * Persistent public chrome — keeps SiteHeader mounted across navigations
  * so the bar does not remount/jump when switching Projects / Builders / etc.
  * Auth routes use AuthPageShell instead of the public header.
- * Home, partners/projects/builders list+detail, building detail, and geo map
+ * Home, partners/projects/builders list+detail, and geo map
  * use a transparent header so content sits under the bar; other public pages
  * use the same floating pill chrome as home-after-scroll.
  * Public, portal, and auth pages use DesktopFluidFrame so desktop composition
@@ -93,7 +88,6 @@ export const PublicChrome = ({ children }: PublicChromeProps) => {
     isProjectsListRoute(pathname) ||
     isBuildersListRoute(pathname) ||
     isBuilderDetailRoute(pathname) ||
-    isBuildingDetailRoute(pathname) ||
     isMap
       ? 'transparent'
       : 'solid';

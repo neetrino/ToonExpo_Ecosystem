@@ -58,6 +58,7 @@ export const FloorApartmentMappingEditor = ({
   onAfterSave,
 }: FloorApartmentMappingEditorProps) => {
   const t = useTranslations('Admin.interactiveMapping.canvas');
+  const tForms = useTranslations('Admin.interactiveMapping.forms');
 
   return (
     <MappingEditorShell
@@ -67,6 +68,7 @@ export const FloorApartmentMappingEditor = ({
       toolPreset="basic"
       listTitle={t('apartmentsListTitle')}
       emptyHint={t('emptyFloorHint')}
+      searchPlaceholder={tForms('searchApartments')}
       sidebarFooter={createForm}
       labelDigitsOnly
       deleteEntityLabel={t('deleteApartment')}

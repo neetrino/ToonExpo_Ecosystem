@@ -15,11 +15,13 @@ import {
   createFloorSchema,
   type CreateFloorFormValues,
 } from '@/features/builder/schemas/inventory.schema';
+import { isFloorNumberDuplicateApiError } from '@/shared/api/errors';
 import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
 import { ListboxSelect } from '@/shared/ui/listbox-select';
+import { useFormErrorToast } from '@/shared/ui/use-form-error-toast';
 
 type AdminCreateFloorSheetProps = {
   open: boolean;
@@ -29,7 +31,7 @@ type AdminCreateFloorSheetProps = {
 };
 
 /**
- * Admin sheet: pick company + building, then create a floor.
+ * Admin sheet: pick builder + building, then create a floor.
  */
 export const AdminCreateFloorSheet = ({
   open,
@@ -43,7 +45,9 @@ export const AdminCreateFloorSheet = ({
   const mutation = useAdminCreateFloorMutation();
   const [companyId, setCompanyId] = useState(defaultCompanyId ?? '');
   const [buildingId, setBuildingId] = useState(defaultBuildingId ?? '');
-  const [error, setError] = useState<string | null>(null);
+  const { showError, onInvalid, errorToast } = useFormErrorToast({
+    fieldLabels: { floorNumber: inventoryT('floorNumber') },
+  });
 
   const buildingsQuery = useAdminBuildingsQuery(
     1,
@@ -85,7 +89,6 @@ export const AdminCreateFloorSheet = ({
     }
     setCompanyId(defaultCompanyId ?? '');
     setBuildingId(defaultBuildingId ?? '');
-    setError(null);
     reset({
       floorNumber: '1',
       name: '',
@@ -96,10 +99,9 @@ export const AdminCreateFloorSheet = ({
 
   const onSubmit = handleSubmit(async (values) => {
     if (!companyId || !buildingId) {
-      setError(t('pickBuilding'));
+      showError(t('pickBuilding'));
       return;
     }
-    setError(null);
     try {
       const floorNumber = Number(values.floorNumber);
       await mutation.mutateAsync({
@@ -112,19 +114,23 @@ export const AdminCreateFloorSheet = ({
         },
       });
       onClose();
-    } catch {
-      setError(inventoryT('errors.generic'));
+    } catch (caught) {
+      if (isFloorNumberDuplicateApiError(caught)) {
+        showError(inventoryT('errors.floorNumberExists', { number: values.floorNumber }));
+        return;
+      }
+      showError(inventoryT('errors.generic'));
     }
-  });
+  }, onInvalid);
 
   const busy = isSubmitting || mutation.isPending;
 
   return (
     <AdminCreateSheet open={open} onClose={onClose} title={t('title')} size="comfortable">
       <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
-        <FormField id="create-floor-company" label={t('company')}>
+        <FormField id="create-floor-builder" label={t('builder')}>
           <ListboxSelect
-            id="create-floor-company"
+            id="create-floor-builder"
             variant="field"
             searchable
             value={companyId}
@@ -132,9 +138,9 @@ export const AdminCreateFloorSheet = ({
               value: company.id,
               label: company.name,
             }))}
-            placeholder={t('searchCompany')}
-            emptyLabel={t('noCompanyMatches')}
-            aria-label={t('company')}
+            placeholder={t('searchBuilder')}
+            emptyLabel={t('noBuilderMatches')}
+            aria-label={t('builder')}
             onChange={(next) => {
               setCompanyId(next);
               setBuildingId('');
@@ -178,15 +184,10 @@ export const AdminCreateFloorSheet = ({
           </FormField>
         </div>
 
-        {error ? (
-          <p role="alert" className="text-sm text-danger">
-            {error}
-          </p>
-        ) : null}
-
         <Button type="submit" size="sm" variant="secondary" disabled={busy || !buildingId}>
           {busy ? inventoryT('adding') : t('submit')}
         </Button>
+        {errorToast}
       </form>
     </AdminCreateSheet>
   );

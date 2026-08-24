@@ -22,17 +22,34 @@
       "cards": "Карточки",
       "board": "Доска"
     },
+    "publicationStatus": {
+      "label": "Статус публикации"
+    },
     "datePicker": {
       "placeholder": "Выберите дату",
       "clear": "Удалить",
       "today": "Сегодня",
       "previousMonth": "Предыдущий месяц",
-      "nextMonth": "Следующий месяц"
+      "nextMonth": "Следующий месяц",
+      "previousYear": "Предыдущий год",
+      "nextYear": "Следующий год"
     },
     "placeholders": {
       "url": "https://"
     },
-    "back": "Назад"
+    "back": "Назад",
+    "formErrors": {
+      "required": "Поле «{field}» обязательно",
+      "requiredInLanguage": "Поле «{field}» обязательно в {language} версии",
+      "invalid": "Поле «{field}» заполнено неверно",
+      "tooLong": "Поле «{field}» слишком длинное",
+      "generic": "Заполните обязательные поля и попробуйте снова",
+      "languages": {
+        "hy": "армянской",
+        "ru": "русской",
+        "en": "английской"
+      }
+    }
   },
   "ReadinessKpi": {
     "categories": {
@@ -587,6 +604,7 @@
         "overview": "Обзор",
         "details": "Детали",
         "finance": "Финансы",
+        "bankPartner": "Банк-партнёр",
         "facts": "Ключевые факты",
         "amenities": "Удобства",
         "nearby": "Рядом",
@@ -776,6 +794,8 @@
       "breadcrumb": "Навигация",
       "breadcrumbHome": "Главная",
       "breadcrumbSearch": "Поиск",
+      "breadcrumbBuilding": "Building {name}",
+      "breadcrumbFloor": "Floor {number}",
       "inquireTitle": "Запрос по этому дому",
       "inquireSubtitle": "Мы свяжем вас с застройщиком.",
       "inquireAgentRole": "Партнёр ToonExpo",
@@ -893,6 +913,7 @@
       "title": "Экспоненты",
       "subtitle": "{count, plural, =0 {Нет экспонентов} one {# экспонент} few {# экспонента} many {# экспонентов} other {# экспонента}}",
       "empty": "В этой категории пока нет опубликованных экспонентов.",
+      "searchEmpty": "По запросу «{query}» экспоненты не найдены.",
       "notFoundTitle": "Партнёр не найден",
       "metaFallback": "Профиль {name}",
       "meta": {
@@ -916,6 +937,8 @@
         "type": "Тип партнёра",
         "allTypes": "Все типы",
         "typesSelectedCount": "{count} выбрано",
+        "search": "Поиск",
+        "searchPlaceholder": "Искать экспонентов…",
         "apply": "Применить",
         "reset": "Сбросить"
       },
@@ -1491,7 +1514,8 @@
       "projectMeta": "{districts} районов · {buildings} зданий · фаза {phase}",
       "labLink": "Mapping lab (QA)",
       "backToProjects": "Проекты",
-      "backToWizard": "Мастер",
+      "backToWizard": "Назад",
+      "backToDistricts": "Районы",
       "activePhase": "Сейчас фаза {phase}",
       "allPhasesDone": "Все фазы завершены",
       "filters": {
@@ -1518,6 +1542,8 @@
         "buildings": "Создайте здания и разместите их на плане района.",
         "floors": "Укажите число этажей, загрузите рендер и нарисуйте этажи.",
         "apartments": "Создайте квартиры и нарисуйте их на плане этажа.",
+        "pickDistrict": "Сначала выберите район, затем продолжите.",
+        "pickApartmentFloor": "Выберите здание, затем этаж для разметки квартир.",
         "setupFloors": "Укажите число этажей, затем откройте страницу разметки."
       },
       "progress": {
@@ -1539,10 +1565,13 @@
         "name": "Название",
         "createDistrict": "Создать район",
         "createBuilding": "Создать здание",
+        "createFloor": "Создать этаж",
         "createApartment": "Создать квартиру",
         "apartmentNumber": "Номер",
+        "floorNumber": "Номер этажа",
         "districtPlaceholder": "напр. Район A",
         "buildingPlaceholder": "напр. Building 01",
+        "floorPlaceholder": "1",
         "apartmentPlaceholder": "101",
         "saving": "Сохранение…",
         "setupFloors": "Начать разметку этажей",
@@ -1554,16 +1583,58 @@
         "uploadFirst": "Сначала загрузите изображение.",
         "uploadAndSetupFloors": "Сначала загрузите рендер и настройте этажи.",
         "pickFloor": "Этажи",
+        "pickDistrict": "Выберите район",
+        "pickBuilding": "Выберите здание",
+        "searchBuildings": "Поиск зданий…",
+        "searchFloors": "Поиск этажей…",
+        "searchApartments": "Поиск квартир…",
+        "searchEntities": "Поиск…",
+        "searchNoResults": "Нет результатов по «{query}».",
+        "noDistricts": "Районов пока нет. Сначала создайте районы на этапе Districts.",
+        "noBuildings": "Зданий пока нет. Сначала создайте здания на этапе Buildings.",
+        "noBuildingsInDistrict": "В этом районе зданий пока нет.",
+        "buildingFloorsMapped": "Этажей на карте: {mapped}/{total}",
+        "buildingApartmentsCount": "{count, plural, =0 {Нет квартир} one {# квартира} few {# квартиры} many {# квартир} other {# квартир}}",
+        "districtPicker": {
+          "districtIndex": "Район",
+          "buildingsCount": "{count, plural, =0 {0 зданий} one {# здание} few {# здания} many {# зданий} other {# зданий}}"
+        },
+        "buildingPicker": {
+          "buildingIndex": "Здание",
+          "floorIndex": "Этаж",
+          "floorsMapped": "{count, plural, =0 {0 этажей на карте} one {# этаж на карте} few {# этажа на карте} many {# этажей на карте} other {# этажей на карте}}",
+          "totalArea": "{area} m² общая площадь",
+          "zones": "{count, plural, =0 {0 зон} one {# зона} few {# зоны} many {# зон} other {# зон}}",
+          "lastUpdated": "последнее обновление",
+          "lastUpdatedUnknown": "—",
+          "lastUpdatedToday": "Сегодня",
+          "lastUpdatedDaysAgo": "{count, plural, one {# день назад} few {# дня назад} many {# дней назад} other {# дней назад}}"
+        },
+        "floorPicker": {
+          "floorIndex": "Этаж"
+        },
         "noFloors": "Этажей пока нет.",
         "needsPolygon": "Сначала нарисуйте polygon",
         "planReady": "plan",
         "floorNeedsPolygon": "Сначала нарисуйте polygon этого этажа на рендере здания. Затем можно загрузить план этажа.",
         "floorNeedsPolygonNamed": "У этажа {name} ещё нет polygon на здании. Откройте building render, нарисуйте его и вернитесь.",
-        "goToBuildingRender": "Открыть building render"
+        "goToBuildingRender": "Открыть building render",
+        "errors": {
+          "generic": "Не удалось сохранить. Попробуйте ещё раз.",
+          "floorNumberExists": "В этом здании этаж {number} уже есть. Укажите другой номер или откройте существующий этаж."
+        }
       },
       "pages": {
         "masterplan": "Masterplan · районы",
         "district": "Район · {name}",
+        "buildingsDistrict": "Здания · выбор района",
+        "floors": "Этажи · выбор здания",
+        "floorsDistrict": "Этажи · выбор района",
+        "floorsChooseBuilding": "Этажи · {district}",
+        "apartments": "Квартиры · выбор здания",
+        "apartmentsDistrict": "Квартиры · выбор района",
+        "apartmentsChooseBuilding": "Квартиры · {district}",
+        "apartmentsBuilding": "Квартиры · {name}",
         "buildingRender": "Здание · {name}",
         "floor": "Этаж · {name}"
       },
@@ -1578,6 +1649,9 @@
         "editDrag": "Править · перетащить",
         "newPolygon": "Новый полигон",
         "deletePolygon": "Удалить полигон",
+        "deleteAllPolygons": "Удалить все полигоны",
+        "deleteAllPolygonsConfirm": "Удалить все полигоны с этой карты? Объекты останутся — можно нарисовать заново.",
+        "allPolygonsCleared": "Удалено полигонов: {count}",
         "saveDrawing": "Сохранить чертёж ({count} точек)",
         "saveDrawingAria": "Сохранить чертёж, {count} точек",
         "deleteSelectedPoint": "Удалить выбранную точку (Delete)",
@@ -1597,10 +1671,12 @@
         "hintEmpty": "Сначала создайте или выберите объект в списке слева, затем нарисуйте инструментом Polygon.",
         "hintSelectEntity": "Выберите объект в списке слева, затем нажмите Polygon и нарисуйте точки.",
         "hintFloorsReady": "Быстро: Авто / Полоса. Править · перетащить, чтобы изменить форму.",
-        "hintAfterSave": "После Save следующий клик начинает новую линию (старая остаётся). Править · перетащить, чтобы изменить форму.",
         "confirmDeletePolygon": "Удалить этот чертёж? Позже можно нарисовать новый полигон.",
         "confirmReplacePolygon": "Удалить старый чертёж и начать новый? Старый сохранится как удалённый.",
         "confirmDeleteApartment": "Удалить эту квартиру?",
+        "confirmDeleteDistrict": "Удалить этот район?",
+        "confirmDeleteBuilding": "Удалить это здание?",
+        "confirmDeleteFloor": "Удалить этот этаж?",
         "emptyFloorHint": "На этом этаже пока нет квартир. Создайте хотя бы одну, выберите в списке, затем нарисуйте Polygon.",
         "movePolygon": "Переместить полигон",
         "rotatePolygon": "Повернуть полигон",
@@ -1621,7 +1697,13 @@
         "openFullscreen": "Открыть карту на весь экран",
         "deleteFailed": "Не удалось удалить",
         "apartmentsListTitle": "Квартиры",
+        "districtsListTitle": "Районы",
+        "buildingsListTitle": "Здания",
+        "floorsListTitle": "Этажи",
         "deleteApartment": "Удалить квартиру",
+        "deleteDistrict": "Удалить район",
+        "deleteBuilding": "Удалить здание",
+        "deleteFloor": "Удалить этаж",
         "removeMappingConfirm": "Удалить разметку для этого объекта?",
         "fullscreenHint": "Полноэкранная разметка · Esc — выход · Save сохраняет работу",
         "exitFullscreen": "Выйти из полноэкранного режима",
@@ -1808,6 +1890,10 @@
         "resendSubmitting": "Отправка…",
         "resendSuccess": "Приглашение отправлено повторно",
         "resendNotFound": "У этой компании нет приглашённого администратора",
+        "delete": "Удалить компанию",
+        "deleteConfirmTitle": "Удалить компанию",
+        "deleteConfirmMessage": "Вы уверены, что хотите удалить эту компанию? Действие нельзя отменить.",
+        "deleteBlocked": "У компании ещё есть проекты, заявки, сделки или визуальные карты. Сначала удалите их.",
         "projects": {
           "title": "Проекты",
           "count": "{count, plural, =0 {Нет проектов} one {# проект} few {# проекта} many {# проектов} other {# проекта}}",
@@ -1912,11 +1998,11 @@
       "create": {
         "cta": "+ Добавить проект",
         "title": "Добавить проект",
-        "company": "Компания",
-        "searchCompany": "Поиск компаний",
-        "noCompanyMatches": "Нет подходящих компаний",
-        "selectCompany": "Выберите компанию",
-        "pickCompany": "Выберите компанию, чтобы продолжить."
+        "builder": "Застройщик",
+        "searchBuilder": "Поиск застройщиков",
+        "noBuilderMatches": "Нет подходящих застройщиков",
+        "selectBuilder": "Выберите застройщика",
+        "pickBuilder": "Выберите застройщика, чтобы продолжить."
       }
     },
     "buildings": {
@@ -1938,15 +2024,15 @@
       "create": {
         "cta": "+ Добавить здание",
         "title": "Добавить здание",
-        "company": "Компания",
-        "selectCompany": "Выберите компанию",
-        "searchCompany": "Поиск компаний",
-        "noCompanyMatches": "Нет подходящих компаний",
+        "builder": "Застройщик",
+        "selectBuilder": "Выберите застройщика",
+        "searchBuilder": "Поиск застройщиков",
+        "noBuilderMatches": "Нет подходящих застройщиков",
         "project": "Проект",
         "selectProject": "Выберите проект",
         "searchProject": "Поиск проектов",
         "noProjectMatches": "Нет подходящих проектов",
-        "pickProject": "Выберите компанию и проект.",
+        "pickProject": "Выберите застройщика и проект.",
         "submit": "Создать здание"
       },
       "inventory": {
@@ -1979,6 +2065,11 @@
         "apartmentsError": "Не удалось загрузить квартиры. Попробуйте ещё раз.",
         "noApartments": "На этом этаже пока нет квартир.",
         "apartmentUnit": "Кв. {number}",
+        "deleteBuildingTitle": "Удалить здание",
+        "deleteBuildingConfirm": "Удалить этот черновик здания? Этажи и квартиры в нём будут удалены. Это нельзя отменить.",
+        "deleteFloorTitle": "Удалить этаж",
+        "deleteFloorConfirm": "Удалить этот черновик этажа? Квартиры на нём будут удалены. Это нельзя отменить.",
+        "deleteError": "Не удалось удалить. Попробуйте ещё раз.",
         "sales": {
           "available": "Доступна",
           "reserved": "Зарезервирована",
@@ -2025,15 +2116,15 @@
       "create": {
         "cta": "+ Добавить этаж",
         "title": "Добавить этаж",
-        "company": "Компания",
-        "selectCompany": "Выберите компанию",
-        "searchCompany": "Поиск компаний",
-        "noCompanyMatches": "Нет подходящих компаний",
+        "builder": "Застройщик",
+        "selectBuilder": "Выберите застройщика",
+        "searchBuilder": "Поиск застройщиков",
+        "noBuilderMatches": "Нет подходящих застройщиков",
         "building": "Здание",
         "selectBuilding": "Выберите здание",
         "searchBuilding": "Поиск зданий",
         "noBuildingMatches": "Нет подходящих зданий",
-        "pickBuilding": "Выберите компанию и здание.",
+        "pickBuilding": "Выберите застройщика и здание.",
         "submit": "Создать этаж"
       }
     },
@@ -2959,6 +3050,13 @@
   },
   "Builder": {
     "badge": "Застройщик",
+    "verified": {
+      "label": "Проверено",
+      "hint": "Показывать бейдж «Проверено» на публичной карточке.",
+      "placeholder": "Выкл — без бейджа",
+      "on": "Вкл — бейдж виден",
+      "saved": "Статус «Проверено» обновлён"
+    },
     "profileLink": "Профиль",
     "locales": {
       "label": "Язык перевода",
@@ -2972,6 +3070,9 @@
       "portalLabel": "Портал застройщика",
       "dashboard": "Дашборд",
       "projects": "Проекты",
+      "buildings": "Здание",
+      "floors": "Этаж",
+      "apartments": "Квартира",
       "team": "Команда",
       "interactiveMapping": "Интерактивная карта",
       "visualMap": "Визуальная карта",
@@ -3163,7 +3264,7 @@
       },
       "catalog": {
         "title": "Детали проекта (публичный каталог)",
-        "subtitle": "Тот же layout, что на публичной странице проекта — редактируйте Overview, Details, Finance, Features и Nearby для каждого языка.",
+        "subtitle": "Тот же layout, что на публичной странице проекта — редактируйте Overview, Details, Финансы, Банк-партнёр, Features и Nearby для каждого языка.",
         "listHint": "По одному пункту на строку.",
         "amenityLabels": "Удобства",
         "nearbyPlaces": "Рядом",
@@ -3176,7 +3277,7 @@
         "financeImport": {
           "button": "Импорт",
           "title": "Импорт предложения партнёра",
-          "hint": "Выберите опубликованный шаблон из раздела «Шаблон / Партнёрские предложения». Поля заполнятся в Finance — отредактируйте и сохраните.",
+          "hint": "Выберите опубликованный шаблон из раздела «Шаблон / Партнёрские предложения». Поля заполнятся в блоке «Банк-партнёр» — отредактируйте и сохраните.",
           "loading": "Загрузка…",
           "error": "Не удалось загрузить шаблоны.",
           "empty": "Нет опубликованных шаблонов. Создайте в Admin → Шаблон / Партнёрские предложения.",
@@ -3261,7 +3362,8 @@
         "sections": {
           "overview": "Overview",
           "details": "Details",
-          "finance": "Finance",
+          "finance": "Финансы",
+          "bankPartner": "Банк-партнёр",
           "features": "Features",
           "nearby": "Nearby",
           "links": "Ссылки",
@@ -3321,12 +3423,15 @@
       "saveFloorplan": "Сохранить планировку",
       "coverSaved": "Обложка сохранена",
       "floorplanSaved": "Планировка сохранена",
+      "publicationSuccess": "Статус публикации обновлён",
       "floorNumber": "Номер этажа",
       "floorName": "Название этажа",
       "displayLabel": "Метка",
       "floorLabel": "Этаж {number}",
       "floorLabelNamed": "Этаж {number} · {name}",
       "floorsCount": "{count, plural, =0 {Нет этажей} one {# этаж} few {# этажа} other {# этажей}}",
+      "expandBuilding": "Показать этажи: {name}",
+      "collapseBuilding": "Скрыть этажи: {name}",
       "apartmentsCount": "{count, plural, =0 {Нет квартир} one {# квартира} few {# квартиры} other {# квартир}}",
       "apartmentLink": "#{number} · {status}",
       "count": "Количество",
@@ -3350,14 +3455,15 @@
         "count": "Укажите корректное количество"
       },
       "errors": {
-        "generic": "Что-то пошло не так. Попробуйте ещё раз."
+        "generic": "Что-то пошло не так. Попробуйте ещё раз.",
+        "floorNumberExists": "В этом здании этаж {number} уже есть. Укажите другой номер или откройте существующий этаж."
       }
     },
     "visualMap": {
       "title": "Визуальные карты",
       "subtitle": "Рендеры проекта, карты корпусов и поэтажные планы с навигационными точками",
       "loading": "Загрузка визуальных карт…",
-      "empty": "Визуальных canvas пока нет.",
+      "empty": "Визуальных canvas пока нет. Создайте и добавьте точки.",
       "untitled": "Canvas без названия",
       "primaryYes": "Основной",
       "primaryNo": "—",
@@ -3441,10 +3547,10 @@
       "planViewHint": "Открыть планировку на весь экран",
       "savePlan": "Сохранить планировку",
       "planSaved": "Планировка сохранена как Main в галерее",
-      "tinderTitle": "Tinder-фото",
+      "tinderTitle": "Swipe-фото",
       "tinderHint": "Показывается в Discover (свайп). Если пусто — обложка проекта.",
-      "saveTinder": "Сохранить Tinder-фото",
-      "tinderSaved": "Tinder-фото сохранено",
+      "saveTinder": "Сохранить Swipe-фото",
+      "tinderSaved": "Swipe-фото сохранено",
       "floorplanTitle": "План этажа",
       "floorplanHint": "Общий план этажа — один для всех квартир на этом этаже.",
       "saveFloorplan": "Сохранить план этажа",
@@ -3486,7 +3592,7 @@
         "coverMedia": "Обложка",
         "planMedia": "Планировка квартиры",
         "floorplanMedia": "План этажа",
-        "tinderMedia": "Tinder-фото",
+        "tinderMedia": "Swipe-фото",
         "matterportUrl": "Ссылка Matterport",
         "external3dUrl": "Внешняя 3D-ссылка"
       },
@@ -3512,6 +3618,9 @@
       "detail": {
         "publish": "Опубликовать",
         "unpublish": "Снять с публикации",
+        "delete": "Удалить",
+        "deleteConfirm": "Удалить этот черновик квартиры? Действие необратимо.",
+        "deleteConfirmTitle": "Удалить квартиру",
         "publicationSuccess": "Статус публикации обновлён"
       },
       "errors": {

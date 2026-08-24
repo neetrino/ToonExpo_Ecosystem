@@ -5,6 +5,11 @@ import { useTranslations } from 'next-intl';
 import { useId, useRef, useState } from 'react';
 
 import { useAdminUpdateFloorMutation } from '@/features/admin/hooks/use-admin-inventory';
+import {
+  PLATFORM_INVENTORY_SHEET_SCOPE,
+  toCatalogMutationScope,
+  type InventorySheetScope,
+} from '@/features/admin/inventory-sheet-scope';
 import { catalogMediaContext } from '@/features/builder/catalog-scope';
 import { uploadMediaAsset } from '@/features/media/api/media-api';
 import { isAllowedMediaMimeType, MEDIA_UPLOAD_MAX_BYTES } from '@/features/media/constants';
@@ -21,6 +26,7 @@ type FloorPlanGlanceIconProps = {
   floorId: string;
   /** `icon` — glance row marker; `edit` — labeled Edit button. */
   variant?: 'icon' | 'edit' | undefined;
+  sheetScope?: InventorySheetScope | undefined;
 };
 
 /**
@@ -32,6 +38,7 @@ export const FloorPlanGlanceIcon = ({
   buildingId,
   floorId,
   variant = 'icon',
+  sheetScope = PLATFORM_INVENTORY_SHEET_SCOPE,
 }: FloorPlanGlanceIconProps) => {
   const t = useTranslations('Admin.buildings.inventory');
   const commonT = useTranslations('Common');
@@ -40,7 +47,8 @@ export const FloorPlanGlanceIcon = ({
   const updateFloor = useAdminUpdateFloorMutation();
   const [uploading, setUploading] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const mediaContext = catalogMediaContext({ mode: 'admin', companyId });
+  const mutationScope = toCatalogMutationScope(sheetScope, companyId);
+  const mediaContext = catalogMediaContext(mutationScope);
 
   const busy = uploading || updateFloor.isPending;
 
@@ -56,6 +64,7 @@ export const FloorPlanGlanceIcon = ({
           buildingId,
           floorId,
           body: { floorplanMediaId: asset.id },
+          scope: mutationScope,
         });
       })
       .finally(() => {

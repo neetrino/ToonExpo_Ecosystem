@@ -5,6 +5,7 @@ import { Controller, type Control, type UseFormRegister, type UseFormSetValue } 
 
 import type { TRANSLATION_LOCALES } from '@/features/builder/constants';
 import {
+  PROJECT_CATALOG_BANK_PARTNER_KEYS,
   PROJECT_CATALOG_DETAILS_KEYS,
   PROJECT_CATALOG_FINANCE_KEYS,
   PROJECT_CATALOG_MEDIA_LINK_EDITOR_IDS,
@@ -107,7 +108,7 @@ const CatalogLinkFields = ({ ids, register, labelFor }: CatalogLinkFieldsProps) 
 
 /**
  * Admin catalog editor laid out like the public Project details cards
- * (Overview / Details / Finance / Features / Nearby / Links / Socials).
+ * (Overview / Details / Finance / Bank partner / Features / Nearby / Links / Socials).
  */
 export const ProjectCatalogEditor = ({
   register,
@@ -146,13 +147,23 @@ export const ProjectCatalogEditor = ({
               />
             </ProjectCatalogSectionCard>
 
-            <ProjectCatalogSectionCard
-              title={tCatalog('finance')}
-              headerAction={<ProjectFinanceTemplateImport setValue={setValue} />}
-            >
+            <ProjectCatalogSectionCard title={tCatalog('finance')}>
               <ProjectCatalogKvEditor
                 sectionId="finance"
                 keys={PROJECT_CATALOG_FINANCE_KEYS}
+                locale={locale}
+                control={control}
+                register={register}
+              />
+            </ProjectCatalogSectionCard>
+
+            <ProjectCatalogSectionCard
+              title={tCatalog('bankPartner')}
+              headerAction={<ProjectFinanceTemplateImport setValue={setValue} />}
+            >
+              <ProjectCatalogKvEditor
+                sectionId="bankPartner"
+                keys={PROJECT_CATALOG_BANK_PARTNER_KEYS}
                 locale={locale}
                 control={control}
                 register={register}
@@ -172,7 +183,7 @@ export const ProjectCatalogEditor = ({
                     addLabel={t('addItem')}
                     removeLabel={t('removeItem')}
                     placeholder={getCatalogListPlaceholder(locale, 'amenity')}
-                    columns={3}
+                    columns={4}
                   />
                 )}
               />
