@@ -1,8 +1,11 @@
+import type { ProjectBankPartnerOfferSummary } from '@toonexpo/contracts';
+
 import {
   ProjectCatalogCheckList,
   ProjectCatalogDetailsList,
   ProjectCatalogOverviewStat,
 } from '@/features/catalog/components/project-catalog-details-bits';
+import { ProjectBankPartnerOffersPanel } from '@/features/catalog/components/project-bank-partner-offers-panel';
 import { ProjectCatalogSectionCard } from '@/features/catalog/components/project-catalog-section-card';
 import { ProjectCatalogLinksSection } from '@/features/catalog/components/project-catalog-links-section';
 import { ProjectCatalogMediaPoster } from '@/features/catalog/components/project-catalog-media-poster';
@@ -14,6 +17,7 @@ import {
 } from '@/features/catalog/utils/build-project-catalog-rows';
 import type { ProjectCatalogLink } from '@/features/catalog/utils/project-catalog-details';
 import { splitProjectCatalogLinks } from '@/features/catalog/utils/project-catalog-links';
+import type { buildProjectBankPartnerOfferRows } from '@/features/catalog/utils/build-project-bank-partner-offer-rows';
 import { staticAssetUrl } from '@/shared/lib/static-asset-url';
 import { cn } from '@/shared/ui/cn';
 
@@ -33,6 +37,9 @@ type ProjectCatalogDetailsPanelProps = {
   videoTitle: string;
   videoOpenLabel: string;
   linkLabels: Record<ProjectCatalogLink['id'], string>;
+  bankPartnerFieldLabels: Parameters<typeof buildProjectBankPartnerOfferRows>[2];
+  bankPartnerOffers: ProjectBankPartnerOfferSummary[];
+  locale: string;
   rows: ProjectCatalogRow[];
   amenityLabels: string[];
   nearbyPlaces: string[];
@@ -66,6 +73,9 @@ export const ProjectCatalogDetailsPanel = ({
   videoTitle,
   videoOpenLabel,
   linkLabels,
+  bankPartnerFieldLabels,
+  bankPartnerOffers,
+  locale,
   rows,
   amenityLabels,
   nearbyPlaces,
@@ -95,7 +105,8 @@ export const ProjectCatalogDetailsPanel = ({
   const hasOverview = overviewRows.length > 0;
   const hasDetails = detailRows.length > 0;
   const hasFinance = financeRows.length > 0;
-  const hasBankPartner = bankPartnerRows.length > 0;
+  const hasRelationalBankPartnerOffers = bankPartnerOffers.length > 0;
+  const hasLegacyBankPartner = !hasRelationalBankPartnerOffers && bankPartnerRows.length > 0;
   const hasAmenities = amenityLabels.length > 0;
   const hasNearby = nearbyPlaces.length > 0;
   const hasVideo = videoLink != null;
@@ -150,10 +161,19 @@ export const ProjectCatalogDetailsPanel = ({
           </ProjectCatalogSectionCard>
         ) : null}
 
-        {hasBankPartner ? (
+        {hasLegacyBankPartner ? (
           <ProjectCatalogSectionCard title={bankPartnerTitle}>
             <ProjectCatalogDetailsList rows={bankPartnerRows} />
           </ProjectCatalogSectionCard>
+        ) : null}
+
+        {hasRelationalBankPartnerOffers ? (
+          <ProjectBankPartnerOffersPanel
+            offers={bankPartnerOffers}
+            locale={locale}
+            sectionTitle={bankPartnerTitle}
+            labels={bankPartnerFieldLabels}
+          />
         ) : null}
 
         {hasAmenities ? (

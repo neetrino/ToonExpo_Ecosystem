@@ -266,9 +266,9 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
       />
 
       <ProjectCatalogEditor
+        projectId={project.id}
         register={register}
         control={control}
-        setValue={setValue}
       />
 
       <FormSaveBar>

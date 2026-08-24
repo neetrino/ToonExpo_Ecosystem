@@ -133,7 +133,8 @@ model ProjectBankPartnerOffer {
   id               String   @id @default(cuid())
   projectId        String   @map("project_id")
   templateId       String?  @map("template_id")
-  partnerCompanyId String   @map("partner_company_id")
+  /// Optional link to PartnerCompany; bank name may live in finance fields only.
+  partnerCompanyId String?  @map("partner_company_id")
   name             String
   /// Copied localized finance fields; project edits do not mutate the template.
   fields           Json
@@ -145,7 +146,7 @@ model ProjectBankPartnerOffer {
 
   project        Project                   @relation(fields: [projectId], references: [id], onDelete: Cascade)
   template       BankPartnerOfferTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
-  partnerCompany PartnerCompany            @relation(fields: [partnerCompanyId], references: [id], onDelete: Restrict)
+  partnerCompany PartnerCompany?           @relation(fields: [partnerCompanyId], references: [id], onDelete: SetNull)
   createdBy      User                      @relation("ProjectBankPartnerOfferCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
   updatedBy      User?                     @relation("ProjectBankPartnerOfferUpdater", fields: [updatedByUserId], references: [id], onDelete: SetNull)
 

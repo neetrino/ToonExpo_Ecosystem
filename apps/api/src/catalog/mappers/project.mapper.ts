@@ -2,6 +2,7 @@ import type {
   ApartmentAvailabilitySummary,
   FloorApartmentSummary,
   PriceVisibility,
+  ProjectBankPartnerOfferSummary,
   ProjectDetail,
   ProjectListItem,
 } from '@toonexpo/contracts';
@@ -9,6 +10,7 @@ import type { ApartmentSalesStatus, Prisma } from '@toonexpo/db';
 import type { SupportedLocale } from '@toonexpo/shared';
 
 import { toPublicFileUrl } from '../../media/public-file-url.js';
+import { parseStoredFinanceFields } from '../../bank-partner-offers/utils/finance-fields.js';
 import {
   resolveCompanyDisplayName,
   resolveTranslatedName,
@@ -67,6 +69,16 @@ type ProjectDetailSource = Omit<ProjectListSource, 'buildings'> & {
   completionDate: Date | null;
   amenities: Prisma.JsonValue;
   nearbyPlaces: Prisma.JsonValue;
+  bankPartnerOffers: Array<{
+    id: string;
+    name: string;
+    sortOrder: number;
+    fields: Prisma.JsonValue;
+    partnerCompany: {
+      name: string;
+      logoMedia: { fileUrl: string } | null;
+    } | null;
+  }>;
   buildings: Array<{
     id: string;
     name: string;
@@ -235,6 +247,19 @@ export const mapProjectListItem = (
   };
 };
 
+const mapBankPartnerOfferSummary = (
+  offer: ProjectDetailSource['bankPartnerOffers'][number],
+): ProjectBankPartnerOfferSummary => ({
+  id: offer.id,
+  name: offer.name,
+  partnerCompanyName: offer.partnerCompany?.name ?? null,
+  partnerCompanyLogoUrl: offer.partnerCompany?.logoMedia
+    ? toPublicFileUrl(offer.partnerCompany.logoMedia.fileUrl)
+    : null,
+  fields: parseStoredFinanceFields(offer.fields),
+  sortOrder: offer.sortOrder,
+});
+
 export const mapProjectDetail = (project: ProjectDetailSource, ctx: MapContext): ProjectDetail => {
   const listBase = mapProjectListItem(project, ctx);
   const prices = aggregateVisiblePrices(project.apartments, ctx.isAuthenticated);
@@ -257,6 +282,7 @@ export const mapProjectDetail = (project: ProjectDetailSource, ctx: MapContext):
       : null,
     amenities: project.amenities,
     nearbyPlaces: project.nearbyPlaces,
+    bankPartnerOffers: project.bankPartnerOffers.map(mapBankPartnerOfferSummary),
     buildings: project.buildings.map((building) => ({
       id: building.id,
       name: building.name,

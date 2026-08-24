@@ -2,6 +2,8 @@
  * Shared catalog types for public project / apartment / builder APIs.
  */
 
+import type { BankPartnerOfferFinanceFields } from './bank-partner-offer-templates.js';
+
 export type PublicationStatus = 'draft' | 'published' | 'archived';
 
 export type ApartmentSalesStatus = 'available' | 'reserved' | 'sold';
@@ -177,6 +179,16 @@ export type BuildingSummary = {
   priceOnRequestEnabled: boolean;
 };
 
+/** Published bank partner offer shown on the public project page. */
+export type ProjectBankPartnerOfferSummary = {
+  id: string;
+  name: string;
+  partnerCompanyName: string | null;
+  partnerCompanyLogoUrl: string | null;
+  fields: BankPartnerOfferFinanceFields;
+  sortOrder: number;
+};
+
 export type ProjectDetail = {
   id: string;
   name: string;
@@ -208,6 +220,7 @@ export type ProjectDetail = {
   priceCurrency: string | null;
   /** True when any published building has price-on-request enabled. */
   priceOnRequest: boolean;
+  bankPartnerOffers: ProjectBankPartnerOfferSummary[];
 };
 
 export type ApartmentDetail = {

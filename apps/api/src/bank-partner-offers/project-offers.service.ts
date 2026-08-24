@@ -95,10 +95,7 @@ export class ProjectBankPartnerOffersService {
     }
 
     const toApply = templates.filter(
-      (template): template is (typeof templates)[number] & {
-        partnerCompanyId: string;
-      } =>
-        template.partnerCompanyId != null && !alreadyApplied.has(template.id),
+      (template) => !alreadyApplied.has(template.id),
     );
     if (toApply.length === 0) {
       const current = await this.listForProject(projectId);
