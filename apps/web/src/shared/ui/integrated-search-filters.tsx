@@ -125,11 +125,9 @@ export const IntegratedSearchFilters = ({
             filters={filters ?? []}
             filterValues={draftFilters}
             onFilterChange={(key, value) => {
-              setDraftFilters((prev) => {
-                const next = applyDraftFilterChange(filters, prev, key, value);
-                onDraftFilterChange?.(next);
-                return next;
-              });
+              const next = applyDraftFilterChange(filters, draftFilters, key, value);
+              setDraftFilters(next);
+              onDraftFilterChange?.(next);
             }}
             onApply={() => {
               applyDraftFilters(filters, draftFilters, filterValues, onFilterChange);
