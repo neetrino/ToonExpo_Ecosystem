@@ -22,17 +22,18 @@ export const pickPrimaryVisualCanvas = (
   return withHotspots ?? canvases[0] ?? null;
 };
 
-export const buildApartmentHref = (apartmentId: string): string =>
-  `/apartments/${encodeURIComponent(apartmentId)}`;
+import { buildApartmentHref, buildBuildingHref, buildDistrictHref, buildFloorHref } from '@/features/geo-map/public/utils/build-project-public-href';
 
-export const buildBuildingHref = (projectId: string, buildingId: string): string =>
-  `/projects/${encodeURIComponent(projectId)}/buildings/${encodeURIComponent(buildingId)}`;
+export { buildApartmentHref };
 
-export const buildDistrictHref = (projectId: string, districtId: string): string =>
-  `/projects/${encodeURIComponent(projectId)}/districts/${encodeURIComponent(districtId)}`;
+export const buildBuildingHref = (projectSlug: string, buildingId: string): string =>
+  buildProjectBuildingPublicHref(projectSlug, buildingId);
 
-export const buildFloorHref = (projectId: string, buildingId: string, floorId: string): string =>
-  `/projects/${encodeURIComponent(projectId)}/buildings/${encodeURIComponent(buildingId)}/floors/${encodeURIComponent(floorId)}`;
+export const buildDistrictHref = (projectSlug: string, districtId: string): string =>
+  buildProjectDistrictPublicHref(projectSlug, districtId);
+
+export const buildFloorHref = (projectSlug: string, buildingId: string, floorId: string): string =>
+  buildProjectFloorPublicHref(projectSlug, buildingId, floorId);
 
 /**
  * Sync public path for a hotspot when the destination can be derived without an extra fetch.

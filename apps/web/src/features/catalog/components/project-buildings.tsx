@@ -7,17 +7,23 @@ import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 
 import { ApartmentPriceLabel } from '@/features/catalog/components/apartment-price-label';
+import { buildProjectBuildingPublicHref } from '@/features/geo-map/public/utils/build-project-public-href';
 import { Link } from '@/i18n/navigation';
 
 type ProjectBuildingsProps = {
   projectId: string;
+  projectSlug: string;
   buildings: BuildingSummary[];
 };
 
 /**
  * Project buildings → floors → apartment rows with status and price rules.
  */
-export const ProjectBuildings = async ({ projectId, buildings }: ProjectBuildingsProps) => {
+export const ProjectBuildings = async ({
+  projectId,
+  projectSlug,
+  buildings,
+}: ProjectBuildingsProps) => {
   const t = await getTranslations('Catalog');
 
   if (buildings.length === 0) {
@@ -33,7 +39,7 @@ export const ProjectBuildings = async ({ projectId, buildings }: ProjectBuilding
         >
           <div className="grid gap-0 sm:grid-cols-[12rem_1fr]">
             <Link
-              href={`/projects/${projectId}/buildings/${building.id}`}
+              href={buildProjectBuildingPublicHref(projectSlug, building.id)}
               className="relative aspect-[4/3] bg-surface sm:aspect-auto sm:min-h-full"
             >
               {building.cover ? (
@@ -55,7 +61,7 @@ export const ProjectBuildings = async ({ projectId, buildings }: ProjectBuilding
               <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
                 <div className="flex flex-wrap items-center gap-2">
                   <Link
-                    href={`/projects/${projectId}/buildings/${building.id}`}
+                    href={buildProjectBuildingPublicHref(projectSlug, building.id)}
                     className="font-brand text-lg font-semibold text-ink transition-colors hover:text-brand"
                   >
                     {building.name}
