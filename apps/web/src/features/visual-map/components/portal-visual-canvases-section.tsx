@@ -79,7 +79,7 @@ export const PortalVisualCanvasesSection = ({ project }: PortalVisualCanvasesSec
                   <td className={ACTIONS_COL_CLASS}>
                     <div className="flex justify-center">
                       <Link
-                        href={catalogVisualMapHref(scope, project.id, canvas.id)}
+                        href={catalogVisualMapHref(scope, project.slug, canvas.id)}
                         aria-label={t('editCanvas')}
                         title={t('editCanvas')}
                         className={cn(
