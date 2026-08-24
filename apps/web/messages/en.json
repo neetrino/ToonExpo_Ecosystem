@@ -1585,6 +1585,16 @@
         "noBuildings": "No buildings yet. Create buildings in the Buildings phase first.",
         "buildingFloorsMapped": "{mapped}/{total} floors mapped",
         "buildingApartmentsCount": "{count, plural, =0 {No apartments} one {# apartment} other {# apartments}}",
+        "buildingPicker": {
+          "floorIndex": "Floor",
+          "floorsMapped": "{count, plural, =0 {0 floors mapped} one {# floor mapped} other {# floors mapped}}",
+          "totalArea": "{area} m² total area",
+          "zones": "{count, plural, =0 {0 zones} one {# zone} other {# zones}}",
+          "lastUpdated": "last updated",
+          "lastUpdatedUnknown": "—",
+          "lastUpdatedToday": "Today",
+          "lastUpdatedDaysAgo": "{count, plural, one {# day ago} other {# days ago}}"
+        },
         "noFloors": "No floors yet.",
         "needsPolygon": "Draw polygon first",
         "planReady": "plan",

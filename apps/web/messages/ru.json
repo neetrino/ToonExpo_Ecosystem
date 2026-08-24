@@ -1585,6 +1585,16 @@
         "noBuildings": "Зданий пока нет. Сначала создайте здания на этапе Buildings.",
         "buildingFloorsMapped": "Этажей на карте: {mapped}/{total}",
         "buildingApartmentsCount": "{count, plural, =0 {Нет квартир} one {# квартира} few {# квартиры} many {# квартир} other {# квартир}}",
+        "buildingPicker": {
+          "floorIndex": "Этаж",
+          "floorsMapped": "{count, plural, =0 {0 этажей на карте} one {# этаж на карте} few {# этажа на карте} many {# этажей на карте} other {# этажей на карте}}",
+          "totalArea": "{area} m² общая площадь",
+          "zones": "{count, plural, =0 {0 зон} one {# зона} few {# зоны} many {# зон} other {# зон}}",
+          "lastUpdated": "последнее обновление",
+          "lastUpdatedUnknown": "—",
+          "lastUpdatedToday": "Сегодня",
+          "lastUpdatedDaysAgo": "{count, plural, one {# день назад} few {# дня назад} many {# дней назад} other {# дней назад}}"
+        },
         "noFloors": "Этажей пока нет.",
         "needsPolygon": "Сначала нарисуйте polygon",
         "planReady": "plan",

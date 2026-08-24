@@ -3,22 +3,29 @@
 import type {
   InteractiveMappingApartmentSummary,
   InteractiveMappingBuildingSummary,
+  InteractiveMappingCanvasSummary,
   InteractiveMappingDistrictSummary,
   InteractiveMappingFloorSummary,
 } from '@toonexpo/contracts';
 
 import { cn } from '@/shared/ui/cn';
 
+import { MappingBuildingPickerCards } from './mapping-building-picker-cards';
+
+export type MappingBuildingPickerVariant = 'list' | 'cards';
+
 export type MappingBuildingPickerProps = {
   buildings: InteractiveMappingBuildingSummary[];
   districts: InteractiveMappingDistrictSummary[];
   floors: InteractiveMappingFloorSummary[];
+  canvases?: InteractiveMappingCanvasSummary[] | undefined;
   apartments?: InteractiveMappingApartmentSummary[] | undefined;
   selectedBuildingId: string | null;
   title: string;
   emptyLabel: string;
   floorsMappedLabel: (values: { mapped: number; total: number }) => string;
   apartmentsCountLabel?: ((values: { count: number }) => string) | undefined;
+  variant?: MappingBuildingPickerVariant | undefined;
   onSelectBuilding: (buildingId: string) => void;
 };
 
@@ -37,10 +44,7 @@ const buildingFloorStats = (
   return { mapped, total };
 };
 
-/**
- * Lists project buildings so the user can pick which one to map.
- */
-export const MappingBuildingPicker = ({
+const MappingBuildingPickerList = ({
   buildings,
   districts,
   floors,
@@ -102,4 +106,31 @@ export const MappingBuildingPicker = ({
       )}
     </div>
   );
+};
+
+/**
+ * Lists project buildings so the user can pick which one to map.
+ */
+export const MappingBuildingPicker = ({
+  variant = 'list',
+  canvases = [],
+  ...props
+}: MappingBuildingPickerProps) => {
+  if (variant === 'cards') {
+    return (
+      <MappingBuildingPickerCards
+        buildings={props.buildings}
+        districts={props.districts}
+        floors={props.floors}
+        canvases={canvases}
+        apartments={props.apartments}
+        selectedBuildingId={props.selectedBuildingId}
+        title={props.title}
+        emptyLabel={props.emptyLabel}
+        onSelectBuilding={props.onSelectBuilding}
+      />
+    );
+  }
+
+  return <MappingBuildingPickerList {...props} />;
 };

@@ -35,7 +35,7 @@ export const FloorsPhasePage = ({ projectId }: FloorsPhasePageProps) => {
     );
   }
 
-  const { districts, buildings, floors } = detailQuery.data;
+  const { districts, buildings, floors, apartments, canvases } = detailQuery.data;
   const { basePath } = catalog;
 
   return (
@@ -47,9 +47,12 @@ export const FloorsPhasePage = ({ projectId }: FloorsPhasePageProps) => {
       </div>
 
       <MappingBuildingPicker
+        variant="cards"
         buildings={buildings}
         districts={districts}
         floors={floors}
+        canvases={canvases}
+        apartments={apartments}
         selectedBuildingId={null}
         title={t('forms.pickBuilding')}
         emptyLabel={t('forms.noBuildings')}

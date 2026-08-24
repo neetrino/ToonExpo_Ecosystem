@@ -59,6 +59,7 @@ export type InteractiveMappingCanvasSummary = {
   publicationStatus: PublicationStatus;
   isPrimary: boolean;
   hotspotCount: number;
+  updatedAt: string;
 };
 
 export type InteractiveMappingBuildingSummary = {
@@ -88,6 +89,7 @@ export type InteractiveMappingApartmentSummary = {
   floorId: string;
   number: string;
   publicationStatus: PublicationStatus;
+  areaTotal: string | null;
 };
 
 export type InteractiveMappingProjectDetail = {

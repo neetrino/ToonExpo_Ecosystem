@@ -64,12 +64,14 @@ export const mapApartment = (row: {
   floorId: string;
   number: string;
   publicationStatus: PublicationStatus;
+  areaTotal: { toString(): string } | null;
 }): InteractiveMappingApartmentSummary => ({
   id: row.id,
   buildingId: row.buildingId,
   floorId: row.floorId,
   number: row.number,
   publicationStatus: row.publicationStatus,
+  areaTotal: row.areaTotal?.toString() ?? null,
 });
 
 export const mapCanvas = (row: {
@@ -79,6 +81,7 @@ export const mapCanvas = (row: {
   mediaAssetId: string;
   publicationStatus: PublicationStatus;
   isPrimary: boolean;
+  updatedAt: Date;
   mediaAsset: { fileUrl: string; width: number | null; height: number | null };
   _count: { hotspots: number };
 }): InteractiveMappingCanvasSummary => ({
@@ -92,4 +95,5 @@ export const mapCanvas = (row: {
   publicationStatus: row.publicationStatus,
   isPrimary: row.isPrimary,
   hotspotCount: row._count.hotspots,
+  updatedAt: row.updatedAt.toISOString(),
 });

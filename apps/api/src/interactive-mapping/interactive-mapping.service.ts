@@ -131,6 +131,7 @@ export class InteractiveMappingService {
             floorId: true,
             number: true,
             publicationStatus: true,
+            areaTotal: true,
           },
           orderBy: [{ number: 'asc' }],
         },

@@ -1585,6 +1585,16 @@
         "noBuildings": "Շենքեր դեռ չկան։ Նախ ստեղծեք շենքեր Buildings փուլում։",
         "buildingFloorsMapped": "Քարտեզավորված հարկեր՝ {mapped}/{total}",
         "buildingApartmentsCount": "{count, plural, =0 {Բնակարան չկա} one {# բնակարան} other {# բնակարան}}",
+        "buildingPicker": {
+          "floorIndex": "Հարկ",
+          "floorsMapped": "{count, plural, =0 {0 քարտեզավորված հարկ} one {# քարտեզավորված հարկ} other {# քարտեզավորված հարկ}}",
+          "totalArea": "{area} m² ընդհանուր մակերես",
+          "zones": "{count, plural, =0 {0 գոտի} one {# գոտի} other {# գոտի}}",
+          "lastUpdated": "վերջին թարմացում",
+          "lastUpdatedUnknown": "—",
+          "lastUpdatedToday": "Այսօր",
+          "lastUpdatedDaysAgo": "{count, plural, one {# օր առաջ} other {# օր առաջ}}"
+        },
         "noFloors": "Հարկեր դեռ չկան։",
         "needsPolygon": "Նախ գծեք polygon",
         "planReady": "plan",
