@@ -104,7 +104,7 @@ export const ApartmentDetailView = async ({
         project={apartment.project}
         building={apartment.building}
         floor={{ id: apartment.floor.id, label: floorLabel }}
-        apartment={{ id: apartment.id, label: title }}
+        apartment={{ id: apartment.id, slug: apartment.slug, label: title }}
         current="apartment"
       />
 

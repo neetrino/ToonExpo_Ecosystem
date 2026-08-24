@@ -7,7 +7,7 @@ import type {
 import { getTranslations } from 'next-intl/server';
 
 import { ApartmentPriceLabel } from '@/features/catalog/components/apartment-price-label';
-import { buildProjectFloorPublicHref } from '@/features/geo-map/public/utils/build-project-public-href';
+import { buildApartmentPublicHref, buildProjectFloorPublicHref } from '@/features/geo-map/public/utils/build-project-public-href';
 import { Link } from '@/i18n/navigation';
 
 type BuildingFloorsListProps = {
@@ -134,7 +134,7 @@ const ApartmentRow = ({
   return (
     <li className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-sm hover:bg-surface">
       <Link
-        href={`/apartments/${apartment.id}`}
+        href={buildApartmentPublicHref(apartment.slug)}
         className="flex min-w-0 flex-1 flex-wrap items-center gap-3"
       >
         <span className="font-medium text-ink">

@@ -7,6 +7,7 @@ import type { ProjectFilterParams } from '@/features/catalog/utils/project-filte
 export const BUY_APARTMENT_PAGE_SIZE = 10;
 export type BuyApartmentListing = {
   id: string;
+  slug: string;
   title: string;
   rooms: number | null;
   bedrooms: number | null;
@@ -41,6 +42,7 @@ export const toBuyApartmentListing = (apartment: ApartmentListItem): BuyApartmen
 
   return {
     id: apartment.id,
+    slug: apartment.slug,
     title: apartment.number,
     rooms: apartment.rooms,
     bedrooms: apartment.bedrooms,

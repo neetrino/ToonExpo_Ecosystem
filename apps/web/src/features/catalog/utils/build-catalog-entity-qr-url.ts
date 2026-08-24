@@ -14,7 +14,7 @@ export const buildProjectCatalogQrUrl = (locale: string, projectSlug: string): s
 /**
  * Absolute apartment interest URL for apartment detail QR.
  */
-export const buildApartmentCatalogQrUrl = (locale: string, apartmentId: string): string => {
+export const buildApartmentCatalogQrUrl = (locale: string, apartmentSlug: string): string => {
   const base = resolveSiteUrl();
-  return `${base}/${locale}/apartments/${encodeURIComponent(apartmentId)}/${CATALOG_QR_INTEREST_PATH_SEGMENT}`;
+  return `${base}/${locale}/apartments/${encodeURIComponent(apartmentSlug)}/${CATALOG_QR_INTEREST_PATH_SEGMENT}`;
 };
