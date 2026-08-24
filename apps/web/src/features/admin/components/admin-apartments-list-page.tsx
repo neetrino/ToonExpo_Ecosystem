@@ -30,7 +30,7 @@ const FIRST_PAGE = 1;
  */
 export const AdminApartmentsListPage = () => {
   const t = useTranslations('Admin.apartments');
-  const { page, pageSize, companyId, buildingId } = useAdminInventoryListParams();
+  const { page, pageSize, companyId, buildingId, floorId } = useAdminInventoryListParams();
   const [search, setSearch] = useState('');
   const trimmedSearch = search.trim();
   const debouncedSearch = useDebouncedValue(trimmedSearch, ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS);
@@ -41,6 +41,7 @@ export const AdminApartmentsListPage = () => {
     companyId,
     buildingId,
     activeSearch || undefined,
+    floorId,
   );
   const response = query.data;
   const [showCreate, setShowCreate] = useState(false);
@@ -90,6 +91,7 @@ export const AdminApartmentsListPage = () => {
         onSearchChange={handleSearchChange}
         icon={Home}
         showBuildingFilter
+        showFloorFilter
         viewMode={viewMode}
         onViewModeChange={setViewMode}
         headerActions={

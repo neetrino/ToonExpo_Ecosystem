@@ -69,6 +69,7 @@ export class AdminInventoryController {
       query.pageSize,
       query.companyId,
       query.buildingId,
+      query.floorId,
       query.search,
     );
   }

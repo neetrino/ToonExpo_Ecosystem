@@ -1968,6 +1968,8 @@
         "allBuilders": "Все застройщики",
         "building": "Здание",
         "allBuildings": "Все здания",
+        "floor": "Этаж",
+        "allFloors": "Все этажи",
         "searchPlaceholder": "Поиск по проекту, компании или городу"
       },
       "openBuildings": "Показать здания проекта {name}",

@@ -23,6 +23,8 @@ export type ListPageHeaderProps = {
   filters?: readonly IntegratedSearchFilterConfig[] | undefined;
   filterValues?: Record<string, string> | undefined;
   onFilterChange?: ((key: string, value: string) => void) | undefined;
+  onDraftFilterChange?: ((draftFilters: Record<string, string>) => void) | undefined;
+  onPanelOpenChange?: ((open: boolean) => void) | undefined;
   onClearAll?: (() => void) | undefined;
   actions?: ReactNode | undefined;
   /** Overrides default search slot width (`min-w-[12rem] max-w-md flex-1`). */
@@ -46,6 +48,8 @@ export const ListPageHeader = ({
   filters,
   filterValues,
   onFilterChange,
+  onDraftFilterChange,
+  onPanelOpenChange,
   onClearAll,
   actions,
   searchClassName,
@@ -85,6 +89,8 @@ export const ListPageHeader = ({
                 panelAlign="end"
                 onSearchChange={onSearchChange}
                 onFilterChange={onFilterChange}
+                onDraftFilterChange={onDraftFilterChange}
+                onPanelOpenChange={onPanelOpenChange}
                 onClearAll={onClearAll}
               />
             </div>

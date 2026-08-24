@@ -56,6 +56,7 @@ export class AdminInventoryService {
     pageSize: number,
     companyId?: string,
     buildingId?: string,
+    floorId?: string,
     search?: string,
   ): Promise<AdminApartmentListResponse> {
     if (companyId) {
@@ -64,7 +65,17 @@ export class AdminInventoryService {
     if (buildingId) {
       await this.assertBuildingInScope(buildingId, companyId);
     }
-    return this.inventoryHub.listApartments(page, pageSize, companyId, buildingId, search);
+    if (floorId) {
+      await this.assertFloorInScope(floorId, buildingId, companyId);
+    }
+    return this.inventoryHub.listApartments(
+      page,
+      pageSize,
+      companyId,
+      buildingId,
+      floorId,
+      search,
+    );
   }
 
   /**
@@ -110,6 +121,30 @@ export class AdminInventoryService {
     }
     if (companyId && building.project.builderCompanyId !== companyId) {
       throw new NotFoundException('Building not found');
+    }
+  }
+
+  private async assertFloorInScope(
+    floorId: string,
+    buildingId?: string,
+    companyId?: string,
+  ): Promise<void> {
+    const floor = await this.prisma.db.floor.findUnique({
+      where: { id: floorId },
+      select: {
+        id: true,
+        buildingId: true,
+        building: { select: { project: { select: { builderCompanyId: true } } } },
+      },
+    });
+    if (!floor) {
+      throw new NotFoundException('Floor not found');
+    }
+    if (buildingId && floor.buildingId !== buildingId) {
+      throw new NotFoundException('Floor not found');
+    }
+    if (companyId && floor.building.project.builderCompanyId !== companyId) {
+      throw new NotFoundException('Floor not found');
     }
   }
 }

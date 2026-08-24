@@ -111,6 +111,7 @@ export type ListAdminProjectsParams = {
   pageSize: number;
   companyId?: string;
   buildingId?: string;
+  floorId?: string;
   projectId?: string;
   search?: string;
 };

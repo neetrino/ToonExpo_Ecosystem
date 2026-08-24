@@ -1968,6 +1968,8 @@
         "allBuilders": "Բոլոր կառուցապատողները",
         "building": "Շենք",
         "allBuildings": "Բոլոր շենքերը",
+        "floor": "Հարկ",
+        "allFloors": "Բոլոր հարկերը",
         "searchPlaceholder": "Փնտրել ըստ նախագծի, ընկերության կամ քաղաքի"
       },
       "openBuildings": "Դիտել շենքերը՝ {name}",

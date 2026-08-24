@@ -83,6 +83,7 @@ export const adminApartmentsQueryKey = (params: {
   pageSize: number;
   companyId?: string;
   buildingId?: string;
+  floorId?: string;
   search?: string;
 }) => [...ADMIN_APARTMENTS_QUERY_KEY, params] as const;
 

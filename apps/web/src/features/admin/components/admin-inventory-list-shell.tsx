@@ -1,17 +1,21 @@
 'use client';
 
+import type { AdminFloorListItem } from '@toonexpo/contracts';
 import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 import {
   ADMIN_COMPANIES_MAX_PAGE_SIZE,
   ADMIN_INVENTORY_DEFAULT_PAGE_SIZE,
 } from '@/features/admin/constants';
 import { useAdminBuilderCompaniesQuery } from '@/features/admin/hooks/use-admin-companies';
-import { useAdminBuildingsQuery } from '@/features/admin/hooks/use-admin-inventory';
+import {
+  useAdminBuildingsQuery,
+  useAdminFloorsQuery,
+} from '@/features/admin/hooks/use-admin-inventory';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import type { IntegratedSearchFilterConfig } from '@/shared/ui/integrated-search-filters.types';
@@ -21,6 +25,7 @@ import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
 const ADMIN_INVENTORY_FILTER_COMPANY_KEY = 'companyId';
 const ADMIN_INVENTORY_FILTER_BUILDING_KEY = 'buildingId';
+const ADMIN_INVENTORY_FILTER_FLOOR_KEY = 'floorId';
 const FIRST_PAGE = 1;
 
 type AdminInventoryListShellProps = {
@@ -40,6 +45,8 @@ type AdminInventoryListShellProps = {
   icon?: LucideIcon | undefined;
   /** Floors / apartments hubs: company + building cascading filters. */
   showBuildingFilter?: boolean | undefined;
+  /** Apartments hub: floor filter (requires building filter). */
+  showFloorFilter?: boolean | undefined;
   headerActions?: ReactNode | undefined;
   viewMode?: ViewMode | undefined;
   onViewModeChange?: ((mode: ViewMode) => void) | undefined;
@@ -51,6 +58,24 @@ const parsePage = (raw: string | null): number => {
     return FIRST_PAGE;
   }
   return Math.floor(parsed);
+};
+
+const resolveDraftOrApplied = (
+  draft: Record<string, string> | null,
+  key: string,
+  applied: string | undefined,
+): string | undefined => {
+  if (draft && key in draft) {
+    const value = draft[key]?.trim();
+    return value || undefined;
+  }
+  return applied;
+};
+
+const formatFloorOptionLabel = (floor: AdminFloorListItem): string => {
+  const label =
+    floor.displayLabel?.trim() || floor.name?.trim() || `Floor ${floor.number}`;
+  return `${label} · ${floor.buildingName}`;
 };
 
 /**
@@ -73,6 +98,7 @@ export const AdminInventoryListShell = ({
   onSearchChange,
   icon,
   showBuildingFilter = false,
+  showFloorFilter = false,
   headerActions,
   viewMode,
   onViewModeChange,
@@ -84,9 +110,33 @@ export const AdminInventoryListShell = ({
   const pathname = usePathname();
   const companyId = searchParams.get('companyId')?.trim() || undefined;
   const buildingId = searchParams.get('buildingId')?.trim() || undefined;
+  const floorId = searchParams.get('floorId')?.trim() || undefined;
   const projectId = searchParams.get('projectId')?.trim() || undefined;
+  const [panelDraftFilters, setPanelDraftFilters] = useState<Record<string, string> | null>(
+    null,
+  );
   const companiesQuery = useAdminBuilderCompaniesQuery(ADMIN_COMPANIES_MAX_PAGE_SIZE);
-  const buildingsQuery = useAdminBuildingsQuery(1, ADMIN_COMPANIES_MAX_PAGE_SIZE, companyId);
+
+  const effectiveCompanyId = resolveDraftOrApplied(
+    panelDraftFilters,
+    ADMIN_INVENTORY_FILTER_COMPANY_KEY,
+    companyId,
+  );
+  const effectiveBuildingId = resolveDraftOrApplied(
+    panelDraftFilters,
+    ADMIN_INVENTORY_FILTER_BUILDING_KEY,
+    buildingId,
+  );
+
+  const buildingsQuery = useAdminBuildingsQuery(1, ADMIN_COMPANIES_MAX_PAGE_SIZE, effectiveCompanyId);
+  const floorsQuery = useAdminFloorsQuery(
+    1,
+    ADMIN_COMPANIES_MAX_PAGE_SIZE,
+    effectiveCompanyId,
+    effectiveBuildingId,
+    undefined,
+    { enabled: showFloorFilter },
+  );
 
   const builderCompanies = useMemo(() => {
     const companies = companiesQuery.data?.data ?? [];
@@ -104,16 +154,29 @@ export const AdminInventoryListShell = ({
     });
   }, [buildingsQuery.data]);
 
+  const floorOptions = useMemo(() => {
+    const floors = floorsQuery.data?.data ?? [];
+    return floors.slice().sort((a, b) => {
+      const byBuilding = a.buildingName.localeCompare(b.buildingName);
+      if (byBuilding !== 0) {
+        return byBuilding;
+      }
+      return a.number - b.number;
+    });
+  }, [floorsQuery.data]);
+
   const buildListHref = (next: {
     page?: number;
     companyId?: string | null;
     buildingId?: string | null;
+    floorId?: string | null;
     projectId?: string | null;
   }): string => {
     const params = new URLSearchParams();
     const nextCompanyId = next.companyId === undefined ? companyId : next.companyId || undefined;
     const nextBuildingId =
       next.buildingId === undefined ? buildingId : next.buildingId || undefined;
+    const nextFloorId = next.floorId === undefined ? floorId : next.floorId || undefined;
     const nextProjectId = next.projectId === undefined ? projectId : next.projectId || undefined;
     const nextPage = next.page ?? page;
 
@@ -122,6 +185,9 @@ export const AdminInventoryListShell = ({
     }
     if (showBuildingFilter && nextBuildingId) {
       params.set('buildingId', nextBuildingId);
+    }
+    if (showFloorFilter && nextFloorId) {
+      params.set('floorId', nextFloorId);
     }
     if (nextProjectId) {
       params.set('projectId', nextProjectId);
@@ -140,6 +206,12 @@ export const AdminInventoryListShell = ({
         label: t('filters.builder'),
         allOptionLabel: t('filters.allBuilders'),
         searchable: true,
+        resetsKeys: showBuildingFilter
+          ? [
+              ADMIN_INVENTORY_FILTER_BUILDING_KEY,
+              ...(showFloorFilter ? [ADMIN_INVENTORY_FILTER_FLOOR_KEY] : []),
+            ]
+          : undefined,
         options: builderCompanies.map((company) => ({
           value: company.id,
           label: company.name,
@@ -152,17 +224,32 @@ export const AdminInventoryListShell = ({
         label: t('filters.building'),
         allOptionLabel: t('filters.allBuildings'),
         searchable: true,
+        resetsKeys: showFloorFilter ? [ADMIN_INVENTORY_FILTER_FLOOR_KEY] : undefined,
         options: buildingOptions.map((building) => ({
           value: building.id,
           label: `${building.name} · ${building.projectName}`,
         })),
       });
     }
+    if (showFloorFilter) {
+      configs.push({
+        key: ADMIN_INVENTORY_FILTER_FLOOR_KEY,
+        label: t('filters.floor'),
+        allOptionLabel: t('filters.allFloors'),
+        searchable: true,
+        options: floorOptions.map((floor) => ({
+          value: floor.id,
+          label: formatFloorOptionLabel(floor),
+        })),
+      });
+    }
     return configs;
-  }, [builderCompanies, buildingOptions, showBuildingFilter, t]);
+  }, [builderCompanies, buildingOptions, floorOptions, showBuildingFilter, showFloorFilter, t]);
 
   const filtersLoading =
-    companiesQuery.isLoading || (showBuildingFilter && buildingsQuery.isLoading);
+    companiesQuery.isLoading ||
+    (showBuildingFilter && buildingsQuery.isLoading) ||
+    (showFloorFilter && floorsQuery.isLoading);
 
   if (isLoading || filtersLoading) {
     return <p className="text-sm text-ink-secondary">{loading}</p>;
@@ -189,8 +276,15 @@ export const AdminInventoryListShell = ({
         filterValues={{
           [ADMIN_INVENTORY_FILTER_COMPANY_KEY]: companyId ?? '',
           [ADMIN_INVENTORY_FILTER_BUILDING_KEY]: buildingId ?? '',
+          [ADMIN_INVENTORY_FILTER_FLOOR_KEY]: floorId ?? '',
         }}
         onSearchChange={onSearchChange}
+        onDraftFilterChange={setPanelDraftFilters}
+        onPanelOpenChange={(open) => {
+          if (!open) {
+            setPanelDraftFilters(null);
+          }
+        }}
         onFilterChange={(key, value) => {
           if (key === ADMIN_INVENTORY_FILTER_COMPANY_KEY) {
             router.replace(
@@ -198,13 +292,24 @@ export const AdminInventoryListShell = ({
                 page: FIRST_PAGE,
                 companyId: value || null,
                 buildingId: null,
+                floorId: null,
                 projectId: null,
               }),
             );
             return;
           }
           if (key === ADMIN_INVENTORY_FILTER_BUILDING_KEY) {
-            router.replace(buildListHref({ page: FIRST_PAGE, buildingId: value || null }));
+            router.replace(
+              buildListHref({
+                page: FIRST_PAGE,
+                buildingId: value || null,
+                floorId: null,
+              }),
+            );
+            return;
+          }
+          if (key === ADMIN_INVENTORY_FILTER_FLOOR_KEY) {
+            router.replace(buildListHref({ page: FIRST_PAGE, floorId: value || null }));
           }
         }}
         onClearAll={() => {
@@ -214,6 +319,7 @@ export const AdminInventoryListShell = ({
               page: FIRST_PAGE,
               companyId: null,
               buildingId: null,
+              floorId: null,
               projectId: null,
             }),
           );
@@ -248,17 +354,20 @@ export const useAdminInventoryListParams = (): {
   pageSize: number;
   companyId?: string;
   buildingId?: string;
+  floorId?: string;
   projectId?: string;
 } => {
   const searchParams = useSearchParams();
   const companyId = searchParams.get('companyId')?.trim() || undefined;
   const buildingId = searchParams.get('buildingId')?.trim() || undefined;
+  const floorId = searchParams.get('floorId')?.trim() || undefined;
   const projectId = searchParams.get('projectId')?.trim() || undefined;
   return {
     page: parsePage(searchParams.get('page')),
     pageSize: ADMIN_INVENTORY_DEFAULT_PAGE_SIZE,
     ...(companyId ? { companyId } : {}),
     ...(buildingId ? { buildingId } : {}),
+    ...(floorId ? { floorId } : {}),
     ...(projectId ? { projectId } : {}),
   };
 };

@@ -1968,6 +1968,8 @@
         "allBuilders": "All builders",
         "building": "Building",
         "allBuildings": "All buildings",
+        "floor": "Floor",
+        "allFloors": "All floors",
         "searchPlaceholder": "Search by project, company, or city"
       },
       "openBuildings": "View buildings for {name}",

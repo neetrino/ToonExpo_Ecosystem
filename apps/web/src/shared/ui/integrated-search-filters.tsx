@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState, type RefObject } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 
 import { IntegratedSearchBar } from '@/shared/ui/integrated-search-filters.bar';
 import { buildActiveIntegratedFilterChips } from '@/shared/ui/integrated-search-filters.build-chips';
@@ -23,6 +23,10 @@ export type IntegratedSearchFiltersProps = {
   filters?: readonly IntegratedSearchFilterConfig[] | undefined;
   filterValues?: Record<string, string> | undefined;
   onFilterChange?: ((key: string, value: string) => void) | undefined;
+  /** Fires while the panel is open whenever draft filter values change. */
+  onDraftFilterChange?: ((draftFilters: Record<string, string>) => void) | undefined;
+  /** Fires when the filter panel opens or closes. */
+  onPanelOpenChange?: ((open: boolean) => void) | undefined;
   onClearAll?: (() => void) | undefined;
   applyLabel: string;
   resetLabel: string;
@@ -45,6 +49,8 @@ export const IntegratedSearchFilters = ({
   filters,
   filterValues = EMPTY_FILTER_VALUES,
   onFilterChange,
+  onDraftFilterChange,
+  onPanelOpenChange,
   onClearAll,
   applyLabel,
   resetLabel,
@@ -64,13 +70,18 @@ export const IntegratedSearchFilters = ({
   );
   const hasQuery = search.trim().length > 0 || chips.length > 0;
 
-  useOutsideClose(panelOpen, containerRef, setPanelOpen);
+  const closePanel = useCallback(() => {
+    setPanelOpen(false);
+    onPanelOpenChange?.(false);
+  }, [onPanelOpenChange]);
+
+  useOutsideClose(panelOpen, containerRef, closePanel);
 
   const handleReset = () => {
     clearDraftToBaseline(filters, setDraftFilters);
     onClearAll?.();
     onSearchChange('');
-    setPanelOpen(false);
+    closePanel();
   };
 
   const openPanel = () => {
@@ -78,6 +89,8 @@ export const IntegratedSearchFilters = ({
       return;
     }
     setDraftFilters(filterValues);
+    onDraftFilterChange?.(filterValues);
+    onPanelOpenChange?.(true);
     setPanelOpen(true);
   };
 
@@ -95,9 +108,7 @@ export const IntegratedSearchFilters = ({
         removeChipAriaLabel={removeChipAriaLabel}
         onSearchChange={onSearchChange}
         onOpenPanel={openPanel}
-        onClosePanel={() => {
-          setPanelOpen(false);
-        }}
+        onClosePanel={closePanel}
         onRemoveChip={(key) => {
           onFilterChange?.(key, INTEGRATED_SEARCH_FILTER_ALL_VALUE);
         }}
@@ -114,11 +125,15 @@ export const IntegratedSearchFilters = ({
             filters={filters ?? []}
             filterValues={draftFilters}
             onFilterChange={(key, value) => {
-              setDraftFilters((prev) => ({ ...prev, [key]: value }));
+              setDraftFilters((prev) => {
+                const next = applyDraftFilterChange(filters, prev, key, value);
+                onDraftFilterChange?.(next);
+                return next;
+              });
             }}
             onApply={() => {
               applyDraftFilters(filters, draftFilters, filterValues, onFilterChange);
-              setPanelOpen(false);
+              closePanel();
             }}
             onReset={handleReset}
             applyLabel={applyLabel}
@@ -128,6 +143,20 @@ export const IntegratedSearchFilters = ({
       </DropdownPortal>
     </div>
   );
+};
+
+const applyDraftFilterChange = (
+  filters: readonly IntegratedSearchFilterConfig[] | undefined,
+  prev: Record<string, string>,
+  key: string,
+  value: string,
+): Record<string, string> => {
+  const next = { ...prev, [key]: value };
+  const config = filters?.find((filter) => filter.key === key);
+  config?.resetsKeys?.forEach((resetKey) => {
+    next[resetKey] = INTEGRATED_SEARCH_FILTER_ALL_VALUE;
+  });
+  return next;
 };
 
 const applyDraftFilters = (
@@ -161,7 +190,7 @@ const clearDraftToBaseline = (
 const useOutsideClose = (
   open: boolean,
   containerRef: RefObject<HTMLDivElement | null>,
-  setPanelOpen: (open: boolean) => void,
+  closePanel: () => void,
 ): void => {
   useEffect(() => {
     if (!open) {
@@ -178,11 +207,11 @@ const useOutsideClose = (
       if (target.closest('[data-dropdown-portal]')) {
         return;
       }
-      setPanelOpen(false);
+      closePanel();
     };
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        setPanelOpen(false);
+        closePanel();
       }
     };
     document.addEventListener('pointerdown', onPointerDown);
@@ -191,5 +220,5 @@ const useOutsideClose = (
       document.removeEventListener('pointerdown', onPointerDown);
       document.removeEventListener('keydown', onKeyDown);
     };
-  }, [open, containerRef, setPanelOpen]);
+  }, [open, containerRef, closePanel]);
 };

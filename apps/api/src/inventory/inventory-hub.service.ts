@@ -139,9 +139,10 @@ export class InventoryHubService {
     pageSize: number,
     companyId?: string,
     buildingId?: string,
+    floorId?: string,
     search?: string,
   ): Promise<AdminApartmentListResponse> {
-    const where = buildInventoryApartmentsWhere(companyId, buildingId, search);
+    const where = buildInventoryApartmentsWhere(companyId, buildingId, floorId, search);
 
     const [total, featuredOnHomeTotal, apartments] = await Promise.all([
       this.prisma.db.apartment.count({ where }),

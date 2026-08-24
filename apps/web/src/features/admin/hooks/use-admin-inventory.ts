@@ -64,12 +64,14 @@ const toListParams = (
   buildingId?: string,
   projectId?: string,
   search?: string,
+  floorId?: string,
 ): ListAdminProjectsParams => ({
   page,
   pageSize,
   ...(companyId ? { companyId } : {}),
   ...(buildingId ? { buildingId } : {}),
   ...(projectId ? { projectId } : {}),
+  ...(floorId ? { floorId } : {}),
   ...(search ? { search } : {}),
 });
 
@@ -113,11 +115,13 @@ export const useAdminFloorsQuery = (
   companyId?: string,
   buildingId?: string,
   search?: string,
+  options?: { enabled?: boolean },
 ) => {
   const params = toListParams(page, pageSize, companyId, buildingId, undefined, search);
   return useQuery({
     queryKey: adminFloorsQueryKey(params),
     queryFn: () => listAdminFloors(params),
+    enabled: options?.enabled ?? true,
     placeholderData: keepPreviousData,
   });
 };
@@ -131,8 +135,9 @@ export const useAdminApartmentsQuery = (
   companyId?: string,
   buildingId?: string,
   search?: string,
+  floorId?: string,
 ) => {
-  const params = toListParams(page, pageSize, companyId, buildingId, undefined, search);
+  const params = toListParams(page, pageSize, companyId, buildingId, undefined, search, floorId);
   return useQuery({
     queryKey: adminApartmentsQueryKey(params),
     queryFn: () => listAdminApartments(params),

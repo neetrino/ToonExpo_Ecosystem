@@ -78,11 +78,13 @@ export const buildInventoryFloorsWhere = (
 export const buildInventoryApartmentsWhere = (
   companyId: string | undefined,
   buildingId: string | undefined,
+  floorId: string | undefined,
   search: string | undefined,
 ): Prisma.ApartmentWhereInput => {
   const scope: Prisma.ApartmentWhereInput = {
     ...(companyId ? { project: { builderCompanyId: companyId } } : {}),
     ...(buildingId ? { buildingId } : {}),
+    ...(floorId ? { floorId } : {}),
   };
   const needle = search?.trim();
   if (!needle) {

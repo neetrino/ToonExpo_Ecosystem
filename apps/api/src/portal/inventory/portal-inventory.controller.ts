@@ -92,6 +92,7 @@ export class PortalInventoryController {
       query.pageSize,
       member.companyId,
       query.buildingId,
+      undefined,
       query.search,
     );
   }

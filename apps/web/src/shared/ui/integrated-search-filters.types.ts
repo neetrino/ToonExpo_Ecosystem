@@ -11,6 +11,8 @@ export type IntegratedSearchFilterConfig = {
   allOptionLabel: string;
   /** Combobox: type in the field to filter options. */
   searchable?: boolean | undefined;
+  /** When this filter changes, draft values for these keys reset to “all”. */
+  resetsKeys?: readonly string[] | undefined;
 };
 
 export type ActiveIntegratedFilterChip = {
