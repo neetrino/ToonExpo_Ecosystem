@@ -6,17 +6,19 @@ import { cache } from 'react';
 import { QrInterestLanding } from '@/features/buyer/components/qr-interest-landing';
 import { QrInterestRequestSection } from '@/features/buyer/components/qr-interest-request-section';
 import { getProject } from '@/features/catalog/api/catalog-api';
+import { ensureCanonicalProjectSlug } from '@/features/catalog/utils/ensure-canonical-project-slug';
+import { buildProjectPublicHref } from '@/features/geo-map/public/utils/build-project-public-href';
 
 type ProjectInterestPageProps = {
   params: Promise<{ locale: string; id: string }>;
 };
 
-const loadProject = cache((id: string, locale: string) => getProject(id, { locale }));
+const loadProject = cache((projectSlug: string, locale: string) => getProject(projectSlug, { locale }));
 
 export const generateMetadata = async ({ params }: ProjectInterestPageProps): Promise<Metadata> => {
-  const { locale, id } = await params;
+  const { locale, id: projectSlug } = await params;
   const t = await getTranslations({ locale, namespace: 'Catalog' });
-  const project = await loadProject(id, locale);
+  const project = await loadProject(projectSlug, locale);
 
   if (!project) {
     return { title: t('project.notFoundTitle') };
@@ -32,13 +34,15 @@ export const generateMetadata = async ({ params }: ProjectInterestPageProps): Pr
  * Project QR landing — cover + notes form → builder CRM request.
  */
 export default async function ProjectInterestPage({ params }: ProjectInterestPageProps) {
-  const { locale, id } = await params;
+  const { locale, id: projectSlug } = await params;
   setRequestLocale(locale);
 
-  const project = await loadProject(id, locale);
+  const project = await loadProject(projectSlug, locale);
   if (!project) {
     notFound();
   }
+
+  ensureCanonicalProjectSlug(project, projectSlug, locale, '/interest');
 
   const t = await getTranslations({ locale, namespace: 'Catalog' });
 
@@ -50,7 +54,7 @@ export default async function ProjectInterestPage({ params }: ProjectInterestPag
           subtitle={t('qrInterest.subtitleProject', { builder: project.builder.name })}
           imageUrl={project.cover?.fileUrl ?? null}
           imageAlt={project.cover?.altText ?? project.name}
-          detailsHref={`/projects/${project.id}`}
+          detailsHref={buildProjectPublicHref(project.slug)}
           detailsLabel={t('qrInterest.viewDetails')}
         >
           <QrInterestRequestSection projectId={project.id} />

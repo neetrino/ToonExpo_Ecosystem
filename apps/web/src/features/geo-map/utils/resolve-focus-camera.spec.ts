@@ -36,6 +36,7 @@ describe('findFocusObject', () => {
     {
       id: 'proj-a',
       projectId: 'proj-a',
+      projectSlug: 'proj-a',
       label: 'Ajapnyak Terrace',
       logoUrl: null,
       addressLine: null,

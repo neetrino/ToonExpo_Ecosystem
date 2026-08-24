@@ -12,13 +12,14 @@ import { useRouter } from '@/i18n/navigation';
 type PublicVisualMapProps = {
   canvas: PublicVisualCanvasItem;
   projectId: string;
+  projectSlug: string;
 };
 
 /**
  * Public interactive map — polygon clicks navigate to refresh-safe path URLs
  * (district / building / floor / apartment pages).
  */
-export const PublicVisualMap = ({ canvas, projectId }: PublicVisualMapProps) => {
+export const PublicVisualMap = ({ canvas, projectId, projectSlug }: PublicVisualMapProps) => {
   const t = useTranslations('Catalog.visualMap');
   const router = useRouter();
   const [selectedHotspotId, setSelectedHotspotId] = useState<string | null>(null);
@@ -49,7 +50,7 @@ export const PublicVisualMap = ({ canvas, projectId }: PublicVisualMapProps) => 
 
     void (async () => {
       try {
-        const href = await resolveHotspotHref(projectId, hotspot, canvas);
+        const href = await resolveHotspotHref(projectId, projectSlug, hotspot, canvas);
         if (!href) {
           setErrorMessage(t('stageUnavailable'));
           setIsNavigating(false);
@@ -84,17 +85,12 @@ export const PublicVisualMap = ({ canvas, projectId }: PublicVisualMapProps) => 
           interactive={interactive}
           onSelectHotspot={openHotspot}
         />
-        {isNavigating ? (
-          <p className="pointer-events-none absolute inset-x-0 bottom-3 text-center text-xs text-ink-secondary">
-            {t('loadingStage')}
-          </p>
-        ) : null}
       </div>
 
-      {errorMessage ? <p className="text-sm text-danger">{errorMessage}</p> : null}
-
-      {!interactive && !isNavigating && canvas.hotspots.length === 0 ? (
-        <p className="text-sm text-ink-secondary">{t('finalStage')}</p>
+      {errorMessage ? (
+        <p role="alert" className="text-sm text-danger">
+          {errorMessage}
+        </p>
       ) : null}
     </section>
   );

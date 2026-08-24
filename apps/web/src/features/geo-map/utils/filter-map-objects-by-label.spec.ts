@@ -7,6 +7,7 @@ const objects: GeoMapObject[] = [
   {
     id: 'a',
     projectId: 'a',
+    projectSlug: 'a',
     label: 'Ajapnyak Terrace',
     logoUrl: null,
     addressLine: 'Bashinjaghyan 18 · Yerevan',
@@ -24,6 +25,7 @@ const objects: GeoMapObject[] = [
   {
     id: 'b',
     projectId: 'b',
+    projectSlug: 'b',
     label: 'Cascade Heights',
     logoUrl: null,
     addressLine: null,

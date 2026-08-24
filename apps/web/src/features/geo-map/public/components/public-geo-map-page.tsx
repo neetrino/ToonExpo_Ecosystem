@@ -32,10 +32,10 @@ export const PublicGeoMapPage = () => {
 
   const onObjectClick = (id: string) => {
     const object = findObjectById(objects, id);
-    if (!object?.projectId) {
+    if (!object?.projectSlug) {
       return;
     }
-    router.push(buildProjectPublicHref(object.projectId));
+    router.push(buildProjectPublicHref(object.projectSlug));
   };
 
   const showEmpty = !modelsQuery.isLoading && !modelsQuery.isError && objects.length === 0;

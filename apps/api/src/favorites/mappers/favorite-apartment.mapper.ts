@@ -19,6 +19,7 @@ import { toPublicFileUrl } from '../../media/public-file-url.js';
 
 type ApartmentFavoriteSource = {
   id: string;
+  slug: string;
   number: string;
   salesStatus: ApartmentSalesStatus;
   rooms: number | null;
@@ -81,6 +82,7 @@ export const mapFavoriteApartmentCard = (
 
   return {
     id: apartment.id,
+    slug: apartment.slug,
     number: apartment.number,
     salesStatus: apartment.salesStatus,
     rooms: apartment.rooms,

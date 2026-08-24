@@ -15,6 +15,7 @@ import {
 } from '@toonexpo/db';
 
 import { hashPassword } from '../src/auth/utils/password.util.js';
+import { buildApartmentSlug } from '../src/portal/utils/slug.js';
 import { PrismaService } from '../src/prisma/prisma.service.js';
 import { uniqueEmail } from './helpers/e2e-http.js';
 
@@ -177,6 +178,7 @@ export async function seedCrmFixtures(
       buildingId: building.id,
       floorId: floor.id,
       number: '101',
+      slug: buildApartmentSlug(project.slug, '101'),
       salesStatus: ApartmentSalesStatus.available,
       publicationStatus: PublicationStatus.published,
       price: 50_000_000,
@@ -214,6 +216,7 @@ export async function seedCrmFixtures(
       buildingId: foreignBuilding.id,
       floorId: foreignFloor.id,
       number: '201',
+      slug: buildApartmentSlug(foreignProject.slug, '201'),
       salesStatus: ApartmentSalesStatus.available,
       publicationStatus: PublicationStatus.published,
       price: 40_000_000,

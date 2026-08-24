@@ -25,6 +25,7 @@ type MediaRow = Parameters<typeof toMediaSummary>[0];
 const mapFloorApartment = (
   apartment: {
     id: string;
+    slug: string;
     number: string;
     salesStatus: ApartmentSalesStatus;
     rooms: number | null;
@@ -40,6 +41,7 @@ const mapFloorApartment = (
   priceOnRequestEnabled: boolean,
 ) => ({
   id: apartment.id,
+  slug: apartment.slug,
   number: apartment.number,
   salesStatus: apartment.salesStatus,
   rooms: apartment.rooms,
@@ -76,6 +78,7 @@ export const mapBuildingDetail = (
       displayOrder: number;
       apartments: Array<{
         id: string;
+        slug: string;
         number: string;
         salesStatus: ApartmentSalesStatus;
         rooms: number | null;
@@ -144,6 +147,7 @@ export const mapFloorDetail = (
     project: { id: string; name: string; slug: string };
     apartments: Array<{
       id: string;
+      slug: string;
       number: string;
       salesStatus: ApartmentSalesStatus;
       rooms: number | null;

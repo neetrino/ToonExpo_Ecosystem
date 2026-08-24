@@ -63,6 +63,7 @@ export const BuyApartmentsBrowse = ({
   const [focusRequest, setFocusRequest] = useState<GeoMapFocusRequest | undefined>(undefined);
   const [highlightedObjectId, setHighlightedObjectId] = useState<string | null>(null);
   const [mapProjectId, setMapProjectId] = useState<string | null>(null);
+  const [mapProjectSlug, setMapProjectSlug] = useState<string | null>(null);
   const [mapProjectLabel, setMapProjectLabel] = useState<string | null>(null);
   const loginHref = `/auth/login?returnUrl=${encodeURIComponent(pathname)}`;
 
@@ -121,6 +122,7 @@ export const BuyApartmentsBrowse = ({
 
   const onMapObjectSelect = (object: GeoMapObject): void => {
     setMapProjectId(object.projectId);
+    setMapProjectSlug(object.projectSlug);
     setMapProjectLabel(object.label);
     setHighlightedObjectId(object.id);
     setSelectedId(null);
@@ -129,6 +131,7 @@ export const BuyApartmentsBrowse = ({
 
   const onClearMapFilter = (): void => {
     setMapProjectId(null);
+    setMapProjectSlug(null);
     setMapProjectLabel(null);
     setHighlightedObjectId(null);
   };
@@ -156,10 +159,10 @@ export const BuyApartmentsBrowse = ({
           <p className="text-sm text-header-muted">{t('results', { count: resultsCount })}</p>
         </div>
 
-        {mapProjectId != null && mapProjectLabel != null ? (
+        {mapProjectId != null && mapProjectSlug != null && mapProjectLabel != null ? (
           <BuyMapProjectFilterChip
             projectName={mapProjectLabel}
-            projectHref={buildProjectPublicHref(mapProjectId)}
+            projectHref={buildProjectPublicHref(mapProjectSlug)}
             onClear={onClearMapFilter}
           />
         ) : null}

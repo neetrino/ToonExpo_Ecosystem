@@ -7,11 +7,13 @@ import { useLocale, useTranslations } from 'next-intl';
 import { CatalogRequestButton } from '@/features/buyer/components/catalog-request-button';
 import { usePriceOverlay } from '@/features/catalog/components/price-overlay-scope';
 import { formatCatalogPrice } from '@/features/catalog/utils/format-price';
+import { buildApartmentPublicHref } from '@/features/geo-map/public/utils/build-project-public-href';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
 export type ComparableHomeCardModel = {
   id: string;
+  slug: string;
   title: string;
   locationLine: string | null;
   bedrooms: number | null;
@@ -57,7 +59,7 @@ export const ComparableHomeCard = ({ home, className }: ComparableHomeCardProps)
       )}
     >
       <Link
-        href={`/apartments/${home.id}`}
+        href={buildApartmentPublicHref(home.slug)}
         className="relative block aspect-[4/3] overflow-hidden rounded-[15px] bg-surface"
       >
         {home.image ? (
@@ -79,7 +81,7 @@ export const ComparableHomeCard = ({ home, className }: ComparableHomeCardProps)
         <div className="mb-1 flex items-start justify-between gap-3">
           <h3 className="min-w-0 truncate font-brand text-base font-semibold tracking-[-0.02em] text-ink-navy">
             <Link
-              href={`/apartments/${home.id}`}
+              href={buildApartmentPublicHref(home.slug)}
               className="transition-colors hover:text-brand-deep"
             >
               {t('unit', { number: home.title })}

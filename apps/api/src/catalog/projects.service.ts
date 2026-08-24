@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import type { PaginatedResponse, ProjectDetail, ProjectListItem } from '@toonexpo/contracts';
 import { ApartmentSalesStatus, type Prisma, PublicationStatus } from '@toonexpo/db';
+import { findProjectByRef } from '../common/utils/resolve-project-ref.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { AnalyticsService } from '../analytics/analytics.service.js';
 import { CATALOG_DEFAULT_PAGE_SIZE, PUBLIC_PUBLICATION_STATUS } from './catalog.constants.js';
@@ -84,11 +85,16 @@ export class ProjectsService {
     };
   }
 
-  async getProjectById(projectId: string, viewer: CatalogViewerContext): Promise<ProjectDetail> {
+  async getProjectById(projectRef: string, viewer: CatalogViewerContext): Promise<ProjectDetail> {
     const locale = resolveCatalogLocale(viewer.locale);
+    const resolved = await findProjectByRef(this.prisma, projectRef, { id: true });
+    if (!resolved) {
+      throw new NotFoundException('Project not found');
+    }
+
     const project = await this.prisma.db.project.findFirst({
       where: {
-        id: projectId,
+        id: resolved.id,
         publicationStatus: PUBLIC_PUBLICATION_STATUS,
       },
       include: {
@@ -108,6 +114,7 @@ export class ProjectsService {
                   orderBy: [{ number: 'asc' }],
                   select: {
                     id: true,
+                    slug: true,
                     number: true,
                     salesStatus: true,
                     rooms: true,

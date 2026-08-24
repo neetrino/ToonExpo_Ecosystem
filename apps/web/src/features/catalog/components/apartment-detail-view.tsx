@@ -17,6 +17,7 @@ import { ApartmentTourSections } from '@/features/catalog/components/apartment-t
 import { CatalogEntityQr } from '@/features/catalog/components/catalog-entity-qr';
 import { buildApartmentCatalogQrUrl } from '@/features/catalog/utils/build-catalog-entity-qr-url';
 import { buildApartmentDetailRows } from '@/features/catalog/utils/build-apartment-detail-rows';
+import { buildProjectPublicHref } from '@/features/geo-map/public/utils/build-project-public-href';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
@@ -47,7 +48,7 @@ export const ApartmentDetailView = async ({
   const t = await getTranslations('Catalog');
   const locale = await getLocale();
   const title = t('apartment.unit', { number: apartment.number });
-  const apartmentQrUrl = buildApartmentCatalogQrUrl(locale, apartment.id);
+  const apartmentQrUrl = buildApartmentCatalogQrUrl(locale, apartment.slug);
   const typeLabel = projectType?.trim()
     ? projectType
     : apartment.rooms != null
@@ -103,7 +104,7 @@ export const ApartmentDetailView = async ({
         project={apartment.project}
         building={apartment.building}
         floor={{ id: apartment.floor.id, label: floorLabel }}
-        apartment={{ id: apartment.id, label: title }}
+        apartment={{ id: apartment.id, slug: apartment.slug, label: title }}
         current="apartment"
       />
 
@@ -277,7 +278,7 @@ export const ApartmentDetailView = async ({
 
           <div className="pb-6">
             <Link
-              href={`/projects/${apartment.project.id}`}
+              href={buildProjectPublicHref(apartment.project.slug)}
               className="text-sm font-semibold text-brand-deep hover:underline"
             >
               {t('actions.viewProject')}

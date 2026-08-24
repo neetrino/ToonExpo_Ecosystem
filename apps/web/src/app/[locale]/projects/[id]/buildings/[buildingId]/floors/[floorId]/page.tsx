@@ -9,6 +9,7 @@ import { FloorApartmentsList } from '@/features/catalog/components/building-floo
 import { CatalogPathBreadcrumb } from '@/features/catalog/components/catalog-path-breadcrumb';
 import { ProjectPricesOverlayScope } from '@/features/catalog/components/price-overlay-scope';
 import { SiteFooter } from '@/features/catalog/components/site-footer';
+import { ensureCanonicalProjectSlug } from '@/features/catalog/utils/ensure-canonical-project-slug';
 import { listFloorVisualCanvases } from '@/features/visual-map/api/public-visual-map-api';
 import { PublicVisualMap } from '@/features/visual-map/components/public-visual-map';
 import { pickPrimaryVisualCanvas } from '@/features/visual-map/utils/public-visual-map';
@@ -22,14 +23,17 @@ type FloorPageProps = {
   }>;
 };
 
+const loadProject = cache((projectSlug: string, locale: string) => getProject(projectSlug, { locale }));
+
 const loadFloor = cache((floorId: string, locale: string, projectId: string) =>
   getFloor(floorId, { locale, projectId }),
 );
 
 export const generateMetadata = async ({ params }: FloorPageProps): Promise<Metadata> => {
-  const { locale, id, floorId } = await params;
+  const { locale, id: projectSlug, floorId } = await params;
   const t = await getTranslations({ locale, namespace: 'Catalog' });
-  const floor = await loadFloor(floorId, locale, id);
+  const project = await loadProject(projectSlug, locale);
+  const floor = project ? await loadFloor(floorId, locale, project.id) : null;
 
   if (!floor) {
     return { title: t('floor.notFoundTitle') };
@@ -42,18 +46,29 @@ export const generateMetadata = async ({ params }: FloorPageProps): Promise<Meta
 };
 
 export default async function FloorPage({ params }: FloorPageProps) {
-  const { locale, id, buildingId, floorId } = await params;
+  const { locale, id: projectSlug, buildingId, floorId } = await params;
   setRequestLocale(locale);
 
-  const floor = await loadFloor(floorId, locale, id);
+  const project = await loadProject(projectSlug, locale);
+  if (!project) {
+    notFound();
+  }
 
-  if (!floor || floor.project.id !== id || floor.building.id !== buildingId) {
+  ensureCanonicalProjectSlug(
+    project,
+    projectSlug,
+    locale,
+    `/buildings/${buildingId}/floors/${floorId}`,
+  );
+
+  const floor = await loadFloor(floorId, locale, project.id);
+
+  if (!floor || floor.project.id !== project.id || floor.building.id !== buildingId) {
     notFound();
   }
 
   const t = await getTranslations('Catalog');
-  const project = await getProject(floor.project.id, { locale });
-  const district = project?.district ?? null;
+  const district = project.district ?? null;
   const visualResponse = await listFloorVisualCanvases(floorId);
   const visualCanvas = pickPrimaryVisualCanvas(visualResponse?.data ?? []);
   const floorLabel =
@@ -62,6 +77,7 @@ export default async function FloorPage({ params }: FloorPageProps) {
   const apartmentShortcut = firstApartment
     ? {
         id: firstApartment.id,
+        slug: firstApartment.slug,
         label: t('apartment.unit', { number: firstApartment.number }),
       }
     : undefined;
@@ -105,7 +121,11 @@ export default async function FloorPage({ params }: FloorPageProps) {
 
         {visualCanvas ? (
           <div className="mb-8">
-            <PublicVisualMap canvas={visualCanvas} projectId={floor.project.id} />
+            <PublicVisualMap
+              canvas={visualCanvas}
+              projectId={floor.project.id}
+              projectSlug={floor.project.slug}
+            />
           </div>
         ) : null}
 

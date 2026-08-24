@@ -9,6 +9,7 @@ import { usePriceOverlay } from '@/features/catalog/components/price-overlay-sco
 import { ProjectPriceCta } from '@/features/catalog/components/project-price-cta';
 import { formatCompactPrice, formatPriceRange } from '@/features/catalog/utils/format-price';
 import { shouldShowPriceOnRequestCta } from '@/features/catalog/utils/price-on-request-cta';
+import { buildProjectPublicHref } from '@/features/geo-map/public/utils/build-project-public-href';
 import { Link } from '@/i18n/navigation';
 import { resolvePublicAssetUrl } from '@/shared/lib/static-asset-url';
 import { cn } from '@/shared/ui/cn';
@@ -93,7 +94,7 @@ export const ProjectCard = ({
       )}
     >
       <div className="relative aspect-[4/3] overflow-hidden rounded-[15px] bg-surface">
-        <Link href={`/projects/${project.id}`} className="absolute inset-0 block">
+        <Link href={buildProjectPublicHref(project.slug)} className="absolute inset-0 block">
           {project.cover ? (
             <Image
               src={project.cover.fileUrl}
@@ -141,7 +142,7 @@ export const ProjectCard = ({
         <div className="mb-1 flex flex-col gap-1 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between sm:gap-x-3 sm:gap-y-1">
           <h3 className="min-w-0 truncate font-brand text-base font-semibold tracking-[-0.02em] text-ink-navy sm:min-w-[min(100%,10rem)] sm:flex-1 sm:basis-[10rem]">
             <Link
-              href={`/projects/${project.id}`}
+              href={buildProjectPublicHref(project.slug)}
               className="transition-colors hover:text-brand-deep"
             >
               {project.name}

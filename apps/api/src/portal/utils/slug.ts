@@ -20,3 +20,20 @@ export const buildProjectSlug = (name: string): string => {
   const slug = `${base || "project"}-${suffix}`;
   return slug.slice(0, PORTAL_SLUG_MAX_LENGTH);
 };
+
+/**
+ * Builds a globally unique apartment slug from project slug + unit number.
+ */
+export const buildApartmentSlug = (projectSlug: string, number: string): string => {
+  const unit = number
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 24);
+
+  const suffix = randomBytes(SLUG_SUFFIX_BYTES).toString("hex");
+  const slug = `${projectSlug}-unit-${unit || "apt"}-${suffix}`;
+  return slug.slice(0, PORTAL_SLUG_MAX_LENGTH);
+};

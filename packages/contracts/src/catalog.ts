@@ -113,6 +113,7 @@ export type ProjectListItem = {
  */
 export type FloorApartmentSummary = {
   id: string;
+  slug: string;
   number: string;
   salesStatus: ApartmentSalesStatus;
   rooms: number | null;
@@ -133,6 +134,7 @@ export type FloorApartmentSummary = {
  */
 export type ApartmentListItem = {
   id: string;
+  slug: string;
   number: string;
   salesStatus: ApartmentSalesStatus;
   rooms: number | null;
@@ -225,6 +227,7 @@ export type ProjectDetail = {
 
 export type ApartmentDetail = {
   id: string;
+  slug: string;
   number: string;
   salesStatus: ApartmentSalesStatus;
   rooms: number | null;

@@ -14,6 +14,7 @@ export type FavoriteTargetType = 'project' | 'apartment';
 /** Apartment card for favorites list — same marketplace card chrome as projects. */
 export type FavoriteApartmentCard = {
   id: string;
+  slug: string;
   number: string;
   salesStatus: ApartmentSalesStatus;
   rooms: number | null;

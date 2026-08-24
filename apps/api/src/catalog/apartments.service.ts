@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import type { ApartmentDetail, ApartmentListItem, PaginatedResponse } from '@toonexpo/contracts';
 
+import { findApartmentByRef } from '../common/utils/resolve-apartment-ref.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { AnalyticsService } from '../analytics/analytics.service.js';
 import { CATALOG_DEFAULT_PAGE_SIZE, PUBLIC_PUBLICATION_STATUS } from './catalog.constants.js';
@@ -72,6 +73,7 @@ export class ApartmentsService {
         take: pageSize,
         select: {
           id: true,
+          slug: true,
           number: true,
           salesStatus: true,
           rooms: true,
@@ -125,6 +127,7 @@ export class ApartmentsService {
 
         return {
           id: apartment.id,
+          slug: apartment.slug,
           number: apartment.number,
           salesStatus: apartment.salesStatus,
           rooms: apartment.rooms,
@@ -156,13 +159,18 @@ export class ApartmentsService {
   }
 
   async getApartmentById(
-    apartmentId: string,
+    apartmentRef: string,
     viewer: CatalogViewerContext,
   ): Promise<ApartmentDetail> {
     const locale = resolveCatalogLocale(viewer.locale);
+    const resolved = await findApartmentByRef(this.prisma, apartmentRef, { id: true });
+    if (!resolved) {
+      throw new NotFoundException('Apartment not found');
+    }
+
     const apartment = await this.prisma.db.apartment.findFirst({
       where: {
-        id: apartmentId,
+        id: resolved.id,
         publicationStatus: PUBLIC_PUBLICATION_STATUS,
         project: { publicationStatus: PUBLIC_PUBLICATION_STATUS },
         building: { publicationStatus: PUBLIC_PUBLICATION_STATUS },
@@ -237,6 +245,7 @@ export class ApartmentsService {
 
     return {
       id: apartment.id,
+      slug: apartment.slug,
       number: apartment.number,
       salesStatus: apartment.salesStatus,
       rooms: apartment.rooms,

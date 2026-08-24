@@ -8,6 +8,7 @@ import { computeSoldPercent, resolveBadge } from '@/features/catalog/utils/devel
 import { formatCompactPrice } from '@/features/catalog/utils/format-price';
 import { shouldShowPriceOnRequestCta } from '@/features/catalog/utils/price-on-request-cta';
 import { ProjectPriceCta } from '@/features/catalog/components/project-price-cta';
+import { buildProjectPublicHref } from '@/features/geo-map/public/utils/build-project-public-href';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
@@ -51,7 +52,7 @@ export const DevelopmentProgressCard = ({
       )}
     >
       <Link
-        href={`/projects/${project.id}`}
+        href={buildProjectPublicHref(project.slug)}
         className="relative block aspect-[16/10] overflow-hidden bg-surface"
       >
         {project.cover ? (
@@ -83,7 +84,7 @@ export const DevelopmentProgressCard = ({
         <div className="mb-1 flex items-start justify-between gap-3">
           <h3 className="min-w-0 truncate font-brand text-lg font-semibold tracking-[-0.02em] text-ink-navy">
             <Link
-              href={`/projects/${project.id}`}
+              href={buildProjectPublicHref(project.slug)}
               className="transition-colors hover:text-brand-deep"
             >
               {project.name}

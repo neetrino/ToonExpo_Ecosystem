@@ -4,6 +4,7 @@ import { pickPrimaryVisualCanvas } from '@/features/visual-map/utils/public-visu
 
 type ProjectInteractiveMapSectionProps = {
   projectId: string;
+  projectSlug: string;
 };
 
 /**
@@ -11,6 +12,7 @@ type ProjectInteractiveMapSectionProps = {
  */
 export const ProjectInteractiveMapSection = async ({
   projectId,
+  projectSlug,
 }: ProjectInteractiveMapSectionProps) => {
   const visualResponse = await listProjectVisualCanvases(projectId);
   const visualCanvas = pickPrimaryVisualCanvas(visualResponse?.data ?? []);
@@ -21,7 +23,11 @@ export const ProjectInteractiveMapSection = async ({
 
   return (
     <div className="page-container section-pad pt-0">
-      <PublicVisualMap canvas={visualCanvas} projectId={projectId} />
+      <PublicVisualMap
+        canvas={visualCanvas}
+        projectId={projectId}
+        projectSlug={projectSlug}
+      />
     </div>
   );
 };

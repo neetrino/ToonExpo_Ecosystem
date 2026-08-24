@@ -8,6 +8,7 @@ import {
   PublicationStatus,
 } from '@toonexpo/db';
 
+import { buildApartmentSlug } from '../src/portal/utils/slug.js';
 import { PrismaService } from '../src/prisma/prisma.service.js';
 
 export const CATALOG_FIXTURE_PREFIX = 'e2e_catalog_';
@@ -50,6 +51,7 @@ export async function seedCatalogFixtures(prisma: PrismaService): Promise<Catalo
 
   const builderId = `${CATALOG_FIXTURE_PREFIX}builder`;
   const publishedProjectId = `${CATALOG_FIXTURE_PREFIX}project_published`;
+  const publishedProjectSlug = `${CATALOG_FIXTURE_PREFIX}published`;
   const draftProjectId = `${CATALOG_FIXTURE_PREFIX}project_draft`;
   const buildingId = `${CATALOG_FIXTURE_PREFIX}building`;
   const floorId = `${CATALOG_FIXTURE_PREFIX}floor`;
@@ -74,7 +76,7 @@ export async function seedCatalogFixtures(prisma: PrismaService): Promise<Catalo
       id: publishedProjectId,
       builderCompanyId: builderId,
       name: 'E2E Published Project',
-      slug: `${CATALOG_FIXTURE_PREFIX}published`,
+      slug: publishedProjectSlug,
       publicationStatus: PublicationStatus.published,
       city: 'Yerevan',
       shortDescription: 'Short description in English',
@@ -163,6 +165,7 @@ export async function seedCatalogFixtures(prisma: PrismaService): Promise<Catalo
       buildingId,
       floorId,
       number: '101',
+      slug: buildApartmentSlug(publishedProjectSlug, '101'),
       salesStatus: ApartmentSalesStatus.available,
       publicationStatus: PublicationStatus.published,
       rooms: 2,
@@ -180,6 +183,7 @@ export async function seedCatalogFixtures(prisma: PrismaService): Promise<Catalo
       buildingId,
       floorId,
       number: '102',
+      slug: buildApartmentSlug(publishedProjectSlug, '102'),
       salesStatus: ApartmentSalesStatus.available,
       publicationStatus: PublicationStatus.draft,
       rooms: 3,
@@ -197,6 +201,7 @@ export async function seedCatalogFixtures(prisma: PrismaService): Promise<Catalo
       buildingId,
       floorId,
       number: '103',
+      slug: buildApartmentSlug(publishedProjectSlug, '103'),
       salesStatus: ApartmentSalesStatus.available,
       publicationStatus: PublicationStatus.published,
       rooms: 2,
@@ -214,6 +219,7 @@ export async function seedCatalogFixtures(prisma: PrismaService): Promise<Catalo
       buildingId,
       floorId,
       number: '104',
+      slug: buildApartmentSlug(publishedProjectSlug, '104'),
       salesStatus: ApartmentSalesStatus.available,
       publicationStatus: PublicationStatus.published,
       rooms: 3,

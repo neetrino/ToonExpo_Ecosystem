@@ -52,6 +52,7 @@ export class FloorsCatalogService {
           orderBy: [{ number: 'asc' }],
           select: {
             id: true,
+            slug: true,
             number: true,
             salesStatus: true,
             rooms: true,

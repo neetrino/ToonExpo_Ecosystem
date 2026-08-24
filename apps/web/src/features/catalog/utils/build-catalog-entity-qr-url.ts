@@ -6,15 +6,15 @@ export const CATALOG_QR_INTEREST_PATH_SEGMENT = 'interest';
 /**
  * Absolute project interest URL encoded in project QR printouts / detail pages.
  */
-export const buildProjectCatalogQrUrl = (locale: string, projectId: string): string => {
+export const buildProjectCatalogQrUrl = (locale: string, projectSlug: string): string => {
   const base = resolveSiteUrl();
-  return `${base}/${locale}/projects/${encodeURIComponent(projectId)}/${CATALOG_QR_INTEREST_PATH_SEGMENT}`;
+  return `${base}/${locale}/projects/${encodeURIComponent(projectSlug)}/${CATALOG_QR_INTEREST_PATH_SEGMENT}`;
 };
 
 /**
  * Absolute apartment interest URL for apartment detail QR.
  */
-export const buildApartmentCatalogQrUrl = (locale: string, apartmentId: string): string => {
+export const buildApartmentCatalogQrUrl = (locale: string, apartmentSlug: string): string => {
   const base = resolveSiteUrl();
-  return `${base}/${locale}/apartments/${encodeURIComponent(apartmentId)}/${CATALOG_QR_INTEREST_PATH_SEGMENT}`;
+  return `${base}/${locale}/apartments/${encodeURIComponent(apartmentSlug)}/${CATALOG_QR_INTEREST_PATH_SEGMENT}`;
 };

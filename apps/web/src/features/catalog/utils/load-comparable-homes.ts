@@ -69,6 +69,7 @@ const toComparableHomeCard = (
 
   return {
     id: apartment.id,
+    slug: apartment.slug,
     title: apartment.number,
     locationLine,
     bedrooms: apartment.bedrooms ?? apartment.rooms,

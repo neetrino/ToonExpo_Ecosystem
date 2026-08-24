@@ -33,6 +33,7 @@ const resolveAdminLabel = (item: AdminGeoMapModelItem): string =>
 export const mapAdminGeoMapItemToObject = (item: AdminGeoMapModelItem): GeoMapObject => ({
   id: item.id,
   projectId: item.projectId,
+  projectSlug: item.projectSlug,
   label: resolveAdminLabel(item),
   logoUrl: null,
   addressLine: null,
@@ -52,6 +53,7 @@ export const mapAdminGeoMapItemsToObjects = (items: AdminGeoMapModelItem[]): Geo
 export const mapPublicGeoMapItemToObject = (item: PublicGeoMapModelItem): GeoMapObject => ({
   id: item.projectId,
   projectId: item.projectId,
+  projectSlug: item.projectSlug,
   label: item.projectName,
   logoUrl: item.logoUrl,
   addressLine: formatGeoMapAddressLine(item),

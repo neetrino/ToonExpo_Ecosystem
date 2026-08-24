@@ -4,6 +4,12 @@ import type {
   PublicVisualHotspotItem,
 } from '@toonexpo/contracts';
 
+import {
+  buildApartmentPublicHref,
+  buildProjectBuildingPublicHref,
+  buildProjectDistrictPublicHref,
+  buildProjectFloorPublicHref,
+} from '@/features/geo-map/public/utils/build-project-public-href';
 import { apiFetch } from '@/shared/api/client';
 import { isApiErrorStatus } from '@/shared/api/errors';
 import { catalogProjectFetch } from '@/shared/api/public-fetch';
@@ -23,23 +29,26 @@ export const pickPrimaryVisualCanvas = (
 };
 
 export const buildApartmentHref = (apartmentId: string): string =>
-  `/apartments/${encodeURIComponent(apartmentId)}`;
+  buildApartmentPublicHref(apartmentId);
 
-export const buildBuildingHref = (projectId: string, buildingId: string): string =>
-  `/projects/${encodeURIComponent(projectId)}/buildings/${encodeURIComponent(buildingId)}`;
+export const buildBuildingHref = (projectSlug: string, buildingId: string): string =>
+  buildProjectBuildingPublicHref(projectSlug, buildingId);
 
-export const buildDistrictHref = (projectId: string, districtId: string): string =>
-  `/projects/${encodeURIComponent(projectId)}/districts/${encodeURIComponent(districtId)}`;
+export const buildDistrictHref = (projectSlug: string, districtId: string): string =>
+  buildProjectDistrictPublicHref(projectSlug, districtId);
 
-export const buildFloorHref = (projectId: string, buildingId: string, floorId: string): string =>
-  `/projects/${encodeURIComponent(projectId)}/buildings/${encodeURIComponent(buildingId)}/floors/${encodeURIComponent(floorId)}`;
+export const buildFloorHref = (
+  projectSlug: string,
+  buildingId: string,
+  floorId: string,
+): string => buildProjectFloorPublicHref(projectSlug, buildingId, floorId);
 
 /**
  * Sync public path for a hotspot when the destination can be derived without an extra fetch.
  * Floor targets outside a building canvas return null — use `resolveHotspotHref`.
  */
 export const buildHotspotHref = (
-  projectId: string,
+  projectSlug: string,
   hotspot: PublicVisualHotspotItem,
   canvas: PublicVisualCanvasItem,
 ): string | null => {
@@ -49,13 +58,13 @@ export const buildHotspotHref = (
     return buildApartmentHref(id);
   }
   if (type === 'building') {
-    return buildBuildingHref(projectId, id);
+    return buildBuildingHref(projectSlug, id);
   }
   if (type === 'district') {
-    return buildDistrictHref(projectId, id);
+    return buildDistrictHref(projectSlug, id);
   }
   if (type === 'floor' && canvas.contextType === 'building') {
-    return buildFloorHref(projectId, canvas.contextId, id);
+    return buildFloorHref(projectSlug, canvas.contextId, id);
   }
 
   return null;
@@ -83,10 +92,11 @@ const fetchFloorForNavigation = async (
  */
 export const resolveHotspotHref = async (
   projectId: string,
+  projectSlug: string,
   hotspot: PublicVisualHotspotItem,
   canvas: PublicVisualCanvasItem,
 ): Promise<string | null> => {
-  const direct = buildHotspotHref(projectId, hotspot, canvas);
+  const direct = buildHotspotHref(projectSlug, hotspot, canvas);
   if (direct) {
     return direct;
   }
@@ -100,5 +110,5 @@ export const resolveHotspotHref = async (
     return null;
   }
 
-  return buildFloorHref(projectId, floor.building.id, floor.id);
+  return buildFloorHref(floor.project.slug, floor.building.id, floor.id);
 };

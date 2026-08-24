@@ -211,6 +211,7 @@ model Apartment {
   buildingId              String               @map("building_id")
   floorId                 String               @map("floor_id")
   number                  String
+  slug                    String               @unique
   salesStatus             ApartmentSalesStatus @default(available) @map("sales_status")
   publicationStatus       PublicationStatus    @default(draft) @map("publication_status")
   rooms                   Int?

@@ -8,6 +8,7 @@ import type { GeoMapObject } from '@/features/geo-map/types';
 
 const buildObject = (overrides: Partial<GeoMapObject> & { id: string }): GeoMapObject => ({
   projectId: overrides.id,
+  projectSlug: overrides.projectSlug ?? overrides.projectId ?? overrides.id,
   label: 'Project',
   logoUrl: null,
   addressLine: null,

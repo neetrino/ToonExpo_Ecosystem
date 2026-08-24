@@ -25,6 +25,8 @@ export type GeoMapObject = {
   id: string;
   /** Null for admin unassigned placements (not yet attached to a project). */
   projectId: string | null;
+  /** Public project slug for detail links; null for admin unassigned placements. */
+  projectSlug: string | null;
   /** Project name — shown in the hover/select info card (not on the dot marker). */
   label: string;
   /** Builder company logo URL for the info card; null when unavailable. */

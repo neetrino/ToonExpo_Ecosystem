@@ -1,6 +1,7 @@
 import type { ProjectListItem } from '@toonexpo/contracts';
 
 import { HERO_KEYWORD_MAX_SUGGESTIONS } from '@/features/catalog/constants/hero-search';
+import { buildProjectPublicHref } from '@/features/geo-map/public/utils/build-project-public-href';
 
 export type HeroSearchSuggestionKind = 'project' | 'builder' | 'city';
 
@@ -41,7 +42,7 @@ export const buildHeroSearchSuggestions = (
         kind: 'project',
         label: project.name,
         meta: project.city?.trim() || project.builder.name,
-        href: `/projects/${project.id}`,
+        href: buildProjectPublicHref(project.slug),
       });
     }
 

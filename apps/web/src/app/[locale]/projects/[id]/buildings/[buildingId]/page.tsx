@@ -10,6 +10,7 @@ import { BuildingFloorsList } from '@/features/catalog/components/building-floor
 import { CatalogPathBreadcrumb } from '@/features/catalog/components/catalog-path-breadcrumb';
 import { ProjectPricesOverlayScope } from '@/features/catalog/components/price-overlay-scope';
 import { SiteFooter } from '@/features/catalog/components/site-footer';
+import { ensureCanonicalProjectSlug } from '@/features/catalog/utils/ensure-canonical-project-slug';
 import { listBuildingVisualCanvases } from '@/features/visual-map/api/public-visual-map-api';
 import { PublicVisualMap } from '@/features/visual-map/components/public-visual-map';
 import { pickPrimaryVisualCanvas } from '@/features/visual-map/utils/public-visual-map';
@@ -18,14 +19,19 @@ type BuildingPageProps = {
   params: Promise<{ locale: string; id: string; buildingId: string }>;
 };
 
+const loadProject = cache((projectSlug: string, locale: string) => getProject(projectSlug, { locale }));
+
 const loadBuilding = cache((buildingId: string, locale: string, projectId: string) =>
   getBuilding(buildingId, { locale, projectId }),
 );
 
 export const generateMetadata = async ({ params }: BuildingPageProps): Promise<Metadata> => {
-  const { locale, id, buildingId } = await params;
+  const { locale, id: projectSlug, buildingId } = await params;
   const t = await getTranslations({ locale, namespace: 'Catalog' });
-  const building = await loadBuilding(buildingId, locale, id);
+  const project = await loadProject(projectSlug, locale);
+  const building = project
+    ? await loadBuilding(buildingId, locale, project.id)
+    : null;
 
   if (!building) {
     return { title: t('building.notFoundTitle') };
@@ -37,18 +43,24 @@ export const generateMetadata = async ({ params }: BuildingPageProps): Promise<M
 };
 
 export default async function BuildingPage({ params }: BuildingPageProps) {
-  const { locale, id, buildingId } = await params;
+  const { locale, id: projectSlug, buildingId } = await params;
   setRequestLocale(locale);
 
-  const building = await loadBuilding(buildingId, locale, id);
+  const project = await loadProject(projectSlug, locale);
+  if (!project) {
+    notFound();
+  }
 
-  if (!building || building.project.id !== id) {
+  ensureCanonicalProjectSlug(project, projectSlug, locale, `/buildings/${buildingId}`);
+
+  const building = await loadBuilding(buildingId, locale, project.id);
+
+  if (!building || building.project.id !== project.id) {
     notFound();
   }
 
   const t = await getTranslations('Catalog');
-  const project = await getProject(building.project.id, { locale });
-  const district = project?.district ?? null;
+  const district = project.district ?? null;
   const visualResponse = await listBuildingVisualCanvases(buildingId);
   const visualCanvas = pickPrimaryVisualCanvas(visualResponse?.data ?? []);
   const pathShortcut = pickBuildingPathShortcut(building.floors, (floorNumber) =>
@@ -112,7 +124,11 @@ export default async function BuildingPage({ params }: BuildingPageProps) {
 
           {visualCanvas ? (
             <div className="mb-8">
-              <PublicVisualMap canvas={visualCanvas} projectId={building.project.id} />
+              <PublicVisualMap
+                canvas={visualCanvas}
+                projectId={building.project.id}
+                projectSlug={building.project.slug}
+              />
             </div>
           ) : null}
 
@@ -120,7 +136,11 @@ export default async function BuildingPage({ params }: BuildingPageProps) {
             <h2 className="text-section-title text-ink">{t('building.floors')}</h2>
           </div>
           <ProjectPricesOverlayScope projectId={building.project.id}>
-            <BuildingFloorsList projectId={building.project.id} building={building} />
+            <BuildingFloorsList
+              projectId={building.project.id}
+              projectSlug={building.project.slug}
+              building={building}
+            />
           </ProjectPricesOverlayScope>
         </div>
       </main>
@@ -135,7 +155,7 @@ const pickBuildingPathShortcut = (
   formatApartment: (apartmentNumber: string) => string,
 ): {
   floor: { id: string; label: string };
-  apartment?: { id: string; label: string };
+  apartment?: { id: string; slug: string; label: string };
 } | null => {
   const floor = floors[0];
   if (!floor) {
@@ -152,6 +172,7 @@ const pickBuildingPathShortcut = (
       ? {
           apartment: {
             id: apartment.id,
+            slug: apartment.slug,
             label: formatApartment(apartment.number),
           },
         }
