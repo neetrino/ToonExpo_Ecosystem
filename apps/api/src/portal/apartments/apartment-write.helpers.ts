@@ -16,6 +16,7 @@ import type {
 } from "../dto/portal-apartment.dto.js";
 import { DEFAULT_PRICE_CURRENCY } from "../portal.constants.js";
 import { upsertTranslations } from "../utils/upsert-translations.js";
+import { buildApartmentSlug } from "../utils/slug.js";
 
 type ApartmentRow = {
   id: string;
@@ -70,6 +71,7 @@ export const createPortalApartmentRow = async (
   params: {
     userId: string;
     projectId: string;
+    projectSlug: string;
     buildingId: string;
     floorId: string;
     dto: CreatePortalApartmentDto;
@@ -88,6 +90,7 @@ export const createPortalApartmentRow = async (
       buildingId: params.buildingId,
       floorId: params.floorId,
       number: dto.number,
+      slug: buildApartmentSlug(params.projectSlug, dto.number),
       salesStatus,
       publicationStatus,
       priceCurrency: DEFAULT_PRICE_CURRENCY,

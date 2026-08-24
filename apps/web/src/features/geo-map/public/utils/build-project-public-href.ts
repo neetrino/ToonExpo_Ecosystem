@@ -26,5 +26,10 @@ export const buildProjectInterestPublicHref = (
 ): `/projects/${string}/interest` =>
   `/projects/${encodeURIComponent(projectSlug)}/interest`;
 
-export const buildApartmentPublicHref = (apartmentId: string): `/apartments/${string}` =>
-  `/apartments/${encodeURIComponent(apartmentId)}`;
+export const buildApartmentPublicHref = (apartmentSlug: string): `/apartments/${string}` =>
+  `/apartments/${encodeURIComponent(apartmentSlug)}`;
+
+export const buildApartmentInterestPublicHref = (
+  apartmentSlug: string,
+): `/apartments/${string}/interest` =>
+  `/apartments/${encodeURIComponent(apartmentSlug)}/interest`;

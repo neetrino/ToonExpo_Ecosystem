@@ -6,19 +6,23 @@ import { cache } from 'react';
 import { QrInterestLanding } from '@/features/buyer/components/qr-interest-landing';
 import { QrInterestRequestSection } from '@/features/buyer/components/qr-interest-request-section';
 import { getApartment, getProject } from '@/features/catalog/api/catalog-api';
+import { ensureCanonicalApartmentSlug } from '@/features/catalog/utils/ensure-canonical-apartment-slug';
+import { buildApartmentPublicHref } from '@/features/geo-map/public/utils/build-project-public-href';
 
 type ApartmentInterestPageProps = {
   params: Promise<{ locale: string; id: string }>;
 };
 
-const loadApartment = cache((id: string, locale: string) => getApartment(id, { locale }));
+const loadApartment = cache((apartmentSlug: string, locale: string) =>
+  getApartment(apartmentSlug, { locale }),
+);
 
 export const generateMetadata = async ({
   params,
 }: ApartmentInterestPageProps): Promise<Metadata> => {
-  const { locale, id } = await params;
+  const { locale, id: apartmentSlug } = await params;
   const t = await getTranslations({ locale, namespace: 'Catalog' });
-  const apartment = await loadApartment(id, locale);
+  const apartment = await loadApartment(apartmentSlug, locale);
 
   if (!apartment) {
     return { title: t('apartment.notFoundTitle') };
@@ -37,15 +41,17 @@ export const generateMetadata = async ({
  * Apartment QR landing — plan/cover + notes form → builder CRM request.
  */
 export default async function ApartmentInterestPage({ params }: ApartmentInterestPageProps) {
-  const { locale, id } = await params;
+  const { locale, id: apartmentSlug } = await params;
   setRequestLocale(locale);
 
-  const apartment = await loadApartment(id, locale);
+  const apartment = await loadApartment(apartmentSlug, locale);
   if (!apartment) {
     notFound();
   }
 
-  const project = await getProject(apartment.project.id, { locale });
+  ensureCanonicalApartmentSlug(apartment, apartmentSlug, locale, '/interest');
+
+  const project = await getProject(apartment.project.slug, { locale });
   const t = await getTranslations({ locale, namespace: 'Catalog' });
 
   const imageUrl = apartment.plan?.fileUrl ?? project?.cover?.fileUrl ?? null;
@@ -65,7 +71,7 @@ export default async function ApartmentInterestPage({ params }: ApartmentInteres
           subtitle={t('qrInterest.subtitleApartment', { builder: apartment.builder.name })}
           imageUrl={imageUrl}
           imageAlt={imageAlt}
-          detailsHref={`/apartments/${apartment.id}`}
+          detailsHref={buildApartmentPublicHref(apartment.slug)}
           detailsLabel={t('qrInterest.viewDetails')}
         >
           <QrInterestRequestSection projectId={apartment.project.id} apartmentId={apartment.id} />

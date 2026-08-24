@@ -101,6 +101,7 @@ export class PortalApartmentsService {
     const apartment = await createPortalApartmentRow(this.prisma.db, {
       userId,
       projectId,
+      projectSlug: floor.building.project.slug,
       buildingId: floor.buildingId,
       floorId,
       dto,
@@ -154,6 +155,7 @@ export class PortalApartmentsService {
       const apartment = await createPortalApartmentRow(this.prisma.db, {
         userId,
         projectId,
+        projectSlug: floor.building.project.slug,
         buildingId: floor.buildingId,
         floorId,
         dto: item,

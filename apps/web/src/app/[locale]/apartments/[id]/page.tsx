@@ -9,6 +9,7 @@ import { ComparableHomesSection } from '@/features/catalog/components/comparable
 import { ProjectPricesOverlayScope } from '@/features/catalog/components/price-overlay-scope';
 import { SiteFooter } from '@/features/catalog/components/site-footer';
 import { buildApartmentGalleryImages } from '@/features/catalog/utils/build-apartment-gallery-images';
+import { ensureCanonicalApartmentSlug } from '@/features/catalog/utils/ensure-canonical-apartment-slug';
 import { loadComparableHomes } from '@/features/catalog/utils/load-comparable-homes';
 import { parseProjectCatalog } from '@/features/catalog/utils/project-catalog-details';
 
@@ -16,12 +17,14 @@ type ApartmentPageProps = {
   params: Promise<{ locale: string; id: string }>;
 };
 
-const loadApartment = cache((id: string, locale: string) => getApartment(id, { locale }));
+const loadApartment = cache((apartmentSlug: string, locale: string) =>
+  getApartment(apartmentSlug, { locale }),
+);
 
 export const generateMetadata = async ({ params }: ApartmentPageProps): Promise<Metadata> => {
-  const { locale, id } = await params;
+  const { locale, id: apartmentSlug } = await params;
   const t = await getTranslations({ locale, namespace: 'Catalog' });
-  const apartment = await loadApartment(id, locale);
+  const apartment = await loadApartment(apartmentSlug, locale);
 
   if (!apartment) {
     return { title: t('apartment.notFoundTitle') };
@@ -42,15 +45,17 @@ export const generateMetadata = async ({ params }: ApartmentPageProps): Promise<
 };
 
 export default async function ApartmentPage({ params }: ApartmentPageProps) {
-  const { locale, id } = await params;
+  const { locale, id: apartmentSlug } = await params;
   setRequestLocale(locale);
 
-  const apartment = await loadApartment(id, locale);
+  const apartment = await loadApartment(apartmentSlug, locale);
   if (!apartment) {
     notFound();
   }
 
-  const project = await getProject(apartment.project.id, { locale });
+  ensureCanonicalApartmentSlug(apartment, apartmentSlug, locale);
+
+  const project = await getProject(apartment.project.slug, { locale });
   const locationLine = buildLocationLine(
     project?.address,
     project?.city,

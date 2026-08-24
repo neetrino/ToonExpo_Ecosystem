@@ -6,6 +6,7 @@ import { mapFavoriteApartmentCard } from './favorite-apartment.mapper.js';
 describe('mapFavoriteApartmentCard price visibility', () => {
   const apartment = {
     id: 'apt_1',
+    slug: 'project-unit-12-abc123',
     number: '12',
     salesStatus: 'available' as const,
     rooms: 2,

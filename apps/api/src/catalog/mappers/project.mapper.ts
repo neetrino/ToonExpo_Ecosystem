@@ -120,6 +120,7 @@ type MapContext = {
 const mapFloorApartment = (
   apartment: {
     id: string;
+    slug: string;
     number: string;
     salesStatus: ApartmentSalesStatus;
     rooms: number | null;
@@ -142,6 +143,7 @@ const mapFloorApartment = (
 
   return {
     id: apartment.id,
+    slug: apartment.slug,
     number: apartment.number,
     salesStatus: apartment.salesStatus,
     rooms: apartment.rooms,

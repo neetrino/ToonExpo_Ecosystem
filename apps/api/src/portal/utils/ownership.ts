@@ -101,6 +101,7 @@ export const requireOwnedFloor = async (
             select: {
               builderCompanyId: true,
               publicationStatus: true,
+              slug: true,
             },
           },
         },

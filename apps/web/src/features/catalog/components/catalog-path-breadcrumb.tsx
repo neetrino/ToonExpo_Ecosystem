@@ -2,7 +2,7 @@ import type { CatalogProjectRef } from '@toonexpo/contracts';
 
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
-import { buildProjectBuildingPublicHref, buildProjectPublicHref } from '@/features/geo-map/public/utils/build-project-public-href';
+import { buildApartmentPublicHref, buildProjectBuildingPublicHref, buildProjectPublicHref } from '@/features/geo-map/public/utils/build-project-public-href';
 
 export type CatalogPathLevel = 'building' | 'floor' | 'apartment';
 
@@ -20,6 +20,7 @@ type FloorPathRef = {
 
 type ApartmentPathRef = {
   id: string;
+  slug: string;
   label: string;
 };
 
@@ -159,7 +160,7 @@ const buildCatalogPathItems = ({
     items.push({
       id: 'apartment',
       label: apartment.label,
-      ...(current === 'apartment' ? {} : { href: `/apartments/${apartment.id}` }),
+      ...(current === 'apartment' ? {} : { href: buildApartmentPublicHref(apartment.slug) }),
     });
   }
 
