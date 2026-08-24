@@ -10,6 +10,7 @@ import type {
 import {
   decodeIntegratedFilterIds,
   encodeIntegratedFilterChipKey,
+  encodeIntegratedFilterIds,
   parseIntegratedFilterChipKey,
 } from '@/shared/ui/integrated-search-filters.types';
 
