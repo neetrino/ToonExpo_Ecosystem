@@ -3292,7 +3292,11 @@
           "clearSelection": "Մաքրել ընտրությունը",
           "templatesCount": "{count} շաբլոն",
           "importSelected": "Ներմուծել ընտրվածները ({count})",
-          "cancel": "Չեղարկել"
+          "cancel": "Չեղարկել",
+          "tapToRemove": "Արդեն ավելացված է — սեղմեք հանելու համար",
+          "selectAria": "Ընտրել {name}",
+          "deselectAria": "Չեղարկել {name} ընտրությունը",
+          "removeAppliedAria": "Հանել {name} նախագծից"
         },
         "bankPartnerOffers": {
           "import": "Ներմուծել",

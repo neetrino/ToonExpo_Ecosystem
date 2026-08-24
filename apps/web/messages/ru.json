@@ -3292,7 +3292,11 @@
           "clearSelection": "Снять выбор",
           "templatesCount": "{count} шаблонов",
           "importSelected": "Импортировать выбранные ({count})",
-          "cancel": "Отмена"
+          "cancel": "Отмена",
+          "tapToRemove": "Уже на проекте — нажмите, чтобы убрать",
+          "selectAria": "Выбрать {name}",
+          "deselectAria": "Снять выбор {name}",
+          "removeAppliedAria": "Убрать {name} с проекта"
         },
         "bankPartnerOffers": {
           "import": "Импорт",

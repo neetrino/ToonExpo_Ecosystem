@@ -7,6 +7,7 @@ import { useMemo, useState } from 'react';
 
 import {
   useApplyProjectBankPartnerOffersMutation,
+  useDeleteProjectBankPartnerOfferMutation,
   useProjectBankPartnerOffersQuery,
   useSelectableTemplatesQuery,
 } from '@/features/admin/hooks/use-project-bank-partner-offers';
@@ -41,6 +42,7 @@ export const ProjectBankPartnerOfferImportSheet = ({
   const templatesQuery = useSelectableTemplatesQuery(scope);
   const offersQuery = useProjectBankPartnerOffersQuery(scope, projectId);
   const applyMutation = useApplyProjectBankPartnerOffersMutation(scope, projectId);
+  const deleteMutation = useDeleteProjectBankPartnerOfferMutation(scope, projectId);
 
   const appliedTemplateIds = useMemo(
     () =>
@@ -52,16 +54,39 @@ export const ProjectBankPartnerOfferImportSheet = ({
     [offersQuery.data?.data],
   );
 
+  const appliedOfferIdByTemplateId = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const offer of offersQuery.data?.data ?? []) {
+      if (offer.templateId != null) {
+        map.set(offer.templateId, offer.id);
+      }
+    }
+    return map;
+  }, [offersQuery.data?.data]);
+
   const templates = templatesQuery.data?.data ?? [];
   const importable = templates.filter((template) => !appliedTemplateIds.has(template.id));
   const importableIds = importable.map((template) => template.id);
   const allImportableSelected =
     importableIds.length > 0 && importableIds.every((id) => selectedIds.includes(id));
 
-  const toggleTemplate = (templateId: string, checked: boolean): void => {
+  const toggleTemplateSelection = (templateId: string): void => {
+    if (appliedTemplateIds.has(templateId)) {
+      return;
+    }
     setSelectedIds((current) =>
-      checked ? [...current, templateId] : current.filter((id) => id !== templateId),
+      current.includes(templateId)
+        ? current.filter((id) => id !== templateId)
+        : [...current, templateId],
     );
+  };
+
+  const removeAppliedTemplate = async (templateId: string): Promise<void> => {
+    const offerId = appliedOfferIdByTemplateId.get(templateId);
+    if (!offerId) {
+      return;
+    }
+    await deleteMutation.mutateAsync(offerId);
   };
 
   const toggleSelectAll = (): void => {
@@ -137,8 +162,10 @@ export const ProjectBankPartnerOfferImportSheet = ({
                   key={template.id}
                   template={template}
                   applied={appliedTemplateIds.has(template.id)}
-                  checked={selectedIds.includes(template.id)}
-                  onToggle={(checked) => toggleTemplate(template.id, checked)}
+                  selected={selectedIds.includes(template.id)}
+                  busy={deleteMutation.isPending}
+                  onToggleSelection={() => toggleTemplateSelection(template.id)}
+                  onRemoveApplied={() => void removeAppliedTemplate(template.id)}
                 />
               ))}
             </ul>
@@ -168,43 +195,61 @@ export const ProjectBankPartnerOfferImportSheet = ({
 type TemplateImportRowProps = {
   template: BankPartnerOfferTemplateItem;
   applied: boolean;
-  checked: boolean;
-  onToggle: (checked: boolean) => void;
+  selected: boolean;
+  busy: boolean;
+  onToggleSelection: () => void;
+  onRemoveApplied: () => void;
 };
 
 const TemplateImportRow = ({
   template,
   applied,
-  checked,
-  onToggle,
+  selected,
+  busy,
+  onToggleSelection,
+  onRemoveApplied,
 }: TemplateImportRowProps) => {
   const t = useTranslations('Builder.projects.catalog.financeImport');
   const partnerName = template.partnerCompanyName?.trim() ?? '';
   const logoUrl = resolvePublicAssetUrl(template.partnerCompanyLogoUrl);
-  const active = !applied && checked;
+  const active = !applied && selected;
+
+  const handleClick = (): void => {
+    if (busy) {
+      return;
+    }
+    if (applied) {
+      onRemoveApplied();
+      return;
+    }
+    onToggleSelection();
+  };
 
   return (
     <li>
       <button
         type="button"
-        disabled={applied}
-        aria-pressed={applied || checked}
+        disabled={busy}
+        aria-pressed={applied || selected}
+        aria-label={
+          applied
+            ? t('removeAppliedAria', { name: template.name })
+            : selected
+              ? t('deselectAria', { name: template.name })
+              : t('selectAria', { name: template.name })
+        }
         className={cn(
           'flex w-full items-center gap-3 px-4 py-3.5 text-left text-sm transition-colors',
-          applied && 'cursor-default bg-surface-muted/60',
+          applied && 'bg-success-soft/40 hover:bg-success-soft/70',
           active && 'bg-brand-soft',
-          !applied && !checked && 'hover:bg-surface',
+          !applied && !selected && 'hover:bg-surface',
         )}
-        onClick={() => {
-          if (!applied) {
-            onToggle(!checked);
-          }
-        }}
+        onClick={handleClick}
       >
         {applied ? (
           <CheckCircle2 className="size-4 shrink-0 text-success" strokeWidth={2} aria-hidden />
         ) : (
-          <SelectionMark checked={checked} />
+          <SelectionMark checked={selected} />
         )}
 
         <span className="flex min-w-0 flex-1 items-center gap-3">
@@ -232,7 +277,7 @@ const TemplateImportRow = ({
               {template.name}
             </span>
             {applied ? (
-              <span className="text-xs text-ink-muted">{t('alreadyApplied')}</span>
+              <span className="text-xs text-ink-muted">{t('tapToRemove')}</span>
             ) : partnerName.length > 0 ? (
               <span className="truncate text-xs text-ink-secondary">{partnerName}</span>
             ) : null}

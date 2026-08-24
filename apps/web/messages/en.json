@@ -3552,7 +3552,11 @@
           "clearSelection": "Clear selection",
           "templatesCount": "{count} templates",
           "importSelected": "Import selected ({count})",
-          "cancel": "Cancel"
+          "cancel": "Cancel",
+          "tapToRemove": "On this project — tap to remove",
+          "selectAria": "Select {name}",
+          "deselectAria": "Deselect {name}",
+          "removeAppliedAria": "Remove {name} from project"
         },
         "bankPartnerOffers": {
           "import": "Import",
