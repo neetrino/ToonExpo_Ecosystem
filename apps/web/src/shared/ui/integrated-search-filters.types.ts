@@ -1,3 +1,5 @@
+import { INTEGRATED_SEARCH_FILTER_CHIP_KEY_SEPARATOR } from '@/shared/ui/integrated-search-filters.constants';
+
 export type IntegratedSearchFilterOption = {
   value: string;
   label: string;
@@ -41,4 +43,22 @@ export const decodeIntegratedFilterIds = (raw: string | undefined | null): strin
     .split(',')
     .map((id) => id.trim())
     .filter((id) => id.length > 0);
+};
+
+/** Chip key for one selected value inside a multi-select filter. */
+export const encodeIntegratedFilterChipKey = (filterKey: string, valueId: string): string =>
+  `${filterKey}${INTEGRATED_SEARCH_FILTER_CHIP_KEY_SEPARATOR}${valueId}`;
+
+/** Parses a multi-value chip key; returns null for plain filter keys. */
+export const parseIntegratedFilterChipKey = (
+  chipKey: string,
+): { filterKey: string; valueId: string } | null => {
+  const separatorIndex = chipKey.indexOf(INTEGRATED_SEARCH_FILTER_CHIP_KEY_SEPARATOR);
+  if (separatorIndex <= 0) {
+    return null;
+  }
+  return {
+    filterKey: chipKey.slice(0, separatorIndex),
+    valueId: chipKey.slice(separatorIndex + INTEGRATED_SEARCH_FILTER_CHIP_KEY_SEPARATOR.length),
+  };
 };

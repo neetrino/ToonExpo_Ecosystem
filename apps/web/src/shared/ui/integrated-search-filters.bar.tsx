@@ -49,6 +49,11 @@ export const IntegratedSearchBar = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const hasChips = chips.length > 0;
 
+  const focusSearch = () => {
+    inputRef.current?.focus();
+    onOpenPanel();
+  };
+
   return (
     <div
       className={cn(
@@ -75,10 +80,6 @@ export const IntegratedSearchBar = ({
           onOpenPanel();
         }}
       >
-        <Search
-          className="pointer-events-none absolute top-1/2 left-1.5 size-4 -translate-y-1/2 text-ink-muted"
-          aria-hidden
-        />
         <Input
           ref={inputRef}
           type="search"
@@ -88,7 +89,7 @@ export const IntegratedSearchBar = ({
           role="searchbox"
           aria-controls={hasFilters ? 'integrated-search-filter-panel' : undefined}
           className={cn(
-            'h-8 w-full border-0 bg-transparent py-0 pl-7 shadow-none focus-visible:ring-0 [&::-webkit-search-cancel-button]:hidden',
+            'h-8 w-full border-0 bg-transparent px-1 py-0 shadow-none focus-visible:ring-0 [&::-webkit-search-cancel-button]:hidden',
             INTEGRATED_SEARCH_BAR_FIELD_MIN_WIDTH_CLASS,
           )}
           onChange={(event) => {
@@ -101,21 +102,35 @@ export const IntegratedSearchBar = ({
           onClick={onOpenPanel}
         />
       </div>
-      {hasQuery ? (
+      <div className="flex shrink-0 items-center gap-0.5">
         <IconButton
-          label={clearAllAriaLabel}
+          label={searchAriaLabel}
           size="sm"
           variant="ghost"
           className="size-7 shrink-0 rounded-[15px]"
           onPointerDown={(event) => {
             event.preventDefault();
-            event.stopPropagation();
-            onReset();
+            focusSearch();
           }}
         >
-          <X className="size-3.5" aria-hidden />
+          <Search className="size-3.5 text-ink-muted" aria-hidden />
         </IconButton>
-      ) : null}
+        {hasQuery ? (
+          <IconButton
+            label={clearAllAriaLabel}
+            size="sm"
+            variant="ghost"
+            className="size-7 shrink-0 rounded-[15px]"
+            onPointerDown={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              onReset();
+            }}
+          >
+            <X className="size-3.5" aria-hidden />
+          </IconButton>
+        ) : null}
+      </div>
     </div>
   );
 };

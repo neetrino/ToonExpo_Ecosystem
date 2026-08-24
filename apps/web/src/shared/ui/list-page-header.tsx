@@ -88,6 +88,7 @@ export const ListPageHeader = ({
                 clearAllAriaLabel={t('clearAll')}
                 panelAriaLabel={t('panelLabel')}
                 removeChipAriaLabel={(chipLabel) => t('removeChip', { label: chipLabel })}
+                filtersSelectedCountLabel={(count) => t('selectedCount', { count })}
                 panelAlign="end"
                 onSearchChange={onSearchChange}
                 onFilterChange={onFilterChange}

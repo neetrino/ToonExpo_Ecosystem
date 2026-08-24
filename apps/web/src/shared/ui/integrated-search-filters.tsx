@@ -3,13 +3,20 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 
 import { IntegratedSearchBar } from '@/shared/ui/integrated-search-filters.bar';
-import { buildActiveIntegratedFilterChips } from '@/shared/ui/integrated-search-filters.build-chips';
+import {
+  buildActiveIntegratedFilterChips,
+  removeIntegratedFilterChip,
+} from '@/shared/ui/integrated-search-filters.build-chips';
 import {
   INTEGRATED_SEARCH_FILTER_ALL_VALUE,
   INTEGRATED_SEARCH_FILTER_PANEL_SURFACE,
+  INTEGRATED_SEARCH_FILTER_SUMMARY_CHIP_KEY,
 } from '@/shared/ui/integrated-search-filters.constants';
 import { IntegratedSearchFilterPanel } from '@/shared/ui/integrated-search-filters.panel';
-import type { IntegratedSearchFilterConfig } from '@/shared/ui/integrated-search-filters.types';
+import {
+  parseIntegratedFilterChipKey,
+  type IntegratedSearchFilterConfig,
+} from '@/shared/ui/integrated-search-filters.types';
 import { cn } from '@/shared/ui/cn';
 import { DropdownPortal } from '@/shared/ui/dropdown-portal';
 
@@ -35,6 +42,8 @@ export type IntegratedSearchFiltersProps = {
   clearAllAriaLabel: string;
   panelAriaLabel: string;
   removeChipAriaLabel: (chipLabel: string) => string;
+  /** Label for the collapsed total-count chip (e.g. “7 selected”). */
+  filtersSelectedCountLabel?: ((count: number) => string) | undefined;
   /** Panel horizontal anchor when search sits on the right. */
   panelAlign?: 'start' | 'end' | undefined;
   className?: string | undefined;
@@ -60,6 +69,7 @@ export const IntegratedSearchFilters = ({
   clearAllAriaLabel,
   panelAriaLabel,
   removeChipAriaLabel,
+  filtersSelectedCountLabel,
   panelAlign = 'start',
   className,
 }: IntegratedSearchFiltersProps) => {
@@ -73,8 +83,11 @@ export const IntegratedSearchFilters = ({
   const hasFilters = Boolean(filters?.length);
   const displayedFilterValues = optimisticFilterValues ?? filterValues;
   const chips = useMemo(
-    () => buildActiveIntegratedFilterChips(filters, displayedFilterValues),
-    [filters, displayedFilterValues],
+    () =>
+      buildActiveIntegratedFilterChips(filters, displayedFilterValues, {
+        summaryCountLabel: filtersSelectedCountLabel,
+      }),
+    [filters, displayedFilterValues, filtersSelectedCountLabel],
   );
   const hasQuery = search.trim().length > 0 || chips.length > 0;
 
@@ -130,6 +143,31 @@ export const IntegratedSearchFilters = ({
     setPanelOpen(true);
   };
 
+  const handleRemoveChip = (chipKey: string) => {
+    if (chipKey === INTEGRATED_SEARCH_FILTER_SUMMARY_CHIP_KEY) {
+      handleReset();
+      return;
+    }
+
+    const next = removeIntegratedFilterChip(filters, displayedFilterValues, chipKey);
+    if (!next) {
+      return;
+    }
+
+    setOptimisticFilterValues(next);
+    setDraftFilters(next);
+    onDraftFilterChange?.(next);
+
+    if (onApplyFilters) {
+      onApplyFilters(next);
+      return;
+    }
+
+    const parsed = parseIntegratedFilterChipKey(chipKey);
+    const filterKey = parsed?.filterKey ?? chipKey;
+    onFilterChange?.(filterKey, next[filterKey] ?? INTEGRATED_SEARCH_FILTER_ALL_VALUE);
+  };
+
   return (
     <div ref={containerRef} className={cn('relative w-full min-w-0', className)}>
       <IntegratedSearchBar
@@ -145,9 +183,7 @@ export const IntegratedSearchFilters = ({
         onSearchChange={onSearchChange}
         onOpenPanel={openPanel}
         onClosePanel={closePanel}
-        onRemoveChip={(key) => {
-          onFilterChange?.(key, INTEGRATED_SEARCH_FILTER_ALL_VALUE);
-        }}
+        onRemoveChip={handleRemoveChip}
         onReset={handleReset}
       />
       <DropdownPortal open={hasFilters && panelOpen} anchorRef={containerRef} align={panelAlign}>
