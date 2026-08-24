@@ -152,7 +152,7 @@ export const ProjectDetailHero = ({ project }: ProjectDetailHeroProps) => {
     onRequestLabel: catalogT('price.onRequest'),
   });
   const builderInitials = project.builder.name.trim().slice(0, 2).toUpperCase() || '—';
-  const projectQrUrl = buildProjectCatalogQrUrl(locale, project.id);
+  const projectQrUrl = buildProjectCatalogQrUrl(locale, project.slug);
 
   return (
     <section className="relative">
