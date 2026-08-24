@@ -7,17 +7,23 @@ import type {
 import { getTranslations } from 'next-intl/server';
 
 import { ApartmentPriceLabel } from '@/features/catalog/components/apartment-price-label';
+import { buildProjectFloorPublicHref } from '@/features/geo-map/public/utils/build-project-public-href';
 import { Link } from '@/i18n/navigation';
 
 type BuildingFloorsListProps = {
   projectId: string;
+  projectSlug: string;
   building: BuildingSummary;
 };
 
 /**
  * Floor and apartment list fallback for a building page.
  */
-export const BuildingFloorsList = async ({ projectId, building }: BuildingFloorsListProps) => {
+export const BuildingFloorsList = async ({
+  projectId,
+  projectSlug,
+  building,
+}: BuildingFloorsListProps) => {
   const t = await getTranslations('Catalog');
 
   if (building.floors.length === 0) {
@@ -30,6 +36,7 @@ export const BuildingFloorsList = async ({ projectId, building }: BuildingFloors
         <FloorSection
           key={floor.id}
           projectId={projectId}
+          projectSlug={projectSlug}
           buildingId={building.id}
           floor={floor}
           t={t}
@@ -41,17 +48,18 @@ export const BuildingFloorsList = async ({ projectId, building }: BuildingFloors
 
 type FloorSectionProps = {
   projectId: string;
+  projectSlug: string;
   buildingId: string;
   floor: FloorSummary;
   t: Awaited<ReturnType<typeof getTranslations>>;
 };
 
-const FloorSection = ({ projectId, buildingId, floor, t }: FloorSectionProps) => {
+const FloorSection = ({ projectId, projectSlug, buildingId, floor, t }: FloorSectionProps) => {
   return (
     <div>
       <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
         <Link
-          href={`/projects/${projectId}/buildings/${buildingId}/floors/${floor.id}`}
+          href={buildProjectFloorPublicHref(projectSlug, buildingId, floor.id)}
           className="text-sm font-semibold text-ink hover:text-brand"
         >
           {floor.displayLabel ?? t('project.floor', { number: floor.number })}
