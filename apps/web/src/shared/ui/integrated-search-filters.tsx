@@ -1,15 +1,22 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState, type RefObject } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 
 import { IntegratedSearchBar } from '@/shared/ui/integrated-search-filters.bar';
-import { buildActiveIntegratedFilterChips } from '@/shared/ui/integrated-search-filters.build-chips';
+import {
+  buildActiveIntegratedFilterChips,
+  removeIntegratedFilterChip,
+} from '@/shared/ui/integrated-search-filters.build-chips';
 import {
   INTEGRATED_SEARCH_FILTER_ALL_VALUE,
   INTEGRATED_SEARCH_FILTER_PANEL_SURFACE,
+  INTEGRATED_SEARCH_FILTER_SUMMARY_CHIP_KEY,
 } from '@/shared/ui/integrated-search-filters.constants';
 import { IntegratedSearchFilterPanel } from '@/shared/ui/integrated-search-filters.panel';
-import type { IntegratedSearchFilterConfig } from '@/shared/ui/integrated-search-filters.types';
+import {
+  parseIntegratedFilterChipKey,
+  type IntegratedSearchFilterConfig,
+} from '@/shared/ui/integrated-search-filters.types';
 import { cn } from '@/shared/ui/cn';
 import { DropdownPortal } from '@/shared/ui/dropdown-portal';
 
@@ -23,12 +30,20 @@ export type IntegratedSearchFiltersProps = {
   filters?: readonly IntegratedSearchFilterConfig[] | undefined;
   filterValues?: Record<string, string> | undefined;
   onFilterChange?: ((key: string, value: string) => void) | undefined;
+  /** Prefer over per-key onFilterChange when Apply commits several filters at once. */
+  onApplyFilters?: ((draftFilters: Record<string, string>) => void) | undefined;
+  /** Fires while the panel is open whenever draft filter values change. */
+  onDraftFilterChange?: ((draftFilters: Record<string, string>) => void) | undefined;
+  /** Fires when the filter panel opens or closes. */
+  onPanelOpenChange?: ((open: boolean) => void) | undefined;
   onClearAll?: (() => void) | undefined;
   applyLabel: string;
   resetLabel: string;
   clearAllAriaLabel: string;
   panelAriaLabel: string;
   removeChipAriaLabel: (chipLabel: string) => string;
+  /** Label for the collapsed total-count chip (e.g. “7 selected”). */
+  filtersSelectedCountLabel?: ((count: number) => string) | undefined;
   /** Panel horizontal anchor when search sits on the right. */
   panelAlign?: 'start' | 'end' | undefined;
   className?: string | undefined;
@@ -45,32 +60,77 @@ export const IntegratedSearchFilters = ({
   filters,
   filterValues = EMPTY_FILTER_VALUES,
   onFilterChange,
+  onApplyFilters,
+  onDraftFilterChange,
+  onPanelOpenChange,
   onClearAll,
   applyLabel,
   resetLabel,
   clearAllAriaLabel,
   panelAriaLabel,
   removeChipAriaLabel,
+  filtersSelectedCountLabel,
   panelAlign = 'start',
   className,
 }: IntegratedSearchFiltersProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [panelOpen, setPanelOpen] = useState(false);
   const [draftFilters, setDraftFilters] = useState(filterValues);
+  const [optimisticFilterValues, setOptimisticFilterValues] = useState<Record<
+    string,
+    string
+  > | null>(null);
   const hasFilters = Boolean(filters?.length);
+  const displayedFilterValues = optimisticFilterValues ?? filterValues;
   const chips = useMemo(
-    () => buildActiveIntegratedFilterChips(filters, filterValues),
-    [filters, filterValues],
+    () =>
+      buildActiveIntegratedFilterChips(filters, displayedFilterValues, {
+        summaryCountLabel: filtersSelectedCountLabel,
+      }),
+    [filters, displayedFilterValues, filtersSelectedCountLabel],
   );
   const hasQuery = search.trim().length > 0 || chips.length > 0;
 
-  useOutsideClose(panelOpen, containerRef, setPanelOpen);
+  useEffect(() => {
+    if (!optimisticFilterValues) {
+      return;
+    }
+    const allCleared = filters?.every(
+      (filter) =>
+        (filterValues[filter.key] ?? INTEGRATED_SEARCH_FILTER_ALL_VALUE) ===
+        INTEGRATED_SEARCH_FILTER_ALL_VALUE,
+    );
+    if (allCleared) {
+      setOptimisticFilterValues(null);
+    }
+  }, [filterValues, filters, optimisticFilterValues]);
+
+  const closePanel = useCallback(() => {
+    setPanelOpen(false);
+    onPanelOpenChange?.(false);
+  }, [onPanelOpenChange]);
+
+  useOutsideClose(panelOpen, containerRef, closePanel);
 
   const handleReset = () => {
-    clearDraftToBaseline(filters, setDraftFilters);
-    onClearAll?.();
+    const cleared: Record<string, string> = {};
+    filters?.forEach((filter) => {
+      cleared[filter.key] = INTEGRATED_SEARCH_FILTER_ALL_VALUE;
+    });
+    setOptimisticFilterValues(cleared);
+    setDraftFilters(cleared);
+    onDraftFilterChange?.(cleared);
     onSearchChange('');
-    setPanelOpen(false);
+    closePanel();
+    if (onClearAll) {
+      onClearAll();
+    } else if (onApplyFilters) {
+      onApplyFilters(cleared);
+    } else {
+      filters?.forEach((filter) => {
+        onFilterChange?.(filter.key, INTEGRATED_SEARCH_FILTER_ALL_VALUE);
+      });
+    }
   };
 
   const openPanel = () => {
@@ -78,7 +138,34 @@ export const IntegratedSearchFilters = ({
       return;
     }
     setDraftFilters(filterValues);
+    onDraftFilterChange?.(filterValues);
+    onPanelOpenChange?.(true);
     setPanelOpen(true);
+  };
+
+  const handleRemoveChip = (chipKey: string) => {
+    if (chipKey === INTEGRATED_SEARCH_FILTER_SUMMARY_CHIP_KEY) {
+      handleReset();
+      return;
+    }
+
+    const next = removeIntegratedFilterChip(filters, displayedFilterValues, chipKey);
+    if (!next) {
+      return;
+    }
+
+    setOptimisticFilterValues(next);
+    setDraftFilters(next);
+    onDraftFilterChange?.(next);
+
+    if (onApplyFilters) {
+      onApplyFilters(next);
+      return;
+    }
+
+    const parsed = parseIntegratedFilterChipKey(chipKey);
+    const filterKey = parsed?.filterKey ?? chipKey;
+    onFilterChange?.(filterKey, next[filterKey] ?? INTEGRATED_SEARCH_FILTER_ALL_VALUE);
   };
 
   return (
@@ -95,12 +182,8 @@ export const IntegratedSearchFilters = ({
         removeChipAriaLabel={removeChipAriaLabel}
         onSearchChange={onSearchChange}
         onOpenPanel={openPanel}
-        onClosePanel={() => {
-          setPanelOpen(false);
-        }}
-        onRemoveChip={(key) => {
-          onFilterChange?.(key, INTEGRATED_SEARCH_FILTER_ALL_VALUE);
-        }}
+        onClosePanel={closePanel}
+        onRemoveChip={handleRemoveChip}
         onReset={handleReset}
       />
       <DropdownPortal open={hasFilters && panelOpen} anchorRef={containerRef} align={panelAlign}>
@@ -114,11 +197,17 @@ export const IntegratedSearchFilters = ({
             filters={filters ?? []}
             filterValues={draftFilters}
             onFilterChange={(key, value) => {
-              setDraftFilters((prev) => ({ ...prev, [key]: value }));
+              const next = applyDraftFilterChange(filters, draftFilters, key, value);
+              setDraftFilters(next);
+              onDraftFilterChange?.(next);
             }}
             onApply={() => {
-              applyDraftFilters(filters, draftFilters, filterValues, onFilterChange);
-              setPanelOpen(false);
+              if (onApplyFilters) {
+                onApplyFilters(draftFilters);
+              } else {
+                applyDraftFilters(filters, draftFilters, filterValues, onFilterChange);
+              }
+              closePanel();
             }}
             onReset={handleReset}
             applyLabel={applyLabel}
@@ -128,6 +217,20 @@ export const IntegratedSearchFilters = ({
       </DropdownPortal>
     </div>
   );
+};
+
+const applyDraftFilterChange = (
+  filters: readonly IntegratedSearchFilterConfig[] | undefined,
+  prev: Record<string, string>,
+  key: string,
+  value: string,
+): Record<string, string> => {
+  const next = { ...prev, [key]: value };
+  const config = filters?.find((filter) => filter.key === key);
+  config?.resetsKeys?.forEach((resetKey) => {
+    next[resetKey] = INTEGRATED_SEARCH_FILTER_ALL_VALUE;
+  });
+  return next;
 };
 
 const applyDraftFilters = (
@@ -147,21 +250,10 @@ const applyDraftFilters = (
   }
 };
 
-const clearDraftToBaseline = (
-  filters: readonly IntegratedSearchFilterConfig[] | undefined,
-  setDraftFilters: (next: Record<string, string>) => void,
-): void => {
-  const cleared: Record<string, string> = {};
-  filters?.forEach((filter) => {
-    cleared[filter.key] = INTEGRATED_SEARCH_FILTER_ALL_VALUE;
-  });
-  setDraftFilters(cleared);
-};
-
 const useOutsideClose = (
   open: boolean,
   containerRef: RefObject<HTMLDivElement | null>,
-  setPanelOpen: (open: boolean) => void,
+  closePanel: () => void,
 ): void => {
   useEffect(() => {
     if (!open) {
@@ -178,11 +270,11 @@ const useOutsideClose = (
       if (target.closest('[data-dropdown-portal]')) {
         return;
       }
-      setPanelOpen(false);
+      closePanel();
     };
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        setPanelOpen(false);
+        closePanel();
       }
     };
     document.addEventListener('pointerdown', onPointerDown);
@@ -191,5 +283,5 @@ const useOutsideClose = (
       document.removeEventListener('pointerdown', onPointerDown);
       document.removeEventListener('keydown', onKeyDown);
     };
-  }, [open, containerRef, setPanelOpen]);
+  }, [open, containerRef, closePanel]);
 };

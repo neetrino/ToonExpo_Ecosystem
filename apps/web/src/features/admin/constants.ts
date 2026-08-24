@@ -11,6 +11,9 @@ export const ADMIN_COMPANIES_MAX_PAGE_SIZE = 50;
  */
 export const ADMIN_INVENTORY_DEFAULT_PAGE_SIZE = 18;
 
+/** Search bar width for inventory hubs (builder / building / floor chips). */
+export const ADMIN_INVENTORY_SEARCH_WIDTH_CLASS = 'md:max-w-2xl';
+
 export const COMPANY_TYPES = ['builder', 'partner', 'bank', 'service'] as const;
 
 export const COMPANY_STATUSES = ['active', 'inactive', 'pending'] as const;
@@ -65,7 +68,7 @@ export const adminBuildingInventoryGlanceQueryKey = (buildingId: string) =>
 export const adminBuildingsQueryKey = (params: {
   page: number;
   pageSize: number;
-  companyId?: string;
+  companyId?: string | readonly string[];
   projectId?: string;
   search?: string;
 }) => [...ADMIN_BUILDINGS_QUERY_KEY, params] as const;
@@ -73,16 +76,17 @@ export const adminBuildingsQueryKey = (params: {
 export const adminFloorsQueryKey = (params: {
   page: number;
   pageSize: number;
-  companyId?: string;
-  buildingId?: string;
+  companyId?: string | readonly string[];
+  buildingId?: string | readonly string[];
   search?: string;
 }) => [...ADMIN_FLOORS_QUERY_KEY, params] as const;
 
 export const adminApartmentsQueryKey = (params: {
   page: number;
   pageSize: number;
-  companyId?: string;
-  buildingId?: string;
+  companyId?: string | readonly string[];
+  buildingId?: string | readonly string[];
+  floorId?: string | readonly string[];
   search?: string;
 }) => [...ADMIN_APARTMENTS_QUERY_KEY, params] as const;
 

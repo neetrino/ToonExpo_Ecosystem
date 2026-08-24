@@ -24,7 +24,7 @@ export class InventoryHubService {
   async listBuildings(
     page: number,
     pageSize: number,
-    companyId?: string,
+    companyId?: string | readonly string[],
     projectId?: string,
     search?: string,
   ): Promise<AdminBuildingListResponse> {
@@ -75,8 +75,8 @@ export class InventoryHubService {
   async listFloors(
     page: number,
     pageSize: number,
-    companyId?: string,
-    buildingId?: string,
+    companyId?: string | readonly string[],
+    buildingId?: string | readonly string[],
     search?: string,
   ): Promise<AdminFloorListResponse> {
     const where = buildInventoryFloorsWhere(companyId, buildingId, search);
@@ -137,11 +137,12 @@ export class InventoryHubService {
   async listApartments(
     page: number,
     pageSize: number,
-    companyId?: string,
-    buildingId?: string,
+    companyId?: string | readonly string[],
+    buildingId?: string | readonly string[],
+    floorId?: string | readonly string[],
     search?: string,
   ): Promise<AdminApartmentListResponse> {
-    const where = buildInventoryApartmentsWhere(companyId, buildingId, search);
+    const where = buildInventoryApartmentsWhere(companyId, buildingId, floorId, search);
 
     const [total, featuredOnHomeTotal, apartments] = await Promise.all([
       this.prisma.db.apartment.count({ where }),

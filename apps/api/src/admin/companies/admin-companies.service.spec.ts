@@ -62,12 +62,14 @@ describe('AdminCompaniesService.listProjects', () => {
     projectFindMany.mockResolvedValue([
       {
         id: 'pr_1',
+        slug: 'alpha-tower',
         name: 'Alpha Tower',
         publicationStatus: 'draft',
         createdAt: new Date('2026-01-15T10:00:00.000Z'),
       },
       {
         id: 'pr_2',
+        slug: 'beta-residence',
         name: 'Beta Residence',
         publicationStatus: 'published',
         createdAt: new Date('2026-02-01T12:00:00.000Z'),
@@ -81,6 +83,7 @@ describe('AdminCompaniesService.listProjects', () => {
       orderBy: [{ createdAt: 'desc' }],
       select: {
         id: true,
+        slug: true,
         name: true,
         publicationStatus: true,
         createdAt: true,
@@ -89,12 +92,14 @@ describe('AdminCompaniesService.listProjects', () => {
     expect(result.data).toEqual([
       {
         id: 'pr_1',
+        slug: 'alpha-tower',
         name: 'Alpha Tower',
         publicationStatus: 'draft',
         createdAt: '2026-01-15T10:00:00.000Z',
       },
       {
         id: 'pr_2',
+        slug: 'beta-residence',
         name: 'Beta Residence',
         publicationStatus: 'published',
         createdAt: '2026-02-01T12:00:00.000Z',
@@ -114,6 +119,7 @@ describe('AdminCompaniesService.listProjects', () => {
     projectFindMany.mockResolvedValue([
       {
         id: 'pr_1',
+        slug: 'alpha-tower',
         name: 'Alpha Tower',
         publicationStatus: 'draft',
         createdAt: new Date('2026-01-15T10:00:00.000Z'),
@@ -147,6 +153,7 @@ describe('AdminCompaniesService.listProjects', () => {
       take: 20,
       select: {
         id: true,
+        slug: true,
         name: true,
         publicationStatus: true,
         createdAt: true,
@@ -177,6 +184,7 @@ describe('AdminCompaniesService.listProjects', () => {
       data: [
         {
           id: 'pr_1',
+          slug: 'alpha-tower',
           name: 'Alpha Tower',
           publicationStatus: 'draft',
           createdAt: '2026-01-15T10:00:00.000Z',

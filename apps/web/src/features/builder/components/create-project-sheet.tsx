@@ -32,13 +32,13 @@ export const CreateProjectSheet = ({ open, onClose, onCreated }: CreateProjectSh
       size="comfortable"
     >
       <CreateProjectForm
-        onCreated={(projectId) => {
+        onCreated={(project) => {
           onClose();
           if (onCreated) {
-            onCreated(projectId);
+            onCreated(project.id);
             return;
           }
-          router.push(catalogProjectDetailHref(scope, projectId));
+          router.push(catalogProjectDetailHref(scope, project.slug));
         }}
       />
     </AdminCreateSheet>

@@ -82,10 +82,18 @@ const templatesListPath = (scope: CatalogScope): string =>
  */
 export const listSelectableTemplates = (
   scope: CatalogScope,
-): Promise<BankPartnerOfferTemplateListResponse> =>
-  apiFetch<BankPartnerOfferTemplateListResponse>({
-    path: templatesListPath(scope),
+  params: { publishedOnly?: boolean } = {},
+): Promise<BankPartnerOfferTemplateListResponse> => {
+  const search = new URLSearchParams();
+  if (params.publishedOnly) {
+    search.set('publishedOnly', 'true');
+  }
+  const query = search.toString();
+  const base = templatesListPath(scope);
+  return apiFetch<BankPartnerOfferTemplateListResponse>({
+    path: query.length > 0 ? `${base}?${query}` : base,
     method: 'GET',
     credentials: 'include',
     cache: 'no-store',
   });
+};

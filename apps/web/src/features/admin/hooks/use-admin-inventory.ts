@@ -9,7 +9,7 @@ import type {
   UpdatePortalFloorRequest,
 } from '@toonexpo/contracts';
 
-import type { ListAdminProjectsParams } from '@/features/admin/api/admin-companies-api';
+import type { ListAdminInventoryParams } from '@/features/admin/api/admin-companies-api';
 import {
   getAdminBuildingInventoryGlance,
   listAdminApartments,
@@ -60,16 +60,22 @@ import {
 const toListParams = (
   page: number,
   pageSize: number,
-  companyId?: string,
-  buildingId?: string,
+  companyId?: string | readonly string[],
+  buildingId?: string | readonly string[],
   projectId?: string,
   search?: string,
-): ListAdminProjectsParams => ({
+  floorId?: string | readonly string[],
+): ListAdminInventoryParams => ({
   page,
   pageSize,
-  ...(companyId ? { companyId } : {}),
-  ...(buildingId ? { buildingId } : {}),
+  ...(companyId && (Array.isArray(companyId) ? companyId.length > 0 : companyId)
+    ? { companyId }
+    : {}),
+  ...(buildingId && (Array.isArray(buildingId) ? buildingId.length > 0 : buildingId)
+    ? { buildingId }
+    : {}),
   ...(projectId ? { projectId } : {}),
+  ...(floorId && (Array.isArray(floorId) ? floorId.length > 0 : floorId) ? { floorId } : {}),
   ...(search ? { search } : {}),
 });
 
@@ -84,7 +90,7 @@ const adminCatalogScope = (companyId: string): CatalogScope => ({
 export const useAdminBuildingsQuery = (
   page: number,
   pageSize: number,
-  companyId?: string,
+  companyId?: string | readonly string[],
   projectId?: string,
   options?: { enabled?: boolean; search?: string },
 ) => {
@@ -110,14 +116,16 @@ export const useAdminBuildingsQuery = (
 export const useAdminFloorsQuery = (
   page: number,
   pageSize: number,
-  companyId?: string,
-  buildingId?: string,
+  companyId?: string | readonly string[],
+  buildingId?: string | readonly string[],
   search?: string,
+  options?: { enabled?: boolean },
 ) => {
   const params = toListParams(page, pageSize, companyId, buildingId, undefined, search);
   return useQuery({
     queryKey: adminFloorsQueryKey(params),
     queryFn: () => listAdminFloors(params),
+    enabled: options?.enabled ?? true,
     placeholderData: keepPreviousData,
   });
 };
@@ -128,11 +136,12 @@ export const useAdminFloorsQuery = (
 export const useAdminApartmentsQuery = (
   page: number,
   pageSize: number,
-  companyId?: string,
-  buildingId?: string,
+  companyId?: string | readonly string[],
+  buildingId?: string | readonly string[],
   search?: string,
+  floorId?: string | readonly string[],
 ) => {
-  const params = toListParams(page, pageSize, companyId, buildingId, undefined, search);
+  const params = toListParams(page, pageSize, companyId, buildingId, undefined, search, floorId);
   return useQuery({
     queryKey: adminApartmentsQueryKey(params),
     queryFn: () => listAdminApartments(params),

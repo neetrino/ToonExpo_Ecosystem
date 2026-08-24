@@ -11,6 +11,7 @@ import type {
 import { PublicationStatus, type Prisma } from "@toonexpo/db";
 
 import { PrismaService } from "../prisma/prisma.service.js";
+import { findProjectByRef } from "../common/utils/resolve-project-ref.js";
 import {
   cloneFinanceFields,
   normalizeFinanceFields,
@@ -32,14 +33,39 @@ const offerNotFound = (): NotFoundException =>
 const projectNotFound = (): NotFoundException =>
   new NotFoundException("Project not found");
 
+type TemplateToApply = {
+  id: string;
+  name: string;
+  partnerCompanyId: string | null;
+  fields: Prisma.JsonValue;
+};
+
+const buildOfferCreateData = (
+  projectId: string,
+  userId: string,
+  template: TemplateToApply,
+  fields: ReturnType<typeof cloneFinanceFields>,
+  sortOrder: number,
+): Prisma.ProjectBankPartnerOfferCreateInput => ({
+  project: { connect: { id: projectId } },
+  template: { connect: { id: template.id } },
+  name: template.name,
+  fields: toFinanceFieldsJson(fields),
+  sortOrder,
+  createdBy: { connect: { id: userId } },
+  ...(template.partnerCompanyId != null
+    ? { partnerCompany: { connect: { id: template.partnerCompanyId } } }
+    : {}),
+});
+
 @Injectable()
 export class ProjectBankPartnerOffersService {
   constructor(private readonly prisma: PrismaService) {}
 
   async listForProject(
-    projectId: string,
+    projectRef: string,
   ): Promise<ProjectBankPartnerOfferListResponse> {
-    await this.requireProject(projectId);
+    const projectId = await this.requireProjectId(projectRef);
     const rows = await this.prisma.db.projectBankPartnerOffer.findMany({
       where: { projectId },
       include: projectOfferInclude,
@@ -49,11 +75,11 @@ export class ProjectBankPartnerOffersService {
   }
 
   async apply(
-    projectId: string,
+    projectRef: string,
     userId: string,
     dto: ApplyProjectBankPartnerOffersDto,
   ): Promise<ApplyProjectBankPartnerOffersResponse> {
-    await this.requireProject(projectId);
+    const projectId = await this.requireProjectId(projectRef);
 
     const addAll = dto.addAll === true;
     const templateIds = dto.templateIds ?? [];
@@ -86,6 +112,12 @@ export class ProjectBankPartnerOffersService {
             publicationStatus: PublicationStatus.published,
           },
       orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+      select: {
+        id: true,
+        name: true,
+        partnerCompanyId: true,
+        fields: true,
+      },
     });
 
     if (!addAll && templates.length !== templateIds.length) {
@@ -95,10 +127,7 @@ export class ProjectBankPartnerOffersService {
     }
 
     const toApply = templates.filter(
-      (template): template is (typeof templates)[number] & {
-        partnerCompanyId: string;
-      } =>
-        template.partnerCompanyId != null && !alreadyApplied.has(template.id),
+      (template) => !alreadyApplied.has(template.id),
     );
     if (toApply.length === 0) {
       const current = await this.listForProject(projectId);
@@ -119,15 +148,13 @@ export class ProjectBankPartnerOffersService {
         const sortOrder = nextSort;
         nextSort += 1;
         return this.prisma.db.projectBankPartnerOffer.create({
-          data: {
+          data: buildOfferCreateData(
             projectId,
-            templateId: template.id,
-            partnerCompanyId: template.partnerCompanyId,
-            name: template.name,
-            fields: toFinanceFieldsJson(fields),
+            userId,
+            template,
+            fields,
             sortOrder,
-            createdByUserId: userId,
-          },
+          ),
         });
       }),
     );
@@ -172,14 +199,14 @@ export class ProjectBankPartnerOffersService {
     });
   }
 
-  private async requireProject(projectId: string): Promise<void> {
-    const project = await this.prisma.db.project.findUnique({
-      where: { id: projectId },
-      select: { id: true },
+  private async requireProjectId(projectRef: string): Promise<string> {
+    const project = await findProjectByRef(this.prisma, projectRef, {
+      id: true,
     });
     if (!project) {
       throw projectNotFound();
     }
+    return project.id;
   }
 
   private async requireOwnedOffer(

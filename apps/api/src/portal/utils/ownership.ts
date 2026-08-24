@@ -1,6 +1,7 @@
 import type { Prisma, PublicationStatus } from "@toonexpo/db";
 
 import type { PrismaService } from "../../prisma/prisma.service.js";
+import { projectRefOrFilter } from "../../common/utils/resolve-project-ref.js";
 import { entityNotFound } from "./access.js";
 
 type ProjectOwned = {
@@ -36,11 +37,14 @@ type ApartmentOwned = {
  */
 export const requireOwnedProject = async (
   prisma: PrismaService,
-  projectId: string,
+  projectRef: string,
   companyId: string,
 ): Promise<ProjectOwned> => {
   const project = await prisma.db.project.findFirst({
-    where: { id: projectId, builderCompanyId: companyId },
+    where: {
+      builderCompanyId: companyId,
+      ...projectRefOrFilter(projectRef),
+    },
     select: { id: true, builderCompanyId: true },
   });
   if (!project) {

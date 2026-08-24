@@ -21,7 +21,7 @@ export const IntegratedSearchFilterChips = ({
   }
 
   return (
-    <div className="flex min-w-0 flex-nowrap items-center gap-1 overflow-x-auto pe-1">
+    <div className="flex min-w-0 flex-nowrap items-center gap-1 pe-1 max-md:overflow-x-auto">
       {chips.map((chip) => (
         <span
           key={chip.key}

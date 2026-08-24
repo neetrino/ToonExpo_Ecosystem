@@ -1,11 +1,10 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Controller, type Control, type UseFormRegister, type UseFormSetValue } from 'react-hook-form';
+import { Controller, type Control, type UseFormRegister } from 'react-hook-form';
 
 import type { TRANSLATION_LOCALES } from '@/features/builder/constants';
 import {
-  PROJECT_CATALOG_BANK_PARTNER_KEYS,
   PROJECT_CATALOG_DETAILS_KEYS,
   PROJECT_CATALOG_FINANCE_KEYS,
   PROJECT_CATALOG_MEDIA_LINK_EDITOR_IDS,
@@ -21,7 +20,7 @@ import {
   ProjectCatalogKvEditor,
   ProjectCatalogOverviewEditor,
 } from '@/features/builder/components/project-catalog-layout-fields';
-import { ProjectFinanceTemplateImport } from '@/features/builder/components/project-finance-template-import';
+import { ProjectBankPartnerOffersSection } from '@/features/builder/components/project-bank-partner-offers-section';
 import { TranslationTabs } from '@/features/builder/components/translation-tabs';
 import type { UpdateProjectFormValues } from '@/features/builder/schemas/project.schema';
 import { ProjectCatalogSectionCard } from '@/features/catalog/components/project-catalog-section-card';
@@ -30,9 +29,9 @@ import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
 
 type ProjectCatalogEditorProps = {
+  projectId: string;
   register: UseFormRegister<UpdateProjectFormValues>;
   control: Control<UpdateProjectFormValues>;
-  setValue: UseFormSetValue<UpdateProjectFormValues>;
 };
 
 type TranslationLocale = (typeof TRANSLATION_LOCALES)[number];
@@ -111,9 +110,9 @@ const CatalogLinkFields = ({ ids, register, labelFor }: CatalogLinkFieldsProps) 
  * (Overview / Details / Finance / Bank partner / Features / Nearby / Links / Socials).
  */
 export const ProjectCatalogEditor = ({
+  projectId,
   register,
   control,
-  setValue,
 }: ProjectCatalogEditorProps) => {
   const t = useTranslations('Builder.projects.catalog');
   const tCatalog = useTranslations('Catalog.projectDetail.catalog');
@@ -151,19 +150,6 @@ export const ProjectCatalogEditor = ({
               <ProjectCatalogKvEditor
                 sectionId="finance"
                 keys={PROJECT_CATALOG_FINANCE_KEYS}
-                locale={locale}
-                control={control}
-                register={register}
-              />
-            </ProjectCatalogSectionCard>
-
-            <ProjectCatalogSectionCard
-              title={tCatalog('bankPartner')}
-              headerAction={<ProjectFinanceTemplateImport setValue={setValue} />}
-            >
-              <ProjectCatalogKvEditor
-                sectionId="bankPartner"
-                keys={PROJECT_CATALOG_BANK_PARTNER_KEYS}
                 locale={locale}
                 control={control}
                 register={register}
@@ -210,6 +196,8 @@ export const ProjectCatalogEditor = ({
           </div>
         )}
       </TranslationTabs>
+
+      <ProjectBankPartnerOffersSection projectId={projectId} />
 
       <div className="mt-2 space-y-5 sm:space-y-6">
         <ProjectCatalogSectionCard title={tCatalog('links')}>

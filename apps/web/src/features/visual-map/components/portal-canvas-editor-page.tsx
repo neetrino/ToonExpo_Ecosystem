@@ -56,7 +56,7 @@ export const PortalCanvasEditorPage = ({ project, canvasId }: PortalCanvasEditor
         <p role="alert" className="text-sm text-danger">
           {t('notFound')}
         </p>
-        <BackLink href={catalogProjectDetailHref(scope, project.id)} label={t('back')} />
+        <BackLink href={catalogProjectDetailHref(scope, project.slug)} label={t('back')} />
       </div>
     );
   }
@@ -81,7 +81,7 @@ export const PortalCanvasEditorPage = ({ project, canvasId }: PortalCanvasEditor
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <BackLink href={catalogProjectDetailHref(scope, project.id)} label={t('back')} />
+          <BackLink href={catalogProjectDetailHref(scope, project.slug)} label={t('back')} />
           <div className="flex flex-wrap items-center gap-2">
             {canvas.publicationStatus !== 'published' ? (
               <Button

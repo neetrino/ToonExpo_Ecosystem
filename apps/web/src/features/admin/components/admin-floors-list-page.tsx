@@ -35,7 +35,8 @@ const FIRST_PAGE = 1;
 export const AdminFloorsListPage = () => {
   const t = useTranslations('Admin.floors');
   const inventoryT = useTranslations('Admin.buildings.inventory');
-  const { page, pageSize, companyId, buildingId } = useAdminInventoryListParams();
+  const { page, pageSize, companyIds, buildingIds, companyId, buildingId } =
+    useAdminInventoryListParams();
   const [search, setSearch] = useState('');
   const trimmedSearch = search.trim();
   const debouncedSearch = useDebouncedValue(trimmedSearch, ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS);
@@ -43,8 +44,8 @@ export const AdminFloorsListPage = () => {
   const query = useAdminFloorsQuery(
     page,
     pageSize,
-    companyId,
-    buildingId,
+    companyIds,
+    buildingIds,
     activeSearch || undefined,
   );
   const response = query.data;

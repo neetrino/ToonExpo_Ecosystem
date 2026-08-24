@@ -14,7 +14,8 @@
       "removeChip": "Remove filter {label}",
       "searchPlaceholder": "Search…",
       "searchLabel": "Search",
-      "noMatches": "No matches"
+      "noMatches": "No matches",
+      "selectedCount": "{count} selected"
     },
     "viewMode": {
       "label": "View mode",
@@ -1968,6 +1969,9 @@
         "allBuilders": "All builders",
         "building": "Building",
         "allBuildings": "All buildings",
+        "floor": "Floor",
+        "allFloors": "All floors",
+        "selectBuildingFirst": "Select a building first",
         "searchPlaceholder": "Search by project, company, or city"
       },
       "openBuildings": "View buildings for {name}",
@@ -3536,12 +3540,38 @@
         "socialsHint": "Website and social profile URLs (same for all languages).",
         "financeImport": {
           "button": "Import",
-          "title": "Import partner offer",
+          "title": "Import partner offers",
           "hint": "Choose a published template from Template/Partner Offers. Fields fill into Bank partner — edit and save as usual.",
+          "hintMulti": "Select one or more published templates. Each becomes its own Bank partner card. Use Save changes on the project page to publish on the site.",
           "loading": "Loading templates…",
           "error": "Could not load templates.",
           "empty": "No published templates yet. Create one under Template/Partner Offers.",
-          "cancel": "Cancel"
+          "allApplied": "All published templates are already on this project.",
+          "alreadyApplied": "Already on this project",
+          "selectAll": "Select all",
+          "clearSelection": "Clear selection",
+          "templatesCount": "{count} templates",
+          "importSelected": "Import selected ({count})",
+          "cancel": "Cancel",
+          "tapToRemove": "On this project — tap to remove",
+          "pendingOnProject": "Added — save project changes to publish on the site",
+          "selectAria": "Select {name}",
+          "deselectAria": "Deselect {name}",
+          "removeAppliedAria": "Remove {name} from project"
+        },
+        "bankPartnerOffers": {
+          "import": "Import",
+          "loading": "Loading partner offers…",
+          "error": "Could not load partner offers.",
+          "empty": "No partner offers yet. Use Import to add templates from Template/Partner Offers.",
+          "name": "Offer name",
+          "sectionHint": "Import and edits to partner offers are saved with Save changes at the bottom. Until then they are not visible on the public site.",
+          "pendingImport": "Not saved yet — use Save changes at the bottom to publish on the site.",
+          "delete": "Remove offer",
+          "deleteTitle": "Remove partner offer?",
+          "deleteDescription": "Remove “{name}” from this project? This cannot be undone.",
+          "deleteConfirm": "Remove",
+          "deleteCancel": "Cancel"
         },
         "placeholders": {
           "propertyType": "e.g. Apartment",

@@ -138,6 +138,17 @@ export class ProjectsService {
             building: { select: { priceOnRequestEnabled: true } },
           },
         },
+        bankPartnerOffers: {
+          orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
+          include: {
+            partnerCompany: {
+              select: {
+                name: true,
+                logoMedia: { select: { fileUrl: true } },
+              },
+            },
+          },
+        },
       },
     });
 

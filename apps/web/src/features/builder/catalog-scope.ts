@@ -26,10 +26,12 @@ export const catalogProjectsListHref = (scope: CatalogScope): string =>
   scope.mode === 'admin' ? '/admin/projects' : '/builder/projects';
 
 /**
- * Builder/admin UI href for a project detail page.
+ * Builder/admin UI href for a project detail page (slug in URL).
  */
-export const catalogProjectDetailHref = (scope: CatalogScope, projectId: string): string =>
-  scope.mode === 'admin' ? `/admin/projects/${projectId}` : `/builder/projects/${projectId}`;
+export const catalogProjectDetailHref = (scope: CatalogScope, projectSlug: string): string =>
+  scope.mode === 'admin'
+    ? `/admin/projects/${encodeURIComponent(projectSlug)}`
+    : `/builder/projects/${encodeURIComponent(projectSlug)}`;
 
 /**
  * Builder/admin UI href for creating a project.
@@ -92,12 +94,12 @@ export const catalogApartmentDetailHref = (
  */
 export const catalogVisualMapHref = (
   scope: CatalogScope,
-  projectId: string,
+  projectSlug: string,
   canvasId: string,
 ): string =>
   scope.mode === 'admin'
-    ? `/admin/projects/${projectId}/visual-maps/${canvasId}`
-    : `/builder/projects/${projectId}/visual-maps/${canvasId}`;
+    ? `/admin/projects/${encodeURIComponent(projectSlug)}/visual-maps/${canvasId}`
+    : `/builder/projects/${encodeURIComponent(projectSlug)}/visual-maps/${canvasId}`;
 
 /**
  * Media upload/list context derived from catalog scope.

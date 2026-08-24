@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from "@nestjs/common";
 import {
@@ -37,6 +38,7 @@ import {
   ApplyProjectBankPartnerOffersDto,
   UpdateProjectBankPartnerOfferDto,
 } from "../admin/dto/project-offer.dto.js";
+import { ListBankPartnerOfferTemplatesQueryDto } from "../admin/dto/admin-template.dto.js";
 import { ProjectBankPartnerOffersService } from "../project-offers.service.js";
 
 @ApiTags("portal-bank-partner-offer-templates")
@@ -52,8 +54,10 @@ export class PortalBankPartnerOfferTemplatesController {
   @Get()
   @ApiOperation({ summary: "List bank partner offer templates" })
   @ApiOkResponse({ description: "Template list" })
-  list(): Promise<BankPartnerOfferTemplateListResponse> {
-    return this.templates.list({});
+  list(
+    @Query() query: ListBankPartnerOfferTemplatesQueryDto,
+  ): Promise<BankPartnerOfferTemplateListResponse> {
+    return this.templates.list(query);
   }
 }
 

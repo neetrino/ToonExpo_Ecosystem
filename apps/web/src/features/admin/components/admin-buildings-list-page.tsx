@@ -32,12 +32,12 @@ const FIRST_PAGE = 1;
  */
 export const AdminBuildingsListPage = () => {
   const t = useTranslations('Admin.buildings');
-  const { page, pageSize, companyId, projectId } = useAdminInventoryListParams();
+  const { page, pageSize, companyIds, companyId, projectId } = useAdminInventoryListParams();
   const [search, setSearch] = useState('');
   const trimmedSearch = search.trim();
   const debouncedSearch = useDebouncedValue(trimmedSearch, ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS);
   const activeSearch = trimmedSearch.length === 0 ? '' : debouncedSearch;
-  const query = useAdminBuildingsQuery(page, pageSize, companyId, projectId, {
+  const query = useAdminBuildingsQuery(page, pageSize, companyIds, projectId, {
     ...(activeSearch ? { search: activeSearch } : {}),
   });
   const response = query.data;

@@ -8,7 +8,7 @@ import type {
 
 import {
   type AdminRequestOptions,
-  type ListAdminProjectsParams,
+  type ListAdminInventoryParams,
 } from '@/features/admin/api/admin-companies-api';
 import { apiFetch, type ApiFetchOptions } from '@/shared/api/client';
 
@@ -25,17 +25,31 @@ const withCookie = (options: ApiFetchOptions, cookieHeader?: string): ApiFetchOp
   };
 };
 
-const toSearch = (params: ListAdminProjectsParams): string => {
+const appendIdParam = (
+  search: URLSearchParams,
+  key: string,
+  value: string | readonly string[] | undefined,
+): void => {
+  if (value == null) {
+    return;
+  }
+  const ids = (Array.isArray(value) ? value : [value])
+    .map((id) => id.trim())
+    .filter((id) => id.length > 0);
+  if (ids.length === 0) {
+    return;
+  }
+  search.set(key, ids.join(','));
+};
+
+const toSearch = (params: ListAdminInventoryParams): string => {
   const search = new URLSearchParams({
     page: String(params.page),
     pageSize: String(params.pageSize),
   });
-  if (params.companyId) {
-    search.set('companyId', params.companyId);
-  }
-  if (params.buildingId) {
-    search.set('buildingId', params.buildingId);
-  }
+  appendIdParam(search, 'companyId', params.companyId);
+  appendIdParam(search, 'buildingId', params.buildingId);
+  appendIdParam(search, 'floorId', params.floorId);
   if (params.projectId) {
     search.set('projectId', params.projectId);
   }
@@ -50,7 +64,7 @@ const toSearch = (params: ListAdminProjectsParams): string => {
  * Lists buildings across companies for the admin buildings hub.
  */
 export const listAdminBuildings = (
-  params: ListAdminProjectsParams,
+  params: ListAdminInventoryParams,
   options: AdminRequestOptions = {},
 ): Promise<AdminBuildingListResponse> =>
   apiFetch<AdminBuildingListResponse>(
@@ -69,7 +83,7 @@ export const listAdminBuildings = (
  * Lists floors across companies for the admin floors hub.
  */
 export const listAdminFloors = (
-  params: ListAdminProjectsParams,
+  params: ListAdminInventoryParams,
   options: AdminRequestOptions = {},
 ): Promise<AdminFloorListResponse> =>
   apiFetch<AdminFloorListResponse>(
@@ -88,7 +102,7 @@ export const listAdminFloors = (
  * Lists apartments across companies for the admin apartments hub.
  */
 export const listAdminApartments = (
-  params: ListAdminProjectsParams,
+  params: ListAdminInventoryParams,
   options: AdminRequestOptions = {},
 ): Promise<AdminApartmentListResponse> =>
   apiFetch<AdminApartmentListResponse>(

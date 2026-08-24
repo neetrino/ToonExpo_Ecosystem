@@ -67,8 +67,8 @@ export type ProjectBankPartnerOfferItem = {
   id: string;
   projectId: string;
   templateId: string | null;
-  partnerCompanyId: string;
-  partnerCompanyName: string;
+  partnerCompanyId: string | null;
+  partnerCompanyName: string | null;
   partnerCompanyLogoUrl: string | null;
   name: string;
   fields: BankPartnerOfferFinanceFields;

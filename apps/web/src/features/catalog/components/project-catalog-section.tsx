@@ -100,6 +100,7 @@ export const ProjectCatalogSection = async ({ project }: ProjectCatalogSectionPr
   return (
     <ProjectCatalogDetailsPanel
       projectId={project.id}
+      locale={locale}
       title={t('catalog.title')}
       aboutTitle={t('catalog.about')}
       aboutText={project.fullDescription}
@@ -130,6 +131,18 @@ export const ProjectCatalogSection = async ({ project }: ProjectCatalogSectionPr
         instagram: t('catalog.linkInstagram'),
       }}
       rows={rows}
+      bankPartnerOffers={project.bankPartnerOffers ?? []}
+      bankPartnerFieldLabels={{
+        partnerBank: t('catalog.partnerBank'),
+        parkingPrice: t('catalog.parkingPrice'),
+        paymentTypes: t('catalog.paymentTypes'),
+        installmentTerms: t('catalog.installmentTerms'),
+        mortgageTerms: t('catalog.mortgageTerms'),
+        specialTermsAvailable: t('catalog.specialTermsAvailable'),
+        specialTerms: t('catalog.specialTerms'),
+        incomeTaxRefund: t('catalog.incomeTaxRefund'),
+        subsidizedPrograms: t('catalog.subsidizedPrograms'),
+      }}
       amenityLabels={catalog.amenityLabels}
       nearbyPlaces={catalog.nearbyPlaces}
       links={catalog.links}

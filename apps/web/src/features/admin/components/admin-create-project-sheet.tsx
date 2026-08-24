@@ -81,14 +81,14 @@ export const AdminCreateProjectSheet = ({
         {companyId ? (
           <CatalogScopeProvider key={companyId} scope={{ mode: 'admin', companyId }}>
             <CreateProjectForm
-              onCreated={(projectId) => {
+              onCreated={(project) => {
                 void queryClient.invalidateQueries({ queryKey: ADMIN_PROJECTS_QUERY_KEY });
                 onClose();
                 if (onCreated) {
-                  onCreated(projectId);
+                  onCreated(project.id);
                   return;
                 }
-                router.push(`/admin/projects/${projectId}`);
+                router.push(`/admin/projects/${encodeURIComponent(project.slug)}`);
               }}
             />
           </CatalogScopeProvider>
