@@ -1600,6 +1600,7 @@
           "buildingsCount": "{count, plural, =0 {0 շենք} one {# շենք} other {# շենք}}"
         },
         "buildingPicker": {
+          "buildingIndex": "Շենք",
           "floorIndex": "Հարկ",
           "floorsMapped": "{count, plural, =0 {0 քարտեզավորված հարկ} one {# քարտեզավորված հարկ} other {# քարտեզավորված հարկ}}",
           "totalArea": "{area} m² ընդհանուր մակերես",
@@ -1608,6 +1609,9 @@
           "lastUpdatedUnknown": "—",
           "lastUpdatedToday": "Այսօր",
           "lastUpdatedDaysAgo": "{count, plural, one {# օր առաջ} other {# օր առաջ}}"
+        },
+        "floorPicker": {
+          "floorIndex": "Հարկ"
         },
         "noFloors": "Հարկեր դեռ չկան։",
         "needsPolygon": "Նախ գծեք polygon",
