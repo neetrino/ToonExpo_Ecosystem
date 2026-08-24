@@ -3548,6 +3548,9 @@
           "empty": "No published templates yet. Create one under Template/Partner Offers.",
           "allApplied": "All published templates are already on this project.",
           "alreadyApplied": "Already on this project",
+          "selectAll": "Select all",
+          "clearSelection": "Clear selection",
+          "templatesCount": "{count} templates",
           "importSelected": "Import selected ({count})",
           "cancel": "Cancel"
         },

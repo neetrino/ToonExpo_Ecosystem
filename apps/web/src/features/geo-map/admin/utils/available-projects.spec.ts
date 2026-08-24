@@ -8,6 +8,7 @@ import {
 
 const project = (id: string, name: string): AdminProjectListItem => ({
   id,
+  slug: `project-${id}`,
   name,
   publicationStatus: 'published',
   createdAt: '2026-07-31T00:00:00.000Z',
