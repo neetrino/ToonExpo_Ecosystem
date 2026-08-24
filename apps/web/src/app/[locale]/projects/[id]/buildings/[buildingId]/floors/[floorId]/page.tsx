@@ -77,6 +77,7 @@ export default async function FloorPage({ params }: FloorPageProps) {
   const apartmentShortcut = firstApartment
     ? {
         id: firstApartment.id,
+        slug: firstApartment.slug,
         label: t('apartment.unit', { number: firstApartment.number }),
       }
     : undefined;

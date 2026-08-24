@@ -48,7 +48,7 @@ export const ApartmentDetailView = async ({
   const t = await getTranslations('Catalog');
   const locale = await getLocale();
   const title = t('apartment.unit', { number: apartment.number });
-  const apartmentQrUrl = buildApartmentCatalogQrUrl(locale, apartment.id);
+  const apartmentQrUrl = buildApartmentCatalogQrUrl(locale, apartment.slug);
   const typeLabel = projectType?.trim()
     ? projectType
     : apartment.rooms != null

@@ -172,6 +172,7 @@ const pickBuildingPathShortcut = (
       ? {
           apartment: {
             id: apartment.id,
+            slug: apartment.slug,
             label: formatApartment(apartment.number),
           },
         }
