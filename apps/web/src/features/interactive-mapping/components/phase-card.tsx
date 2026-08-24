@@ -11,7 +11,6 @@ export type PhaseCardProps = {
   title: string;
   hint: string;
   state: InteractiveMappingPhaseStatus;
-  progressLabel: string;
   statusLabel: string;
   addHref?: string | undefined;
   addLabel?: string | undefined;
@@ -27,7 +26,6 @@ export const PhaseCard = ({
   title,
   hint,
   state,
-  progressLabel,
   statusLabel,
   addHref,
   addLabel,
@@ -68,7 +66,6 @@ export const PhaseCard = ({
             </div>
           </div>
           <p className="mt-3 max-w-xl text-sm text-ink-muted">{hint}</p>
-          <p className="mt-2 text-xs text-ink-muted">{progressLabel}</p>
         </div>
 
         <div className="flex w-full flex-col gap-2 sm:w-auto sm:min-w-[220px]">
