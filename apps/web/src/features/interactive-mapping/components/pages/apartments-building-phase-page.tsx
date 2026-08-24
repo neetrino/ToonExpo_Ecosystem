@@ -59,7 +59,7 @@ export const ApartmentsBuildingPhasePage = ({
   return (
     <div className="space-y-6">
       <div>
-        <BackLink href={`${basePath}/${projectId}/phases/apartments`} label={t('backToWizard')} />
+        <BackLink href={`${basePath}/${projectId}/phases/apartments`} label={t('backToDistricts')} />
         <h1 className="mt-3 font-display text-3xl text-ink">
           {t('pages.apartmentsBuilding', { name: building.name })}
         </h1>
@@ -68,7 +68,9 @@ export const ApartmentsBuildingPhasePage = ({
 
       <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
         <MappingBuildingPicker
-          buildings={buildings}
+          buildings={buildings.filter(
+            (item) => item.districtId === building.districtId || item.id === buildingId,
+          )}
           districts={districts}
           floors={floors}
           apartments={apartments}

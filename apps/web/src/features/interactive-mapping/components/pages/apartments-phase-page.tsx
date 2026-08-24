@@ -9,6 +9,7 @@ import { BackLink } from '@/shared/ui/back-link';
 import { useInteractiveMappingProjectQuery } from '../../hooks/use-interactive-mapping';
 import { useMappingCatalog } from '../../hooks/use-mapping-catalog';
 import { countBuildingsByDistrict } from '../../utils/count-buildings-by-district';
+import { FloorPlanUploadPicker } from '../floor-plan-upload-picker';
 import { MappingBuildingPicker } from '../mapping-building-picker';
 import { MappingDistrictPicker } from '../mapping-district-picker';
 
@@ -17,12 +18,14 @@ export type ApartmentsPhasePageProps = {
 };
 
 /**
- * Phase 4 landing — pick district, then building, then floors for apartments.
+ * Phase 4 landing — pick district, then building + floor together.
  */
 export const ApartmentsPhasePage = ({ projectId }: ApartmentsPhasePageProps) => {
   const t = useTranslations('Admin.interactiveMapping');
   const router = useRouter();
   const [selectedDistrictId, setSelectedDistrictId] = useState<string | null>(null);
+  const [selectedBuildingId, setSelectedBuildingId] = useState<string | null>(null);
+  const [lockNotice, setLockNotice] = useState<string | null>(null);
   const detailQuery = useInteractiveMappingProjectQuery(projectId);
   const companyId = detailQuery.data?.project.builderCompanyId;
   const catalog = useMappingCatalog(companyId);
@@ -46,6 +49,9 @@ export const ApartmentsPhasePage = ({ projectId }: ApartmentsPhasePageProps) => 
   const districtBuildings = selectedDistrictId
     ? buildings.filter((building) => building.districtId === selectedDistrictId)
     : [];
+  const buildingFloors = selectedBuildingId
+    ? floors.filter((floor) => floor.buildingId === selectedBuildingId)
+    : [];
 
   if (!selectedDistrictId || !selectedDistrict) {
     return (
@@ -62,7 +68,12 @@ export const ApartmentsPhasePage = ({ projectId }: ApartmentsPhasePageProps) => 
           selectedDistrictId={null}
           title={t('forms.pickDistrict')}
           emptyLabel={t('forms.noDistricts')}
-          onSelectDistrict={setSelectedDistrictId}
+          onSelectDistrict={(districtId) => {
+            setLockNotice(null);
+            setSelectedDistrictId(districtId);
+            const firstBuilding = buildings.find((building) => building.districtId === districtId);
+            setSelectedBuildingId(firstBuilding?.id ?? null);
+          }}
         />
       </div>
     );
@@ -76,29 +87,61 @@ export const ApartmentsPhasePage = ({ projectId }: ApartmentsPhasePageProps) => 
           label={t('backToDistricts')}
           onClick={(event) => {
             event.preventDefault();
+            setLockNotice(null);
             setSelectedDistrictId(null);
+            setSelectedBuildingId(null);
           }}
         />
         <h1 className="mt-3 font-display text-3xl text-ink">
           {t('pages.apartmentsChooseBuilding', { district: selectedDistrict.name })}
         </h1>
-        <p className="mt-2 max-w-2xl text-sm text-ink-muted">{t('hints.apartments')}</p>
+        <p className="mt-2 max-w-2xl text-sm text-ink-muted">{t('hints.pickApartmentFloor')}</p>
       </div>
 
-      <MappingBuildingPicker
-        buildings={districtBuildings}
-        districts={districts}
-        floors={floors}
-        apartments={apartments}
-        selectedBuildingId={null}
-        title={t('forms.pickBuilding')}
-        emptyLabel={t('forms.noBuildingsInDistrict')}
-        floorsMappedLabel={(values) => t('forms.buildingFloorsMapped', values)}
-        apartmentsCountLabel={(values) => t('forms.buildingApartmentsCount', values)}
-        onSelectBuilding={(buildingId) => {
-          router.push(`${basePath}/${projectId}/phases/apartments/buildings/${buildingId}`);
-        }}
-      />
+      <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
+        <MappingBuildingPicker
+          buildings={districtBuildings}
+          districts={districts}
+          floors={floors}
+          apartments={apartments}
+          selectedBuildingId={selectedBuildingId}
+          title={t('forms.pickBuilding')}
+          emptyLabel={t('forms.noBuildingsInDistrict')}
+          floorsMappedLabel={(values) => t('forms.buildingFloorsMapped', values)}
+          apartmentsCountLabel={(values) => t('forms.buildingApartmentsCount', values)}
+          onSelectBuilding={(buildingId) => {
+            setLockNotice(null);
+            setSelectedBuildingId(buildingId);
+          }}
+        />
+
+        <FloorPlanUploadPicker
+          floors={buildingFloors}
+          selectedFloorId={null}
+          title={t('forms.pickFloor')}
+          emptyLabel={t('forms.noFloors')}
+          lockedHint={t('forms.floorNeedsPolygon')}
+          planReadyLabel={t('forms.planReady')}
+          needsPolygonLabel={t('forms.needsPolygon')}
+          onSelectFloor={(floorId) => {
+            setLockNotice(null);
+            router.push(`${basePath}/${projectId}/floors/${floorId}`);
+          }}
+          onSelectLockedFloor={(lockedFloor) => {
+            setLockNotice(
+              t('forms.floorNeedsPolygonNamed', {
+                name: lockedFloor.name ?? String(lockedFloor.number),
+              }),
+            );
+          }}
+        />
+      </div>
+
+      {lockNotice ? (
+        <p role="status" className="text-sm text-ink-muted">
+          {lockNotice}
+        </p>
+      ) : null}
     </div>
   );
 };
