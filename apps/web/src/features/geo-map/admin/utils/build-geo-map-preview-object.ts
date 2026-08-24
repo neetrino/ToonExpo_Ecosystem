@@ -14,6 +14,7 @@ export const buildGeoMapPreviewObject = (
 ): GeoMapObject => ({
   id: GEO_MAP_PREVIEW_PIN_ID,
   projectId: null,
+  projectSlug: null,
   label,
   logoUrl: null,
   addressLine: null,

@@ -16,6 +16,7 @@ export const GEO_MAP_LAB_OBJECTS: GeoMapObject[] = [
   {
     id: 'lab-1',
     projectId: 'lab-project-1',
+    projectSlug: 'lab-project-1',
     label: 'Toon Duck Tower',
     logoUrl: null,
     addressLine: 'Northern Avenue 1 · Yerevan',
@@ -33,6 +34,7 @@ export const GEO_MAP_LAB_OBJECTS: GeoMapObject[] = [
   {
     id: 'lab-2',
     projectId: 'lab-project-2',
+    projectSlug: 'lab-project-2',
     label: 'Avocado Residences',
     logoUrl: null,
     addressLine: 'Baghramyan 26 · Yerevan',
@@ -50,6 +52,7 @@ export const GEO_MAP_LAB_OBJECTS: GeoMapObject[] = [
   {
     id: 'lab-3',
     projectId: 'lab-project-3',
+    projectSlug: 'lab-project-3',
     label: 'Duck Plaza South',
     logoUrl: null,
     addressLine: 'Charents 33 · Yerevan',

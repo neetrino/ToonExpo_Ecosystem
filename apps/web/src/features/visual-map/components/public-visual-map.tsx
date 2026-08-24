@@ -81,9 +81,9 @@ export const PublicVisualMap = ({ canvas, projectId, projectSlug }: PublicVisual
       >
         <InteractiveMapImage
           canvas={canvas}
-          interactive={interactive}
           selectedHotspotId={selectedHotspotId}
-          onHotspotClick={openHotspot}
+          interactive={interactive}
+          onSelectHotspot={openHotspot}
         />
       </div>
 

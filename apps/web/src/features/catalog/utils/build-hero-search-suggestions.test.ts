@@ -49,7 +49,7 @@ describe('buildHeroSearchSuggestions', () => {
     expect(byProject[0]).toMatchObject({
       kind: 'project',
       label: 'Arabkir Park Homes',
-      href: '/projects/p1',
+      href: '/projects/arabkir-park-homes',
     });
 
     const byBuilder = buildHeroSearchSuggestions(projects, 'northern');

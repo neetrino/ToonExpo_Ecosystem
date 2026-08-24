@@ -4,6 +4,6 @@ import { buildProjectPublicHref } from '@/features/geo-map/public/utils/build-pr
 
 describe('buildProjectPublicHref', () => {
   it('builds the catalog project detail path', () => {
-    expect(buildProjectPublicHref('proj_abc')).toBe('/projects/proj_abc');
+    expect(buildProjectPublicHref('defans-hauzing-test')).toBe('/projects/defans-hauzing-test');
   });
 });

@@ -57,6 +57,7 @@ describe('mapAdminGeoMapItemToObject', () => {
     expect(mapAdminGeoMapItemToObject(adminItem)).toEqual({
       id: 'geomap_1',
       projectId: 'proj_1',
+      projectSlug: 'toon-towers',
       label: 'Toon Towers',
       logoUrl: null,
       addressLine: null,
@@ -94,6 +95,7 @@ describe('mapPublicGeoMapItemToObject', () => {
     expect(mapPublicGeoMapItemToObject(publicItem)).toEqual({
       id: 'proj_1',
       projectId: 'proj_1',
+      projectSlug: 'toon-towers',
       label: 'Toon Towers',
       logoUrl: 'https://cdn.example/logo.png',
       addressLine: 'Baghramyan 26 · Yerevan',
