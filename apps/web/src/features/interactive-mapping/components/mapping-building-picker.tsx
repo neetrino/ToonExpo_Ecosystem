@@ -64,12 +64,12 @@ const MappingBuildingPickerList = ({
   });
 
   return (
-    <div className="space-y-2 rounded-sm border border-border bg-background p-3">
-      <h3 className="text-sm font-semibold text-ink">{title}</h3>
+    <section className="rounded-lg border border-border bg-surface p-4 shadow-xs sm:p-5">
+      <h3 className="mb-3 text-sm font-semibold text-ink">{title}</h3>
       {sorted.length === 0 ? (
         <p className="text-sm text-ink-muted">{emptyLabel}</p>
       ) : (
-        <ul className="divide-y divide-border border border-border">
+        <ul className="overflow-hidden rounded-md border border-border divide-y divide-border">
           {sorted.map((building) => {
             const selected = building.id === selectedBuildingId;
             const stats = buildingFloorStats(building, floors);
@@ -86,16 +86,27 @@ const MappingBuildingPickerList = ({
                 <button
                   type="button"
                   className={cn(
-                    'flex w-full items-center justify-between gap-3 border-l-2 border-transparent px-3 py-2.5 text-left text-sm text-ink transition-colors hover:bg-surface',
-                    selected && 'border-ink',
+                    'flex w-full items-center justify-between gap-4 border-l-[3px] px-4 py-3.5 text-left transition-colors',
+                    selected
+                      ? 'border-ink bg-surface-elevated'
+                      : 'border-transparent bg-surface hover:bg-surface-elevated/70',
                   )}
                   onClick={() => {
                     onSelectBuilding(building.id);
                   }}
                 >
                   <span className="min-w-0">
-                    <span className="block truncate font-medium">{building.name}</span>
-                    <span className="block truncate text-xs text-ink-muted">{districtLabel}</span>
+                    <span
+                      className={cn(
+                        'block truncate text-sm tracking-tight text-ink',
+                        selected ? 'font-semibold' : 'font-medium',
+                      )}
+                    >
+                      {building.name}
+                    </span>
+                    <span className="mt-0.5 block truncate text-xs text-ink-muted">
+                      {districtLabel}
+                    </span>
                   </span>
                   <span className="shrink-0 text-xs text-ink-muted">{trailingLabel}</span>
                 </button>
@@ -104,7 +115,7 @@ const MappingBuildingPickerList = ({
           })}
         </ul>
       )}
-    </div>
+    </section>
   );
 };
 
