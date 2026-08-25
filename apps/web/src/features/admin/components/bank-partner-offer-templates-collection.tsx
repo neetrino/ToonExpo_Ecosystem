@@ -125,28 +125,38 @@ export const BankPartnerOfferTemplatesCollection = ({
           <thead className="bg-surface-muted text-xs tracking-wide text-ink-muted uppercase">
             <tr>
               <th className="px-4 py-3 font-semibold">{t('columns.name')}</th>
-              <th className="px-4 py-3 font-semibold">{t('columns.actions')}</th>
+              <th className="w-28 px-4 py-3 text-center font-semibold">{t('columns.actions')}</th>
             </tr>
           </thead>
           <tbody>
             {templates.map((template) => (
-              <tr key={template.id} className="border-t border-border">
-                <td className="max-w-[20rem] px-4 py-3 font-medium text-ink-navy">
+              <tr
+                key={template.id}
+                className="cursor-pointer border-t border-border hover:bg-surface/60"
+                onClick={() => onEdit(template)}
+              >
+                <td className="px-4 py-3 align-middle font-medium text-ink-navy">
                   <span className="line-clamp-2">{template.name}</span>
                 </td>
-                <td className="px-4 py-3">
-                  <div className="flex gap-1">
+                <td className="px-4 py-3 align-middle">
+                  <div className="flex items-center justify-center gap-1">
                     <IconButton
                       label={t('edit')}
                       disabled={busy}
-                      onClick={() => onEdit(template)}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        onEdit(template);
+                      }}
                     >
                       <SquarePen className="size-4" />
                     </IconButton>
                     <IconButton
                       label={t('delete')}
                       disabled={busy}
-                      onClick={() => onDelete(template)}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        onDelete(template);
+                      }}
                     >
                       <Trash2 className="size-4" />
                     </IconButton>
