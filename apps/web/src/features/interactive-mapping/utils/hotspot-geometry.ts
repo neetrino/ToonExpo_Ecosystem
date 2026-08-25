@@ -42,11 +42,15 @@ export const toHotspotGeometry = (input: MappingGeometryInput): MappingHotspotGe
 
 export const hotspotToMappingCoords = (
   hotspot: PortalVisualHotspotItem,
-): Pick<MappingGeometryInput, 'markerX' | 'markerY' | 'svgPath'> => ({
-  markerX: Number(hotspot.xPercent) / MARKER_TO_PERCENT,
-  markerY: Number(hotspot.yPercent) / MARKER_TO_PERCENT,
-  svgPath: hotspot.svgPath,
-});
+): Pick<MappingGeometryInput, 'markerX' | 'markerY' | 'svgPath'> => {
+  const showMarker =
+    hotspot.interactionType === 'marker' || hotspot.interactionType === 'both';
+  return {
+    markerX: showMarker ? Number(hotspot.xPercent) / MARKER_TO_PERCENT : null,
+    markerY: showMarker ? Number(hotspot.yPercent) / MARKER_TO_PERCENT : null,
+    svgPath: hotspot.svgPath,
+  };
+};
 
 export const toCreateHotspotBody = (params: {
   targetType: CreatePortalVisualHotspotRequest['targetType'];

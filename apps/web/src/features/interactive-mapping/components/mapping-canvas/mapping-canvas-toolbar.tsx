@@ -35,6 +35,7 @@ type MappingCanvasToolbarProps = {
   replaceEditShape: (shape: PolygonShape) => void;
   startFreshPolygon: () => void;
   deletePolygon: () => void;
+  deleteMarker?: (() => void) | undefined;
   closePolygon: () => void;
   deleteSelectedDraftPoint: () => void;
   undoLastDraftPoint: () => void;
@@ -80,6 +81,7 @@ export const MappingCanvasToolbar = ({
   replaceEditShape,
   startFreshPolygon,
   deletePolygon,
+  deleteMarker,
   closePolygon,
   deleteSelectedDraftPoint,
   undoLastDraftPoint,
@@ -102,21 +104,50 @@ export const MappingCanvasToolbar = ({
           const needsSelection = value === 'draw-polygon' || value === 'place-marker';
           const disabled = needsSelection && !selectedId;
           const label = t(labelKey);
+          const canDeleteMarker =
+            value === 'place-marker' &&
+            selected?.markerX != null &&
+            selected.markerY != null &&
+            Boolean(deleteMarker);
+          const canDeletePolygon = value === 'draw-polygon' && Boolean(selected?.svgPath);
           return (
-            <button
-              key={value}
-              type="button"
-              title={disabled ? t('selectEntityFirst') : label}
-              aria-label={label}
-              disabled={disabled}
-              className={`${TOOL_BUTTON_CLASS} ${
-                mode === value ? 'border-ink' : 'border-border'
-              }`}
-              onClick={() => changeMode(value)}
-            >
-              <Icon />
-              <span className="hidden sm:inline">{label}</span>
-            </button>
+            <span key={value} className="inline-flex items-center gap-2">
+              <button
+                type="button"
+                title={disabled ? t('selectEntityFirst') : label}
+                aria-label={label}
+                disabled={disabled}
+                className={`${TOOL_BUTTON_CLASS} ${
+                  mode === value ? 'border-ink' : 'border-border'
+                }`}
+                onClick={() => changeMode(value)}
+              >
+                <Icon />
+                <span className="hidden sm:inline">{label}</span>
+              </button>
+              {canDeleteMarker ? (
+                <button
+                  type="button"
+                  className={`${TOOL_BUTTON_CLASS} border-red-700/40 px-3 text-red-800`}
+                  onClick={deleteMarker}
+                  title={t('deleteMarker')}
+                  aria-label={t('deleteMarker')}
+                >
+                  {t('deleteMarker')}
+                </button>
+              ) : null}
+              {canDeletePolygon ? (
+                <button
+                  type="button"
+                  className={`${TOOL_BUTTON_CLASS} border-red-700/40 px-3 text-red-800`}
+                  onClick={deletePolygon}
+                  title={t('deletePolygon')}
+                  aria-label={t('deletePolygon')}
+                >
+                  {t('deletePolygon')}
+                </button>
+              ) : null}
+            </span>
           );
         })}
         {selected?.svgPath ? (
@@ -146,13 +177,6 @@ export const MappingCanvasToolbar = ({
               }}
             >
               {t('newPolygon')}
-            </button>
-            <button
-              type="button"
-              className={`${TOOL_BUTTON_CLASS} border-red-700/40 px-3 text-red-800`}
-              onClick={deletePolygon}
-            >
-              {t('deletePolygon')}
             </button>
           </>
         ) : null}

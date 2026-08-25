@@ -264,12 +264,22 @@ export const useMappingEditorState = ({
   };
 
   const onClear = async () => {
-    if (!selected?.hotspotId) {
+    if (!selected) {
+      return;
+    }
+    const hasGeometry =
+      selected.hotspotId != null ||
+      selected.markerX != null ||
+      selected.markerY != null ||
+      selected.svgPath != null;
+    if (!hasGeometry) {
       return;
     }
     setPending(true);
     try {
-      await deleteVisualHotspot(catalogScope, canvasId, selected.hotspotId);
+      if (selected.hotspotId) {
+        await deleteVisualHotspot(catalogScope, canvasId, selected.hotspotId);
+      }
       const cleared = {
         ...selected,
         hotspotId: null,
@@ -278,6 +288,11 @@ export const useMappingEditorState = ({
         svgPath: null,
       };
       setEntities((prev) => prev.map((item) => (item.id === selected.id ? cleared : item)));
+      setDirtyIds((prev) => {
+        const next = new Set(prev);
+        next.delete(selected.id);
+        return next;
+      });
       setMessage(t('cleared'));
       onAfterSaveRef.current?.();
     } catch (error) {
@@ -285,6 +300,20 @@ export const useMappingEditorState = ({
     } finally {
       setPending(false);
     }
+  };
+
+  /** Removes only the pin; keeps polygon. Marker-only hotspots are deleted entirely. */
+  const onClearMarker = async () => {
+    if (!selected || (selected.markerX == null && selected.markerY == null)) {
+      return;
+    }
+    if (selected.svgPath) {
+      const next = { ...selected, markerX: null, markerY: null };
+      setEntities((prev) => prev.map((item) => (item.id === selected.id ? next : item)));
+      await persistEntity(next, t('markerCleared'));
+      return;
+    }
+    await onClear();
   };
 
   const onClearAllPolygons = async () => {
@@ -362,6 +391,7 @@ export const useMappingEditorState = ({
     onBulkPaths,
     onSave,
     onClear,
+    onClearMarker,
     onClearAllPolygons,
     onLabelChange,
   };
