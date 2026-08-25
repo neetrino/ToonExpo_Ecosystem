@@ -13,6 +13,8 @@ import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 const CARD_RADIUS_CLASS = 'rounded-[15px]';
 const MEDIA_RADIUS_CLASS = 'rounded-[12px]';
 const MEDIA_ASPECT_CLASS = 'aspect-[5/2]';
+/** Four cards per row on wide screens. */
+const TEMPLATES_CARD_GRID_CLASS = 'xl:grid-cols-4';
 
 type TemplatesCollectionProps = {
   templates: BankPartnerOfferTemplateItem[];
@@ -24,15 +26,13 @@ type TemplatesCollectionProps = {
 
 type TemplateCardProps = {
   template: BankPartnerOfferTemplateItem;
-  busy: boolean;
   onEdit: () => void;
-  onDelete: () => void;
 };
 
 /**
- * Finance template card — media header + title, matching bank-offer chrome.
+ * Finance template card — media header + title; click opens edit sheet.
  */
-const TemplateCard = ({ template, busy, onEdit, onDelete }: TemplateCardProps) => {
+const TemplateCard = ({ template, onEdit }: TemplateCardProps) => {
   const t = useTranslations('Admin.templates');
 
   return (
@@ -82,7 +82,7 @@ const TemplateCard = ({ template, busy, onEdit, onDelete }: TemplateCardProps) =
           </div>
         </div>
 
-        <div className="flex flex-1 flex-col gap-1.5 px-4 pt-3 pb-3">
+        <div className="flex flex-1 flex-col gap-1.5 px-4 pt-3 pb-4">
           <p className="text-[11px] font-semibold tracking-wide text-brand-deep/70 uppercase">
             {t('card.eyebrow')}
           </p>
@@ -94,21 +94,6 @@ const TemplateCard = ({ template, busy, onEdit, onDelete }: TemplateCardProps) =
           </p>
         </div>
       </button>
-
-      <div className="flex items-center justify-end gap-0.5 border-t border-border/70 px-2.5 py-2">
-        <IconButton label={t('edit')} size="sm" disabled={busy} onClick={onEdit}>
-          <SquarePen className="size-4" strokeWidth={1.75} aria-hidden />
-        </IconButton>
-        <IconButton
-          label={t('delete')}
-          size="sm"
-          className="text-danger hover:bg-danger-soft"
-          disabled={busy}
-          onClick={onDelete}
-        >
-          <Trash2 className="size-4" strokeWidth={1.75} aria-hidden />
-        </IconButton>
-      </div>
     </article>
   );
 };
@@ -127,14 +112,12 @@ export const BankPartnerOfferTemplatesCollection = ({
 
   if (viewMode === VIEW_MODE_CARDS) {
     return (
-      <AdminListCardGrid>
+      <AdminListCardGrid className={TEMPLATES_CARD_GRID_CLASS}>
         {templates.map((template) => (
           <TemplateCard
             key={template.id}
             template={template}
-            busy={busy}
             onEdit={() => onEdit(template)}
-            onDelete={() => onDelete(template)}
           />
         ))}
       </AdminListCardGrid>
