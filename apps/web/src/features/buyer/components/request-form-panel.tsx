@@ -115,15 +115,10 @@ export const RequestFormPanel = ({
         </p>
       ) : null}
 
-      <div className="flex flex-col gap-2 sm:flex-row">
+      <div className="flex justify-end">
         <Button type="submit" disabled={busy} className="w-full sm:w-auto">
           {busy ? t('submitting') : t('submit')}
         </Button>
-        {!isPage && onClose ? (
-          <Button type="button" variant="ghost" onClick={onClose} className="w-full sm:w-auto">
-            {t('cancel')}
-          </Button>
-        ) : null}
       </div>
     </form>
   );
