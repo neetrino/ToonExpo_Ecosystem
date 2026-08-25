@@ -38,6 +38,7 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
       onChangeEntity,
       onPolygonClosed,
       onPolygonDeleted,
+      onDeleteMarker,
       toolPreset = 'basic',
       viewportClassName,
       onBulkPaths,
@@ -60,6 +61,7 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
     const selectedIdRef = useRef(selectedId);
     const entitiesRef = useRef(entities);
     const modeRef = useRef(mode);
+    const selectedHasMarkerRef = useRef(false);
     const replaceOnCommitRef = useRef(false);
     const toolPresetRef = useRef(toolPreset);
     const [cursorPoint, setCursorPoint] = useState<NormPoint | null>(null);
@@ -88,6 +90,10 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
     useEffect(() => {
       modeRef.current = mode;
     }, [mode]);
+    useEffect(() => {
+      const current = entities.find((entity) => entity.id === selectedId) ?? null;
+      selectedHasMarkerRef.current = current?.markerX != null && current.markerY != null;
+    }, [entities, selectedId]);
 
     const measure = useCallback(() => {
       const el = viewportRef.current;
@@ -194,6 +200,7 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
       draftRef,
       selectedDraftIndexRef,
       replaceOnCommitRef,
+      selectedHasMarkerRef,
       nudgeSelection,
       closePolygon,
       deleteSelectedDraftPoint,
@@ -201,6 +208,7 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
       clearDraft,
       setSelectedDraftIndex,
       setMode,
+      onDeleteMarker,
     });
 
     const {
@@ -265,6 +273,11 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
           replaceEditShape={replaceEditShape}
           startFreshPolygon={startFreshPolygon}
           deletePolygon={deletePolygon}
+          deleteMarker={
+            onDeleteMarker && selected?.markerX != null && selected.markerY != null
+              ? onDeleteMarker
+              : undefined
+          }
           closePolygon={closePolygon}
           deleteSelectedDraftPoint={deleteSelectedDraftPoint}
           undoLastDraftPoint={undoLastDraftPoint}

@@ -227,6 +227,9 @@ export class ProjectsService {
 
     if (apartmentFilter) {
       where.apartments = { some: apartmentFilter };
+      if (query.minPrice != null || query.maxPrice != null) {
+        where.priceOnRequestEnabled = false;
+      }
     }
 
     if (andClauses.length > 0) {

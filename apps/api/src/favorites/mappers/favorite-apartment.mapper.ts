@@ -39,6 +39,7 @@ type ApartmentFavoriteSource = {
     city: string | null;
     district: string | null;
     locationText: string | null;
+    priceOnRequestEnabled: boolean;
     builderCompany: {
       id: string;
       name: string;
@@ -57,7 +58,8 @@ export const mapFavoriteApartmentCard = (
   apartment: ApartmentFavoriteSource,
   ctx: MapApartmentContext,
 ): FavoriteApartmentCard => {
-  const priceOnRequest = apartment.building.priceOnRequestEnabled;
+  const priceOnRequest =
+    apartment.building.priceOnRequestEnabled || apartment.project.priceOnRequestEnabled;
   const revealPrice = shouldRevealCatalogPrice(
     apartment.priceVisibility,
     ctx.isAuthenticated,

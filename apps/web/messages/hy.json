@@ -1650,6 +1650,12 @@
         "editDrag": "Խմբագրել · քաշել",
         "newPolygon": "Նոր polygon",
         "deletePolygon": "Ջնջել polygon",
+        "deleteMarker": "Ջնջել marker",
+        "confirmDeleteMarker": "Ջնջե՞լ միայն marker-ը։ Polygon-ը կմնա։",
+        "markerCleared": "Marker-ը ջնջված է",
+        "clearMapping": "Մաքրել գծագրումը",
+        "save": "Պահել",
+        "labelField": "Պիտակ",
         "deleteAllPolygons": "Ջնջել բոլոր polygon-ները",
         "deleteAllPolygonsConfirm": "Հեռացնե՞լ բոլոր polygon-ները այս քարտեզից։ Օբյեկտները կմնան — կարող եք նորից գծել։",
         "allPolygonsCleared": "Հեռացվել է {count} polygon",
@@ -3227,6 +3233,11 @@
         "codeTitle": "{name} նախագծի QR",
         "copyLink": "Պատճենել հղումը",
         "copied": "Պատճենվեց"
+      },
+      "priceOnRequest": {
+        "label": "Գինը ըստ հարցման",
+        "hint": "Միացնելիս հանրային էջերում այս նախագծի բոլոր բնակարանների գները չեն երևա։ Նոր շենքերը ժառանգում են այս կարգավորումը։",
+        "saved": "Գինը ըստ հարցման կարգավիճակը թարմացված է"
       },
       "publication": {
         "draft": "Սևագիր",

@@ -96,6 +96,7 @@ export class ApartmentsService {
               district: true,
               latitude: true,
               longitude: true,
+              priceOnRequestEnabled: true,
             },
           },
         },
@@ -110,7 +111,8 @@ export class ApartmentsService {
 
     return {
       data: apartments.map((apartment) => {
-        const priceOnRequest = apartment.building.priceOnRequestEnabled;
+        const priceOnRequest =
+          apartment.building.priceOnRequestEnabled || apartment.project.priceOnRequestEnabled;
         const revealPrice = shouldRevealCatalogPrice(
           apartment.priceVisibility,
           viewer.isAuthenticated,
@@ -202,7 +204,8 @@ export class ApartmentsService {
       apartment.project.id,
       apartment.project.builderCompany.id,
     );
-    const priceOnRequest = apartment.building.priceOnRequestEnabled;
+    const priceOnRequest =
+      apartment.building.priceOnRequestEnabled || apartment.project.priceOnRequestEnabled;
     const revealPrice = shouldRevealCatalogPrice(
       apartment.priceVisibility,
       viewer.isAuthenticated,

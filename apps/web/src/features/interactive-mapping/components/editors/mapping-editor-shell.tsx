@@ -71,9 +71,9 @@ export const MappingEditorShell = ({
   const [fullscreen, setFullscreen] = useState(false);
   const [portalReady, setPortalReady] = useState(false);
   const [deletePending, setDeletePending] = useState(false);
-  const [pendingAction, setPendingAction] = useState<'entity' | 'mapping' | 'allPolygons' | null>(
-    null,
-  );
+  const [pendingAction, setPendingAction] = useState<
+    'entity' | 'mapping' | 'marker' | 'allPolygons' | null
+  >(null);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const editor = useMappingEditorState({
     companyId,
@@ -120,6 +120,9 @@ export const MappingEditorShell = ({
       onChangeEntity={editor.onChangeEntity}
       onPolygonClosed={editor.onPolygonClosed}
       onPolygonDeleted={editor.onPolygonDeleted}
+      onDeleteMarker={() => {
+        setPendingAction('marker');
+      }}
       viewportClassName={fullscreen ? FULLSCREEN_VIEWPORT_CLASS : DEFAULT_VIEWPORT_CLASS}
       {...(toolPreset === 'floors' ? { onBulkPaths: editor.onBulkPaths } : {})}
       {...(fullscreen
@@ -141,6 +144,11 @@ export const MappingEditorShell = ({
     if (pendingAction === 'mapping') {
       setPendingAction(null);
       void editor.onClear();
+      return;
+    }
+    if (pendingAction === 'marker') {
+      setPendingAction(null);
+      void editor.onClearMarker();
       return;
     }
     if (pendingAction === 'allPolygons') {
@@ -228,9 +236,11 @@ export const MappingEditorShell = ({
         message={
           pendingAction === 'mapping'
             ? t('removeMappingConfirm')
-            : pendingAction === 'allPolygons'
-              ? t('deleteAllPolygonsConfirm')
-              : (confirmDeleteMessage ?? t('confirmDeleteApartment'))
+            : pendingAction === 'marker'
+              ? t('confirmDeleteMarker')
+              : pendingAction === 'allPolygons'
+                ? t('deleteAllPolygonsConfirm')
+                : (confirmDeleteMessage ?? t('confirmDeleteApartment'))
         }
         confirming={deletePending || editor.pending}
         onCancel={() => {

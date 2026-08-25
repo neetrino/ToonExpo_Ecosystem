@@ -34,6 +34,7 @@ import type { CompanyMemberContext } from '../../company/types/company-member-co
 import { assertCompanyAdmin } from '../utils/access.js';
 import { CreatePortalProjectDto } from '../dto/create-portal-project.dto.js';
 import { ListPortalProjectsQueryDto } from '../dto/list-portal-projects.query.dto.js';
+import { UpdatePortalPriceOnRequestDto } from '../dto/update-portal-price-on-request.dto.js';
 import { UpdatePortalProjectDto } from '../dto/update-portal-project.dto.js';
 import { UpdatePortalPublicationDto } from '../dto/update-portal-publication.dto.js';
 import { PortalProjectQrService } from './portal-project-qr.service.js';
@@ -115,6 +116,26 @@ export class PortalProjectsController {
   ): Promise<PortalProjectDetail> {
     assertCompanyAdmin(member);
     return this.projectsService.updatePublication(member.companyId, user.id, projectId, body);
+  }
+
+  @Patch(':projectId/price-on-request')
+  @ApiOperation({
+    summary: 'Enable or disable price-on-request for a project and all its buildings (company_admin)',
+  })
+  @ApiOkResponse({ description: 'Updated price-on-request status' })
+  updatePriceOnRequest(
+    @CurrentCompanyMember() member: CompanyMemberContext,
+    @CurrentUser() user: AuthenticatedUser,
+    @Param('projectId') projectId: string,
+    @Body() body: UpdatePortalPriceOnRequestDto,
+  ): Promise<PortalProjectDetail> {
+    assertCompanyAdmin(member);
+    return this.projectsService.updatePriceOnRequest(
+      member.companyId,
+      user.id,
+      projectId,
+      body.enabled,
+    );
   }
 
   @Delete(':projectId')

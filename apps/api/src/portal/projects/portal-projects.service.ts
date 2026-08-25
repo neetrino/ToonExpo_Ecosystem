@@ -253,6 +253,44 @@ export class PortalProjectsService {
     return this.toProjectDetail(project);
   }
 
+  /**
+   * Enables or disables price-on-request for the project and cascades to all buildings
+   * so new and existing inventory stay aligned.
+   */
+  async updatePriceOnRequest(
+    companyId: string,
+    userId: string,
+    projectRef: string,
+    enabled: boolean,
+  ): Promise<PortalProjectDetail> {
+    const owned = await requireOwnedProject(this.prisma, projectRef, companyId);
+
+    await this.prisma.db.$transaction([
+      this.prisma.db.project.update({
+        where: { id: owned.id },
+        data: {
+          priceOnRequestEnabled: enabled,
+          updatedByUserId: userId,
+        },
+      }),
+      this.prisma.db.building.updateMany({
+        where: { projectId: owned.id },
+        data: {
+          priceOnRequestEnabled: enabled,
+          updatedByUserId: userId,
+        },
+      }),
+    ]);
+
+    const project = await this.prisma.db.project.findUniqueOrThrow({
+      where: { id: owned.id },
+      include: projectDetailInclude,
+    });
+
+    this.webRevalidation.revalidateCatalog(owned.id);
+    return this.toProjectDetail(project);
+  }
+
   async remove(companyId: string, projectRef: string): Promise<void> {
     const owned = await requireOwnedProject(this.prisma, projectRef, companyId);
     const project = await this.prisma.db.project.findFirst({

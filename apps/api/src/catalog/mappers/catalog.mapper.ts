@@ -74,7 +74,7 @@ export const shouldRevealPrice = (priceVisibility: string, isAuthenticated: bool
 };
 
 /**
- * Building-level price-on-request never reveals a numeric price, even after login.
+ * Building- or project-level price-on-request never reveals a numeric price, even after login.
  */
 export const shouldRevealCatalogPrice = (
   priceVisibility: string,
@@ -88,14 +88,29 @@ export const shouldRevealCatalogPrice = (
   return shouldRevealPrice(priceVisibility, isAuthenticated);
 };
 
-export const isPriceOnRequestEnabled = (row: {
+type PriceOnRequestSource = {
   priceOnRequestEnabled?: boolean | undefined;
-  building?: { priceOnRequestEnabled?: boolean | undefined } | null | undefined;
-}): boolean => row.priceOnRequestEnabled === true || row.building?.priceOnRequestEnabled === true;
+  building?:
+    | {
+        priceOnRequestEnabled?: boolean | undefined;
+        project?: { priceOnRequestEnabled?: boolean | undefined } | null | undefined;
+      }
+    | null
+    | undefined;
+  project?: { priceOnRequestEnabled?: boolean | undefined } | null | undefined;
+};
+
+export const isPriceOnRequestEnabled = (row: PriceOnRequestSource): boolean =>
+  row.priceOnRequestEnabled === true ||
+  row.building?.priceOnRequestEnabled === true ||
+  row.building?.project?.priceOnRequestEnabled === true ||
+  row.project?.priceOnRequestEnabled === true;
 
 /**
- * True when any published building opted into the public price-on-request CTA.
+ * True when the project or any published building opted into the public price-on-request CTA.
  */
 export const hasPublishedPriceOnRequest = (
   buildings: Array<{ priceOnRequestEnabled: boolean }>,
-): boolean => buildings.some((building) => building.priceOnRequestEnabled);
+  projectPriceOnRequestEnabled = false,
+): boolean =>
+  projectPriceOnRequestEnabled || buildings.some((building) => building.priceOnRequestEnabled);

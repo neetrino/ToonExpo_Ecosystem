@@ -15,6 +15,7 @@ import {
   getPortalProjectQr,
   listPortalProjects,
   updatePortalProject,
+  updatePortalProjectPriceOnRequest,
   updatePortalProjectPublication,
 } from '@/features/builder/api/portal-projects-api';
 import type { CatalogScope } from '@/features/builder/catalog-scope';
@@ -119,6 +120,26 @@ export const useUpdateProjectPublicationMutation = (id: string) => {
       updatePortalProjectPublication(id, body, { scope }),
     onSuccess: (project) => {
       queryClient.setQueryData([...portalProjectQueryKey(id), ...scopeKey(scope)], project);
+      void queryClient.invalidateQueries({ queryKey: PORTAL_PROJECTS_QUERY_KEY });
+      if (scope.mode === 'admin') {
+        void queryClient.invalidateQueries({ queryKey: ADMIN_PROJECTS_QUERY_KEY });
+      }
+    },
+  });
+};
+
+/**
+ * Toggles public price-on-request for a project and all its buildings (company_admin).
+ */
+export const useUpdateProjectPriceOnRequestMutation = (projectId: string) => {
+  const queryClient = useQueryClient();
+  const scope = useCatalogScope();
+
+  return useMutation({
+    mutationFn: (enabled: boolean) =>
+      updatePortalProjectPriceOnRequest(projectId, { enabled }, { scope }),
+    onSuccess: (project) => {
+      queryClient.setQueryData([...portalProjectQueryKey(projectId), ...scopeKey(scope)], project);
       void queryClient.invalidateQueries({ queryKey: PORTAL_PROJECTS_QUERY_KEY });
       if (scope.mode === 'admin') {
         void queryClient.invalidateQueries({ queryKey: ADMIN_PROJECTS_QUERY_KEY });

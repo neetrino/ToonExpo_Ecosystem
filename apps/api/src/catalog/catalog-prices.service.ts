@@ -22,7 +22,10 @@ type PricedApartmentRow = {
   price: Prisma.Decimal | null;
   priceCurrency: string;
   priceVisibility: string;
-  building?: { priceOnRequestEnabled?: boolean } | null;
+  building?: {
+    priceOnRequestEnabled?: boolean;
+    project?: { priceOnRequestEnabled?: boolean } | null;
+  } | null;
 };
 
 const APARTMENT_PRICE_SELECT = {
@@ -31,7 +34,12 @@ const APARTMENT_PRICE_SELECT = {
   price: true,
   priceCurrency: true,
   priceVisibility: true,
-  building: { select: { priceOnRequestEnabled: true } },
+  building: {
+    select: {
+      priceOnRequestEnabled: true,
+      project: { select: { priceOnRequestEnabled: true } },
+    },
+  },
 } as const;
 
 /**

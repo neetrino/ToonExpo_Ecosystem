@@ -62,6 +62,7 @@ export const buildApartmentListWhere = (
       publicationStatus: PUBLIC_PUBLICATION_STATUS,
       priceOnRequestEnabled: false,
     };
+    projectWhere.priceOnRequestEnabled = false;
   }
 
   const keyword = query.q?.trim();

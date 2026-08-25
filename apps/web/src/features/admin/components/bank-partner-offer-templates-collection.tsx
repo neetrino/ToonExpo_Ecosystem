@@ -11,8 +11,11 @@ import { LIST_CARD_LIFT_CLASS, ListTableReveal } from '@/shared/ui/motion';
 import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 
 const CARD_RADIUS_CLASS = 'rounded-[15px]';
-const MEDIA_RADIUS_CLASS = 'rounded-[12px]';
-const MEDIA_ASPECT_CLASS = 'aspect-[5/2]';
+const MEDIA_RADIUS_CLASS = 'rounded-[14px]';
+/** Same landscape media ratio as partner cards. */
+const MEDIA_ASPECT_CLASS = 'aspect-[16/10]';
+/** Four cards per row on wide screens. */
+const TEMPLATES_CARD_GRID_CLASS = 'xl:grid-cols-4';
 
 type TemplatesCollectionProps = {
   templates: BankPartnerOfferTemplateItem[];
@@ -24,92 +27,68 @@ type TemplatesCollectionProps = {
 
 type TemplateCardProps = {
   template: BankPartnerOfferTemplateItem;
-  busy: boolean;
   onEdit: () => void;
-  onDelete: () => void;
 };
 
 /**
- * Finance template card — media header + title, matching bank-offer chrome.
+ * Finance template card — partner-style proportions; click opens edit sheet.
  */
-const TemplateCard = ({ template, busy, onEdit, onDelete }: TemplateCardProps) => {
+const TemplateCard = ({ template, onEdit }: TemplateCardProps) => {
   const t = useTranslations('Admin.templates');
 
   return (
-    <article
+    <button
+      type="button"
+      onClick={onEdit}
       className={cn(
-        'group flex h-full flex-col overflow-hidden border border-border/80',
-        'bg-surface-elevated shadow-card',
-        'transition-[box-shadow,transform,border-color] duration-[var(--duration-fast)]',
+        'group flex h-full w-full flex-col gap-3 overflow-hidden border border-border/80',
+        'bg-surface-elevated p-3.5 text-left shadow-card',
+        'transition-[box-shadow,border-color] duration-[var(--duration-fast)]',
         'hover:border-brand/30 hover:shadow-sm',
         LIST_CARD_LIFT_CLASS,
         CARD_RADIUS_CLASS,
       )}
     >
-      <button
-        type="button"
-        onClick={onEdit}
-        className="flex min-w-0 flex-1 flex-col text-left"
+      <header className="flex flex-col gap-1">
+        <p className="text-[11px] font-semibold tracking-wide text-brand-deep/70 uppercase">
+          {t('card.eyebrow')}
+        </p>
+        <h3 className="line-clamp-2 text-base font-semibold tracking-tight text-ink">
+          {template.name}
+        </h3>
+      </header>
+
+      <div
+        className={cn(
+          'relative flex w-full items-center justify-center overflow-hidden',
+          'bg-band-mist/70 ring-1 ring-border/60',
+          MEDIA_ASPECT_CLASS,
+          MEDIA_RADIUS_CLASS,
+        )}
       >
-        <div className="p-3 pb-0">
-          <div
-            className={cn(
-              'relative flex w-full items-center justify-center overflow-hidden',
-              'bg-band-mist/70 ring-1 ring-border/50',
-              MEDIA_ASPECT_CLASS,
-              MEDIA_RADIUS_CLASS,
-            )}
-          >
-            <span
-              className={cn(
-                'absolute inset-y-0 left-0 w-1/2 bg-brand-soft/50',
-                'transition-opacity duration-[var(--duration-fast)]',
-                'group-hover:opacity-80',
-              )}
-              aria-hidden
-            />
-            <span
-              className={cn(
-                'relative flex size-12 items-center justify-center rounded-[14px]',
-                'bg-surface-elevated text-brand-deep shadow-xs ring-1 ring-border/60',
-                'transition-transform duration-[var(--duration-slow)]',
-                'ease-[var(--ease-out-premium)] group-hover:scale-[1.06]',
-                'motion-reduce:transition-none motion-reduce:group-hover:scale-100',
-              )}
-            >
-              <FileStack className="size-5" strokeWidth={1.75} aria-hidden />
-            </span>
-          </div>
-        </div>
-
-        <div className="flex flex-1 flex-col gap-1.5 px-4 pt-3 pb-3">
-          <p className="text-[11px] font-semibold tracking-wide text-brand-deep/70 uppercase">
-            {t('card.eyebrow')}
-          </p>
-          <h3 className="line-clamp-2 text-base font-semibold tracking-tight text-ink-navy">
-            {template.name}
-          </h3>
-          <p className="line-clamp-2 text-sm leading-relaxed text-ink-secondary">
-            {t('card.hint')}
-          </p>
-        </div>
-      </button>
-
-      <div className="flex items-center justify-end gap-0.5 border-t border-border/70 px-2.5 py-2">
-        <IconButton label={t('edit')} size="sm" disabled={busy} onClick={onEdit}>
-          <SquarePen className="size-4" strokeWidth={1.75} aria-hidden />
-        </IconButton>
-        <IconButton
-          label={t('delete')}
-          size="sm"
-          className="text-danger hover:bg-danger-soft"
-          disabled={busy}
-          onClick={onDelete}
+        <span
+          className={cn(
+            'absolute inset-y-0 left-0 w-1/2 bg-brand-soft/50',
+            'transition-opacity duration-[var(--duration-fast)]',
+            'group-hover:opacity-80',
+          )}
+          aria-hidden
+        />
+        <span
+          className={cn(
+            'relative flex size-12 items-center justify-center rounded-[14px]',
+            'bg-surface-elevated text-brand-deep shadow-xs ring-1 ring-border/60',
+            'transition-transform duration-[var(--duration-slow)]',
+            'ease-[var(--ease-out-premium)] group-hover:scale-[1.06]',
+            'motion-reduce:transition-none motion-reduce:group-hover:scale-100',
+          )}
         >
-          <Trash2 className="size-4" strokeWidth={1.75} aria-hidden />
-        </IconButton>
+          <FileStack className="size-5" strokeWidth={1.75} aria-hidden />
+        </span>
       </div>
-    </article>
+
+      <p className="line-clamp-2 text-sm leading-relaxed text-ink-secondary">{t('card.hint')}</p>
+    </button>
   );
 };
 
@@ -127,14 +106,12 @@ export const BankPartnerOfferTemplatesCollection = ({
 
   if (viewMode === VIEW_MODE_CARDS) {
     return (
-      <AdminListCardGrid>
+      <AdminListCardGrid className={TEMPLATES_CARD_GRID_CLASS}>
         {templates.map((template) => (
           <TemplateCard
             key={template.id}
             template={template}
-            busy={busy}
             onEdit={() => onEdit(template)}
-            onDelete={() => onDelete(template)}
           />
         ))}
       </AdminListCardGrid>
@@ -148,28 +125,38 @@ export const BankPartnerOfferTemplatesCollection = ({
           <thead className="bg-surface-muted text-xs tracking-wide text-ink-muted uppercase">
             <tr>
               <th className="px-4 py-3 font-semibold">{t('columns.name')}</th>
-              <th className="px-4 py-3 font-semibold">{t('columns.actions')}</th>
+              <th className="w-28 px-4 py-3 text-center font-semibold">{t('columns.actions')}</th>
             </tr>
           </thead>
           <tbody>
             {templates.map((template) => (
-              <tr key={template.id} className="border-t border-border">
-                <td className="max-w-[20rem] px-4 py-3 font-medium text-ink-navy">
+              <tr
+                key={template.id}
+                className="cursor-pointer border-t border-border hover:bg-surface/60"
+                onClick={() => onEdit(template)}
+              >
+                <td className="px-4 py-3 align-middle font-medium text-ink-navy">
                   <span className="line-clamp-2">{template.name}</span>
                 </td>
-                <td className="px-4 py-3">
-                  <div className="flex gap-1">
+                <td className="px-4 py-3 align-middle">
+                  <div className="flex items-center justify-center gap-1">
                     <IconButton
                       label={t('edit')}
                       disabled={busy}
-                      onClick={() => onEdit(template)}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        onEdit(template);
+                      }}
                     >
                       <SquarePen className="size-4" />
                     </IconButton>
                     <IconButton
                       label={t('delete')}
                       disabled={busy}
-                      onClick={() => onDelete(template)}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        onDelete(template);
+                      }}
                     >
                       <Trash2 className="size-4" />
                     </IconButton>

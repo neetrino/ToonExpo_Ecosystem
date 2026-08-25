@@ -4,6 +4,7 @@ import { Prisma, PublicationStatus } from '@toonexpo/db';
 
 import { WebRevalidationService } from '../../common/web-revalidation/web-revalidation.service.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
+import { syncFloorPlanMediaToCanvas } from '../../visual-map/utils/sync-floor-plan-media.js';
 import type { CreatePortalFloorDto, UpdatePortalFloorDto } from '../dto/portal-floor.dto.js';
 import type { UpdatePortalPublicationDto } from '../dto/update-portal-publication.dto.js';
 import { mapPortalFloor } from '../mappers/portal.mapper.js';
@@ -57,7 +58,7 @@ export class PortalFloorsService {
     buildingId: string,
     dto: CreatePortalFloorDto,
   ): Promise<PortalFloorSummary> {
-    await requireOwnedBuilding(this.prisma, buildingId, companyId);
+    const building = await requireOwnedBuilding(this.prisma, buildingId, companyId);
     try {
       const floor = await this.prisma.db.floor.create({
         data: {
@@ -74,6 +75,16 @@ export class PortalFloorsService {
         },
         include: floorInclude,
       });
+      if (dto.floorplanMediaId !== undefined) {
+        await syncFloorPlanMediaToCanvas(this.prisma, {
+          companyId,
+          userId,
+          projectId: building.projectId,
+          floorId: floor.id,
+          mediaAssetId: dto.floorplanMediaId,
+          title: floor.name ?? `Floor ${floor.number}`,
+        });
+      }
       return mapPortalFloor(floor);
     } catch (error) {
       rethrowFloorNumberConflict(error);
@@ -87,7 +98,7 @@ export class PortalFloorsService {
     floorId: string,
     dto: UpdatePortalFloorDto,
   ): Promise<PortalFloorSummary> {
-    await requireOwnedFloor(this.prisma, floorId, companyId);
+    const owned = await requireOwnedFloor(this.prisma, floorId, companyId);
     try {
       const floor = await this.prisma.db.floor.update({
         where: { id: floorId },
@@ -102,6 +113,16 @@ export class PortalFloorsService {
         },
         include: floorInclude,
       });
+      if (dto.floorplanMediaId !== undefined) {
+        await syncFloorPlanMediaToCanvas(this.prisma, {
+          companyId,
+          userId,
+          projectId: owned.building.projectId,
+          floorId: floor.id,
+          mediaAssetId: dto.floorplanMediaId,
+          title: floor.name ?? `Floor ${floor.number}`,
+        });
+      }
       return mapPortalFloor(floor);
     } catch (error) {
       rethrowFloorNumberConflict(error);

@@ -1650,6 +1650,12 @@
         "editDrag": "Edit · drag",
         "newPolygon": "New polygon",
         "deletePolygon": "Delete polygon",
+        "deleteMarker": "Delete marker",
+        "confirmDeleteMarker": "Remove only the marker pin? The polygon stays.",
+        "markerCleared": "Marker removed",
+        "clearMapping": "Clear mapping",
+        "save": "Save",
+        "labelField": "Label",
         "deleteAllPolygons": "Delete all polygons",
         "deleteAllPolygonsConfirm": "Remove all polygons from this map? Entities stay — you can draw again.",
         "allPolygonsCleared": "Removed {count} polygons",
@@ -3487,6 +3493,11 @@
         "codeTitle": "Project QR for {name}",
         "copyLink": "Copy link",
         "copied": "Copied"
+      },
+      "priceOnRequest": {
+        "label": "Price on request",
+        "hint": "When on, public listings hide all apartment prices in this project and show a request button. New buildings inherit this setting.",
+        "saved": "Price on request updated"
       },
       "publication": {
         "draft": "Draft",
