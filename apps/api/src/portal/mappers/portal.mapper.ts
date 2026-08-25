@@ -93,6 +93,7 @@ type ProjectDetailRow = {
   nearbyPlaces: Prisma.JsonValue;
   coverMediaId: string | null;
   verified: boolean;
+  priceOnRequestEnabled: boolean;
   coverMedia?: {
     id: string;
     fileUrl: string;
@@ -281,6 +282,7 @@ export const mapPortalProjectDetail = (
   coverMediaId: project.coverMediaId,
   cover: toPortalMediaSummary(project.coverMedia),
   verified: project.verified,
+  priceOnRequestEnabled: project.priceOnRequestEnabled,
   createdAt: project.createdAt.toISOString(),
   updatedAt: project.updatedAt.toISOString(),
   buildings: project.buildings.map(mapPortalBuilding),

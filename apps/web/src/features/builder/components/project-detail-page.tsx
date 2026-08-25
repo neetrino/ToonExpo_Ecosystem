@@ -1,5 +1,6 @@
 'use client';
 
+import type { PortalProjectDetail } from '@toonexpo/contracts';
 import { QrCode } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
@@ -8,6 +9,7 @@ import { catalogProjectDetailHref, catalogProjectsListHref } from '@/features/bu
 import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import { EditProjectForm } from '@/features/builder/components/edit-project-form';
 import { ProjectInventorySection } from '@/features/builder/components/project-inventory-section';
+import { ProjectPriceOnRequestToggle } from '@/features/builder/components/project-price-on-request-toggle';
 import { ProjectPublicationActions } from '@/features/builder/components/project-publication-actions';
 import { ProjectQrDialog } from '@/features/builder/components/project-qr-dialog';
 import { usePortalProjectQuery } from '@/features/builder/hooks/use-portal-projects';
@@ -38,6 +40,7 @@ type ProjectDetailPageProps = {
 type ProjectDetailHeadingProps = {
   name: string;
   titleLogo: ProjectDetailTitleLogo | undefined;
+  project: PortalProjectDetail;
   qrLabel: string;
   onOpenQr: () => void;
 };
@@ -45,6 +48,7 @@ type ProjectDetailHeadingProps = {
 const ProjectDetailHeading = ({
   name,
   titleLogo,
+  project,
   qrLabel,
   onOpenQr,
 }: ProjectDetailHeadingProps) => (
@@ -60,15 +64,12 @@ const ProjectDetailHeading = ({
       ) : null}
       <h1 className="min-w-0 flex-1 text-page-title text-ink">{name}</h1>
     </div>
-    <IconButton
-      label={qrLabel}
-      variant="soft"
-      size="lg"
-      className="mt-0.5 shrink-0"
-      onClick={onOpenQr}
-    >
-      <QrCode className={TITLE_QR_ICON_CLASS} aria-hidden />
-    </IconButton>
+    <div className="mt-0.5 flex shrink-0 items-center gap-3">
+      <ProjectPriceOnRequestToggle project={project} />
+      <IconButton label={qrLabel} variant="soft" size="lg" className="shrink-0" onClick={onOpenQr}>
+        <QrCode className={TITLE_QR_ICON_CLASS} aria-hidden />
+      </IconButton>
+    </div>
   </div>
 );
 
@@ -123,6 +124,7 @@ export const ProjectDetailPage = ({
         <ProjectDetailHeading
           name={project.name}
           titleLogo={titleLogo}
+          project={project}
           qrLabel={tQr('open')}
           onOpenQr={() => {
             setQrOpen(true);

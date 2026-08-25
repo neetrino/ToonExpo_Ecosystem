@@ -3494,6 +3494,11 @@
         "copyLink": "Copy link",
         "copied": "Copied"
       },
+      "priceOnRequest": {
+        "label": "Price on request",
+        "hint": "When on, public listings hide all apartment prices in this project and show a request button. New buildings inherit this setting.",
+        "saved": "Price on request updated"
+      },
       "publication": {
         "draft": "Draft",
         "published": "Published",

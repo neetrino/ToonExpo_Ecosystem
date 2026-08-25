@@ -28,6 +28,7 @@ import { CurrentUser } from '../../auth/decorators/current-user.decorator.js';
 import type { AuthenticatedUser } from '../../auth/types/authenticated-user.js';
 import { CreatePortalProjectDto } from '../../portal/dto/create-portal-project.dto.js';
 import { ListPortalProjectsQueryDto } from '../../portal/dto/list-portal-projects.query.dto.js';
+import { UpdatePortalPriceOnRequestDto } from '../../portal/dto/update-portal-price-on-request.dto.js';
 import { UpdatePortalProjectDto } from '../../portal/dto/update-portal-project.dto.js';
 import { UpdatePortalPublicationDto } from '../../portal/dto/update-portal-publication.dto.js';
 import { PortalProjectQrService } from '../../portal/projects/portal-project-qr.service.js';
@@ -110,6 +111,25 @@ export class AdminCatalogProjectsController {
   ): Promise<PortalProjectDetail> {
     const companyId = await this.builderCompanies.requireBuilderCompanyId(params.companyId);
     return this.projectsService.updatePublication(companyId, user.id, params.projectId, body);
+  }
+
+  @Patch(':projectId/price-on-request')
+  @ApiOperation({
+    summary: 'Enable or disable price-on-request for a project and all its buildings (admin)',
+  })
+  @ApiOkResponse({ description: 'Updated price-on-request status' })
+  async updatePriceOnRequest(
+    @Param() params: AdminCatalogProjectParamDto,
+    @CurrentUser() user: AuthenticatedUser,
+    @Body() body: UpdatePortalPriceOnRequestDto,
+  ): Promise<PortalProjectDetail> {
+    const companyId = await this.builderCompanies.requireBuilderCompanyId(params.companyId);
+    return this.projectsService.updatePriceOnRequest(
+      companyId,
+      user.id,
+      params.projectId,
+      body.enabled,
+    );
   }
 
   @Delete(':projectId')

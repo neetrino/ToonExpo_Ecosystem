@@ -148,7 +148,7 @@ Status syncs immediately to ToonExpo public apartment status
 - floors_count;
 - visual_media_id;
 - publication_status;
-- price_on_request_enabled (builder toggle; public catalog hides prices and shows a request CTA).
+- price_on_request_enabled (builder toggle on project or building; public catalog hides prices and shows a request CTA; project toggle cascades / new buildings inherit).
 
 ### Floor
 
