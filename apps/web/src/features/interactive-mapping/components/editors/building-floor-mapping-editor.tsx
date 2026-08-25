@@ -35,7 +35,7 @@ const buildEntities = (
       return {
         id: floor.id,
         title: floor.name || `Floor ${floor.number}`,
-        label: hotspot?.label ?? floor.label ?? String(floor.number),
+        label: hotspot ? (hotspot.label ?? '') : (floor.label ?? String(floor.number)),
         ...(hotspot
           ? hotspotToMappingCoords(hotspot)
           : { markerX: null, markerY: null, svgPath: null }),

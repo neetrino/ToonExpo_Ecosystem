@@ -33,7 +33,7 @@ const buildEntities = (
     return {
       id: building.id,
       title: building.name,
-      label: hotspot?.label ?? building.label ?? building.name.slice(0, 2),
+      label: hotspot ? (hotspot.label ?? '') : (building.label ?? building.name.slice(0, 2)),
       ...(hotspot
         ? hotspotToMappingCoords(hotspot)
         : { markerX: null, markerY: null, svgPath: null }),

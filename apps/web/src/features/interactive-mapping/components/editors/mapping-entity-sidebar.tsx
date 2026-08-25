@@ -70,7 +70,8 @@ const MappingEntityListItem = ({
       onClick={() => onSelect(entity.id)}
     >
       <span className="truncate">
-        {entity.label} · {entity.title}
+        {entity.label.length > 0 ? `${entity.label} · ` : ''}
+        {entity.title}
         {dirty ? ' · *' : ''}
       </span>
       <span className="text-[10px] text-ink-muted">

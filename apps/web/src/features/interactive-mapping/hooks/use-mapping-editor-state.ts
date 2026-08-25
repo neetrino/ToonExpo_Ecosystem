@@ -43,7 +43,7 @@ const mergeHotspot = (
   ...entity,
   hotspotId: hotspot.id,
   ...hotspotToMappingCoords(hotspot),
-  label: hotspot.label || entity.label,
+  label: hotspot.label ?? entity.label,
 });
 
 /** Content fingerprint so parent re-renders with a fresh array do not re-sync. */
@@ -286,6 +286,7 @@ export const useMappingEditorState = ({
         markerX: null,
         markerY: null,
         svgPath: null,
+        label: '',
       };
       setEntities((prev) => prev.map((item) => (item.id === selected.id ? cleared : item)));
       setDirtyIds((prev) => {
@@ -308,7 +309,7 @@ export const useMappingEditorState = ({
       return;
     }
     if (selected.svgPath) {
-      const next = { ...selected, markerX: null, markerY: null };
+      const next = { ...selected, markerX: null, markerY: null, label: '' };
       setEntities((prev) => prev.map((item) => (item.id === selected.id ? next : item)));
       await persistEntity(next, t('markerCleared'));
       return;
