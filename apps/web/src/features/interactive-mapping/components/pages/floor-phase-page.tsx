@@ -10,6 +10,7 @@ import {
   createPortalApartment,
   deletePortalApartment,
 } from '@/features/builder/api/portal-apartments-api';
+import { updatePortalFloor } from '@/features/builder/api/portal-floors-api';
 import { BackLink } from '@/shared/ui/back-link';
 
 import {
@@ -66,6 +67,7 @@ export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
         if (!match) {
           if (!cancelled) {
             setCanvas(null);
+            setMediaId('');
           }
           return;
         }
@@ -93,6 +95,70 @@ export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
   useEffect(() => {
     setLockNotice(null);
   }, [floorId]);
+
+  const floorFromDetail = detailQuery.data?.floors.find((item) => item.id === floorId);
+  const shouldSeedFloorPlan =
+    Boolean(catalogScope) &&
+    !loadingCanvas &&
+    canvas === null &&
+    mediaId.length === 0 &&
+    floorFromDetail != null &&
+    floorFromDetail.floorplanMediaId != null &&
+    isFloorPlanMappingUnlocked(floorFromDetail);
+
+  useEffect(() => {
+    if (!shouldSeedFloorPlan || !catalogScope || !floorFromDetail?.floorplanMediaId) {
+      return;
+    }
+    const planMediaId = floorFromDetail.floorplanMediaId;
+    let cancelled = false;
+    const seed = async () => {
+      setLoadingCanvas(true);
+      setError(null);
+      try {
+        await updatePortalFloor(
+          floorId,
+          { floorplanMediaId: planMediaId },
+          { scope: catalogScope },
+        );
+        const list = await listProjectVisualCanvases(catalogScope, projectId);
+        const match = list.data.find(
+          (item) => item.contextType === 'floor' && item.contextId === floorId,
+        );
+        if (!match) {
+          return;
+        }
+        const detail = await getVisualCanvas(catalogScope, match.id);
+        if (!cancelled) {
+          setCanvas(detail);
+          setMediaId(detail.mediaAssetId);
+          void queryClient.invalidateQueries({
+            queryKey: interactiveMappingProjectQueryKey(projectId, catalogScope.mode),
+          });
+        }
+      } catch (seedError) {
+        if (!cancelled) {
+          setError(seedError instanceof Error ? seedError.message : t('error'));
+        }
+      } finally {
+        if (!cancelled) {
+          setLoadingCanvas(false);
+        }
+      }
+    };
+    void seed();
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    catalogScope,
+    floorFromDetail?.floorplanMediaId,
+    floorId,
+    projectId,
+    queryClient,
+    shouldSeedFloorPlan,
+    t,
+  ]);
 
   if (detailQuery.isLoading || loadingCanvas) {
     return <p className="text-sm text-ink-muted">{t('loading')}</p>;
