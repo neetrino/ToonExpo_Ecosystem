@@ -54,7 +54,7 @@ export const MarketInsightsDashboard = async () => {
           <article
             className={cn(
               'h-full rounded-[24px] border border-header-border bg-surface-elevated p-6 sm:p-8',
-              'shadow-[0_12px_30px_-18px_rgb(9_43_68/0.25)]',
+              'shadow-[0_12px_30px_-18px_rgb(25_38_67/0.25)]',
               LIST_CARD_LIFT_CLASS,
             )}
           >
@@ -197,7 +197,7 @@ const InsightMetricCard = ({ label, value, hint, tone }: InsightMetricCardProps)
   <article
     className={cn(
       'h-full rounded-[24px] border border-header-border bg-surface-elevated p-5 sm:p-6',
-      'shadow-[0_12px_30px_-18px_rgb(9_43_68/0.2)]',
+      'shadow-[0_12px_30px_-18px_rgb(25_38_67/0.2)]',
       LIST_CARD_LIFT_CLASS,
     )}
   >

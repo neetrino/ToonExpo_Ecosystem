@@ -7,13 +7,14 @@ import { PortalRailCollapseProvider } from '@/shared/ui/portal-rail-collapse-con
 import { PortalRailCollapseToggle } from '@/shared/ui/portal-rail-collapse-toggle';
 import {
   PORTAL_RAIL_DESKTOP_ID,
+  PORTAL_RAIL_TOP_CLASS,
   PORTAL_RAIL_WIDTH_COLLAPSED_CLASS,
   PORTAL_RAIL_WIDTH_EXPANDED_CLASS,
   PORTAL_RAIL_WIDTH_TRANSITION_CLASS,
 } from '@/shared/ui/portal-rail.constants';
 import { cn } from '@/shared/ui/cn';
 
-const RAIL_CHROME_TOP_CLASS = 'top-[calc(5.5rem+env(safe-area-inset-top,0px))]';
+const RAIL_CHROME_TOP_CLASS = PORTAL_RAIL_TOP_CLASS;
 const RAIL_CHROME_BOTTOM_CLASS = 'bottom-0';
 
 type PortalRailDesktopAsideProps = {
@@ -27,7 +28,7 @@ type PortalRailDesktopAsideProps = {
 };
 
 /**
- * Fixed desktop dark rail with optional icons-only collapse.
+ * Fixed desktop Metallic Seaweed rail with optional icons-only collapse.
  */
 export const PortalRailDesktopAside = ({
   sidebar,
@@ -53,7 +54,7 @@ export const PortalRailDesktopAside = ({
       >
         <div
           className={cn(
-            'flex h-full min-h-0 flex-col overflow-hidden rounded-tr-[2.5rem] rounded-br-[2.5rem] bg-brand-secondary',
+            'flex h-full min-h-0 flex-col overflow-hidden rounded-tr-[2.5rem] rounded-br-[2.5rem] bg-brand',
             collapsed ? 'px-2 py-3' : 'p-4',
             MOBILE_BOTTOM_NAV_CONTENT_PB_CLASS,
           )}

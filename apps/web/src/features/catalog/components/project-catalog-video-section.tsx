@@ -1,19 +1,46 @@
 import { ProjectCatalogMediaPoster } from '@/features/catalog/components/project-catalog-media-poster';
-import { staticAssetUrl } from '@/shared/lib/static-asset-url';
-
-/** Temporary poster until a real project video embed is wired. */
-const VIDEO_PLACEHOLDER_SRC = staticAssetUrl('/images/hero-building.webp');
+import { ProjectCatalogVideoFilePreview } from '@/features/catalog/components/project-catalog-video-file-preview';
+import { resolveProjectCatalogVideoPreview } from '@/features/catalog/utils/resolve-project-catalog-video-embed';
 
 type ProjectCatalogVideoSectionProps = {
-  /** Reserved for the future embed URL. */
   url: string;
   title: string;
   openLabel: string;
 };
 
 /**
- * Video block poster (placeholder image). Swap for embed when video is ready.
+ * Project video block — preview uses a real frame/thumbnail from the video URL.
  */
-export const ProjectCatalogVideoSection = ({ title }: ProjectCatalogVideoSectionProps) => {
-  return <ProjectCatalogMediaPoster title={title} imageSrc={VIDEO_PLACEHOLDER_SRC} />;
+export const ProjectCatalogVideoSection = async ({
+  url,
+  title,
+  openLabel,
+}: ProjectCatalogVideoSectionProps) => {
+  const preview = await resolveProjectCatalogVideoPreview(url);
+
+  if (preview == null) {
+    return null;
+  }
+
+  if (preview.kind === 'file') {
+    return <ProjectCatalogVideoFilePreview src={preview.src} title={title} />;
+  }
+
+  if (preview.kind === 'poster') {
+    return (
+      <ProjectCatalogMediaPoster
+        title={title}
+        imageSrc={preview.posterSrc}
+        href={preview.href}
+        openLabel={openLabel}
+        {...(preview.posterFallbackSrc != null
+          ? { imageFallbackSrc: preview.posterFallbackSrc }
+          : {})}
+      />
+    );
+  }
+
+  return (
+    <ProjectCatalogMediaPoster title={title} href={preview.href} openLabel={openLabel} />
+  );
 };

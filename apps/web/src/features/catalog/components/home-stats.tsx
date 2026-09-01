@@ -71,7 +71,7 @@ export const HomeStats = async () => {
         <div
           className={cn(
             'rounded-[20px] bg-brand-deep p-8 text-canvas',
-            'shadow-[0_20px_25px_-5px_rgb(9_43_68/0.1),0_8px_10px_-6px_rgb(9_43_68/0.1)]',
+            'shadow-[0_20px_25px_-5px_rgb(25_38_67/0.1),0_8px_10px_-6px_rgb(25_38_67/0.1)]',
           )}
         >
           <div className="grid w-full grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3 sm:gap-x-5 md:grid-cols-5 md:gap-x-4">

@@ -24,11 +24,19 @@ export const resolveHeaderPillLayout = (
     ? { edgeInsetClass: PILL_EDGE_INSET_HY_CLASS, contentInsetPx: PILL_CONTENT_INSET_HY_PX }
     : { edgeInsetClass: PILL_EDGE_INSET_CLASS, contentInsetPx: PILL_CONTENT_INSET_PX };
 
-/** Float gap above the pill — keeps pill height = navbar (h-16). */
+/** Float gap above the pill — keeps pill height = navbar. */
 export const PILL_TOP_OFFSET_CLASS = 'top-2';
+/** Public navbar / pill height — tuned to the compact brand lockup. */
 export const HEADER_HEIGHT_CLASS = 'h-16';
-/** Spacer under fixed pill chrome (safe-area + top inset + bar). */
+export const HEADER_PILL_HEIGHT_CLASS = 'h-16';
+/**
+ * Spacer under fixed pill chrome (safe-area + top inset `top-2` + bar `h-16`).
+ * Keep in sync with portal rail / map chrome tops that clear the header.
+ */
 export const HEADER_SPACER_CLASS = 'h-[calc(4.5rem+env(safe-area-inset-top,0px))]';
+/** Shared clear-header offset for fixed chrome below the public SiteHeader. */
+export const HEADER_CLEARANCE_TOP_CLASS =
+  'top-[calc(4.5rem+env(safe-area-inset-top,0px))]';
 
 export type SiteHeaderNavHref =
   | '/apartments'

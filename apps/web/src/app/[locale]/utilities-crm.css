@@ -18,8 +18,8 @@
     margin-bottom: -1.5rem;
     padding-top: 1.25rem;
     padding-bottom: 0.75rem;
-    height: calc(100svh / var(--desktop-layout-scale) - 5.5rem);
-    max-height: calc(100svh / var(--desktop-layout-scale) - 5.5rem);
+    height: calc(100svh / var(--desktop-layout-scale) - 4.5rem);
+    max-height: calc(100svh / var(--desktop-layout-scale) - 4.5rem);
   }
 
   @media (min-width: 768px) {

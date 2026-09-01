@@ -49,7 +49,7 @@ const navLinkClassName = (active: boolean, collapsed: boolean): string =>
     'motion-reduce:transition-none',
     collapsed ? 'justify-center px-2' : 'gap-3 px-3.5 text-base',
     active
-      ? 'text-brand-secondary'
+      ? 'text-brand'
       : 'text-on-dark/85 hover:bg-on-dark/10 hover:text-on-dark',
   );
 

@@ -10,6 +10,13 @@ export const PORTAL_RAIL_WIDTH_TRANSITION_CLASS =
 export const PORTAL_RAIL_INSET_TRANSITION_CLASS =
   'transition-[left] duration-[var(--duration-base)] ease-[var(--ease-out-premium)] motion-reduce:transition-none';
 
+/**
+ * Float the rail below SiteHeader (`4.5rem` spacer) with a clear air gap
+ * so the rounded teal panel does not kiss the pill.
+ */
+export const PORTAL_RAIL_TOP_CLASS =
+  'top-[calc(4.5rem+0.75rem+env(safe-area-inset-top,0px))]';
+
 /** Default localStorage key when layouts do not override. */
 export const PORTAL_RAIL_COLLAPSED_STORAGE_KEY = 'toonexpo.portal.rail-collapsed';
 

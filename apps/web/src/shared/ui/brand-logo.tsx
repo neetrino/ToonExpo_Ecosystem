@@ -1,44 +1,48 @@
 'use client';
 
+import Image from 'next/image';
 import type { MouseEvent } from 'react';
 
 import { Link, usePathname } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
+/** Shared lockup frame — color (pill) and white (over-hero) match 1:1. */
+const BRAND_LOGO_WIDTH = 464;
+const BRAND_LOGO_HEIGHT = 454;
+
+/** Color lockup when the navbar pill / solid chrome is visible. */
+const BRAND_LOGO_PILL_SRC = '/brand/toon-expo-logo-pill.png';
+
+/** White lockup over the home hero (transparent navbar). */
+const BRAND_LOGO_OVER_HERO_SRC = '/brand/toon-expo-logo-over-hero.png';
+
+const BRAND_LOGO_ALT = 'TOON EXPO — Real Estate and Construction Expo 2025';
+
 type BrandLogoProps = {
   href?: '/' | '/builder' | '/admin' | '/partner' | '/settings' | '/dashboard' | undefined;
   className?: string | undefined;
   badge?: string | undefined;
-  /** Light text over imagery (hero header). */
+  /**
+   * When true (navbar without pill / over hero), use the over-hero lockup.
+   * When false (pill / solid chrome), use the color pill lockup.
+   */
   inverted?: boolean | undefined;
   size?: 'sm' | 'md' | 'lg' | undefined;
-  /** Hide the house mark (compact portal rails). */
+  /** Kept for call-site compatibility — full lockup always includes the mark. */
   showMark?: boolean | undefined;
   /** Fired when logo scrolls to top while already on home. */
   onHomeClick?: (() => void) | undefined;
 };
 
-const wordmarkClassName = {
-  sm: 'text-base leading-none',
-  md: 'text-lg leading-7',
-  lg: 'text-xl leading-none',
+/** Full official lockup — sized to stay readable in chrome, not cropped. */
+const imageClassName = {
+  sm: 'h-[40px] w-[40px]',
+  md: 'h-[58px] w-[58px]',
+  lg: 'h-[68px] w-[68px]',
 } as const;
-
-const markClassName = {
-  sm: 'size-[22px]',
-  md: 'size-7',
-  lg: 'size-8',
-} as const;
-
-/** Figma header lockup on hero — roof brand-logo, body white (`81:607`). */
-const HERO_HOUSE_ROOF = 'var(--color-brand-logo)';
-const HERO_HOUSE_BODY = 'var(--color-on-dark)';
-/** Solid surfaces — roof brand-logo, body brand-deep. */
-const SOLID_HOUSE_ROOF = 'var(--color-brand-logo)';
-const SOLID_HOUSE_BODY = 'var(--color-brand-deep)';
 
 /**
- * TOON + EXPO wordmark with house mark — matches public header brand lockup.
+ * Official TOON EXPO lockup for public header / portal chrome.
  * On the home page, clicking the logo scrolls smoothly to the top.
  */
 export const BrandLogo = ({
@@ -47,12 +51,11 @@ export const BrandLogo = ({
   badge,
   inverted = false,
   size = 'md',
-  showMark = true,
   onHomeClick,
 }: BrandLogoProps) => {
   const pathname = usePathname();
-  const roofFill = inverted ? HERO_HOUSE_ROOF : SOLID_HOUSE_ROOF;
-  const bodyFill = inverted ? HERO_HOUSE_BODY : SOLID_HOUSE_BODY;
+  const overHero = inverted;
+  const src = overHero ? BRAND_LOGO_OVER_HERO_SRC : BRAND_LOGO_PILL_SRC;
 
   const onClick = (event: MouseEvent<HTMLAnchorElement>): void => {
     if (href !== '/') {
@@ -71,65 +74,29 @@ export const BrandLogo = ({
       href={href}
       onClick={onClick}
       className={cn(
-        'inline-flex gap-2 font-brand font-extrabold tracking-[-0.025em]',
+        'inline-flex gap-2',
         badge ? 'items-start' : 'items-center',
-        wordmarkClassName[size],
         className,
       )}
     >
-      {showMark ? (
-        <span className={cn('relative shrink-0', markClassName[size])} aria-hidden>
-          <HouseMark roofFill={roofFill} bodyFill={bodyFill} />
+      <Image
+        src={src}
+        alt={BRAND_LOGO_ALT}
+        width={BRAND_LOGO_WIDTH}
+        height={BRAND_LOGO_HEIGHT}
+        className={cn('object-contain', imageClassName[size])}
+        priority
+      />
+      {badge ? (
+        <span
+          className={cn(
+            'pt-1 text-[10px] font-semibold uppercase tracking-[0.14em]',
+            overHero ? 'text-on-dark/70' : 'text-ink-muted',
+          )}
+        >
+          {badge}
         </span>
       ) : null}
-      <span className="inline-flex flex-col items-start gap-1">
-        <span className="inline-flex whitespace-nowrap">
-          <span
-            className={cn(
-              'transition-colors duration-[520ms] ease-[var(--ease-out-premium)]',
-              inverted ? 'text-on-dark' : 'text-brand-deep',
-            )}
-          >
-            TOON
-          </span>
-          <span
-            className={cn(
-              'transition-colors duration-[520ms] ease-[var(--ease-out-premium)]',
-              inverted ? 'text-brand-logo' : 'text-brand-secondary',
-            )}
-          >
-            EXPO
-          </span>
-        </span>
-        {badge ? (
-          <span
-            className={cn(
-              'text-[10px] font-semibold uppercase tracking-[0.14em]',
-              inverted ? 'text-on-dark/70' : 'text-ink-muted',
-            )}
-          >
-            {badge}
-          </span>
-        ) : null}
-      </span>
     </Link>
-  );
-};
-
-type HouseMarkProps = {
-  roofFill: string;
-  bodyFill: string;
-};
-
-/** House mark paths from Figma node `81:607` (28×28). */
-const HouseMark = ({ roofFill, bodyFill }: HouseMarkProps) => {
-  return (
-    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" className="size-full">
-      <path
-        d="M3.5 15.75L14 5.25L19.25 9.625V6.125H22.75V12.25L24.5 14V15.75H3.5Z"
-        fill={roofFill}
-      />
-      <path d="M6.125 15.75H21.875V22.75H6.125V15.75Z" fill={bodyFill} />
-    </svg>
   );
 };

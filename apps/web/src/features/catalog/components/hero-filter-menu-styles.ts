@@ -4,7 +4,7 @@
  */
 export const HERO_FILTER_PANEL_CLASS =
   'w-full overflow-hidden rounded-[16px] border border-header-border bg-white ' +
-  'shadow-[0_18px_40px_rgb(9_43_68/0.14)]';
+  'shadow-[0_18px_40px_rgb(25_38_67/0.14)]';
 
 export const HERO_FILTER_OPTION_BASE_CLASS =
   'flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm ' +
