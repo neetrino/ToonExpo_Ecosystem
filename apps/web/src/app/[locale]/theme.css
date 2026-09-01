@@ -73,15 +73,15 @@
   --color-chart-4: #b8956c;
   --color-chart-5: #555c68;
 
-  /* Typography — Manrope UI + Outfit display + Noto Armenian */
+  /* Typography — Montserrat primary + Montserrat Arm (hy) per Toon Expo guideline */
   --font-ui:
-    var(--font-manrope), var(--font-noto-sans), var(--font-noto-sans-armenian), 'Segoe UI',
-    'Helvetica Neue', Arial, sans-serif;
+    var(--font-montserrat), var(--font-montserrat-arm), 'Segoe UI', 'Helvetica Neue', Arial,
+    sans-serif;
   --font-brand:
-    var(--font-outfit), var(--font-manrope), var(--font-noto-sans-armenian), var(--font-noto-sans),
+    var(--font-montserrat), var(--font-montserrat-arm), 'Segoe UI', 'Helvetica Neue', Arial,
     sans-serif;
   --font-display:
-    var(--font-outfit), var(--font-manrope), var(--font-noto-sans-armenian), var(--font-noto-sans),
+    var(--font-montserrat), var(--font-montserrat-arm), 'Segoe UI', 'Helvetica Neue', Arial,
     sans-serif;
 
   /* Radii */

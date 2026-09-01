@@ -6,13 +6,15 @@ import type { MouseEvent } from 'react';
 import { Link, usePathname } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
-const BRAND_LOGO_PILL_SRC = '/brand/toon-expo-logo.png';
-const BRAND_LOGO_PILL_WIDTH = 366;
-const BRAND_LOGO_PILL_HEIGHT = 364;
+/** Shared lockup frame — color (pill) and white (over-hero) match 1:1. */
+const BRAND_LOGO_WIDTH = 464;
+const BRAND_LOGO_HEIGHT = 454;
 
+/** Color lockup when the navbar pill / solid chrome is visible. */
+const BRAND_LOGO_PILL_SRC = '/brand/toon-expo-logo-pill.png';
+
+/** White lockup over the home hero (transparent navbar). */
 const BRAND_LOGO_OVER_HERO_SRC = '/brand/toon-expo-logo-over-hero.png';
-const BRAND_LOGO_OVER_HERO_WIDTH = 464;
-const BRAND_LOGO_OVER_HERO_HEIGHT = 454;
 
 const BRAND_LOGO_ALT = 'TOON EXPO — Real Estate and Construction Expo 2025';
 
@@ -22,7 +24,7 @@ type BrandLogoProps = {
   badge?: string | undefined;
   /**
    * When true (navbar without pill / over hero), use the over-hero lockup.
-   * When false (pill / solid chrome), use the white-background lockup.
+   * When false (pill / solid chrome), use the color pill lockup.
    */
   inverted?: boolean | undefined;
   size?: 'sm' | 'md' | 'lg' | undefined;
@@ -54,8 +56,6 @@ export const BrandLogo = ({
   const pathname = usePathname();
   const overHero = inverted;
   const src = overHero ? BRAND_LOGO_OVER_HERO_SRC : BRAND_LOGO_PILL_SRC;
-  const width = overHero ? BRAND_LOGO_OVER_HERO_WIDTH : BRAND_LOGO_PILL_WIDTH;
-  const height = overHero ? BRAND_LOGO_OVER_HERO_HEIGHT : BRAND_LOGO_PILL_HEIGHT;
 
   const onClick = (event: MouseEvent<HTMLAnchorElement>): void => {
     if (href !== '/') {
@@ -82,14 +82,9 @@ export const BrandLogo = ({
       <Image
         src={src}
         alt={BRAND_LOGO_ALT}
-        width={width}
-        height={height}
-        className={cn(
-          'object-contain',
-          // Keep the white plate on the pill lockup only.
-          !overHero && 'bg-white',
-          imageClassName[size],
-        )}
+        width={BRAND_LOGO_WIDTH}
+        height={BRAND_LOGO_HEIGHT}
+        className={cn('object-contain', imageClassName[size])}
         priority
       />
       {badge ? (
