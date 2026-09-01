@@ -25,7 +25,7 @@ describe('validateGlbFile', () => {
     expect(validateGlbFile(makeFile('tower.glb', 1024, 'image/png'))).toBe('type');
   });
 
-  it('rejects files over the 15 MB limit', () => {
+  it('rejects files over the GLB size limit', () => {
     const oversized = new File([new Uint8Array(1)], 'tower.glb', {
       type: 'model/gltf-binary',
     });
