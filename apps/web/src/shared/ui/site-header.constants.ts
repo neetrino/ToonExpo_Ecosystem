@@ -24,11 +24,13 @@ export const resolveHeaderPillLayout = (
     ? { edgeInsetClass: PILL_EDGE_INSET_HY_CLASS, contentInsetPx: PILL_CONTENT_INSET_HY_PX }
     : { edgeInsetClass: PILL_EDGE_INSET_CLASS, contentInsetPx: PILL_CONTENT_INSET_PX };
 
-/** Float gap above the pill — keeps pill height = navbar (h-16). */
+/** Float gap above the pill — keeps pill height = navbar. */
 export const PILL_TOP_OFFSET_CLASS = 'top-2';
-export const HEADER_HEIGHT_CLASS = 'h-16';
+/** Public navbar / pill height — fits the full square brand lockup. */
+export const HEADER_HEIGHT_CLASS = 'h-20';
+export const HEADER_PILL_HEIGHT_CLASS = 'h-20';
 /** Spacer under fixed pill chrome (safe-area + top inset + bar). */
-export const HEADER_SPACER_CLASS = 'h-[calc(4.5rem+env(safe-area-inset-top,0px))]';
+export const HEADER_SPACER_CLASS = 'h-[calc(5.5rem+env(safe-area-inset-top,0px))]';
 
 export type SiteHeaderNavHref =
   | '/apartments'

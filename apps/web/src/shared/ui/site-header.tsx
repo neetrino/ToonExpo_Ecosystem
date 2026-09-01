@@ -21,6 +21,7 @@ import {
   BURGER_BACKDROP_MS,
   BURGER_MENU_MS,
   HEADER_HEIGHT_CLASS,
+  HEADER_PILL_HEIGHT_CLASS,
   HEADER_SPACER_CLASS,
   isSiteHeaderNavActive,
   PILL_APPEAR_MS,
@@ -165,7 +166,8 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
           <div
             aria-hidden
             className={cn(
-              'pointer-events-none absolute h-16 rounded-full bg-surface-elevated',
+              'pointer-events-none absolute rounded-full bg-surface-elevated',
+              HEADER_PILL_HEIGHT_CLASS,
               PILL_TOP_OFFSET_CLASS,
               edgeInsetClass,
               'shadow-[0_4px_24px_rgb(9_43_68/0.1)]',

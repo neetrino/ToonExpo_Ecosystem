@@ -11,8 +11,8 @@ export const PUBLIC_GEO_MAP_MODELS_PATH = '/geo-map/models';
 export const PUBLIC_GEO_MAP_MAP_HEIGHT_CLASS = 'h-svh min-h-[22rem] sm:min-h-[28rem] lg:min-h-[36rem]';
 
 /**
- * Camera controls top — clears fixed SiteHeader spacer (`4.5rem` + safe-area)
+ * Camera controls top — clears fixed SiteHeader spacer (`5.5rem` + safe-area)
  * plus the usual `0.625rem` inset so the stack sits below the burger / pill.
  */
 export const PUBLIC_GEO_MAP_CAMERA_CONTROLS_POSITION_CLASS =
-  'top-[calc(4.5rem+env(safe-area-inset-top,0px)+0.625rem)] right-2.5';
+  'top-[calc(5.5rem+env(safe-area-inset-top,0px)+0.625rem)] right-2.5';
