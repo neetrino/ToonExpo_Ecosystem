@@ -31,9 +31,11 @@ export const ProjectCatalogVideoSection = async ({
       <ProjectCatalogMediaPoster
         title={title}
         imageSrc={preview.posterSrc}
-        imageFallbackSrc={preview.posterFallbackSrc}
         href={preview.href}
         openLabel={openLabel}
+        {...(preview.posterFallbackSrc != null
+          ? { imageFallbackSrc: preview.posterFallbackSrc }
+          : {})}
       />
     );
   }

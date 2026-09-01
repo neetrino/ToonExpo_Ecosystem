@@ -28,8 +28,8 @@ export const ProjectCatalogMediaPoster = ({
       {imageSrc != null ? (
         <ProjectCatalogPosterImage
           src={imageSrc}
-          fallbackSrc={imageFallbackSrc}
           alt={title}
+          {...(imageFallbackSrc != null ? { fallbackSrc: imageFallbackSrc } : {})}
         />
       ) : null}
       <div className="absolute inset-0 bg-ink/25" aria-hidden />
