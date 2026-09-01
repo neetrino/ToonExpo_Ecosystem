@@ -1,31 +1,37 @@
-import Image from 'next/image';
 import { Play } from 'lucide-react';
 
+import { ProjectCatalogPosterImage } from '@/features/catalog/components/project-catalog-poster-image';
 import { cn } from '@/shared/ui/cn';
 
 type ProjectCatalogMediaPosterProps = {
   title: string;
-  imageSrc: string;
+  /** Real media thumbnail when available; omit for a plain play-frame (no stock placeholder). */
+  imageSrc?: string;
+  /** Used when `imageSrc` is missing/tiny (e.g. YouTube without maxres). */
+  imageFallbackSrc?: string;
   href?: string;
+  openLabel?: string;
 };
 
 /**
- * Aspect-video poster with play affordance (video / interactive tour placeholders).
+ * Aspect-video poster with play affordance (video / interactive tour).
  */
 export const ProjectCatalogMediaPoster = ({
   title,
   imageSrc,
+  imageFallbackSrc,
   href,
+  openLabel,
 }: ProjectCatalogMediaPosterProps) => {
   const content = (
     <>
-      <Image
-        src={imageSrc}
-        alt={title}
-        fill
-        className="object-cover"
-        sizes="(max-width: 768px) 100vw, 720px"
-      />
+      {imageSrc != null ? (
+        <ProjectCatalogPosterImage
+          src={imageSrc}
+          fallbackSrc={imageFallbackSrc}
+          alt={title}
+        />
+      ) : null}
       <div className="absolute inset-0 bg-ink/25" aria-hidden />
       <span
         className={cn(
@@ -51,6 +57,7 @@ export const ProjectCatalogMediaPoster = ({
         href={href}
         target="_blank"
         rel="noopener noreferrer"
+        aria-label={openLabel ?? title}
         className={cn(
           frameClassName,
           'block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/25',
