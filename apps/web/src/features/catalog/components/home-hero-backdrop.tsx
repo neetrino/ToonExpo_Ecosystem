@@ -57,6 +57,11 @@ export const HomeHeroBackdrop = ({ imageUrls, children }: HomeHeroBackdropProps)
             </div>
           );
         })}
+        {/* Dark scrim so on-dark text stays readable on any banner photo */}
+        <div
+          className="pointer-events-none absolute inset-0 z-[1] bg-black/30"
+          aria-hidden
+        />
       </div>
       {canRotate ? (
         <HomeHeroNavButtons
