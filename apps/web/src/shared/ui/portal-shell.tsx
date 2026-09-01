@@ -27,11 +27,13 @@ import { MOBILE_BOTTOM_NAV_CONTENT_PB_CLASS } from '@/shared/ui/mobile-bottom-na
 import { PortalRailDesktopAside } from '@/shared/ui/portal-rail-desktop-aside';
 import {
   PORTAL_RAIL_COLLAPSED_STORAGE_KEY,
+  PORTAL_RAIL_TOP_CLASS,
   PORTAL_RAIL_WIDTH_COLLAPSED_CLASS,
   PORTAL_RAIL_WIDTH_EXPANDED_CLASS,
   PORTAL_RAIL_INSET_TRANSITION_CLASS,
   PORTAL_RAIL_WIDTH_TRANSITION_CLASS,
 } from '@/shared/ui/portal-rail.constants';
+import { HEADER_SPACER_CLASS } from '@/shared/ui/site-header.constants';
 
 type PortalShellProps = {
   brandHref: '/builder' | '/admin' | '/partner' | '/settings' | '/dashboard';
@@ -79,17 +81,18 @@ type PortalShellProps = {
 
 /**
  * SiteHeader pill chrome is ~4.5rem (top inset + h-16).
- * Sidebar is pinned with top + bottom (not a fixed vh height) so the full
+ * Sidebar floats below that with an air gap so it does not kiss the pill.
+ * Rail is pinned with top + bottom (not a fixed vh height) so the full
  * rail stays inside the visual viewport at any zoom / short screen.
  * Rail chrome runs under the bottom nav (lower z-index); inner padding keeps labels clear.
  * Main-column mask matches sidebar top so scrolled content vanishes from that edge.
  */
-const RAIL_CHROME_TOP_CLASS = 'top-[calc(5.5rem+env(safe-area-inset-top,0px))]';
+const RAIL_CHROME_TOP_CLASS = PORTAL_RAIL_TOP_CLASS;
 const RAIL_CHROME_BOTTOM_CLASS = 'bottom-0';
 /** Header spacer band under the fixed pill. */
-const RAIL_HEADER_BAND_HEIGHT_CLASS = 'h-[calc(4.5rem+env(safe-area-inset-top,0px))]';
+const RAIL_HEADER_BAND_HEIGHT_CLASS = HEADER_SPACER_CLASS;
 /** Main-column clip — slightly below sidebar top so content vanishes a bit lower. */
-const RAIL_CONTENT_MASK_HEIGHT_CLASS = 'h-[calc(6rem+env(safe-area-inset-top,0px))]';
+const RAIL_CONTENT_MASK_HEIGHT_CLASS = 'h-[calc(5.75rem+env(safe-area-inset-top,0px))]';
 /** Narrower than desktop rail so the drawer leaves more page visible on phones. */
 const MOBILE_DRAWER_WIDTH_CLASS = 'w-[min(72vw,14rem)]';
 /** Armenian labels need a touch more room in the mobile drawer. */
@@ -245,7 +248,7 @@ export const PortalShell = ({
             className={cn(
               'relative flex h-full w-full flex-col overflow-hidden p-4',
               'rounded-tr-[2.5rem] rounded-br-[2.5rem] shadow-[8px_0_40px_rgb(14_15_20/0.14)]',
-              isRail ? 'bg-brand-secondary' : 'border-r border-border bg-surface-elevated',
+              isRail ? 'bg-brand' : 'border-r border-border bg-surface-elevated',
             )}
             style={{ zIndex: SIDE_SHEET_PANEL_Z_INDEX }}
           >
@@ -312,7 +315,7 @@ export const PortalShell = ({
             >
               <div
                 className={cn(
-                  'flex h-full min-h-0 flex-col overflow-hidden rounded-tr-[2.5rem] rounded-br-[2.5rem] bg-brand-secondary p-4',
+                  'flex h-full min-h-0 flex-col overflow-hidden rounded-tr-[2.5rem] rounded-br-[2.5rem] bg-brand p-4',
                   MOBILE_BOTTOM_NAV_CONTENT_PB_CLASS,
                 )}
               >

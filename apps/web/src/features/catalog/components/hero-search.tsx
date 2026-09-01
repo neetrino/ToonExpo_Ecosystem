@@ -89,7 +89,7 @@ export const HeroSearch = ({ className, locations = [], projects = [] }: HeroSea
         suppressHydrationWarning
         className={cn(
           'w-full rounded-[20px] bg-surface-elevated p-2 lg:w-fit',
-          'shadow-[0_20px_25px_-5px_rgb(9_43_68/0.05),0_8px_10px_-6px_rgb(9_43_68/0.05)]',
+          'shadow-[0_20px_25px_-5px_rgb(25_38_67/0.05),0_8px_10px_-6px_rgb(25_38_67/0.05)]',
           'ring-1 ring-header-border',
         )}
       >

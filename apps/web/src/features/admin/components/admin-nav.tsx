@@ -53,7 +53,7 @@ const navLinkClassName = (active: boolean, collapsed: boolean, nested = false): 
         ? 'h-9 gap-2.5 px-3.5 text-sm leading-snug'
         : 'h-10 gap-2.5 px-3.5 text-[0.9375rem] leading-snug',
     active
-      ? 'text-brand-secondary'
+      ? 'text-brand'
       : 'text-on-dark/85 hover:bg-on-dark/10 hover:text-on-dark',
   );
 

@@ -1,15 +1,15 @@
 @theme {
-  /* Brand — refined teal with deeper secondary */
-  --color-brand: #1a8f98;
-  --color-brand-hover: #157a82;
-  --color-brand-soft: #e6f4f5;
-  --color-brand-secondary: #2a667b;
-  --color-brand-deep: #092b44;
-  /* Figma header mark / EXPO on hero (`81:607`) */
-  --color-brand-logo: #2ba8b0;
-  --color-ink-navy: #0b2230;
+  /* Brand — Toon Expo guideline: Metallic Seaweed + Yankees Blue */
+  --color-brand: #027691;
+  --color-brand-hover: #02647b;
+  --color-brand-soft: #ebf4f6;
+  --color-brand-secondary: #0e4e6a;
+  --color-brand-deep: #192643;
+  /* Logo mark / EXPO accent — Metallic Seaweed */
+  --color-brand-logo: #027691;
+  --color-ink-navy: #192643;
   --color-canvas: #fafcfd;
-  --color-band-mist: #daf0f7;
+  --color-band-mist: #d9eaee;
   --color-header-bg: rgb(250 252 253 / 0.85);
   --color-header-border: #dde6eb;
   --color-header-muted: #536672;
@@ -36,10 +36,10 @@
   /* Borders */
   --color-border: #e3e0d9;
   --color-border-strong: #cdc9c0;
-  --color-border-focus: #1a8f98;
+  --color-border-focus: #027691;
 
-  /* CTA — same deep navy as property list / public browse CTAs */
-  --color-cta-dark: #092b44;
+  /* CTA — Yankees Blue */
+  --color-cta-dark: #192643;
 
   /* Status */
   --color-success: #0d9f6e;
@@ -67,7 +67,7 @@
   --color-map-hotspot-fill: rgb(232 140 72 / 0.16);
   --color-map-hotspot-fill-hover: rgb(232 140 72 / 0.28);
   --color-map-hotspot-fill-active: rgb(232 140 72 / 0.35);
-  --color-chart-1: #1a8f98;
+  --color-chart-1: #027691;
   --color-chart-2: #1e4f5f;
   --color-chart-3: #0d9f6e;
   --color-chart-4: #b8956c;

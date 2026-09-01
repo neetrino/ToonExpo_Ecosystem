@@ -170,7 +170,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
               HEADER_PILL_HEIGHT_CLASS,
               PILL_TOP_OFFSET_CLASS,
               edgeInsetClass,
-              'shadow-[0_4px_24px_rgb(9_43_68/0.1)]',
+              'shadow-[0_4px_24px_rgb(25_38_67/0.1)]',
               'transition-opacity ease-[var(--ease-out-premium)] motion-reduce:transition-none',
             )}
             style={{

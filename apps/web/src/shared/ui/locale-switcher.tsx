@@ -143,7 +143,7 @@ const LocaleSwitcherInner = ({ tone = 'light' }: LocaleSwitcherProps) => {
               )
             : cn(
                 'text-brand-deep hover:bg-brand-deep/[0.06]',
-                open && 'bg-brand-deep/[0.08] shadow-[inset_0_0_0_1px_rgb(9_43_68/0.08)]',
+                open && 'bg-brand-deep/[0.08] shadow-[inset_0_0_0_1px_rgb(25_38_67/0.08)]',
               ),
         )}
         aria-label={t('languageLabel')}

@@ -36,9 +36,9 @@ type BrandLogoProps = {
 
 /** Full official lockup — sized to stay readable in chrome, not cropped. */
 const imageClassName = {
-  sm: 'h-[46px] w-[46px]',
-  md: 'h-[70px] w-[70px]',
-  lg: 'h-[78px] w-[78px]',
+  sm: 'h-[40px] w-[40px]',
+  md: 'h-[58px] w-[58px]',
+  lg: 'h-[68px] w-[68px]',
 } as const;
 
 /**
