@@ -35,6 +35,7 @@ export const GeoMapGlbUploader = ({
   const rootRef = useRef<HTMLDivElement>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const maxMb = Math.round(GEO_MAP_GLB_MAX_BYTES / (1024 * 1024));
 
   useEffect(() => {
     if (!fileName) {
@@ -46,7 +47,7 @@ export const GeoMapGlbUploader = ({
   const handleFile = async (file: File): Promise<void> => {
     const code = validateGlbFile(file);
     if (code) {
-      setError(t(`errors.${code}`));
+      setError(t(`errors.${code}`, { maxMb }));
       return;
     }
 
@@ -65,8 +66,6 @@ export const GeoMapGlbUploader = ({
       setBusy(false);
     }
   };
-
-  const maxMb = Math.round(GEO_MAP_GLB_MAX_BYTES / (1024 * 1024));
 
   return (
     <div ref={rootRef} className="flex flex-col gap-2">

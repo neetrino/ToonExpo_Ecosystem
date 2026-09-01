@@ -90,13 +90,30 @@ NestJS owns upload authorization, validation and persistence; R2 stores bytes; P
 
 | Step          | Owner                                                     | Notes                                                                                                                |
 | ------------- | --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| Upload        | `POST /api/v1/portal/media` or `POST /api/v1/admin/media` | Multipart; MIME whitelist; max size enforced server-side                                                             |
+| Upload (images) | `POST /api/v1/portal/media` or `POST /api/v1/admin/media` | Multipart; MIME whitelist; max 10 MB                                                                              |
+| Upload (GLB)  | `POST /admin/media/uploads/presign` → browser PUT → `…/complete` | Direct-to-R2; bypasses Cloud Run 32 MB body limit; max 100 MB                                               |
 | Storage       | `R2StorageService` (S3-compatible)                        | Object keys scoped by uploader role and entity context                                                               |
 | Metadata      | Prisma `MediaAsset`                                       | Public URL, dimensions (when image), ownership                                                                       |
 | Wiring        | Catalog, partners, company forms                          | Project/building covers, floor/apartment plans, venue maps, partner logo/cover, company logo via `PATCH /company/me` |
 | Degraded mode | Empty R2 env vars                                         | Upload endpoints return 503; URL/`mediaAssetId` fields still accept manual values                                    |
 
 Required env: `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME`, `R2_PUBLIC_URL`. See `.env.example`.
+
+**R2 bucket CORS (required for direct GLB upload):** allow `PUT` from web origins (`http://localhost:3000`, staging, production) with `Content-Type` header. Example:
+
+```json
+[
+  {
+    "AllowedOrigins": ["http://localhost:3000", "https://YOUR_WEB_DOMAIN"],
+    "AllowedMethods": ["PUT", "GET", "HEAD"],
+    "AllowedHeaders": ["Content-Type"],
+    "ExposeHeaders": ["ETag"],
+    "MaxAgeSeconds": 3600
+  }
+]
+```
+
+Configure in Cloudflare Dashboard → R2 → bucket → Settings → CORS policy.
 
 ## Same-Origin API Proxy (`apps/web`)
 

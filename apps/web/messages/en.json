@@ -1447,7 +1447,7 @@
         "selected": "Uploaded: {name}",
         "errors": {
           "type": "Only .glb files are allowed.",
-          "size": "File must be 15 MB or smaller.",
+          "size": "File must be {maxMb} MB or smaller.",
           "uploadFailed": "Upload failed. Try again.",
           "notConfigured": "Media upload is not configured on the server."
         }

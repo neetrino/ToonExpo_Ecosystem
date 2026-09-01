@@ -5,6 +5,7 @@ import { CompanyMemberGuard } from "../company/guards/company-member.guard.js";
 import type { AppEnv } from "../config/env.validation.js";
 import { AdminMediaController } from "./admin/admin-media.controller.js";
 import { isR2ConfiguredFromService } from "./media.config.js";
+import { MediaDirectUploadService } from "./media-direct-upload.service.js";
 import { MediaUploadService } from "./media-upload.service.js";
 import { R2_STORAGE } from "./media.types.js";
 import { PortalMediaController } from "./portal/portal-media.controller.js";
@@ -24,6 +25,7 @@ const createR2Storage = (
   controllers: [PortalMediaController, AdminMediaController],
   providers: [
     MediaUploadService,
+    MediaDirectUploadService,
     {
       provide: R2_STORAGE,
       inject: [ConfigService],
@@ -31,6 +33,6 @@ const createR2Storage = (
     },
     CompanyMemberGuard,
   ],
-  exports: [MediaUploadService],
+  exports: [MediaUploadService, MediaDirectUploadService],
 })
 export class MediaModule {}
