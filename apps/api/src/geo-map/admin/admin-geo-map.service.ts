@@ -1,9 +1,4 @@
-import {
-  BadRequestException,
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import type { AdminGeoMapModelItem, AdminGeoMapModelListResponse } from '@toonexpo/contracts';
 import type { Prisma } from '@toonexpo/db';
 
@@ -26,8 +21,6 @@ const adminInclude = {
 
 type ModelIdentity = {
   id: string;
-  projectId: string | null;
-  isPublished: boolean;
 };
 
 @Injectable()
@@ -49,7 +42,6 @@ export class AdminGeoMapService {
       await this.assertNoExistingModel(dto.projectId);
     }
     await this.requireMediaAsset(dto.mediaAssetId);
-    this.assertPublishAllowed(dto.isPublished ?? false, dto.projectId ?? null);
 
     const row = await this.prisma.db.projectMapModel.create({
       data: this.buildCreateData(userId, dto),
@@ -64,7 +56,7 @@ export class AdminGeoMapService {
     userId: string,
     dto: UpdateGeoMapModelDto,
   ): Promise<AdminGeoMapModelItem> {
-    const existing = await this.requireModel(id);
+    await this.requireModel(id);
 
     if (dto.mediaAssetId !== undefined) {
       await this.requireMediaAsset(dto.mediaAssetId);
@@ -74,10 +66,6 @@ export class AdminGeoMapService {
       await this.requireProject(dto.projectId);
       await this.assertNoExistingModel(dto.projectId, id);
     }
-
-    const nextProjectId = dto.projectId !== undefined ? dto.projectId : existing.projectId;
-    const nextPublished = dto.isPublished !== undefined ? dto.isPublished : existing.isPublished;
-    this.assertPublishAllowed(nextPublished, nextProjectId);
 
     const row = await this.prisma.db.projectMapModel.update({
       where: { id },
@@ -162,12 +150,6 @@ export class AdminGeoMapService {
     return data;
   }
 
-  private assertPublishAllowed(isPublished: boolean, projectId: string | null): void {
-    if (isPublished && !projectId) {
-      throw new BadRequestException('Cannot publish a geo map model without an attached project');
-    }
-  }
-
   private async requireProject(projectId: string): Promise<void> {
     const project = await this.prisma.db.project.findUnique({
       where: { id: projectId },
@@ -191,7 +173,7 @@ export class AdminGeoMapService {
   private async requireModel(id: string): Promise<ModelIdentity> {
     const model = await this.prisma.db.projectMapModel.findUnique({
       where: { id },
-      select: { id: true, projectId: true, isPublished: true },
+      select: { id: true },
     });
     if (!model) {
       throw new NotFoundException('Geo map model not found');

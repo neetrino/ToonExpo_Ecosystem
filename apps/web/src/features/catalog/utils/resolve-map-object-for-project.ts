@@ -2,7 +2,6 @@ import type { GeoMapObject } from '@/features/geo-map/types';
 
 /**
  * Resolves the published geo-map object for a project id.
- * Public payloads use `projectId` as the object id (one model per project).
  */
 export const resolveMapObjectForProject = <T extends Pick<GeoMapObject, 'id' | 'projectId'>>(
   objects: readonly T[],

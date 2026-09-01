@@ -1434,11 +1434,10 @@
         "replacing": "Replacing model…",
         "replaceError": "Could not replace the model. Try again.",
         "attachTitle": "Attach to a project",
-        "attachHint": "This model is not linked yet. Choose a free project to publish it.",
+        "attachHint": "Optional — link a free project so visitors can open its page from the map.",
         "attach": "Attach project",
         "attaching": "Attaching…",
-        "attachError": "Could not attach the project. Try again.",
-        "publishRequiresProject": "Publish is available after a project is attached."
+        "attachError": "Could not attach the project. Try again."
       },
       "upload": {
         "label": "GLB model",

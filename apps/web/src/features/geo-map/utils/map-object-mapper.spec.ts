@@ -33,6 +33,7 @@ const adminItem: AdminGeoMapModelItem = {
 };
 
 const publicItem: PublicGeoMapModelItem = {
+  id: 'pmm_1',
   projectId: 'proj_1',
   projectSlug: 'toon-towers',
   projectName: 'Toon Towers',
@@ -91,9 +92,9 @@ describe('mapAdminGeoMapItemToObject', () => {
 });
 
 describe('mapPublicGeoMapItemToObject', () => {
-  it('parses Decimal strings into numbers and falls back to projectId as the object id', () => {
+  it('parses Decimal strings into numbers and uses the model id as the object id', () => {
     expect(mapPublicGeoMapItemToObject(publicItem)).toEqual({
-      id: 'proj_1',
+      id: 'pmm_1',
       projectId: 'proj_1',
       projectSlug: 'toon-towers',
       label: 'Toon Towers',
@@ -112,7 +113,31 @@ describe('mapPublicGeoMapItemToObject', () => {
     });
   });
 
+  it('maps unassigned published models with an empty label', () => {
+    expect(
+      mapPublicGeoMapItemToObject({
+        ...publicItem,
+        projectId: null,
+        projectSlug: null,
+        projectName: null,
+        logoUrl: null,
+        address: null,
+        city: null,
+        district: null,
+      }),
+    ).toEqual(
+      expect.objectContaining({
+        id: 'pmm_1',
+        projectId: null,
+        projectSlug: null,
+        label: '',
+        logoUrl: null,
+        addressLine: null,
+      }),
+    );
+  });
+
   it('maps a batch preserving order', () => {
-    expect(mapPublicGeoMapItemsToObjects([publicItem]).map((item) => item.id)).toEqual(['proj_1']);
+    expect(mapPublicGeoMapItemsToObjects([publicItem]).map((item) => item.id)).toEqual(['pmm_1']);
   });
 });
