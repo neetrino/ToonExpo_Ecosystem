@@ -66,10 +66,13 @@ export type UpdateGeoMapModelRequest = {
 };
 
 export type PublicGeoMapModelItem = {
-  projectId: string;
-  projectSlug: string;
-  projectName: string;
-  /** Builder company logo URL; null when the company has no logo media. */
+  /** Stable `ProjectMapModel` id (used as the canvas object id). */
+  id: string;
+  /** Null when published without an attached catalog project. */
+  projectId: string | null;
+  projectSlug: string | null;
+  projectName: string | null;
+  /** Builder company logo URL; null when unassigned or the company has no logo media. */
   logoUrl: string | null;
   /** Street address as entered on the project record; shown on the map hover card. */
   address: string | null;

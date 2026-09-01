@@ -27,7 +27,6 @@ export class PublicGeoMapService {
   buildPublishedWhere(): Prisma.ProjectMapModelWhereInput {
     return {
       isPublished: true,
-      NOT: { projectId: null },
     };
   }
 

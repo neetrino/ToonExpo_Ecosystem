@@ -48,13 +48,12 @@ export const mapAdminGeoMapItemsToObjects = (items: AdminGeoMapModelItem[]): Geo
 
 /**
  * Maps a public API item (`GET /public/geo-map/models`) to the canvas view-model.
- * Public payloads carry one model per project (v1), so `projectId` doubles as the object id.
  */
 export const mapPublicGeoMapItemToObject = (item: PublicGeoMapModelItem): GeoMapObject => ({
-  id: item.projectId,
+  id: item.id,
   projectId: item.projectId,
   projectSlug: item.projectSlug,
-  label: item.projectName,
+  label: item.projectName ?? '',
   logoUrl: item.logoUrl,
   addressLine: formatGeoMapAddressLine(item),
   modelUrl: item.modelUrl,

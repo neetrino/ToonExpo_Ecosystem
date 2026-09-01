@@ -24,10 +24,9 @@ describe('PublicGeoMapService', () => {
     projectMapModelFindMany.mockResolvedValue([]);
   });
 
-  it('filters public listing to published models attached to a project', () => {
+  it('filters public listing to published models', () => {
     expect(service.buildPublishedWhere()).toEqual({
       isPublished: true,
-      NOT: { projectId: null },
     });
   });
 
@@ -70,11 +69,12 @@ describe('PublicGeoMapService', () => {
 
     expect(projectMapModelFindMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { isPublished: true, NOT: { projectId: null } },
+        where: { isPublished: true },
       }),
     );
     expect(result.data).toHaveLength(1);
     expect(result.data[0]).toEqual({
+      id: 'pmm_1',
       projectId: 'proj_1',
       projectSlug: 'demo-tower',
       projectName: 'Demo Tower',
@@ -93,6 +93,45 @@ describe('PublicGeoMapService', () => {
       scale: '1',
       minZoom: '14',
     });
+  });
+
+  it('maps null project fields when the model is unassigned', async () => {
+    projectMapModelFindMany.mockResolvedValue([
+      {
+        id: 'pmm_free',
+        projectId: null,
+        mediaAssetId: 'media_free',
+        sourceOsmId: null,
+        longitude: decimal('44.7'),
+        latitude: decimal('40.3'),
+        altitudeM: decimal('0'),
+        headingDeg: decimal('0'),
+        pitchDeg: decimal('0'),
+        rollDeg: decimal('0'),
+        scale: decimal('1'),
+        minZoom: decimal('14'),
+        isPublished: true,
+        createdByUserId: 'user_1',
+        updatedByUserId: null,
+        createdAt: new Date('2026-07-31T10:00:00.000Z'),
+        updatedAt: new Date('2026-07-31T10:00:00.000Z'),
+        project: null,
+        mediaAsset: { fileUrl: 'https://cdn.example.com/free.glb' },
+      },
+    ]);
+
+    const result = await service.listPublished();
+
+    expect(result.data[0]).toEqual(
+      expect.objectContaining({
+        id: 'pmm_free',
+        projectId: null,
+        projectSlug: null,
+        projectName: null,
+        logoUrl: null,
+        modelUrl: 'https://cdn.example.com/free.glb',
+      }),
+    );
   });
 
   it('maps null logoUrl when the builder has no logo media', async () => {
