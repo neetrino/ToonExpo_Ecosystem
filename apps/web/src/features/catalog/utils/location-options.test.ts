@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   collectProjectCities,
   compareLocationOptions,
+  expandCityFilterValues,
   mergeLocationOptions,
 } from './location-options';
 
@@ -29,11 +30,17 @@ describe('collectProjectCities', () => {
       ] as never),
     ).toEqual(['Yerevan', 'Gyumri']);
   });
+
+  it('collapses cross-script Yerevan aliases', () => {
+    expect(
+      collectProjectCities([{ city: 'Yerevan' }, { city: 'Երևան' }, { city: 'Ереван' }] as never),
+    ).toEqual(['Yerevan']);
+  });
 });
 
 describe('mergeLocationOptions', () => {
   it('merges without case-sensitive duplicates and pins Yerevan', () => {
-    expect(mergeLocationOptions(['Yerevan'], ['yerevan', 'Gyumri', 'Vanadzor'])).toEqual([
+    expect(mergeLocationOptions(['Yerevan'], ['Yerevan', 'Gyumri', 'Vanadzor'])).toEqual([
       'Yerevan',
       'Gyumri',
       'Vanadzor',
@@ -46,5 +53,29 @@ describe('mergeLocationOptions', () => {
       'Գյումրի',
       'Դիլիջան',
     ]);
+  });
+
+  it('collapses EN and HY Yerevan preferring popular locale spelling', () => {
+    expect(mergeLocationOptions(['Երևան', 'Gyumri'], ['Yerevan', 'Gyumri'])).toEqual([
+      'Yerevan',
+      'Gyumri',
+    ]);
+  });
+
+  it('collapses EN and HY Yerevan when UI is Armenian', () => {
+    expect(mergeLocationOptions(['Yerevan'], ['Երևան', 'Գյումրի'])).toEqual([
+      'Երևան',
+      'Գյումրի',
+    ]);
+  });
+});
+
+describe('expandCityFilterValues', () => {
+  it('expands Yerevan to all locale spellings', () => {
+    expect(expandCityFilterValues(['Yerevan'])).toEqual(['Yerevan', 'Երևան', 'Ереван']);
+  });
+
+  it('passes through unknown cities', () => {
+    expect(expandCityFilterValues(['Ashtarak'])).toEqual(['Ashtarak']);
   });
 });

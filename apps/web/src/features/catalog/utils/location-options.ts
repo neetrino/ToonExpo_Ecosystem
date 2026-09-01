@@ -1,10 +1,45 @@
 import type { ProjectListItem } from '@toonexpo/contracts';
 
-/** Canonical / localized names for the capital — always listed first. */
-const PINNED_CITY_KEYS = new Set(['yerevan', 'երևան', 'ереван']);
+/**
+ * Same city in EN / HY / RU — one option in the picker; all spellings match in filters.
+ * Lookup is case-insensitive via `toLocaleLowerCase()`.
+ */
+const CITY_ALIAS_GROUPS: readonly (readonly string[])[] = [
+  ['Yerevan', 'Երևան', 'Ереван'],
+  ['Gyumri', 'Գյումրի', 'Гюмри'],
+  ['Vanadzor', 'Վանաձոր', 'Ванадзор'],
+  ['Dilijan', 'Դիլիջան', 'Дилижан'],
+  ['Tsaghkadzor', 'Ծաղկաձոր', 'Цахкадзор'],
+];
 
-const isPinnedCity = (city: string): boolean =>
-  PINNED_CITY_KEYS.has(city.trim().toLocaleLowerCase());
+const PINNED_GROUP_ID = 'yerevan';
+
+const aliasToGroupId = (() => {
+  const map = new Map<string, string>();
+  for (const group of CITY_ALIAS_GROUPS) {
+    const groupId = group[0]!.toLocaleLowerCase();
+    for (const alias of group) {
+      map.set(alias.toLocaleLowerCase(), groupId);
+    }
+  }
+  return map;
+})();
+
+const findAliasGroup = (city: string): readonly string[] | undefined => {
+  const groupId = aliasToGroupId.get(city.trim().toLocaleLowerCase());
+  if (!groupId) {
+    return undefined;
+  }
+  return CITY_ALIAS_GROUPS.find((group) => group[0]!.toLocaleLowerCase() === groupId);
+};
+
+/** Stable key for dedupe — alias group id or lowercase city. */
+export const cityDedupeKey = (city: string): string => {
+  const lower = city.trim().toLocaleLowerCase();
+  return aliasToGroupId.get(lower) ?? lower;
+};
+
+const isPinnedCity = (city: string): boolean => cityDedupeKey(city) === PINNED_GROUP_ID;
 
 /**
  * Alphabetical order with Yerevan (any locale spelling) pinned to the top.
@@ -19,22 +54,58 @@ export const compareLocationOptions = (left: string, right: string): number => {
 };
 
 /**
+ * Expands selected cities to all known locale spellings for API `city` equals filters.
+ */
+export const expandCityFilterValues = (cities: readonly string[]): string[] => {
+  const seen = new Set<string>();
+  const result: string[] = [];
+
+  for (const city of cities) {
+    const trimmed = city.trim();
+    if (trimmed.length === 0) {
+      continue;
+    }
+    const variants = findAliasGroup(trimmed) ?? [trimmed];
+    for (const variant of variants) {
+      const key = variant.toLocaleLowerCase();
+      if (seen.has(key)) {
+        continue;
+      }
+      seen.add(key);
+      result.push(variant);
+    }
+  }
+
+  return result;
+};
+
+/**
  * Unique non-empty city names from catalog projects, locale-sorted.
+ * Cross-script aliases (e.g. Yerevan / Երևան) collapse to the first spelling seen.
  */
 export const collectProjectCities = (projects: readonly ProjectListItem[]): string[] => {
-  const cities = [
-    ...new Set(
-      projects
-        .map((project) => project.city?.trim())
-        .filter((city): city is string => Boolean(city)),
-    ),
-  ];
+  const seen = new Set<string>();
+  const cities: string[] = [];
+
+  for (const project of projects) {
+    const trimmed = project.city?.trim();
+    if (!trimmed) {
+      continue;
+    }
+    const key = cityDedupeKey(trimmed);
+    if (seen.has(key)) {
+      continue;
+    }
+    seen.add(key);
+    cities.push(trimmed);
+  }
+
   return cities.sort(compareLocationOptions);
 };
 
 /**
- * Merges catalog cities with popular fallbacks (no duplicates, case-insensitive).
- * Yerevan stays first; remaining cities are A–Z.
+ * Merges catalog cities with popular fallbacks (no duplicates across locale aliases).
+ * Popular / UI-locale spellings win; Yerevan stays first; remaining cities are A–Z.
  */
 export const mergeLocationOptions = (
   catalogCities: readonly string[],
@@ -43,12 +114,13 @@ export const mergeLocationOptions = (
   const seen = new Set<string>();
   const result: string[] = [];
 
-  for (const city of [...catalogCities, ...popularCities]) {
+  // Popular first so the active locale label is kept when catalog uses another script.
+  for (const city of [...popularCities, ...catalogCities]) {
     const trimmed = city.trim();
     if (trimmed.length === 0) {
       continue;
     }
-    const key = trimmed.toLocaleLowerCase();
+    const key = cityDedupeKey(trimmed);
     if (seen.has(key)) {
       continue;
     }

@@ -8,7 +8,10 @@ import { HeroKeywordSearch } from '@/features/catalog/components/hero-keyword-se
 import { HomeHeroSearchGapNav } from '@/features/catalog/components/home-hero-nav-buttons';
 import { LocationSearchSelect } from '@/features/catalog/components/location-search-select';
 import { PriceRangeSelect } from '@/features/catalog/components/price-range-select';
-import { mergeLocationOptions } from '@/features/catalog/utils/location-options';
+import {
+  expandCityFilterValues,
+  mergeLocationOptions,
+} from '@/features/catalog/utils/location-options';
 import { Link, useRouter } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 import { MultiListboxSelect } from '@/shared/ui/multi-listbox-select';
@@ -167,10 +170,11 @@ export const HeroSearch = ({ className, locations = [], projects = [] }: HeroSea
         <div className="flex flex-wrap gap-2">
           {POPULAR_CITY_KEYS.map((key) => {
             const city = t(`popularCities.${key}`);
+            const cityParam = expandCityFilterValues([city]).join(',');
             return (
               <Link
                 key={key}
-                href={`/projects?city=${encodeURIComponent(city)}`}
+                href={`/projects?city=${encodeURIComponent(cityParam)}`}
                 className={cn(
                   'inline-flex h-7 cursor-pointer items-center rounded-pill px-3',
                   'bg-white/80 text-xs font-medium leading-4 text-ink-navy',
@@ -198,7 +202,7 @@ const buildProjectsHref = (input: HeroSearchHrefInput): string => {
   }
 
   if (input.cities.length > 0) {
-    params.set('city', input.cities.join(','));
+    params.set('city', expandCityFilterValues(input.cities).join(','));
   }
 
   if (input.minPrice != null) {
