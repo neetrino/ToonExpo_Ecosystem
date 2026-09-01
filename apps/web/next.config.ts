@@ -41,6 +41,13 @@ const VIMEO_POSTER_REMOTE_PATTERN = {
   pathname: '/**',
 };
 
+/** Matterport showcase tour thumbnails. */
+const MATTERPORT_POSTER_REMOTE_PATTERN = {
+  protocol: 'https' as const,
+  hostname: 'my.matterport.com',
+  pathname: '/api/v1/player/models/**',
+};
+
 /** Allow any Cloudflare R2 public-dev host (`pub-*.r2.dev`) without relying on build env. */
 const R2_DEV_REMOTE_PATTERN = {
   protocol: 'https' as const,
@@ -92,6 +99,7 @@ const resolveImageRemotePatterns = (): ImageRemotePattern[] => {
     R2_DEV_REMOTE_PATTERN,
     YOUTUBE_POSTER_REMOTE_PATTERN,
     VIMEO_POSTER_REMOTE_PATTERN,
+    MATTERPORT_POSTER_REMOTE_PATTERN,
   ];
   if (
     fromEnv &&

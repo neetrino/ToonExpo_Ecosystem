@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  extractMatterportModelId,
   extractVimeoVideoId,
   extractYoutubeVideoId,
   resolveProjectCatalogVideoEmbed,
@@ -28,6 +29,17 @@ describe('extractVimeoVideoId', () => {
     expect(extractVimeoVideoId(new URL('https://player.vimeo.com/video/123456789'))).toBe(
       '123456789',
     );
+  });
+});
+
+describe('extractMatterportModelId', () => {
+  it('parses show query and space path URLs', () => {
+    expect(
+      extractMatterportModelId(new URL('https://my.matterport.com/show/?m=SxQL3iGyvQQ')),
+    ).toBe('SxQL3iGyvQQ');
+    expect(
+      extractMatterportModelId(new URL('https://discover.matterport.com/space/SxQL3iGyvQQ')),
+    ).toBe('SxQL3iGyvQQ');
   });
 });
 
@@ -61,6 +73,17 @@ describe('resolveProjectCatalogVideoPreview', () => {
     ).resolves.toEqual({
       kind: 'file',
       src: 'https://cdn.example.com/clip.mp4',
+    });
+  });
+
+  it('uses Matterport thumb as poster preview', async () => {
+    await expect(
+      resolveProjectCatalogVideoPreview('https://my.matterport.com/show/?m=SxQL3iGyvQQ'),
+    ).resolves.toEqual({
+      kind: 'poster',
+      posterSrc:
+        'https://my.matterport.com/api/v1/player/models/SxQL3iGyvQQ/thumb?width=1280',
+      href: 'https://my.matterport.com/show/?m=SxQL3iGyvQQ',
     });
   });
 });

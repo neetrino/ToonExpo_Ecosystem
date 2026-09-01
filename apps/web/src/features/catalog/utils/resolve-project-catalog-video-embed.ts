@@ -14,6 +14,8 @@ const YOUTUBE_POSTER_PRIMARY = 'maxresdefault';
 const YOUTUBE_POSTER_FALLBACK = 'hqdefault';
 /** Ask Vimeo oEmbed for a wide thumbnail suitable for aspect-video posters. */
 const VIMEO_OEMBED_THUMBNAIL_WIDTH = 1_280;
+/** Matterport showcase thumb width for aspect-video posters. */
+const MATTERPORT_THUMB_WIDTH = 1_280;
 
 const isHttpUrl = (value: string): boolean => {
   try {
@@ -90,6 +92,29 @@ const vimeoEmbedSrc = (url: URL): string | null => {
   const id = extractVimeoVideoId(url);
   return id ? `https://player.vimeo.com/video/${id}` : null;
 };
+
+/**
+ * Extracts a Matterport model id from show / discover / space URLs.
+ */
+export const extractMatterportModelId = (url: URL): string | null => {
+  const host = url.hostname.toLowerCase();
+  if (!host.endsWith('matterport.com')) {
+    return null;
+  }
+
+  const fromQuery = url.searchParams.get('m')?.trim() ?? null;
+  if (fromQuery && /^[a-zA-Z0-9_-]{6,}$/.test(fromQuery)) {
+    return fromQuery;
+  }
+
+  const pathMatch = url.pathname.match(
+    /\/(?:show|space|models)\/([a-zA-Z0-9_-]{6,})(?:\/|$)/i,
+  );
+  return pathMatch?.[1] ?? null;
+};
+
+const matterportPosterSrc = (modelId: string): string =>
+  `https://my.matterport.com/api/v1/player/models/${modelId}/thumb?width=${MATTERPORT_THUMB_WIDTH}`;
 
 const isDirectVideoFile = (url: URL): boolean => {
   return /\.(mp4|webm|ogg)(?:$|\?)/i.test(url.pathname);
@@ -175,6 +200,15 @@ export const resolveProjectCatalogVideoPreview = async (
       return { kind: 'poster', posterSrc, href };
     }
     return { kind: 'link', href };
+  }
+
+  const matterportId = extractMatterportModelId(url);
+  if (matterportId) {
+    return {
+      kind: 'poster',
+      posterSrc: matterportPosterSrc(matterportId),
+      href,
+    };
   }
 
   if (isDirectVideoFile(url)) {

@@ -7,8 +7,8 @@ import { Link, usePathname } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
 /** Shared lockup frame — color (pill) and white (over-hero) match 1:1. */
-const BRAND_LOGO_WIDTH = 464;
-const BRAND_LOGO_HEIGHT = 454;
+const BRAND_LOGO_WIDTH = 952;
+const BRAND_LOGO_HEIGHT = 1024;
 
 /** Color lockup when the navbar pill / solid chrome is visible. */
 const BRAND_LOGO_PILL_SRC = '/brand/toon-expo-logo-pill.png';
@@ -16,7 +16,7 @@ const BRAND_LOGO_PILL_SRC = '/brand/toon-expo-logo-pill.png';
 /** White lockup over the home hero (transparent navbar). */
 const BRAND_LOGO_OVER_HERO_SRC = '/brand/toon-expo-logo-over-hero.png';
 
-const BRAND_LOGO_ALT = 'TOON EXPO — Real Estate and Construction Expo 2025';
+const BRAND_LOGO_ALT = 'TOON Real Estate Expo';
 
 type BrandLogoProps = {
   href?: '/' | '/builder' | '/admin' | '/partner' | '/settings' | '/dashboard' | undefined;
@@ -36,9 +36,9 @@ type BrandLogoProps = {
 
 /** Full official lockup — sized to stay readable in chrome, not cropped. */
 const imageClassName = {
-  sm: 'h-[40px] w-[40px]',
-  md: 'h-[58px] w-[58px]',
-  lg: 'h-[68px] w-[68px]',
+  sm: 'h-[36px] w-[36px]',
+  md: 'h-[48px] w-[48px]',
+  lg: 'h-[60px] w-[60px]',
 } as const;
 
 /**

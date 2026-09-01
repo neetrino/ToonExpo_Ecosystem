@@ -9,7 +9,8 @@ type ProjectCatalogVideoSectionProps = {
 };
 
 /**
- * Project video block — preview uses a real frame/thumbnail from the video URL.
+ * Catalog media block — preview uses a real frame/thumbnail from the URL
+ * (YouTube, Vimeo, Matterport, direct video file); no stock placeholders.
  */
 export const ProjectCatalogVideoSection = async ({
   url,
