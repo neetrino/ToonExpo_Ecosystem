@@ -17,6 +17,10 @@ type LocaleLayoutProps = {
 const SITE_NAME = 'TOONEXPO';
 const SITE_DESCRIPTION =
   'The marketplace for verified homes, new developments, and partner bank offers.';
+/** Public share card — new path so messenger OG caches do not keep the old house mark. */
+const SHARE_IMAGE_PATH = '/brand/og-share.png';
+const SHARE_IMAGE_WIDTH = 1200;
+const SHARE_IMAGE_HEIGHT = 630;
 
 export const generateMetadata = async ({
   params,
@@ -51,9 +55,9 @@ export const generateMetadata = async ({
       url: siteUrl,
       images: [
         {
-          url: '/opengraph-image.png',
-          width: 1200,
-          height: 630,
+          url: SHARE_IMAGE_PATH,
+          width: SHARE_IMAGE_WIDTH,
+          height: SHARE_IMAGE_HEIGHT,
           alt: SITE_NAME,
         },
       ],
@@ -62,7 +66,7 @@ export const generateMetadata = async ({
       card: 'summary_large_image',
       title: SITE_NAME,
       description: SITE_DESCRIPTION,
-      images: ['/twitter-image.png'],
+      images: [SHARE_IMAGE_PATH],
     },
   };
 };
