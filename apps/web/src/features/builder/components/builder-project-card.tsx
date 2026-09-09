@@ -183,7 +183,7 @@ export const BuilderProjectCard = ({ project }: BuilderProjectCardProps) => {
           </AdminInventoryCardMetaRow>
         ) : null}
 
-        <div className="mt-auto flex flex-wrap items-center gap-x-5 gap-y-3 border-t border-border/70 pt-3">
+        <div className="mt-auto flex items-center gap-3 border-t border-border/70 pt-3">
           <BuilderProjectStat
             icon={Building}
             label={t('columns.buildings')}
@@ -198,7 +198,7 @@ export const BuilderProjectCard = ({ project }: BuilderProjectCardProps) => {
             label={tQr('open')}
             variant="soft"
             size="md"
-            className="ml-auto"
+            className="ml-auto shrink-0"
             onClick={() => {
               setQrOpen(true);
             }}
