@@ -19,6 +19,9 @@ const STAT_MARKET_VALUE_MLN = 30_450_000;
 const STAT_PARTICIPANTS = 20_000_000;
 const STAT_AVG_MORTGAGE_PAYMENT = 15_000_000;
 
+/** Tablet grid fits three stats per row; the wrapped row is centered from this index on. */
+const TABLET_ROW_SIZE = 3;
+
 /**
  * Brand-deep market pulse bar under the hero — Figma node `81:152`.
  * Renders as its own section on the canvas (not overlaid on the hero photo).
@@ -74,13 +77,14 @@ export const HomeStats = async () => {
             'shadow-[0_20px_25px_-5px_rgb(25_38_67/0.1),0_8px_10px_-6px_rgb(25_38_67/0.1)]',
           )}
         >
-          <div className="grid w-full grid-cols-2 gap-x-4 sm:grid-cols-3 sm:gap-x-5 md:grid-cols-5 md:gap-x-4">
-            {stats.map((stat) => (
+          <div className="grid w-full grid-cols-2 gap-x-4 md:grid-cols-6 md:gap-x-5 lg:grid-cols-5 lg:gap-x-4">
+            {stats.map((stat, index) => (
               <div
                 key={stat.id}
                 className={cn(
-                  'row-span-3 grid min-w-0 grid-rows-subgrid px-0.5 py-3',
-                  'text-center last:col-span-2 sm:last:col-span-1',
+                  'row-span-3 grid min-w-0 grid-rows-subgrid px-0.5 py-3 text-center',
+                  'last:col-span-2 md:col-span-2 lg:col-span-1 lg:last:col-span-1',
+                  index === TABLET_ROW_SIZE && 'md:col-start-2 lg:col-start-auto',
                 )}
               >
                 <p
