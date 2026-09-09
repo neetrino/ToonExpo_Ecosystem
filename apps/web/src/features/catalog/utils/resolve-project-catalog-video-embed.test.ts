@@ -44,10 +44,16 @@ describe('extractMatterportModelId', () => {
 });
 
 describe('resolveProjectCatalogVideoEmbed', () => {
-  it('returns youtube embed and direct file sources', () => {
+  it('returns youtube, matterport embeds and direct file sources', () => {
     expect(resolveProjectCatalogVideoEmbed('https://youtu.be/dQw4w9WgXcQ')).toEqual({
       kind: 'iframe',
       src: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+    });
+    expect(
+      resolveProjectCatalogVideoEmbed('https://my.matterport.com/show/?m=SxQL3iGyvQQ'),
+    ).toEqual({
+      kind: 'iframe',
+      src: 'https://my.matterport.com/show/?m=SxQL3iGyvQQ',
     });
     expect(
       resolveProjectCatalogVideoEmbed('https://cdn.example.com/tour.mp4'),

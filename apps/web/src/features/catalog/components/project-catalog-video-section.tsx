@@ -1,6 +1,9 @@
 import { ProjectCatalogMediaPoster } from '@/features/catalog/components/project-catalog-media-poster';
 import { ProjectCatalogVideoFilePreview } from '@/features/catalog/components/project-catalog-video-file-preview';
-import { resolveProjectCatalogVideoPreview } from '@/features/catalog/utils/resolve-project-catalog-video-embed';
+import {
+  resolveProjectCatalogVideoEmbed,
+  resolveProjectCatalogVideoPreview,
+} from '@/features/catalog/utils/resolve-project-catalog-video-embed';
 
 type ProjectCatalogVideoSectionProps = {
   url: string;
@@ -17,6 +20,27 @@ export const ProjectCatalogVideoSection = async ({
   title,
   openLabel,
 }: ProjectCatalogVideoSectionProps) => {
+  const embed = resolveProjectCatalogVideoEmbed(url);
+  if (embed?.kind === 'file') {
+    return <ProjectCatalogVideoFilePreview src={embed.src} title={title} />;
+  }
+
+  if (embed?.kind === 'iframe') {
+    return (
+      <div className="relative aspect-video overflow-hidden rounded-xl bg-ink ring-1 ring-header-border">
+        <iframe
+          src={embed.src}
+          title={title}
+          className="size-full border-0"
+          loading="lazy"
+          referrerPolicy="strict-origin-when-cross-origin"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; xr-spatial-tracking"
+          allowFullScreen
+        />
+      </div>
+    );
+  }
+
   const preview = await resolveProjectCatalogVideoPreview(url);
 
   if (preview == null) {
