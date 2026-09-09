@@ -20,6 +20,7 @@ export type ProjectCatalogFormSlice = {
   nearbyPlacesHy: string;
   nearbyPlacesRu: string;
   nearbyPlacesEn: string;
+  catalogGallery: string;
   catalogLinks: Record<ProjectCatalogLinkId, string>;
 };
 
@@ -134,6 +135,7 @@ export const emptyProjectCatalogFormSlice = (): ProjectCatalogFormSlice => ({
   nearbyPlacesHy: '',
   nearbyPlacesRu: '',
   nearbyPlacesEn: '',
+  catalogGallery: '',
   catalogLinks: emptyCatalogLinks(),
 });
 
@@ -169,6 +171,18 @@ export const catalogJsonToFormSlice = (
       for (const id of PROJECT_CATALOG_LINK_IDS) {
         slice.catalogLinks[id] = asTrimmedString(linksRecord[id]);
       }
+    }
+
+    const galleryValue = record['gallery'];
+    if (Array.isArray(galleryValue)) {
+      slice.catalogGallery = listToLines(
+        galleryValue
+          .map((item) => asTrimmedString(item))
+          .filter((item) => item.length > 0)
+          .slice(0, PROJECT_CATALOG_LIST_MAX_ITEMS),
+      );
+    } else if (typeof galleryValue === 'string') {
+      slice.catalogGallery = galleryValue.trim();
     }
   } else if (Array.isArray(amenities)) {
     slice.amenityLabelsHy = listToLines(readLocaleStringList(amenities, 'hy'));
@@ -245,6 +259,10 @@ export const catalogFormSliceToJson = (
   }
   if (Object.keys(links).length > 0) {
     amenities['links'] = links;
+  }
+  const gallery = linesToList(slice.catalogGallery);
+  if (gallery.length > 0) {
+    amenities['gallery'] = gallery;
   }
 
   const places = buildLocaleListMap(

@@ -7,7 +7,6 @@ import type { TRANSLATION_LOCALES } from '@/features/builder/constants';
 import {
   PROJECT_CATALOG_DETAILS_KEYS,
   PROJECT_CATALOG_FINANCE_KEYS,
-  PROJECT_CATALOG_MEDIA_LINK_EDITOR_IDS,
   PROJECT_CATALOG_OVERVIEW_KEYS,
   PROJECT_CATALOG_SOCIAL_LINK_EDITOR_IDS,
 } from '@/features/builder/constants/project-catalog-editor';
@@ -16,6 +15,7 @@ import {
   getUrlPlaceholder,
 } from '@/features/builder/constants/project-content-placeholders';
 import { ProjectCatalogChecklistEditor } from '@/features/builder/components/project-catalog-checklist-editor';
+import { ProjectCatalogGalleryEditor } from '@/features/builder/components/project-catalog-gallery-editor';
 import {
   ProjectCatalogKvEditor,
   ProjectCatalogOverviewEditor,
@@ -200,12 +200,17 @@ export const ProjectCatalogEditor = ({
       <ProjectBankPartnerOffersSection projectId={projectId} />
 
       <div className="mt-2 space-y-5 sm:space-y-6">
-        <ProjectCatalogSectionCard title={tCatalog('links')}>
-          <p className="mb-4 text-sm text-ink-secondary">{t('linksHint')}</p>
-          <CatalogLinkFields
-            ids={PROJECT_CATALOG_MEDIA_LINK_EDITOR_IDS}
-            register={register}
-            labelFor={(key) => tCatalog(key)}
+        <ProjectCatalogSectionCard title={tCatalog('gallery')}>
+          <p className="mb-4 text-sm text-ink-secondary">{t('galleryHint')}</p>
+          <Controller
+            control={control}
+            name="catalogGallery"
+            render={({ field }) => (
+              <ProjectCatalogGalleryEditor
+                value={field.value}
+                onChange={field.onChange}
+              />
+            )}
           />
         </ProjectCatalogSectionCard>
 

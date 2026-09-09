@@ -21,6 +21,8 @@ const catalogLinksShape = Object.fromEntries(
   PROJECT_CATALOG_LINK_IDS.map((id) => [id, z.string().trim().max(2_048)]),
 ) as Record<(typeof PROJECT_CATALOG_LINK_IDS)[number], z.ZodString>;
 
+const PROJECT_CATALOG_GALLERY_MAX_LENGTH = 20_000;
+
 /**
  * Catalog extras edited on the project detail Admin/portal form.
  */
@@ -32,6 +34,7 @@ export const projectCatalogFormSchema = z.object({
   nearbyPlacesHy: z.string().trim().max(PROJECT_CATALOG_FIELD_MAX_LENGTH * 2),
   nearbyPlacesRu: z.string().trim().max(PROJECT_CATALOG_FIELD_MAX_LENGTH * 2),
   nearbyPlacesEn: z.string().trim().max(PROJECT_CATALOG_FIELD_MAX_LENGTH * 2),
+  catalogGallery: z.string().trim().max(PROJECT_CATALOG_GALLERY_MAX_LENGTH),
   catalogLinks: z.object(catalogLinksShape),
 });
 

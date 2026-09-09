@@ -110,7 +110,7 @@ export const ProjectCatalogSection = async ({ project }: ProjectCatalogSectionPr
       bankPartnerTitle={t('catalog.bankPartner')}
       amenitiesTitle={t('catalog.amenities')}
       nearbyTitle={t('catalog.nearby')}
-      linksTitle={t('catalog.links')}
+      galleryTitle={t('catalog.gallery')}
       socialsTitle={t('catalog.socials')}
       videoTitle={t('catalog.video')}
       videoOpenLabel={t('catalog.videoOpen')}
@@ -146,6 +146,7 @@ export const ProjectCatalogSection = async ({ project }: ProjectCatalogSectionPr
       amenityLabels={catalog.amenityLabels}
       nearbyPlaces={catalog.nearbyPlaces}
       links={catalog.links}
+      galleryImages={catalog.galleryImages}
     />
   );
 };
