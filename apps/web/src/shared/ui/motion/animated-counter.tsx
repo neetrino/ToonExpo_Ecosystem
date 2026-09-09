@@ -21,7 +21,7 @@ type AnimatedCounterProps = {
    * Prefer this over a function formatter from RSC parents.
    */
   formatStyle?: AnimatedCounterFormatStyle | undefined;
-  /** BCP 47 locale used with `formatStyle`. */
+  /** BCP 47 locale; selects the digit grouping separator for `formatStyle`. */
   locale?: string | undefined;
 };
 
@@ -124,17 +124,30 @@ export const AnimatedCounter = ({
   );
 };
 
-const AMD_GROUP_SEPARATOR = '\u00a0';
+const NBSP_GROUP_SEPARATOR = '\u00a0';
+const COMMA_GROUP_SEPARATOR = ',';
 const AMD_CURRENCY_SYMBOL = '֏';
 
+/** Base languages that group thousands with a comma (`hy` / `ru` use NBSP). */
+const COMMA_GROUPING_LANGUAGES = new Set(['en']);
+
 /**
- * Hydration-safe AMD formatter (fixed grouping + dram sign).
- * Avoids ICU locale mismatches between Node and browser.
+ * Groups thousands with a fixed separator instead of `Intl.NumberFormat`.
+ * Node and browser ICU disagree on when to group (e.g. `hy` skips grouping
+ * below five digits), which breaks hydration for server-rendered counters.
  */
+const groupThousands = (value: number, separator: string): string => {
+  return String(Math.round(value)).replace(/\B(?=(\d{3})+(?!\d))/g, separator);
+};
+
+const resolveGroupSeparator = (locale: string): string => {
+  const [language = ''] = locale.toLowerCase().split('-');
+  return COMMA_GROUPING_LANGUAGES.has(language) ? COMMA_GROUP_SEPARATOR : NBSP_GROUP_SEPARATOR;
+};
+
 const formatAmdCurrency = (value: number): string => {
-  const digits = String(Math.round(value));
-  const grouped = digits.replace(/\B(?=(\d{3})+(?!\d))/g, AMD_GROUP_SEPARATOR);
-  return `${grouped}${AMD_GROUP_SEPARATOR}${AMD_CURRENCY_SYMBOL}`;
+  const grouped = groupThousands(value, NBSP_GROUP_SEPARATOR);
+  return `${grouped}${NBSP_GROUP_SEPARATOR}${AMD_CURRENCY_SYMBOL}`;
 };
 
 const createFormatter = (
@@ -145,6 +158,6 @@ const createFormatter = (
     return (n) => formatAmdCurrency(n);
   }
 
-  const formatter = new Intl.NumberFormat(locale);
-  return (n) => formatter.format(Math.round(n));
+  const separator = resolveGroupSeparator(locale);
+  return (n) => groupThousands(n, separator);
 };
