@@ -70,18 +70,22 @@ export const HomeStats = async () => {
       <div className="page-container">
         <div
           className={cn(
-            'rounded-[20px] bg-brand-deep p-8 text-canvas',
+            'rounded-[20px] bg-brand-deep px-8 py-5 text-canvas',
             'shadow-[0_20px_25px_-5px_rgb(25_38_67/0.1),0_8px_10px_-6px_rgb(25_38_67/0.1)]',
           )}
         >
-          <div className="grid w-full grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3 sm:gap-x-5 md:grid-cols-5 md:gap-x-4">
+          <div className="grid w-full grid-cols-2 gap-x-4 sm:grid-cols-3 sm:gap-x-5 md:grid-cols-5 md:gap-x-4">
             {stats.map((stat) => (
               <div
                 key={stat.id}
-                className="min-w-0 px-0.5 text-center last:col-span-2 sm:last:col-span-1"
-              >                <p
+                className={cn(
+                  'row-span-3 grid min-w-0 grid-rows-subgrid px-0.5 py-3',
+                  'text-center last:col-span-2 sm:last:col-span-1',
+                )}
+              >
+                <p
                   className={cn(
-                    'text-balance text-[10px] font-bold uppercase leading-snug',
+                    'self-end text-balance text-[10px] font-bold uppercase leading-snug',
                     'tracking-[0.08em] text-canvas/50',
                   )}
                 >
@@ -89,7 +93,7 @@ export const HomeStats = async () => {
                 </p>
                 <p
                   className={cn(
-                    'mt-1.5 font-brand font-bold tracking-tight text-canvas tabular-nums',
+                    'mt-1.5 self-start font-brand font-bold tracking-tight text-canvas tabular-nums',
                     'text-[clamp(1rem,0.75rem+2.2vw,1.75rem)] leading-none',
                   )}
                 >
