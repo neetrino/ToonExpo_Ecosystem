@@ -55,7 +55,7 @@ export default async function BuilderLayout({ children, params }: BuilderLayoutP
       mobileDrawerControlledByNavbar
       className="bg-canvas"
       railHeader={
-        <p className="truncate text-xs font-semibold uppercase tracking-[0.16em] text-on-dark/65">
+        <p className="line-clamp-2 text-xs font-semibold uppercase leading-tight tracking-[0.16em] text-balance text-on-dark/65">
           {t('nav.portalLabel')}
         </p>
       }
