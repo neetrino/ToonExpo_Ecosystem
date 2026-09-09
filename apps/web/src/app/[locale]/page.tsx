@@ -13,7 +13,6 @@ import { SiteFooter } from '@/features/catalog/components/site-footer';
 import { HOME_HERO_CATALOG_PAGE_SIZE } from '@/features/catalog/constants/hero-search';
 import { HOME_FEATURED_PROJECT_LIMIT } from '@/features/catalog/constants/home-featured';
 import { loadHomeFeaturedApartments } from '@/features/catalog/utils/load-home-featured-apartments';
-import { mergeHomeFeaturedProjects } from '@/features/catalog/utils/merge-home-featured-projects';
 import { collectProjectCities } from '@/features/catalog/utils/location-options';
 
 type HomePageProps = {
@@ -55,10 +54,7 @@ export default async function HomePage({ params }: HomePageProps) {
   ]);
 
   const catalogProjects = catalogResponse.data;
-  const featuredProjects = mergeHomeFeaturedProjects(
-    featuredProjectsResponse.data,
-    catalogProjects,
-  );
+  const featuredProjects = featuredProjectsResponse.data;
   const locations = collectProjectCities(catalogProjects);
 
   return (
