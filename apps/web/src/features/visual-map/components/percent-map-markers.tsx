@@ -12,6 +12,7 @@ type PercentMapMarkersProps = {
   interactive?: boolean;
   onSelectMarker?: (markerId: string) => void;
   showLabels?: boolean;
+  showMarkerDots?: boolean;
 };
 
 /**
@@ -22,6 +23,7 @@ export const PercentMapMarkers = ({
   interactive = false,
   onSelectMarker,
   showLabels = false,
+  showMarkerDots = false,
 }: PercentMapMarkersProps) => {
   if (markers.length === 0) {
     return null;
@@ -54,19 +56,21 @@ export const PercentMapMarkers = ({
                 }}
               />
             ) : null}
-            <circle
-              cx={x}
-              cy={y}
-              r={selected ? 2.8 : 2.2}
-              className={
-                warning
-                  ? 'fill-warning stroke-background stroke-[0.35]'
-                  : selected
-                    ? 'fill-brand stroke-background stroke-[0.45]'
-                    : 'fill-brand stroke-background stroke-[0.35]'
-              }
-              pointerEvents="none"
-            />
+            {showMarkerDots ? (
+              <circle
+                cx={x}
+                cy={y}
+                r={selected ? 2.8 : 2.2}
+                className={
+                  warning
+                    ? 'fill-warning stroke-background stroke-[0.35]'
+                    : selected
+                      ? 'fill-brand stroke-background stroke-[0.45]'
+                      : 'fill-brand stroke-background stroke-[0.35]'
+                }
+                pointerEvents="none"
+              />
+            ) : null}
             {showLabels ? (
               <text
                 x={x}
