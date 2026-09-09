@@ -86,15 +86,17 @@ export const GeoMapCanvas = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const [uiOverlayRoot, setUiOverlayRoot] = useState<HTMLDivElement | null>(null);
   const isWebglSupported = useWebglSupport();
+  const canInitializeMap = isWebglSupported === true;
   const [dragOverride, setDragOverride] = useState<ObjectTransformOverride | null>(null);
   const hoverTarget = useDelayedHoverTarget();
 
-  const { map, isMapLoaded } = useMaplibreMap({
+  const { map, isMapLoaded, initializationError } = useMaplibreMap({
     containerRef,
     styleUrl: styleUrl ?? resolveMapStyleUrl(),
     initialCenter,
     initialZoom,
     initialBearing,
+    enabled: canInitializeMap,
     ...(initialPitch !== undefined ? { initialPitch } : {}),
   });
   const { zoom, bounds } = useMapViewportState(map, isMapLoaded, initialZoom);
@@ -177,8 +179,12 @@ export const GeoMapCanvas = ({
     };
   }, [map, isMapLoaded]);
 
-  if (!isWebglSupported) {
+  if (isWebglSupported === false || initializationError) {
     return <GeoMapWebglFallback className={className} />;
+  }
+
+  if (!canInitializeMap) {
+    return <div className={`relative h-full w-full ${className ?? ''}`} aria-hidden="true" />;
   }
 
   return (
