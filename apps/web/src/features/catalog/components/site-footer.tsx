@@ -123,7 +123,7 @@ export const SiteFooter = async () => {
   return (
     <footer className="hidden border-t border-header-border bg-canvas lg:block">
       <div className="page-container pt-12 pb-4">
-        <div className="mb-12 grid grid-cols-2 gap-8 sm:grid-cols-3 lg:flex lg:justify-between lg:gap-0">
+        <div className="mb-12 grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-6 lg:gap-x-6">
           {columns.map((column) => (
             <FooterNavColumn key={column.title} title={column.title} items={column.items} />
           ))}
@@ -171,7 +171,7 @@ const FooterNavColumn = ({
   title: string;
   items: readonly FooterNavItem[];
 }): ReactNode => (
-  <div className="min-w-0 lg:shrink-0">
+  <div className="min-w-0">
     <p className="font-brand text-xs font-bold tracking-[0.1em] text-ink-navy uppercase">
       {title}
     </p>

@@ -2,8 +2,8 @@ import type { ProjectListItem } from '@toonexpo/contracts';
 import { getTranslations } from 'next-intl/server';
 
 import { DevelopmentProgressCard } from '@/features/catalog/components/development-progress-card';
-import { HomeDevelopmentsMap } from '@/features/catalog/components/home-developments-map';
 import { CATALOG_CARD_CELL_FILL_CLASS } from '@/features/catalog/constants/catalog-list';
+import { HOME_FEATURED_PROJECT_LIMIT } from '@/features/catalog/constants/home-featured';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 import { EmptyState } from '@/shared/ui/empty-state';
@@ -15,14 +15,12 @@ type HomeDevelopmentsProps = {
   projects: ProjectListItem[];
 };
 
-const WATCH_CARD_COUNT = 3;
-
 /**
- * Under-construction developments + interactive 3D city map (Stage 5).
+ * Under-construction developments band (Stage 5). The city map lives in `HomeMapSection`.
  */
 export const HomeDevelopments = async ({ projects }: HomeDevelopmentsProps) => {
   const t = await getTranslations('HomePage.developments');
-  const watchProjects = projects.slice(0, WATCH_CARD_COUNT);
+  const watchProjects = projects.slice(0, HOME_FEATURED_PROJECT_LIMIT);
 
   return (
     <section className="border-y border-header-border bg-band-mist/30">
@@ -53,27 +51,6 @@ export const HomeDevelopments = async ({ projects }: HomeDevelopmentsProps) => {
             ))}
           </StaggerGroup>
         )}
-
-        <div className="mt-16">
-          <Reveal>
-            <SectionHeader
-              className="mb-6"
-              eyebrow={t('mapEyebrow')}
-              title={t('mapTitle')}
-              action={
-                <Link
-                  href="/map"
-                  className="shrink-0 pb-1 text-sm font-semibold text-brand-deep transition-colors hover:text-brand-deep/80"
-                >
-                  {t('openFullMap')}
-                </Link>
-              }
-            />
-          </Reveal>
-          <Reveal delayMs={80}>
-            <HomeDevelopmentsMap />
-          </Reveal>
-        </div>
       </div>
     </section>
   );

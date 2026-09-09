@@ -83,7 +83,7 @@ export const GeoMapAdminSidebar = ({
       <Reveal force>
         <div className="flex shrink-0 flex-wrap items-start justify-between gap-2">
           <div className="flex min-w-0 items-start gap-3">
-            <PageTitleIcon icon={Globe2} />
+            <PageTitleIcon icon={Globe2} className="mt-0.5" />
             <div>
               <h1 className="font-display text-2xl text-ink">{t('title')}</h1>
               <p className="mt-1 text-xs text-ink-muted">{t('subtitle')}</p>

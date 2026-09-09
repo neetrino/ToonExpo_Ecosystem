@@ -439,8 +439,8 @@
       "cookiePolicy": "Cookie քաղաքականություն"
     },
     "copyrightPrefix": "Copyright © 2026 Toon Expo.",
-    "copyrightSuffix": "Բոլոր իրավունքները պաշտպանված են։",
-    "copyrightCreatedBy": "Ստեղծված է",
+    "copyrightSuffix": "All Rights Reserved.",
+    "copyrightCreatedBy": "Created by",
     "copyrightCompany": "Neetrino IT Company",
     "socialLabel": "Սոցիալական ցանցեր",
     "social": {
@@ -923,6 +923,7 @@
       },
       "tabs": {
         "ariaLabel": "Ցուցադրողի տեսակ",
+        "all": "Բոլորը",
         "builder": "Կառուցապատողներ",
         "bank": "Բանկեր",
         "it_company": "IT ընկերություններ",

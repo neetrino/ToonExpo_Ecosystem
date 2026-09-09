@@ -27,6 +27,7 @@ export const FeaturedApartments = async ({ listings }: FeaturedApartmentsProps) 
           <SectionHeader
             eyebrow={t('featured.eyebrow')}
             title={t('featured.title')}
+            contentClassName="max-w-none"
             action={
               <Link
                 href="/apartments"

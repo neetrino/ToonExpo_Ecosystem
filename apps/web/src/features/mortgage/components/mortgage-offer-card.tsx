@@ -7,6 +7,13 @@ import { formatMortgageAmount } from '@/features/mortgage/utils/format-mortgage-
 import { AdminListCardLogo } from '@/shared/ui/admin-list-card-logo';
 import { cn } from '@/shared/ui/cn';
 
+/**
+ * Metric label box: width caps multi-word labels (hy `Նվազ. կանխավճար`) to two lines,
+ * and the fixed two-line height (`leading-[1.2]` × 2) keeps values aligned across columns.
+ */
+const METRIC_LABEL_CLASS =
+  'mx-auto flex h-[2.4em] max-w-[9em] items-end justify-center text-[10px] leading-[1.2] font-bold tracking-widest text-header-muted uppercase';
+
 type MortgageOfferCardProps = {
   offer: PublicMortgageOfferItem;
   selected: boolean;
@@ -50,7 +57,7 @@ export const MortgageOfferCard = ({
         />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="font-brand text-lg font-bold tracking-tight text-ink-navy">
+            <h3 className="font-brand min-w-0 text-lg font-bold tracking-tight break-words text-ink-navy">
               {offer.bank.name}
             </h3>
             {offer.featured ? (
@@ -64,15 +71,13 @@ export const MortgageOfferCard = ({
               </span>
             ) : null}
           </div>
-          {offer.shortDescription ? (
-            <p className="mt-1 text-sm leading-5 text-header-muted">{offer.shortDescription}</p>
-          ) : (
-            <p className="mt-1 text-sm leading-5 text-header-muted">{offer.title}</p>
-          )}
+          <p className="mt-1 truncate text-sm leading-5 text-header-muted">
+            {offer.shortDescription ?? offer.title}
+          </p>
         </div>
       </div>
 
-      <dl className="grid shrink-0 grid-cols-3 gap-x-3 gap-y-3 sm:grid-cols-4 sm:gap-x-8">
+      <dl className="grid grid-cols-3 gap-x-3 gap-y-3 sm:grid-cols-4 sm:gap-x-4">
         <Metric label={t('rate')} value={`${offer.rate}%`} />
         <Metric label={t('apr')} value={offer.apr != null ? `${offer.apr}%` : '—'} />
         <Metric label={t('minDown')} value={`${offer.minDownPaymentPercent}%`} />
@@ -98,7 +103,7 @@ const Metric = ({
   className?: string | undefined;
 }) => (
   <div className={cn('min-w-0 text-center', className)}>
-    <dt className="text-[10px] font-bold tracking-widest text-header-muted uppercase">{label}</dt>
+    <dt className={METRIC_LABEL_CLASS}>{label}</dt>
     <dd
       className={cn(
         'mt-0.5 font-brand text-lg font-bold leading-7 whitespace-nowrap',

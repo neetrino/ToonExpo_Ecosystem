@@ -7,8 +7,8 @@ import {
 } from './partner-filters';
 
 describe('parsePartnerFilters', () => {
-  it('defaults to the builders tab', () => {
-    expect(parsePartnerFilters({})).toEqual({ page: 1, tab: 'builder' });
+  it('defaults to the combined tab', () => {
+    expect(parsePartnerFilters({})).toEqual({ page: 1, tab: 'all' });
   });
 
   it('parses a partner type tab', () => {
@@ -26,8 +26,8 @@ describe('parsePartnerFilters', () => {
     });
   });
 
-  it('falls back to builders for unknown types', () => {
-    expect(parsePartnerFilters({ type: 'unknown' }).tab).toBe('builder');
+  it('falls back to the combined tab for unknown types', () => {
+    expect(parsePartnerFilters({ type: 'unknown' }).tab).toBe('all');
   });
 
   it('uses the first value from a legacy comma list', () => {

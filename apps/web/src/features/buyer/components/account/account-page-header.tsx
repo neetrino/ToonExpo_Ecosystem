@@ -73,7 +73,7 @@ export const AccountPageHeader = ({
         <div className="flex min-w-0 flex-col gap-1">
           {onBack ? <AccountMobileBackLink onBack={onBack} className="-ml-2 mb-3 md:hidden" /> : null}
           <div className="flex min-w-0 items-start gap-3">
-            {resolvedIcon ? <PageTitleIcon icon={resolvedIcon} /> : null}
+            {resolvedIcon ? <PageTitleIcon icon={resolvedIcon} className="mt-0.5" /> : null}
             <div className="flex min-w-0 flex-col gap-1">
               <HeadingTag className="text-page-title min-w-0 text-ink">{title}</HeadingTag>
               {subtitle ? (

@@ -51,7 +51,9 @@ const SelectionMark = ({ checked }: { checked: boolean }) => (
 
 /**
  * Hero location picker — searchable multi-select over catalog cities.
- * Empty selection means "Any location". Menu stays open while toggling.
+ * Empty selection means "Any location" and only that row stays checked; picking a
+ * city then starts a concrete selection (same rules as the beds filter).
+ * Menu stays open while toggling.
  */
 export const LocationSearchSelect = ({
   values,
@@ -125,7 +127,7 @@ export const LocationSearchSelect = ({
 
   const toggleOption = (option: string): void => {
     if (isAny) {
-      onChange(options.filter((item) => item !== option));
+      onChange([option]);
       return;
     }
     if (values.includes(option)) {
@@ -222,7 +224,7 @@ export const LocationSearchSelect = ({
               </button>
             </li>
             {filtered.map((option) => {
-              const active = isAny || values.includes(option);
+              const active = values.includes(option);
               return (
                 <li key={option} role="none">
                   <button

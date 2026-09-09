@@ -28,7 +28,7 @@ export const CATALOG_PRICES_CACHE_CONTROL = 'private, no-store' as const;
 export const CATALOG_SEARCH_Q_MAX_LENGTH = 100;
 
 /** Max admin-curated projects on the public homepage developments band. */
-export const HOME_FEATURED_PROJECT_LIMIT = 3;
+export const HOME_FEATURED_PROJECT_LIMIT = 6;
 
 /** Max admin-curated apartments on the public homepage featured listings band. */
 export const HOME_FEATURED_APARTMENT_LIMIT = 6;

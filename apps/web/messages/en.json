@@ -923,6 +923,7 @@
       },
       "tabs": {
         "ariaLabel": "Exhibitor type",
+        "all": "All",
         "builder": "Builders",
         "bank": "Banks",
         "it_company": "IT companies",

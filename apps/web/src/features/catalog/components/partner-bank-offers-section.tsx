@@ -4,6 +4,13 @@ import { Link } from '@/i18n/navigation';
 
 import { cn } from '@/shared/ui/cn';
 
+/**
+ * Metric label box: width caps multi-word labels (hy `Նվազ. կանխավճար`) to two lines,
+ * and the fixed two-line height (`leading-[1.2]` × 2) keeps values aligned across columns.
+ */
+const METRIC_LABEL_CLASS =
+  'mx-auto flex h-[2.4em] max-w-[9em] items-end justify-center text-[10px] leading-[1.2] font-bold tracking-widest text-header-muted uppercase';
+
 type PartnerBankOffersSectionProps = {
   partnerName: string;
   offers: PublicPartnerBankOfferItem[];
@@ -49,7 +56,7 @@ export const PartnerBankOffersSection = async ({
           >
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
-                <h3 className="font-brand text-lg font-bold tracking-tight text-ink-navy">
+                <h3 className="font-brand min-w-0 text-lg font-bold tracking-tight break-words text-ink-navy">
                   {partnerName}
                 </h3>
                 {offer.featured ? (
@@ -58,12 +65,12 @@ export const PartnerBankOffersSection = async ({
                   </span>
                 ) : null}
               </div>
-              <p className="mt-1 text-sm leading-5 text-header-muted">
+              <p className="mt-1 truncate text-sm leading-5 text-header-muted">
                 {offer.shortDescription ?? offer.title}
               </p>
             </div>
 
-            <dl className="grid shrink-0 grid-cols-3 gap-x-3 gap-y-3 sm:gap-x-8">
+            <dl className="grid grid-cols-3 gap-x-3 gap-y-3 sm:gap-x-4">
               <Metric label={tMortgage('rate')} value={`${offer.rate}%`} />
               <Metric label={tMortgage('apr')} value={offer.apr != null ? `${offer.apr}%` : '—'} />
               <Metric label={tMortgage('minDown')} value={`${offer.minDownPaymentPercent}%`} />
@@ -77,7 +84,7 @@ export const PartnerBankOffersSection = async ({
 
 const Metric = ({ label, value }: { label: string; value: string }) => (
   <div className="min-w-0 text-center">
-    <dt className="text-[10px] font-bold tracking-widest text-header-muted uppercase">{label}</dt>
+    <dt className={METRIC_LABEL_CLASS}>{label}</dt>
     <dd className="mt-0.5 font-brand text-lg font-bold leading-7 whitespace-nowrap text-ink-navy">
       {value}
     </dd>

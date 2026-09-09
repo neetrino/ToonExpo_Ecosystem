@@ -19,7 +19,8 @@ export class AdminHomeFeaturedService {
   ) {}
 
   /**
-   * Pins or unpins a project on the public homepage (max 3 platform-wide).
+   * Pins or unpins a project on the public homepage
+   * (max `HOME_FEATURED_PROJECT_LIMIT` platform-wide).
    */
   async setProjectFeaturedOnHome(
     projectId: string,
@@ -55,7 +56,8 @@ export class AdminHomeFeaturedService {
   }
 
   /**
-   * Pins or unpins an apartment on the public homepage (max 6 platform-wide).
+   * Pins or unpins an apartment on the public homepage
+   * (max `HOME_FEATURED_APARTMENT_LIMIT` platform-wide).
    */
   async setApartmentFeaturedOnHome(
     apartmentId: string,
