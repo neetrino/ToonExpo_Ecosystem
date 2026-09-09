@@ -44,10 +44,10 @@ const EXACT_MATCH_HREFS = new Set(['/dashboard', '/settings', '/qr', '/checkin']
 
 const navLinkClassName = (active: boolean, collapsed: boolean): string =>
   cn(
-    'relative z-10 flex h-10 items-center rounded-pill font-medium tracking-wide leading-none',
+    'relative z-10 flex min-h-10 items-center rounded-pill font-medium tracking-wide leading-snug',
     'transition-colors duration-[var(--duration-base)] ease-[var(--ease-out-premium)]',
     'motion-reduce:transition-none',
-    collapsed ? 'justify-center px-2' : 'gap-3 px-3.5 text-base',
+    collapsed ? 'justify-center px-2' : 'gap-3 px-3.5 py-2 text-base',
     active
       ? 'text-brand'
       : 'text-on-dark/85 hover:bg-on-dark/10 hover:text-on-dark',

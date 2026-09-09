@@ -50,8 +50,8 @@ const navLinkClassName = (active: boolean, collapsed: boolean, nested = false): 
     collapsed
       ? 'h-10 justify-center px-2'
       : nested
-        ? 'h-9 gap-2.5 px-3.5 text-sm leading-snug'
-        : 'h-10 gap-2.5 px-3.5 text-[0.9375rem] leading-snug',
+        ? 'min-h-9 gap-2.5 px-3.5 py-1.5 text-sm leading-snug'
+        : 'min-h-10 gap-2.5 px-3.5 py-2 text-[0.9375rem] leading-snug',
     active
       ? 'text-brand'
       : 'text-on-dark/85 hover:bg-on-dark/10 hover:text-on-dark',
@@ -119,7 +119,11 @@ export const AdminNav = () => {
           {...(active ? { [PORTAL_NAV_ACTIVE_ATTR]: 'true' } : {})}
         >
           <Icon className={NAV_ICON_CLASS} aria-hidden />
-          {railCollapsed ? <span className="sr-only">{label}</span> : <span>{label}</span>}
+          {railCollapsed ? (
+            <span className="sr-only">{label}</span>
+          ) : (
+            <span className="min-w-0">{label}</span>
+          )}
         </Link>
       );
     }
@@ -152,10 +156,10 @@ export const AdminNav = () => {
         >
           <Link
             href={item.href}
-            className="flex h-full min-w-0 flex-1 items-center gap-2.5 leading-snug text-inherit"
+            className="flex min-w-0 flex-1 items-center gap-2.5 self-stretch leading-snug text-inherit"
           >
             <Icon className={NAV_ICON_CLASS} aria-hidden />
-            <span className="truncate">{t(item.key)}</span>
+            <span className="min-w-0">{t(item.key)}</span>
           </Link>
           <button
             type="button"
@@ -202,7 +206,7 @@ export const AdminNav = () => {
                     {...(childActive ? { [PORTAL_NAV_ACTIVE_ATTR]: 'true' } : {})}
                   >
                     <ChildIcon className={NAV_CHILD_ICON_CLASS} aria-hidden />
-                    <span>{t(child.key)}</span>
+                    <span className="min-w-0">{t(child.key)}</span>
                   </Link>
                 );
               })}
