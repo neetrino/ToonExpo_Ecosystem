@@ -241,7 +241,7 @@ export class AdminCompaniesService {
       this.prisma.db.project.count({ where: { featuredOnHome: true } }),
       this.prisma.db.project.findMany({
         where,
-        orderBy: [{ createdAt: 'desc' }],
+        orderBy: [{ featuredOnHome: 'desc' }, { createdAt: 'desc' }],
         skip: (page - 1) * pageSize,
         take: pageSize,
         select: {

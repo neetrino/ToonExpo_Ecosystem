@@ -149,7 +149,7 @@ export class InventoryHubService {
       this.prisma.db.apartment.count({ where: { featuredOnHome: true } }),
       this.prisma.db.apartment.findMany({
         where,
-        orderBy: [{ createdAt: 'desc' }],
+        orderBy: [{ featuredOnHome: 'desc' }, { createdAt: 'desc' }],
         skip: (page - 1) * pageSize,
         take: pageSize,
         select: {

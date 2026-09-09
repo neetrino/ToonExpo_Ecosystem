@@ -148,7 +148,7 @@ describe('AdminCompaniesService.listProjects', () => {
     expect(companyFindUnique).not.toHaveBeenCalled();
     expect(projectFindMany).toHaveBeenCalledWith({
       where: {},
-      orderBy: [{ createdAt: 'desc' }],
+      orderBy: [{ featuredOnHome: 'desc' }, { createdAt: 'desc' }],
       skip: 0,
       take: 20,
       select: {
