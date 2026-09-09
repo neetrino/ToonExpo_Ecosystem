@@ -21,6 +21,15 @@ export type ProjectCatalogLink = {
   url: string;
 };
 
+const isHttpUrl = (value: string): boolean => {
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+  } catch {
+    return false;
+  }
+};
+
 export const PROJECT_CATALOG_LINK_IDS: readonly ProjectCatalogLinkId[] = [
   'exteriorRenders',
   'interiorRenders',
@@ -116,4 +125,51 @@ export const parseProjectCatalogLinks = (value: unknown): ProjectCatalogLink[] =
     }
   }
   return links;
+};
+
+/**
+ * Parses one catalog link field that may contain multiple image URLs
+ * (comma/newline/semicolon-separated) into gallery-ready image sources.
+ */
+export const parseCatalogImageUrls = (value: string): string[] => {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return [];
+  }
+
+  const candidates = trimmed
+    .split(/[\n,;]+/u)
+    .map((item) => item.trim())
+    .filter((item) => item.length > 0);
+
+  const urls = candidates.length > 0 ? candidates : [trimmed];
+  const unique = new Set<string>();
+  for (const url of urls) {
+    if (isHttpUrl(url)) {
+      unique.add(url);
+    }
+  }
+  return Array.from(unique);
+};
+
+/** Parses `amenities.gallery` into a unique list of HTTP(S) image candidates. */
+export const parseCatalogGalleryUrls = (value: unknown): string[] => {
+  if (Array.isArray(value)) {
+    const unique = new Set<string>();
+    for (const item of value) {
+      if (typeof item !== 'string') {
+        continue;
+      }
+      for (const url of parseCatalogImageUrls(item)) {
+        unique.add(url);
+      }
+    }
+    return Array.from(unique);
+  }
+
+  if (typeof value === 'string') {
+    return parseCatalogImageUrls(value);
+  }
+
+  return [];
 };

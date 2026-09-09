@@ -4,6 +4,7 @@
  */
 
 import {
+  parseCatalogGalleryUrls,
   parseProjectCatalogLinks,
   type ProjectCatalogLink,
 } from '@/features/catalog/utils/project-catalog-links';
@@ -87,6 +88,7 @@ export type ParsedProjectCatalog = {
   nearbyPlaces: string[];
   details: ProjectCatalogDetails;
   links: ProjectCatalogLink[];
+  galleryImages: string[];
 };
 
 const EMPTY_DETAILS: ProjectCatalogDetails = {
@@ -225,17 +227,23 @@ const parseDetailsRecord = (
 export const parseProjectAmenities = (
   amenities: unknown,
   locale: CatalogContentLocale,
-): { labels: string[]; details: ProjectCatalogDetails; links: ProjectCatalogLink[] } => {
+): {
+  labels: string[];
+  details: ProjectCatalogDetails;
+  links: ProjectCatalogLink[];
+  galleryImages: string[];
+} => {
   if (Array.isArray(amenities)) {
     return {
       labels: asLocalizedStringList(amenities, locale),
       details: { ...EMPTY_DETAILS },
       links: [],
+      galleryImages: [],
     };
   }
 
   if (amenities == null || typeof amenities !== 'object') {
-    return { labels: [], details: { ...EMPTY_DETAILS }, links: [] };
+    return { labels: [], details: { ...EMPTY_DETAILS }, links: [], galleryImages: [] };
   }
 
   const record = amenities as Record<string, unknown>;
@@ -253,6 +261,7 @@ export const parseProjectAmenities = (
     labels,
     details: parseDetailsRecord(detailsSource, locale),
     links: parseProjectCatalogLinks(record['links']),
+    galleryImages: parseCatalogGalleryUrls(record['gallery']),
   };
 };
 
@@ -297,6 +306,7 @@ export const parseProjectCatalog = (
     nearbyPlaces: parseProjectNearbyPlaces(nearbyPlaces, contentLocale),
     details: parsedAmenities.details,
     links: parsedAmenities.links,
+    galleryImages: parsedAmenities.galleryImages,
   };
 };
 

@@ -6,6 +6,7 @@ import {
   ProjectCatalogOverviewStat,
 } from '@/features/catalog/components/project-catalog-details-bits';
 import { ProjectBankPartnerOffersPanel } from '@/features/catalog/components/project-bank-partner-offers-panel';
+import { ProjectCatalogImageCarousel } from '@/features/catalog/components/project-catalog-image-carousel';
 import { ProjectCatalogSectionCard } from '@/features/catalog/components/project-catalog-section-card';
 import { ProjectCatalogLinksSection } from '@/features/catalog/components/project-catalog-links-section';
 import { ProjectCatalogGeoMap } from '@/features/catalog/components/project-catalog-geo-map';
@@ -30,7 +31,7 @@ type ProjectCatalogDetailsPanelProps = {
   bankPartnerTitle: string;
   amenitiesTitle: string;
   nearbyTitle: string;
-  linksTitle: string;
+  galleryTitle: string;
   socialsTitle: string;
   videoTitle: string;
   videoOpenLabel: string;
@@ -42,6 +43,7 @@ type ProjectCatalogDetailsPanelProps = {
   amenityLabels: string[];
   nearbyPlaces: string[];
   links: ProjectCatalogLink[];
+  galleryImages: string[];
 };
 
 /** Prefer compact icon stats in Overview; long text stays in Details. */
@@ -62,7 +64,7 @@ export const ProjectCatalogDetailsPanel = ({
   bankPartnerTitle,
   amenitiesTitle,
   nearbyTitle,
-  linksTitle,
+  galleryTitle,
   socialsTitle,
   videoTitle,
   videoOpenLabel,
@@ -74,6 +76,7 @@ export const ProjectCatalogDetailsPanel = ({
   amenityLabels,
   nearbyPlaces,
   links,
+  galleryImages,
 }: ProjectCatalogDetailsPanelProps) => {
   const {
     general: generalRows,
@@ -87,7 +90,6 @@ export const ProjectCatalogDetailsPanel = ({
       ? generalRows.filter((row) => row.wide || !overviewIds.has(row.id))
       : generalRows;
   const {
-    media: mediaLinks,
     social: socialLinks,
     video: videoLink,
     typicalTour: typicalTourLink,
@@ -95,6 +97,10 @@ export const ProjectCatalogDetailsPanel = ({
     matterport: matterportLink,
     external3d: external3dLink,
   } = splitProjectCatalogLinks(links);
+  const exteriorRenderGalleryImages = galleryImages.map((src, index) => ({
+    src,
+    alt: `${linkLabels.exteriorRenders} ${index + 1}`,
+  }));
   const hasAbout = aboutText != null && aboutText.trim().length > 0;
   const hasOverview = overviewRows.length > 0;
   const hasDetails = detailRows.length > 0;
@@ -108,7 +114,7 @@ export const ProjectCatalogDetailsPanel = ({
   const hasExteriorTour = exteriorTourLink != null;
   const hasMatterport = matterportLink != null;
   const hasExternal3d = external3dLink != null;
-  const hasMediaLinks = mediaLinks.length > 0;
+  const hasExteriorRenderGallery = exteriorRenderGalleryImages.length > 0;
   const hasSocialLinks = socialLinks.length > 0;
 
   return (
@@ -236,9 +242,9 @@ export const ProjectCatalogDetailsPanel = ({
           <ProjectCatalogGeoMap projectId={projectId} />
         </ProjectCatalogSectionCard>
 
-        {hasMediaLinks ? (
-          <ProjectCatalogSectionCard title={linksTitle}>
-            <ProjectCatalogLinksSection links={mediaLinks} labels={linkLabels} />
+        {hasExteriorRenderGallery ? (
+          <ProjectCatalogSectionCard title={galleryTitle}>
+            <ProjectCatalogImageCarousel images={exteriorRenderGalleryImages} />
           </ProjectCatalogSectionCard>
         ) : null}
 

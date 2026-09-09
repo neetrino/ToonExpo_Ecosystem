@@ -165,6 +165,14 @@ export const resolveProjectCatalogVideoEmbed = (
     return { kind: 'iframe', src: vimeo };
   }
 
+  const matterportId = extractMatterportModelId(url);
+  if (matterportId) {
+    return {
+      kind: 'iframe',
+      src: `https://my.matterport.com/show/?m=${encodeURIComponent(matterportId)}`,
+    };
+  }
+
   if (isDirectVideoFile(url)) {
     return { kind: 'file', src: url.toString() };
   }
