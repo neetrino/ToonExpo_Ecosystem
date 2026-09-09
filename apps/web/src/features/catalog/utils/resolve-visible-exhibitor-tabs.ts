@@ -1,4 +1,5 @@
 import {
+  EXHIBITOR_TAB_ALL,
   EXHIBITOR_TAB_BUILDER,
   EXHIBITOR_TABS,
   isExhibitorTab,
@@ -10,16 +11,22 @@ import {
 } from '@/features/catalog/utils/partner-filters';
 
 /**
- * Builders first, then partner types that currently have published profiles.
+ * Combined tab first, then builders, then partner types that have published profiles.
  */
 export const resolveVisibleExhibitorTabs = (
   hasBuilders: boolean,
   partnerTypes: readonly string[],
 ): ExhibitorTab[] => {
   const available = new Set(partnerTypes.filter(isExhibitorTab));
-  return EXHIBITOR_TABS.filter((tab) =>
-    tab === EXHIBITOR_TAB_BUILDER ? hasBuilders : available.has(tab),
-  );
+  return EXHIBITOR_TABS.filter((tab) => {
+    if (tab === EXHIBITOR_TAB_ALL) {
+      return hasBuilders || available.size > 0;
+    }
+    if (tab === EXHIBITOR_TAB_BUILDER) {
+      return hasBuilders;
+    }
+    return available.has(tab);
+  });
 };
 
 /**

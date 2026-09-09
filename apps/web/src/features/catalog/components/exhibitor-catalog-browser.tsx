@@ -32,7 +32,13 @@ const catalogTotal = (catalog: ExhibitorCatalog | undefined): number => {
   if (catalog == null) {
     return 0;
   }
-  return catalog.kind === 'builders' ? catalog.builders.length : catalog.response.meta.total;
+  if (catalog.kind === 'builders') {
+    return catalog.builders.length;
+  }
+  if (catalog.kind === 'all') {
+    return catalog.buildersTotal + catalog.response.meta.total;
+  }
+  return catalog.response.meta.total;
 };
 
 const resolveEmptyLabel = (
@@ -69,7 +75,7 @@ export const ExhibitorCatalogBrowser = ({
   });
   const showBuilders = isExhibitorBuilderTab(filters.tab);
   const total = catalogTotal(catalog);
-  const partnerMeta = catalog?.kind === 'partners' ? catalog.response.meta : null;
+  const partnerMeta = catalog != null && catalog.kind !== 'builders' ? catalog.response.meta : null;
 
   return (
     <>
@@ -85,8 +91,8 @@ export const ExhibitorCatalogBrowser = ({
         activeTab={filters.tab}
         visibleTabs={visibleTabs}
         emptyLabel={resolveEmptyLabel(showBuilders, filters.q, t)}
-        builders={catalog?.kind === 'builders' ? catalog.builders : undefined}
-        partners={catalog?.kind === 'partners' ? catalog.response.data : undefined}
+        builders={catalog != null && catalog.kind !== 'partners' ? catalog.builders : undefined}
+        partners={catalog != null && catalog.kind !== 'builders' ? catalog.response.data : undefined}
         page={partnerMeta?.page ?? 1}
         totalPages={partnerMeta?.totalPages ?? 1}
         previousLabel={t('pagination.previous')}

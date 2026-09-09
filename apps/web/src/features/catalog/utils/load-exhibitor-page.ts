@@ -1,9 +1,15 @@
 import { listBuilders } from '@/features/catalog/api/catalog-api';
 import { listPublicPartnerFacets } from '@/features/catalog/api/partners-api';
-import { isExhibitorBuilderTab, type ExhibitorTab } from '@/features/catalog/constants/exhibitor-tabs';
+import {
+  isExhibitorAllTab,
+  isExhibitorBuilderTab,
+  type ExhibitorTab,
+} from '@/features/catalog/constants/exhibitor-tabs';
 import {
   filterBuildersByQuery,
   loadExhibitorCatalog,
+  loadExhibitorPartners,
+  toAllExhibitorsCatalog,
   type ExhibitorCatalog,
 } from '@/features/catalog/utils/load-exhibitor-catalog';
 import {
@@ -31,12 +37,22 @@ export const loadExhibitorPage = async (
   ]);
   const visibleTabs = resolveVisibleExhibitorTabs(builders.length > 0, facets.types);
   const filters = resolveExhibitorFilters(requested, visibleTabs);
+  const { tab } = filters;
 
-  if (isExhibitorBuilderTab(filters.tab)) {
+  if (isExhibitorBuilderTab(tab)) {
     return {
       filters,
       visibleTabs,
       catalog: { kind: 'builders', builders: filterBuildersByQuery(builders, filters.q) },
+    };
+  }
+
+  if (isExhibitorAllTab(tab)) {
+    const response = await loadExhibitorPartners(filters, locale);
+    return {
+      filters,
+      visibleTabs,
+      catalog: toAllExhibitorsCatalog(builders, filters, response),
     };
   }
 
