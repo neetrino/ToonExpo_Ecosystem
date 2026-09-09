@@ -6,14 +6,14 @@ import { listProjects } from '@/features/catalog/api/catalog-api';
 import { FeaturedApartments } from '@/features/catalog/components/featured-apartments';
 import { HomeDevelopments } from '@/features/catalog/components/home-developments';
 import { HomeHero } from '@/features/catalog/components/home-hero';
+import { HomeMapSection } from '@/features/catalog/components/home-map-section';
 import { HomeMortgage } from '@/features/catalog/components/home-mortgage';
 import { HomeStats } from '@/features/catalog/components/home-stats';
 import { SiteFooter } from '@/features/catalog/components/site-footer';
 import { HOME_HERO_CATALOG_PAGE_SIZE } from '@/features/catalog/constants/hero-search';
-import {
-  HOME_FEATURED_PROJECT_LIMIT,
-} from '@/features/catalog/constants/home-featured';
+import { HOME_FEATURED_PROJECT_LIMIT } from '@/features/catalog/constants/home-featured';
 import { loadHomeFeaturedApartments } from '@/features/catalog/utils/load-home-featured-apartments';
+import { mergeHomeFeaturedProjects } from '@/features/catalog/utils/merge-home-featured-projects';
 import { collectProjectCities } from '@/features/catalog/utils/location-options';
 
 type HomePageProps = {
@@ -55,18 +55,19 @@ export default async function HomePage({ params }: HomePageProps) {
   ]);
 
   const catalogProjects = catalogResponse.data;
-  const featuredProjects =
-    featuredProjectsResponse.data.length > 0
-      ? featuredProjectsResponse.data
-      : catalogProjects.slice(0, HOME_FEATURED_PROJECT_LIMIT);
+  const featuredProjects = mergeHomeFeaturedProjects(
+    featuredProjectsResponse.data,
+    catalogProjects,
+  );
   const locations = collectProjectCities(catalogProjects);
 
   return (
     <div className="min-h-screen bg-canvas">
       <HomeHero locations={locations} projects={catalogProjects} />
       <HomeStats />
-      <FeaturedApartments listings={featuredApartments} />
       <HomeDevelopments projects={featuredProjects} />
+      <FeaturedApartments listings={featuredApartments} />
+      <HomeMapSection />
       <HomeMortgage />
       <SiteFooter />
     </div>
