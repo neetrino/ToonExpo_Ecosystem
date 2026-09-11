@@ -2,6 +2,11 @@
   "Common": {
     "close": "Փակել",
     "cancel": "Չեղարկել",
+    "retry": "Կրկին փորձել",
+    "apiUnavailableTitle": "API-ն չի աշխատում",
+    "apiUnavailableDescription": "NestJS API-ն 4000 պորտում չպատասխանեց։ Երկրորդ terminal-ում պահիր `pnpm run dev:api`, հետո կրկին փորձիր։",
+    "unexpectedErrorTitle": "Սխալ տեղի ունեցավ",
+    "unexpectedErrorDescription": "Էջը չկարողացավ բեռնվել։ Կրկին փորձիր կամ թարմացրու էջը։",
     "delete": "Ջնջել",
     "deleteConfirmTitle": "Ջնջել",
     "deleteConfirmMessage": "Համոզվա՞ծ եք, որ ուզում եք ջնջել սա։ Սա հնարավոր չէ հետարկել։",

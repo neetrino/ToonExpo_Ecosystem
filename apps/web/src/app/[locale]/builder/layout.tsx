@@ -3,12 +3,13 @@ import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import type { ReactNode } from 'react';
 
-import { getMeOrNullCached as getMeOrNull } from '@/features/auth/api/get-me-or-null-cached';
+import { getMeSessionCached } from '@/features/auth/api/get-me-or-null-cached';
 import { getCompanyProfileCached as getCompanyProfile } from '@/features/builder/api/get-company-profile-cached';
 import { BuilderMobileStack } from '@/features/builder/components/builder-mobile-stack';
 import { BuilderNav } from '@/features/builder/components/builder-nav';
 import { redirect } from '@/i18n/navigation';
 import { isApiErrorStatus } from '@/shared/api/errors';
+import { ApiUnavailablePanel } from '@/shared/ui/api-unavailable-panel';
 import { PortalShell } from '@/shared/ui/portal-shell';
 
 type BuilderLayoutProps = {
@@ -25,7 +26,11 @@ export default async function BuilderLayout({ children, params }: BuilderLayoutP
 
   const headerStore = await headers();
   const cookieHeader = headerStore.get('cookie') ?? undefined;
-  const user = await getMeOrNull(cookieHeader);
+  const session = await getMeSessionCached(cookieHeader);
+  if (session.status === 'unavailable') {
+    return <ApiUnavailablePanel />;
+  }
+  const { user } = session;
 
   if (!user) {
     redirect({ href: '/auth/login', locale });

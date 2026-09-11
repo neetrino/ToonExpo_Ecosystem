@@ -2,6 +2,7 @@ import type { FeatureCollection } from 'geojson';
 import type { GeoJSONSource, MapLibreMap } from 'maplibre-gl';
 
 import type { BuildingGeometry } from '@/features/geo-map/utils/building-identification';
+import { roundBuildingGeometry } from '@/features/geo-map/utils/round-building-geometry';
 
 export const OSM_HIGHLIGHT_SOURCE_ID = 'geo-map-osm-building-highlight';
 export const OSM_HIGHLIGHT_FILL_LAYER_ID = 'geo-map-osm-building-highlight-fill';
@@ -93,7 +94,7 @@ export const setOsmHighlightedBuilding = (
       {
         type: 'Feature',
         properties: {},
-        geometry,
+        geometry: roundBuildingGeometry(geometry) ?? geometry,
       },
     ],
   });

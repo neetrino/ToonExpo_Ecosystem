@@ -3,9 +3,13 @@ import { cache } from 'react';
 import { getMeOrNull } from '@/features/auth/api/auth-api';
 import { isNetworkFetchError } from '@/shared/api/errors';
 
-/** Dev HMR / brief Nest restarts — keep portal layouts from bouncing to login. */
-const ME_SSR_NETWORK_RETRY_COUNT = 3;
-const ME_SSR_NETWORK_RETRY_DELAY_MS = 400;
+import { lookupMeSession, type MeSession } from './me-session';
+
+export type { MeSession };
+
+/** Dev HMR / Nest watch reboot — keep portal layouts from bouncing to login. */
+const ME_SSR_NETWORK_RETRY_COUNT = 5;
+const ME_SSR_NETWORK_RETRY_DELAY_MS = 500;
 
 const wait = (ms: number): Promise<void> =>
   new Promise((resolve) => {
@@ -13,7 +17,7 @@ const wait = (ms: number): Promise<void> =>
   });
 
 /**
- * `/auth/me` with short retries on network blips, then request-scoped React `cache`.
+ * `/auth/me` with short retries on network blips.
  */
 const getMeOrNullWithNetworkRetry = async (cookieHeader?: string) => {
   let attempt = 0;
@@ -31,7 +35,11 @@ const getMeOrNullWithNetworkRetry = async (cookieHeader?: string) => {
   }
 };
 
+const loadMeSession = async (cookieHeader?: string): Promise<MeSession> =>
+  lookupMeSession(() => getMeOrNullWithNetworkRetry(cookieHeader));
+
 /**
- * Request-scoped `/auth/me` dedupe for RSC (layout + page share one call).
+ * Request-scoped session lookup. `unavailable` means Nest never answered —
+ * layouts must render recovery UI instead of throwing or faking logout.
  */
-export const getMeOrNullCached = cache(getMeOrNullWithNetworkRetry);
+export const getMeSessionCached = cache(loadMeSession);

@@ -2,6 +2,11 @@
   "Common": {
     "close": "Закрыть",
     "cancel": "Отмена",
+    "retry": "Повторить",
+    "apiUnavailableTitle": "API не запущен",
+    "apiUnavailableDescription": "NestJS API на порту 4000 не ответил. Держите `pnpm run dev:api` во втором терминале, затем повторите.",
+    "unexpectedErrorTitle": "Что-то пошло не так",
+    "unexpectedErrorDescription": "Страница не загрузилась. Повторите попытку или обновите страницу.",
     "delete": "Удалить",
     "deleteConfirmTitle": "Удалить",
     "deleteConfirmMessage": "Вы уверены, что хотите удалить это? Действие нельзя отменить.",

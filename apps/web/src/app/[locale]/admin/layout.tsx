@@ -6,8 +6,9 @@ import type { ReactNode } from 'react';
 import { AdminMobileStack } from '@/features/admin/components/admin-mobile-stack';
 import { AdminNav } from '@/features/admin/components/admin-nav';
 import { ADMIN_RAIL_COLLAPSED_STORAGE_KEY } from '@/features/admin/constants';
-import { getMeOrNullCached as getMeOrNull } from '@/features/auth/api/get-me-or-null-cached';
+import { getMeSessionCached } from '@/features/auth/api/get-me-or-null-cached';
 import { redirect } from '@/i18n/navigation';
+import { ApiUnavailablePanel } from '@/shared/ui/api-unavailable-panel';
 import { PortalShell } from '@/shared/ui/portal-shell';
 
 type AdminLayoutProps = {
@@ -24,7 +25,11 @@ export default async function AdminLayout({ children, params }: AdminLayoutProps
 
   const headerStore = await headers();
   const cookieHeader = headerStore.get('cookie') ?? undefined;
-  const user = await getMeOrNull(cookieHeader);
+  const session = await getMeSessionCached(cookieHeader);
+  if (session.status === 'unavailable') {
+    return <ApiUnavailablePanel />;
+  }
+  const { user } = session;
 
   if (!user) {
     redirect({ href: '/auth/login', locale });

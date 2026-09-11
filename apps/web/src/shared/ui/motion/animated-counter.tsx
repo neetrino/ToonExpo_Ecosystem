@@ -2,6 +2,7 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
+import { formatAmdCurrency, formatCounterInteger } from '@/shared/ui/motion/format-counter-value';
 import {
   isEntranceMotionSettled,
   markEntranceMotionSettled,
@@ -124,19 +125,6 @@ export const AnimatedCounter = ({
   );
 };
 
-const AMD_GROUP_SEPARATOR = '\u00a0';
-const AMD_CURRENCY_SYMBOL = '֏';
-
-/**
- * Hydration-safe AMD formatter (fixed grouping + dram sign).
- * Avoids ICU locale mismatches between Node and browser.
- */
-const formatAmdCurrency = (value: number): string => {
-  const digits = String(Math.round(value));
-  const grouped = digits.replace(/\B(?=(\d{3})+(?!\d))/g, AMD_GROUP_SEPARATOR);
-  return `${grouped}${AMD_GROUP_SEPARATOR}${AMD_CURRENCY_SYMBOL}`;
-};
-
 const createFormatter = (
   formatStyle: AnimatedCounterFormatStyle,
   locale: string,
@@ -144,7 +132,5 @@ const createFormatter = (
   if (formatStyle === 'currencyAmd') {
     return (n) => formatAmdCurrency(n);
   }
-
-  const formatter = new Intl.NumberFormat(locale);
-  return (n) => formatter.format(Math.round(n));
+  return (n) => formatCounterInteger(n, locale);
 };

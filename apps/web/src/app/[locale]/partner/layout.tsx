@@ -6,10 +6,11 @@ import type { ReactNode } from 'react';
 import { getCompanyProfileCached as getCompanyProfile } from '@/features/builder/api/get-company-profile-cached';
 import { getPortalPartner } from '@/features/partner/api/portal-partner-api';
 import { PartnerNav } from '@/features/partner/components/partner-nav';
-import { getMeOrNullCached as getMeOrNull } from '@/features/auth/api/get-me-or-null-cached';
+import { getMeSessionCached } from '@/features/auth/api/get-me-or-null-cached';
 import { isPartnerCompatibleCompany } from '@/features/partners/utils/is-partner-compatible-company';
 import { redirect } from '@/i18n/navigation';
 import { isApiErrorStatus } from '@/shared/api/errors';
+import { ApiUnavailablePanel } from '@/shared/ui/api-unavailable-panel';
 import { PortalShell } from '@/shared/ui/portal-shell';
 
 type PartnerLayoutProps = {
@@ -26,7 +27,11 @@ export default async function PartnerLayout({ children, params }: PartnerLayoutP
 
   const headerStore = await headers();
   const cookieHeader = headerStore.get('cookie') ?? undefined;
-  const user = await getMeOrNull(cookieHeader);
+  const session = await getMeSessionCached(cookieHeader);
+  if (session.status === 'unavailable') {
+    return <ApiUnavailablePanel />;
+  }
+  const { user } = session;
 
   if (!user) {
     redirect({ href: '/auth/login?returnUrl=%2Fpartner', locale });

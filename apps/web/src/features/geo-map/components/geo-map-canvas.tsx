@@ -24,9 +24,13 @@ import { useMaplibreMap } from '@/features/geo-map/hooks/use-maplibre-map';
 import { useMarkerLayer } from '@/features/geo-map/hooks/use-marker-layer';
 import { useModelFootprintMasks } from '@/features/geo-map/hooks/use-model-footprint-masks';
 import { useOsmBuildingPick } from '@/features/geo-map/hooks/use-osm-building-pick';
+import { useGreenCanopyLayer } from '@/features/geo-map/hooks/use-green-canopy-layer';
+import { useRoadTrafficLayer } from '@/features/geo-map/hooks/use-road-traffic-layer';
+import { useRoundedOsmBuildings } from '@/features/geo-map/hooks/use-rounded-osm-buildings';
 import { useThreeBuildingLayer } from '@/features/geo-map/hooks/use-three-building-layer';
 import { useVisibleObjects } from '@/features/geo-map/hooks/use-visible-objects';
 import { useWebglSupport } from '@/features/geo-map/hooks/use-webgl-support';
+import { GEO_MAP_CITY_LIFE_PROPS } from '@/features/geo-map/geo-map-city-life-props';
 import type { GeoMapCanvasProps, GeoMapLngLat, GeoMapObject } from '@/features/geo-map/types';
 import type { ObjectTransformOverride } from '@/features/geo-map/utils/apply-position-override';
 import { resolveInfoCardPlacement } from '@/features/geo-map/utils/resolve-info-card-placement';
@@ -57,7 +61,8 @@ const findObjectById = (
  * Hover/select shows a shared logo + name info card. Optional `focusRequest`
  * flies the camera to an object without breaking read-only / editable consumers.
  *
- * Consumed by the admin editor (`editable`), the public map, and the home map.
+ * One city map: admin, home, `/map`, and catalog all share this canvas
+ * (basemap, rounded OSM, trees, traffic). Admin adds edit chrome only.
  * Load via `next/dynamic` with `ssr: false` — see `GeoMapCanvasLazy`.
  */
 export const GeoMapCanvas = ({
@@ -82,6 +87,8 @@ export const GeoMapCanvas = ({
   onOsmBuildingSelect,
   adminSelectionChrome = null,
   adminOsmHideSession = null,
+  greenCanopyEnabled = GEO_MAP_CITY_LIFE_PROPS.greenCanopyEnabled,
+  roadTrafficEnabled = GEO_MAP_CITY_LIFE_PROPS.roadTrafficEnabled,
 }: GeoMapCanvasProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [uiOverlayRoot, setUiOverlayRoot] = useState<HTMLDivElement | null>(null);
@@ -158,6 +165,19 @@ export const GeoMapCanvas = ({
     },
   });
   useThreeBuildingLayer({ map, isMapLoaded, modelObjects });
+  useRoundedOsmBuildings(map, isMapLoaded);
+  useGreenCanopyLayer({
+    map,
+    isMapLoaded,
+    active: true,
+    enabled: greenCanopyEnabled,
+  });
+  useRoadTrafficLayer({
+    map,
+    isMapLoaded,
+    active: true,
+    enabled: roadTrafficEnabled,
+  });
   useEffect(() => {
     if (!map || !isMapLoaded) {
       setUiOverlayRoot(null);

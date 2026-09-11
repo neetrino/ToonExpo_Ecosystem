@@ -2,8 +2,9 @@ import { headers } from 'next/headers';
 import { setRequestLocale } from 'next-intl/server';
 
 import { AdminSettingsPage } from '@/features/admin/components/admin-settings-page';
-import { getMeOrNullCached as getMeOrNull } from '@/features/auth/api/get-me-or-null-cached';
+import { getMeSessionCached } from '@/features/auth/api/get-me-or-null-cached';
 import { redirect } from '@/i18n/navigation';
+import { ApiUnavailablePanel } from '@/shared/ui/api-unavailable-panel';
 
 type AdminSettingsRouteProps = {
   params: Promise<{ locale: string }>;
@@ -18,7 +19,11 @@ export default async function AdminSettingsRoute({ params }: AdminSettingsRouteP
 
   const headerStore = await headers();
   const cookieHeader = headerStore.get('cookie') ?? undefined;
-  const user = await getMeOrNull(cookieHeader);
+  const session = await getMeSessionCached(cookieHeader);
+  if (session.status === 'unavailable') {
+    return <ApiUnavailablePanel />;
+  }
+  const { user } = session;
 
   if (!user) {
     redirect({ href: '/auth/login', locale });

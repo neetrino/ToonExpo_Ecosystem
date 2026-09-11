@@ -1,12 +1,16 @@
 import { headers } from 'next/headers';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import { AccountPageEnter, AccountContentReveal } from '@/features/buyer/components/account/account-page-enter';
+import {
+  AccountPageEnter,
+  AccountContentReveal,
+} from '@/features/buyer/components/account/account-page-enter';
 import { AccountPageHeader } from '@/features/buyer/components/account/account-page-header';
 import { BuyerFavoritesList } from '@/features/buyer/components/buyer-favorites-list';
 import { isBuyerAccount } from '@/features/buyer/utils/is-buyer-account';
-import { getMeOrNullCached as getMeOrNull } from '@/features/auth/api/get-me-or-null-cached';
+import { getMeSessionCached } from '@/features/auth/api/get-me-or-null-cached';
 import { redirect } from '@/i18n/navigation';
+import { ApiUnavailablePanel } from '@/shared/ui/api-unavailable-panel';
 
 type FavoritesPageProps = {
   params: Promise<{ locale: string }>;
@@ -18,7 +22,11 @@ export default async function FavoritesPage({ params }: FavoritesPageProps) {
 
   const headerStore = await headers();
   const cookieHeader = headerStore.get('cookie') ?? undefined;
-  const user = await getMeOrNull(cookieHeader);
+  const session = await getMeSessionCached(cookieHeader);
+  if (session.status === 'unavailable') {
+    return <ApiUnavailablePanel />;
+  }
+  const { user } = session;
 
   if (!user) {
     redirect({

@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 
 import { GeoMapCanvasLazy } from '@/features/geo-map/components/geo-map-canvas-lazy';
+import { GEO_MAP_CITY_LIFE_PROPS } from '@/features/geo-map/geo-map-city-life-props';
 import type { GeoMapFocusRequest, GeoMapObject } from '@/features/geo-map/types';
 import { mapPublicGeoMapItemsToObjects } from '@/features/geo-map/utils/map-object-mapper';
 import { GeoMapStatusOverlays } from '@/features/geo-map/public/components/geo-map-status-overlays';
@@ -66,6 +67,7 @@ export const BuyApartmentsMap = ({
         initialZoom={view.zoom}
         focusRequest={focusRequest}
         highlightedObjectId={highlightedObjectId}
+        {...GEO_MAP_CITY_LIFE_PROPS}
         className="absolute inset-0 h-full w-full"
         onObjectClick={onObjectClick}
       />
