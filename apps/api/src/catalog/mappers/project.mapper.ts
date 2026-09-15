@@ -181,6 +181,7 @@ const localizeProjectFields = (
   name: string;
   shortDescription: string | null;
   locationText: string | null;
+  district: string | null;
   builderName: string;
 } => {
   const { locale, translations } = ctx;
@@ -208,6 +209,14 @@ const localizeProjectFields = (
       TRANSLATION_FIELD.locationText,
       locale,
       project.locationText,
+    ),
+    district: resolveTranslatedValue(
+      translations,
+      TRANSLATION_ENTITY.project,
+      project.id,
+      TRANSLATION_FIELD.district,
+      locale,
+      project.district,
     ),
     builderName: resolveCompanyDisplayName(
       translations,
@@ -237,7 +246,7 @@ export const mapProjectListItem = (
     locationText: localized.locationText,
     address: project.address,
     city: project.city,
-    district: project.district,
+    district: localized.district,
     latitude: decimalToString(project.latitude),
     longitude: decimalToString(project.longitude),
     cover: toMediaSummary(project.coverMedia),

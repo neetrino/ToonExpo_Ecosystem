@@ -98,7 +98,14 @@ export const mapFavoriteApartmentCard = (
     cover: toMediaSummary(apartment.coverMedia),
     verified: apartment.verified,
     city: apartment.project.city,
-    district: apartment.project.district,
+    district: resolveTranslatedValue(
+      ctx.translations,
+      TRANSLATION_ENTITY.project,
+      apartment.project.id,
+      TRANSLATION_FIELD.district,
+      ctx.locale,
+      apartment.project.district,
+    ),
     locationText: resolveTranslatedValue(
       ctx.translations,
       TRANSLATION_ENTITY.project,

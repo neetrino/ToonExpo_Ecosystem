@@ -24,6 +24,7 @@ const PROJECT_TRANSLATION_FIELDS = [
   TRANSLATION_FIELD.shortDescription,
   TRANSLATION_FIELD.fullDescription,
   TRANSLATION_FIELD.locationText,
+  TRANSLATION_FIELD.district,
 ] as const;
 
 const PROJECT_MEDIA_SELECT = {
@@ -155,6 +156,7 @@ export class PortalProjectsService {
           [TRANSLATION_FIELD.shortDescription]: dto.translations.shortDescription,
           [TRANSLATION_FIELD.fullDescription]: dto.translations.fullDescription,
           [TRANSLATION_FIELD.locationText]: dto.translations.locationText,
+          [TRANSLATION_FIELD.district]: dto.translations.district,
         },
         updatedByUserId: userId,
       });
@@ -215,6 +217,7 @@ export class PortalProjectsService {
           [TRANSLATION_FIELD.shortDescription]: dto.translations.shortDescription,
           [TRANSLATION_FIELD.fullDescription]: dto.translations.fullDescription,
           [TRANSLATION_FIELD.locationText]: dto.translations.locationText,
+          [TRANSLATION_FIELD.district]: dto.translations.district,
         },
         updatedByUserId: userId,
       });

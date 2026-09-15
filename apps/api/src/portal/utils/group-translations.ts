@@ -61,6 +61,9 @@ const assignField = (
     case "locationText":
       result.locationText = locales;
       break;
+    case "district":
+      result.district = locales;
+      break;
     case "description":
       result.description = locales;
       break;

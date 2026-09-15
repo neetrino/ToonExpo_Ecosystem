@@ -1,7 +1,7 @@
 'use client';
 
 import { useLocale, useTranslations } from 'next-intl';
-import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 
 import { TRANSLATION_LOCALES } from '@/features/builder/constants';
 import { cn } from '@/shared/ui/cn';
@@ -32,8 +32,9 @@ const resolveTranslationLocale = (value: string): TranslationLocale =>
   isTranslationLocale(value) ? value : 'hy';
 
 /**
- * hy / ru / en tab switcher with a sliding underline and soft panel fade.
- * Defaults to (and follows) the site locale from the header language switcher.
+ * hy / ru / en tab switcher with a sliding underline.
+ * All locale panels stay mounted (hidden when inactive) so each language keeps
+ * its own form fields. Shared values (media, URLs, slug) belong outside the tabs.
  */
 export const TranslationTabs = ({
   children,
@@ -42,8 +43,8 @@ export const TranslationTabs = ({
 }: TranslationTabsProps) => {
   const t = useTranslations('Builder.locales');
   const siteLocale = resolveTranslationLocale(useLocale());
+  const tabsId = useId();
   const [active, setActive] = useState<TranslationLocale>(siteLocale);
-  const [panelKey, setPanelKey] = useState(0);
   const listRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<Partial<Record<TranslationLocale, HTMLButtonElement | null>>>({});
   const [indicator, setIndicator] = useState<IndicatorMetrics>({ left: 0, width: 0 });
@@ -55,7 +56,6 @@ export const TranslationTabs = ({
     }
     previousSiteLocaleRef.current = siteLocale;
     setActive(siteLocale);
-    setPanelKey((key) => key + 1);
   }, [siteLocale]);
 
   useEffect(() => {
@@ -63,7 +63,6 @@ export const TranslationTabs = ({
       return;
     }
     setActive(focusLocale);
-    setPanelKey((key) => key + 1);
   }, [focusLocale, focusTick]);
 
   useLayoutEffect(() => {
@@ -97,7 +96,6 @@ export const TranslationTabs = ({
       return;
     }
     setActive(locale);
-    setPanelKey((key) => key + 1);
   };
 
   return (
@@ -128,8 +126,10 @@ export const TranslationTabs = ({
               tabRefs.current[locale] = node;
             }}
             type="button"
+            id={`translation-tab-${tabsId}-${locale}`}
             role="tab"
             aria-selected={active === locale}
+            aria-controls={`translation-panel-${tabsId}-${locale}`}
             className={cn(
               'relative px-3 py-2 text-sm font-medium',
               'transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out-premium)]',
@@ -149,16 +149,25 @@ export const TranslationTabs = ({
           </button>
         ))}
       </div>
-      <div
-        key={panelKey}
-        role="tabpanel"
-        className={cn(
-          'animate-[page-enter_var(--duration-base)_var(--ease-out-premium)_both]',
-          'motion-reduce:animate-none',
-        )}
-      >
-        {children(active)}
-      </div>
+      {TRANSLATION_LOCALES.map((locale) => {
+        const isActive = locale === active;
+        return (
+          <div
+            key={locale}
+            id={`translation-panel-${tabsId}-${locale}`}
+            role="tabpanel"
+            aria-labelledby={`translation-tab-${tabsId}-${locale}`}
+            hidden={!isActive}
+            className={cn(
+              isActive &&
+                'animate-[page-enter_var(--duration-base)_var(--ease-out-premium)_both]',
+              'motion-reduce:animate-none',
+            )}
+          >
+            {children(locale)}
+          </div>
+        );
+      })}
     </div>
   );
 };
