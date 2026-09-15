@@ -1,6 +1,4 @@
-import type { TRANSLATION_LOCALES } from '@/features/builder/constants';
-
-type ContentLocale = (typeof TRANSLATION_LOCALES)[number];
+type ContentLocale = 'hy' | 'ru' | 'en';
 
 export const PROJECT_LOCALE_FIELDS = {
   name: { hy: 'nameHy', ru: 'nameRu', en: 'nameEn' },
@@ -21,4 +19,4 @@ export const PROJECT_LOCALE_FIELDS = {
 export const projectLocaleField = <K extends keyof typeof PROJECT_LOCALE_FIELDS>(
   field: K,
   locale: ContentLocale,
-): (typeof PROJECT_LOCALE_FIELDS)[K][ContentLocale] => PROJECT_LOCALE_FIELDS[field][locale];
+) => PROJECT_LOCALE_FIELDS[field][locale];
