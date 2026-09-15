@@ -123,7 +123,7 @@ export const updatePortalProjectPriceOnRequest = (
   });
 
 /**
- * Deletes a draft project (company_admin).
+ * Deletes a project and nested inventory (company_admin).
  */
 export const deletePortalProject = (
   id: string,

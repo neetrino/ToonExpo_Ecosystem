@@ -71,10 +71,10 @@ export const ProjectsTable = ({ projects, viewMode = VIEW_MODE_CARDS }: Projects
                 tabIndex={0}
                 className="cursor-pointer border-t border-border hover:bg-surface/60 focus-visible:bg-surface/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand/30"
                 onClick={() => {
-                  openProject(project.slug);
+                  openProject(project.id);
                 }}
                 onKeyDown={(event) => {
-                  onRowKeyDown(event, project.slug);
+                  onRowKeyDown(event, project.id);
                 }}
               >
                 <td className="px-3 py-2.5 align-middle font-medium text-brand">{project.name}</td>

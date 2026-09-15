@@ -134,7 +134,7 @@ export class AdminCatalogProjectsController {
 
   @Delete(':projectId')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Delete draft project (admin)' })
+  @ApiOperation({ summary: 'Delete project and nested inventory (admin)' })
   @ApiNoContentResponse({ description: 'Deleted' })
   async remove(@Param() params: AdminCatalogProjectParamDto): Promise<void> {
     const companyId = await this.builderCompanies.requireBuilderCompanyId(params.companyId);

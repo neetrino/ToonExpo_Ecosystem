@@ -16,7 +16,6 @@ import {
   useUpdatePortalProjectMutation,
   useUpdateProjectPublicationMutation,
 } from '@/features/builder/hooks/use-portal-projects';
-import { toCatalogPublicationStatus } from '@/features/catalog/utils/catalog-publication-status';
 import { useRouter } from '@/i18n/navigation';
 import { AdminDeleteModal } from '@/shared/ui/admin-delete-modal';
 import { IconButton } from '@/shared/ui/icon-button';
@@ -131,16 +130,14 @@ export const ProjectPublicationActions = ({
             <QrCode className={TOOLBAR_QR_ICON_CLASS} aria-hidden />
           </IconButton>
         </div>
-        {toCatalogPublicationStatus(project.publicationStatus) === 'draft' ? (
-          <CatalogDraftDeleteButton
-            label={t('detail.delete')}
-            iconOnly={scope.mode === 'admin'}
-            disabled={busy}
-            onClick={() => {
-              setConfirmDelete(true);
-            }}
-          />
-        ) : null}
+        <CatalogDraftDeleteButton
+          label={t('detail.delete')}
+          iconOnly={scope.mode === 'admin'}
+          disabled={busy}
+          onClick={() => {
+            setConfirmDelete(true);
+          }}
+        />
       </div>
       {error ? (
         <p role="alert" className="text-sm text-danger">

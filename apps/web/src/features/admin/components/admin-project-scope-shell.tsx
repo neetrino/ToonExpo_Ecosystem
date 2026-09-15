@@ -8,6 +8,8 @@ import { AdminProjectRouteProvider } from '@/features/admin/context/admin-projec
 import { useAdminProjectScopeQuery } from '@/features/admin/hooks/use-admin-companies';
 import { CatalogScopeProvider } from '@/features/builder/catalog-scope-context';
 import { useRouter } from '@/i18n/navigation';
+import { isApiErrorStatus } from '@/shared/api/errors';
+import { decodeRouteParam, encodePathSegment } from '@/shared/lib/decode-route-param';
 
 type AdminProjectScopeShellProps = {
   projectSlug: string;
@@ -20,15 +22,19 @@ type AdminProjectScopeShellProps = {
 export const AdminProjectScopeShell = ({ projectSlug, children }: AdminProjectScopeShellProps) => {
   const t = useTranslations('Admin.projects');
   const router = useRouter();
-  const scopeQuery = useAdminProjectScopeQuery(projectSlug);
+  const routeSlug = decodeRouteParam(projectSlug);
+  const scopeQuery = useAdminProjectScopeQuery(routeSlug);
 
   useEffect(() => {
     const scope = scopeQuery.data;
-    if (!scope || scope.slug === projectSlug) {
+    if (!scope) {
       return;
     }
-    router.replace(`/admin/projects/${encodeURIComponent(scope.slug)}`);
-  }, [projectSlug, router, scopeQuery.data]);
+    if (scope.projectId === routeSlug || scope.slug === routeSlug) {
+      return;
+    }
+    router.replace(`/admin/projects/${encodePathSegment(scope.slug)}`);
+  }, [routeSlug, router, scopeQuery.data]);
 
   if (scopeQuery.isLoading) {
     return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
@@ -37,7 +43,7 @@ export const AdminProjectScopeShell = ({ projectSlug, children }: AdminProjectSc
   if (scopeQuery.isError || !scopeQuery.data) {
     return (
       <p role="alert" className="text-sm text-danger">
-        {t('error')}
+        {isApiErrorStatus(scopeQuery.error, 404) ? t('notFound') : t('error')}
       </p>
     );
   }
