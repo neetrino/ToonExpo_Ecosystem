@@ -1,4 +1,4 @@
-import { TRANSLATION_LOCALES } from '@/features/builder/constants';
+import type { TRANSLATION_LOCALES } from '@/features/builder/constants';
 
 type ContentLocale = (typeof TRANSLATION_LOCALES)[number];
 
