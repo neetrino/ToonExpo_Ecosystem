@@ -20,6 +20,7 @@ export const TRANSLATION_FIELD = {
   shortDescription: 'shortDescription',
   fullDescription: 'fullDescription',
   locationText: 'locationText',
+  district: 'district',
   title: 'title',
 } as const;
 

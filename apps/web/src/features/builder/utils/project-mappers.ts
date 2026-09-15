@@ -57,6 +57,7 @@ export const buildProjectTranslations = (
     values.locationTextRu,
     values.locationTextEn,
   );
+  const district = buildLocaleMap(values.districtHy, values.districtRu, values.districtEn);
 
   if (name) {
     translations.name = name;
@@ -69,6 +70,9 @@ export const buildProjectTranslations = (
   }
   if (locationText) {
     translations.locationText = locationText;
+  }
+  if (district) {
+    translations.district = district;
   }
 
   return Object.keys(translations).length > 0 ? translations : undefined;
@@ -95,7 +99,7 @@ export const toCreateProjectRequest = (
       : {}),
     ...(optionalText(values.address) ? { address: values.address } : {}),
     ...(optionalText(values.city) ? { city: values.city } : {}),
-    ...(optionalText(values.district) ? { district: values.district } : {}),
+    ...(optionalText(values.districtHy) ? { district: values.districtHy } : {}),
     ...(optionalText(values.projectType)
       ? { projectType: values.projectType }
       : {}),
@@ -129,7 +133,7 @@ export const toUpdateProjectRequest = (
     locationText: optionalText(values.locationTextHy) ?? null,
     address: optionalText(values.address) ?? null,
     city: optionalText(values.city) ?? null,
-    district: optionalText(values.district) ?? null,
+    district: optionalText(values.districtHy) ?? null,
     projectType: optionalText(values.projectType) ?? null,
     constructionStatus: optionalText(values.constructionStatus) ?? null,
     completionDate: optionalText(values.completionDate) ?? null,

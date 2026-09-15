@@ -33,6 +33,7 @@ import {
   type UpdateProjectFormValues,
 } from '@/features/builder/schemas/project.schema';
 import { catalogJsonToFormSlice } from '@/features/builder/utils/project-catalog-amenities';
+import { projectLocaleField } from '@/features/builder/utils/project-locale-fields';
 import { toUpdateProjectRequest } from '@/features/builder/utils/project-mappers';
 import { MediaUploadField } from '@/features/media/components/media-upload-field';
 import { Button } from '@/shared/ui/button';
@@ -62,7 +63,9 @@ const toFormValues = (project: PortalProjectDetail): UpdateProjectFormValues => 
   locationTextEn: project.translations?.locationText?.en ?? '',
   address: project.address ?? '',
   city: project.city ?? '',
-  district: project.district ?? '',
+  districtHy: project.translations?.district?.hy ?? project.district ?? '',
+  districtRu: project.translations?.district?.ru ?? '',
+  districtEn: project.translations?.district?.en ?? '',
   projectType: project.projectType ?? '',
   constructionStatus: project.constructionStatus ?? '',
   completionDate: project.completionDate ?? '',
@@ -191,7 +194,7 @@ const EditProjectFormInner = ({ project }: EditProjectFormProps) => {
               <Input
                 id={`edit-name-${locale}`}
                 placeholder={getProjectFormPlaceholder(locale, 'name')}
-                {...register(locale === 'hy' ? 'nameHy' : locale === 'ru' ? 'nameRu' : 'nameEn')}
+                {...register(projectLocaleField('name', locale))}
               />
             </FormField>
             <FormField id={`edit-short-${locale}`} label={t('form.shortDescription')}>
@@ -200,13 +203,7 @@ const EditProjectFormInner = ({ project }: EditProjectFormProps) => {
                 rows={2}
                 placeholder={getProjectFormPlaceholder(locale, 'shortDescription')}
                 className="w-full rounded-sm border border-border bg-background px-4 py-3 text-base text-ink lg:text-sm focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20"
-                {...register(
-                  locale === 'hy'
-                    ? 'shortDescriptionHy'
-                    : locale === 'ru'
-                      ? 'shortDescriptionRu'
-                      : 'shortDescriptionEn',
-                )}
+                {...register(projectLocaleField('shortDescription', locale))}
               />
             </FormField>
             <FormField id={`edit-full-${locale}`} label={t('form.fullDescription')}>
@@ -215,57 +212,43 @@ const EditProjectFormInner = ({ project }: EditProjectFormProps) => {
                 rows={4}
                 placeholder={getProjectFormPlaceholder(locale, 'fullDescription')}
                 className="w-full rounded-sm border border-border bg-background px-4 py-3 text-base text-ink lg:text-sm focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20"
-                {...register(
-                  locale === 'hy'
-                    ? 'fullDescriptionHy'
-                    : locale === 'ru'
-                      ? 'fullDescriptionRu'
-                      : 'fullDescriptionEn',
-                )}
+                {...register(projectLocaleField('fullDescription', locale))}
               />
             </FormField>
             <div className="grid gap-4 sm:grid-cols-2">
-              <FormField id={`edit-slug-${locale}`} label={t('form.slug')}>
-                <Input
-                  id={`edit-slug-${locale}`}
-                  placeholder={getProjectFormPlaceholder(locale, 'slug')}
-                  name={slugField.name}
-                  ref={slugField.ref}
-                  onBlur={slugField.onBlur}
-                  onChange={(event) => {
-                    lockSlugAuto();
-                    void slugField.onChange(event);
-                  }}
-                />
-              </FormField>
               <FormField id={`edit-location-${locale}`} label={t('form.locationText')}>
                 <Input
                   id={`edit-location-${locale}`}
                   placeholder={getProjectFormPlaceholder(locale, 'locationText')}
-                  {...register(
-                    locale === 'hy'
-                      ? 'locationTextHy'
-                      : locale === 'ru'
-                        ? 'locationTextRu'
-                        : 'locationTextEn',
-                  )}
+                  {...register(projectLocaleField('locationText', locale))}
                 />
               </FormField>
-              <div className="sm:col-span-2">
-                <FormField id={`edit-district-${locale}`} label={t('form.district')}>
-                  <Input
-                    id={`edit-district-${locale}`}
-                    placeholder={getProjectFormPlaceholder(locale, 'district')}
-                    {...register('district')}
-                  />
-                </FormField>
-              </div>
+              <FormField id={`edit-district-${locale}`} label={t('form.district')}>
+                <Input
+                  id={`edit-district-${locale}`}
+                  placeholder={getProjectFormPlaceholder(locale, 'district')}
+                  {...register(projectLocaleField('district', locale))}
+                />
+              </FormField>
             </div>
           </div>
         )}
       </TranslationTabs>
 
       <div className="grid gap-4 sm:grid-cols-2">
+        <FormField id="edit-slug" label={t('form.slug')}>
+          <Input
+            id="edit-slug"
+            placeholder={getProjectFormPlaceholder(siteLocale, 'slug')}
+            name={slugField.name}
+            ref={slugField.ref}
+            onBlur={slugField.onBlur}
+            onChange={(event) => {
+              lockSlugAuto();
+              void slugField.onChange(event);
+            }}
+          />
+        </FormField>
         <FormField id="edit-type" label={t('form.projectType')}>
           <Input
             id="edit-type"
