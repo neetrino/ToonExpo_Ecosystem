@@ -192,6 +192,51 @@ describe('Builder portal inventory CRUD (e2e)', () => {
     createdProjectIds.splice(createdProjectIds.indexOf(projectId), 1);
   });
 
+  it('deletes a published project together with its buildings', async () => {
+    const { app, fixtures, loginAs, authHeaders, createdProjectIds } = ctx;
+    const admin = await loginAs(fixtures.adminAEmail);
+
+    const projectRes = await request(app.getHttpServer())
+      .post(`${API_V1_PREFIX}/portal/projects`)
+      .set(authHeaders(admin))
+      .send({ name: 'Published Delete Target' })
+      .expect(201);
+    const projectId = projectRes.body.id as string;
+    createdProjectIds.push(projectId);
+
+    const buildingRes = await request(app.getHttpServer())
+      .post(`${API_V1_PREFIX}/portal/projects/${projectId}/buildings`)
+      .set(authHeaders(admin))
+      .send({ name: 'Published Building' })
+      .expect(201);
+    const buildingId = buildingRes.body.id as string;
+
+    await request(app.getHttpServer())
+      .patch(`${API_V1_PREFIX}/portal/projects/${projectId}/publication`)
+      .set(authHeaders(admin))
+      .send({ publicationStatus: 'published' })
+      .expect(200);
+
+    await request(app.getHttpServer())
+      .delete(`${API_V1_PREFIX}/portal/projects/${projectId}`)
+      .set(authHeaders(admin))
+      .expect(204);
+
+    createdProjectIds.splice(createdProjectIds.indexOf(projectId), 1);
+
+    await request(app.getHttpServer())
+      .get(`${API_V1_PREFIX}/portal/projects/${projectId}`)
+      .set(authHeaders(admin))
+      .expect(404);
+
+    await request(app.getHttpServer())
+      .get(`${API_V1_PREFIX}/portal/buildings/${buildingId}`)
+      .set(authHeaders(admin))
+      .expect(404);
+
+    await request(app.getHttpServer()).get(`${API_V1_PREFIX}/projects/${projectId}`).expect(404);
+  });
+
   it('records apartment sales status history on change', async () => {
     const { app, prisma, fixtures, loginAs, authHeaders, createdProjectIds } = ctx;
     const admin = await loginAs(fixtures.adminAEmail);

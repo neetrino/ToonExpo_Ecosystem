@@ -12,11 +12,11 @@ import { catalogProjectDetailHref } from '@/features/builder/catalog-scope';
 import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import { ProjectQrDialog } from '@/features/builder/components/project-qr-dialog';
 import { toCatalogPublicationStatus } from '@/features/catalog/utils/catalog-publication-status';
-import { Link } from '@/i18n/navigation';
 import { resolvePublicAssetUrl } from '@/shared/lib/static-asset-url';
 import { AdminListCardLogo } from '@/shared/ui/admin-list-card-logo';
 import { cn } from '@/shared/ui/cn';
 import { IconButton } from '@/shared/ui/icon-button';
+import { LIST_CARD_FOREGROUND_CLASS, ListCardHitLink } from '@/shared/ui/list-card-hit-link';
 import { LIST_CARD_LIFT_CLASS } from '@/shared/ui/motion';
 
 const MEDIA_RADIUS_CLASS = 'rounded-[15px]';
@@ -120,7 +120,7 @@ export const BuilderProjectCard = ({ project }: BuilderProjectCardProps) => {
   const t = useTranslations('Builder.projects');
   const tQr = useTranslations('Builder.projects.qr');
   const scope = useCatalogScope();
-  const detailHref = catalogProjectDetailHref(scope, project.slug);
+  const detailHref = catalogProjectDetailHref(scope, project.id);
   const catalogStatus = toCatalogPublicationStatus(project.publicationStatus);
   const StatusIcon = catalogStatus === 'published' ? CheckCircle2 : CircleDashed;
   const [qrOpen, setQrOpen] = useState(false);
@@ -135,6 +135,7 @@ export const BuilderProjectCard = ({ project }: BuilderProjectCardProps) => {
           'rounded-[15px]',
         )}
       >
+        <ListCardHitLink href={detailHref} label={project.name} />
         <header className="flex flex-col gap-2">
           <div className="flex items-start justify-between gap-2">
             <div className="flex min-w-0 items-center gap-2.5">
@@ -158,24 +159,17 @@ export const BuilderProjectCard = ({ project }: BuilderProjectCardProps) => {
               {t(`publication.${catalogStatus}`)}
             </span>
           </div>
-          <Link
-            href={detailHref}
+          <h2
             className={cn(
               'min-w-0 text-lg font-semibold tracking-tight text-ink sm:text-xl',
               'transition-colors duration-[var(--duration-fast)] group-hover:text-brand-deep',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30',
             )}
           >
             {project.name}
-          </Link>
+          </h2>
         </header>
 
-        <Link
-          href={detailHref}
-          className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30"
-        >
-          <BuilderProjectImage key={project.cover?.id ?? 'fallback'} project={project} />
-        </Link>
+        <BuilderProjectImage key={project.cover?.id ?? 'fallback'} project={project} />
 
         {project.city ? (
           <AdminInventoryCardMetaRow icon={<MapPin className="size-3.5" strokeWidth={2} />}>
@@ -194,17 +188,18 @@ export const BuilderProjectCard = ({ project }: BuilderProjectCardProps) => {
             label={t('columns.apartments')}
             value={project.apartmentsCount}
           />
-          <IconButton
-            label={tQr('open')}
-            variant="soft"
-            size="md"
-            className="ml-auto shrink-0"
-            onClick={() => {
-              setQrOpen(true);
-            }}
-          >
-            <QrCode className="size-4" aria-hidden />
-          </IconButton>
+          <div className={cn('ml-auto shrink-0', LIST_CARD_FOREGROUND_CLASS)}>
+            <IconButton
+              label={tQr('open')}
+              variant="soft"
+              size="md"
+              onClick={() => {
+                setQrOpen(true);
+              }}
+            >
+              <QrCode className="size-4" aria-hidden />
+            </IconButton>
+          </div>
         </div>
       </article>
 

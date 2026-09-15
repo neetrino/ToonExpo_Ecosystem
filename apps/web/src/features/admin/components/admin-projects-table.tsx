@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import type { KeyboardEvent } from 'react';
 
 import { AdminProjectCard } from '@/features/admin/components/admin-project-card';
+import { catalogProjectDetailHref } from '@/features/builder/catalog-scope';
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
 import { useRouter } from '@/i18n/navigation';
 import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
@@ -22,7 +23,7 @@ type AdminProjectsTableProps = {
 };
 
 const projectHref = (project: AdminProjectListItem): string =>
-  `/admin/projects/${encodeURIComponent(project.slug)}`;
+  catalogProjectDetailHref({ mode: 'admin', companyId: project.builderCompanyId }, project.id);
 
 /**
  * Admin cross-company projects collection as cards or table.

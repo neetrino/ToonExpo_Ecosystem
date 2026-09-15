@@ -149,7 +149,7 @@ export const useUpdateProjectPriceOnRequestMutation = (projectId: string) => {
 };
 
 /**
- * Deletes a draft project.
+ * Deletes a project and nested inventory.
  */
 export const useDeletePortalProjectMutation = () => {
   const queryClient = useQueryClient();

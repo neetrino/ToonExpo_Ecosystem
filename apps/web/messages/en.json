@@ -1969,6 +1969,7 @@
       "clearSearch": "Clear search",
       "loading": "Loading projects…",
       "error": "Could not load projects. Try again.",
+      "notFound": "Project not found. It may have been deleted.",
       "filters": {
         "company": "Company",
         "allCompanies": "All companies",
@@ -3706,7 +3707,7 @@
         "publishConfirm": "Publish \"{name}\"? It will become visible on the public site.",
         "archiveConfirmTitle": "Archive project",
         "archiveConfirm": "Archive \"{name}\"? It will no longer appear in the public catalog.",
-        "deleteConfirm": "Delete this draft project? This cannot be undone.",
+        "deleteConfirm": "Delete this project and all of its buildings? This cannot be undone.",
         "deleteConfirmTitle": "Delete project",
         "publicationSuccess": "Publication status updated"
       }

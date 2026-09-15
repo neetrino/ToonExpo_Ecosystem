@@ -1,3 +1,5 @@
+import { encodePathSegment } from '@/shared/lib/decode-route-param';
+
 export type CatalogScope = { mode: 'portal' } | { mode: 'admin'; companyId: string };
 
 /**
@@ -26,12 +28,12 @@ export const catalogProjectsListHref = (scope: CatalogScope): string =>
   scope.mode === 'admin' ? '/admin/projects' : '/builder/projects';
 
 /**
- * Builder/admin UI href for a project detail page (slug in URL).
+ * Builder/admin UI href for a project detail page (id or slug in URL).
  */
-export const catalogProjectDetailHref = (scope: CatalogScope, projectSlug: string): string =>
+export const catalogProjectDetailHref = (scope: CatalogScope, projectRef: string): string =>
   scope.mode === 'admin'
-    ? `/admin/projects/${encodeURIComponent(projectSlug)}`
-    : `/builder/projects/${encodeURIComponent(projectSlug)}`;
+    ? `/admin/projects/${encodePathSegment(projectRef)}`
+    : `/builder/projects/${encodePathSegment(projectRef)}`;
 
 /**
  * Builder/admin UI href for creating a project.
@@ -98,8 +100,8 @@ export const catalogVisualMapHref = (
   canvasId: string,
 ): string =>
   scope.mode === 'admin'
-    ? `/admin/projects/${encodeURIComponent(projectSlug)}/visual-maps/${canvasId}`
-    : `/builder/projects/${encodeURIComponent(projectSlug)}/visual-maps/${canvasId}`;
+    ? `/admin/projects/${encodePathSegment(projectSlug)}/visual-maps/${encodePathSegment(canvasId)}`
+    : `/builder/projects/${encodePathSegment(projectSlug)}/visual-maps/${encodePathSegment(canvasId)}`;
 
 /**
  * Media upload/list context derived from catalog scope.

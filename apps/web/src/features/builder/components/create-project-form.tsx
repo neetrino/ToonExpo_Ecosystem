@@ -93,7 +93,7 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
         onCreated({ id: project.id, slug: project.slug });
         return;
       }
-      router.push(catalogProjectDetailHref(scope, project.slug));
+      router.push(catalogProjectDetailHref(scope, project.id));
     } catch {
       showError(t('errors.generic'));
     }

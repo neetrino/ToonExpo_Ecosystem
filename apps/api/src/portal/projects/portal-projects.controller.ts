@@ -140,7 +140,7 @@ export class PortalProjectsController {
 
   @Delete(':projectId')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Delete draft project (company_admin)' })
+  @ApiOperation({ summary: 'Delete project and nested inventory (company_admin)' })
   @ApiNoContentResponse({ description: 'Deleted' })
   async remove(
     @CurrentCompanyMember() member: CompanyMemberContext,

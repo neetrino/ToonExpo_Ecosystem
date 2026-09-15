@@ -12,6 +12,7 @@ import type {
 } from '@toonexpo/contracts';
 
 import { apiFetch, type ApiFetchOptions } from '@/shared/api/client';
+import { decodeRouteParam } from '@/shared/lib/decode-route-param';
 
 const jsonCredentials = {
   credentials: 'include' as const,
@@ -165,7 +166,7 @@ export const getAdminProjectScope = (
   apiFetch<AdminProjectScope>(
     withCookie(
       {
-        path: `/admin/projects/${encodeURIComponent(projectId)}/scope`,
+        path: `/admin/projects/${encodeURIComponent(decodeRouteParam(projectId))}/scope`,
         method: 'GET',
         credentials: 'include',
         cache: 'no-store',

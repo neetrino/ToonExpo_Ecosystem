@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import type { PortalProjectDetail, PortalProjectListResponse } from '@toonexpo/contracts';
 import { PublicationStatus, type Prisma } from '@toonexpo/db';
 
@@ -17,6 +17,7 @@ import { upsertTranslations } from '../utils/upsert-translations.js';
 import type { CreatePortalProjectDto } from '../dto/create-portal-project.dto.js';
 import type { UpdatePortalProjectDto } from '../dto/update-portal-project.dto.js';
 import type { UpdatePortalPublicationDto } from '../dto/update-portal-publication.dto.js';
+import { deleteOwnedProject } from './delete-owned-project.js';
 
 const PROJECT_TRANSLATION_FIELDS = [
   TRANSLATION_FIELD.name,
@@ -293,17 +294,8 @@ export class PortalProjectsService {
 
   async remove(companyId: string, projectRef: string): Promise<void> {
     const owned = await requireOwnedProject(this.prisma, projectRef, companyId);
-    const project = await this.prisma.db.project.findFirst({
-      where: { id: owned.id, builderCompanyId: companyId },
-      select: { id: true, publicationStatus: true },
-    });
-    if (!project) {
-      throw entityNotFound('Project');
-    }
-    if (project.publicationStatus !== PublicationStatus.draft) {
-      throw new BadRequestException('Only draft projects can be deleted');
-    }
-    await this.prisma.db.project.delete({ where: { id: owned.id } });
+    await deleteOwnedProject(this.prisma.db, owned.id);
+    this.webRevalidation.revalidateCatalog(owned.id);
   }
 
   private async toProjectDetail(
