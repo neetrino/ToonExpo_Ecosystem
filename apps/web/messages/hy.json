@@ -2156,8 +2156,11 @@
         "company": "Ընկերություն",
         "project": "Նախագիծ",
         "status": "Կարգավիճակ",
-        "sales": "Վաճառք"
+        "sales": "Վաճառք",
+        "price": "Գին"
       },
+      "price": "Գին",
+      "priceEmpty": "—",
       "sales": {
         "available": "Հասանելի",
         "reserved": "Ամրագրված",

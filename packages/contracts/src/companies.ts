@@ -298,6 +298,9 @@ export type AdminApartmentListItem = {
   companyName: string;
   /** Admin-curated homepage featured listings (max 6). */
   featuredOnHome: boolean;
+  /** Stored unit price (builder/admin always see the entered amount). */
+  price: string | null;
+  priceCurrency: string;
   /** Main card image — apartment cover only (no project/building fallback). */
   cover: MediaAssetSummary | null;
 };

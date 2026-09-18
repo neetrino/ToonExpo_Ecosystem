@@ -2156,8 +2156,11 @@
         "company": "Company",
         "project": "Project",
         "status": "Status",
-        "sales": "Sales"
+        "sales": "Sales",
+        "price": "Price"
       },
+      "price": "Price",
+      "priceEmpty": "—",
       "sales": {
         "available": "Available",
         "reserved": "Reserved",

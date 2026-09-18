@@ -6,7 +6,7 @@ import type {
   AdminFloorListResponse,
 } from '@toonexpo/contracts';
 
-import { summarizeSalesStatuses, toMediaSummary } from '../catalog/mappers/catalog.mapper.js';
+import { decimalToString, summarizeSalesStatuses, toMediaSummary } from '../catalog/mappers/catalog.mapper.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import {
   buildInventoryApartmentsWhere,
@@ -162,6 +162,8 @@ export class InventoryHubService {
           buildingId: true,
           projectId: true,
           featuredOnHome: true,
+          price: true,
+          priceCurrency: true,
           floor: { select: { number: true } },
           coverMedia: {
             select: {
@@ -199,6 +201,8 @@ export class InventoryHubService {
         builderCompanyId: apartment.project.builderCompanyId,
         companyName: apartment.project.builderCompany.name,
         featuredOnHome: apartment.featuredOnHome,
+        price: decimalToString(apartment.price),
+        priceCurrency: apartment.priceCurrency,
         cover: toMediaSummary(apartment.coverMedia),
       })),
       meta: {
