@@ -4,13 +4,12 @@ import { Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { startTransition, useEffect, useRef, useState } from 'react';
 
-import { PROJECTS_SEARCH_DEBOUNCE_MS } from '@/features/catalog/constants/projects';
 import {
   buildProjectSearchParams,
   type ProjectFilterParams,
 } from '@/features/catalog/utils/project-filters';
 import { useRouter } from '@/i18n/navigation';
-import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
+import { useDebouncedSearch } from '@/shared/hooks/use-debounced-search';
 import { cn } from '@/shared/ui/cn';
 import { Input } from '@/shared/ui/input';
 
@@ -43,10 +42,7 @@ export const ProjectLiveSearch = ({ filters, controlClassName }: ProjectLiveSear
   const filtersRef = useRef(filters);
   const isUserInputRef = useRef(false);
   const [search, setSearch] = useState(filters.q ?? '');
-  const trimmedSearch = search.trim();
-  const debouncedSearch = useDebouncedValue(trimmedSearch, PROJECTS_SEARCH_DEBOUNCE_MS);
-  /* Clearing applies at once so the full list returns immediately. */
-  const activeSearch = trimmedSearch.length === 0 ? '' : debouncedSearch;
+  const activeSearch = useDebouncedSearch(search);
   const urlQ = filters.q ?? '';
 
   filtersRef.current = filters;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type {
   CreateBankPartnerOfferTemplateBody,
   UpdateBankPartnerOfferTemplateBody,
@@ -25,6 +25,7 @@ export const useAdminBankPartnerOfferTemplatesQuery = (
   useQuery({
     queryKey: [...ADMIN_BANK_PARTNER_OFFER_TEMPLATES_QUERY_KEY, params],
     queryFn: () => listAdminBankPartnerOfferTemplates(params),
+    placeholderData: keepPreviousData,
   });
 
 export const useCreateBankPartnerOfferTemplateMutation = () => {

@@ -13,16 +13,13 @@ import {
   AdminInventoryListShell,
   useAdminInventoryListParams,
 } from '@/features/admin/components/admin-inventory-list-shell';
-import {
-  ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS,
-  ADMIN_VIEW_MODE_KEYS,
-} from '@/features/admin/constants';
+import { ADMIN_VIEW_MODE_KEYS } from '@/features/admin/constants';
 import {
   useAdminBuildingInventoryGlanceQuery,
   useAdminFloorsQuery,
 } from '@/features/admin/hooks/use-admin-inventory';
 import { usePathname, useRouter } from '@/i18n/navigation';
-import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
+import { useDebouncedSearch } from '@/shared/hooks/use-debounced-search';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
@@ -38,9 +35,7 @@ export const AdminFloorsListPage = () => {
   const { page, pageSize, companyIds, buildingIds, companyId, buildingId } =
     useAdminInventoryListParams();
   const [search, setSearch] = useState('');
-  const trimmedSearch = search.trim();
-  const debouncedSearch = useDebouncedValue(trimmedSearch, ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS);
-  const activeSearch = trimmedSearch.length === 0 ? '' : debouncedSearch;
+  const activeSearch = useDebouncedSearch(search);
   const query = useAdminFloorsQuery(
     page,
     pageSize,

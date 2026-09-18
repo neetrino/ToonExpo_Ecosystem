@@ -3,7 +3,7 @@
 import { Building2, SearchX } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
   buildCompanyReadinessMap,
@@ -14,14 +14,13 @@ import { CreateCompanySheet } from '@/features/admin/components/create-company-s
 import {
   ADMIN_COMPANIES_DEFAULT_PAGE_SIZE,
   ADMIN_COMPANIES_MAX_PAGE_SIZE,
-  ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS,
   ADMIN_VIEW_MODE_KEYS,
 } from '@/features/admin/constants';
 import { useAdminCompaniesQuery } from '@/features/admin/hooks/use-admin-companies';
 import { useAdminReadinessAssessmentsQuery } from '@/features/admin/hooks/use-admin-readiness';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
 import { usePathname, useRouter } from '@/i18n/navigation';
-import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
+import { useDebouncedSearch } from '@/shared/hooks/use-debounced-search';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
@@ -58,9 +57,7 @@ export const CompaniesListPage = () => {
   const page = parsePage(searchParams.get('page'));
   const pageSize = ADMIN_COMPANIES_DEFAULT_PAGE_SIZE;
   const [search, setSearch] = useState('');
-  const trimmedSearch = search.trim();
-  const debouncedSearch = useDebouncedValue(trimmedSearch, ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS);
-  const activeSearch = trimmedSearch.length === 0 ? '' : debouncedSearch;
+  const activeSearch = useDebouncedSearch(search);
 
   const query = useAdminCompaniesQuery(page, pageSize, {
     type: 'builder',
@@ -76,12 +73,6 @@ export const CompaniesListPage = () => {
   const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(
     ADMIN_VIEW_MODE_KEYS.companies,
   );
-
-  const loadedSearchRef = useRef(activeSearch);
-  if (!query.isPlaceholderData && query.data) {
-    loadedSearchRef.current = activeSearch;
-  }
-  const isSearchSettling = loadedSearchRef.current !== trimmedSearch;
 
   const readinessByCompanyId = useMemo(
     () => buildCompanyReadinessMap(readinessQuery.data?.data ?? []),
@@ -162,8 +153,6 @@ export const CompaniesListPage = () => {
         <p role="alert" className="text-sm text-danger">
           {t('error')}
         </p>
-      ) : isSearchSettling ? (
-        <p className="text-sm text-ink-secondary">{t('loading')}</p>
       ) : response.data.length === 0 ? (
         <div className="flex min-h-72 items-center justify-center">
           <EmptyState

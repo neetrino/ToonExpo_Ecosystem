@@ -13,13 +13,12 @@ import {
 import { BosProvisioningTable } from '@/features/admin/components/bos-provisioning-table';
 import {
   ADMIN_BOS_PROVISIONING_DEFAULT_PAGE_SIZE,
-  ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS,
   ADMIN_VIEW_MODE_KEYS,
 } from '@/features/admin/constants';
 import { useAdminBosProvisioningListQuery } from '@/features/admin/hooks/use-admin-bos-provisioning';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
 import { usePathname, useRouter } from '@/i18n/navigation';
-import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
+import { useDebouncedSearch } from '@/shared/hooks/use-debounced-search';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { EmptyState } from '@/shared/ui/empty-state';
 import { ListPageHeader } from '@/shared/ui/list-page-header';
@@ -53,9 +52,7 @@ export const BosProvisioningListPage = () => {
   const pathname = usePathname();
   const page = parsePage(searchParams.get('page'));
   const [search, setSearch] = useState('');
-  const trimmedSearch = search.trim();
-  const debouncedSearch = useDebouncedValue(trimmedSearch, ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS);
-  const activeSearch = trimmedSearch.length === 0 ? '' : debouncedSearch;
+  const activeSearch = useDebouncedSearch(search);
   const [statusFilter, setStatusFilter] = useState<BosProvisioningStatus | ''>('');
   const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(
     ADMIN_VIEW_MODE_KEYS.bos,
@@ -85,7 +82,7 @@ export const BosProvisioningListPage = () => {
     }
   };
 
-  if (listQuery.isLoading) {
+  if (listQuery.isLoading && !listQuery.data) {
     return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
   }
 

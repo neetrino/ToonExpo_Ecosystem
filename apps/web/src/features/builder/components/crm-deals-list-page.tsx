@@ -40,12 +40,11 @@ import {
   isCrmStatusTransitionAllowed,
 } from '@/features/builder/utils/crm-status-transitions';
 import { CrmDealSheet, CrmKanbanBoard } from '@/features/crm-board';
-import { CRM_BOARD_SEARCH_DEBOUNCE_MS } from '@/features/crm-board/constants';
 import { CrmNewColumnCreateButton } from '@/features/crm-board/crm-new-column-create-button';
 import { filterCrmDealsBySearch } from '@/features/crm-board/filter-crm-deals-by-search';
 import { useCrmDealSheetUrl } from '@/features/crm-board/use-crm-deal-sheet-url';
 import { useCrmNewLeadUrl } from '@/features/crm-board/use-crm-new-lead-url';
-import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
+import { useDebouncedSearch } from '@/shared/hooks/use-debounced-search';
 import { ListPageHeader } from '@/shared/ui/list-page-header';
 
 /**
@@ -56,7 +55,7 @@ export const CrmDealsListPage = () => {
   const tBoard = useTranslations('CrmBoard');
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
-  const debouncedSearch = useDebouncedValue(search.trim(), CRM_BOARD_SEARCH_DEBOUNCE_MS);
+  const activeSearch = useDebouncedSearch(search);
   const [boardError, setBoardError] = useState<string | null>(null);
   const { isNewLeadOpen, openNewLead, closeNewLead } = useCrmNewLeadUrl();
   const [filters, setFilters] = useState<CrmDealFiltersState>(EMPTY_CRM_DEAL_FILTERS);
@@ -70,7 +69,7 @@ export const CrmDealsListPage = () => {
     ...(filters.source ? { source: filters.source } : {}),
     ...(filters.projectId ? { projectId: filters.projectId } : {}),
     ...(filters.assignedUserId ? { assignedUserId: filters.assignedUserId } : {}),
-    ...(debouncedSearch ? { q: debouncedSearch } : {}),
+    ...(activeSearch ? { q: activeSearch } : {}),
   });
 
   const deals = useMemo(
@@ -189,6 +188,7 @@ export const CrmDealsListPage = () => {
             setFilters((prev) => applyCrmDealFilterKey(prev, key, value));
           }}
           onClearAll={() => {
+            setSearch('');
             setFilters(EMPTY_CRM_DEAL_FILTERS);
           }}
         />

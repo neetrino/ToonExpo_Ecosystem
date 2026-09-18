@@ -57,7 +57,7 @@ export const BankPartnerOfferTemplatesListPage = () => {
   const busy =
     createMutation.isPending || updateMutation.isPending || deleteMutation.isPending;
 
-  if (templatesQuery.isLoading) {
+  if (templatesQuery.isLoading && !templatesQuery.data) {
     return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
   }
 

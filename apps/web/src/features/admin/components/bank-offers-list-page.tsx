@@ -112,7 +112,10 @@ export const BankOffersListPage = () => {
 
   const busy = createMutation.isPending || updateMutation.isPending || deleteMutation.isPending;
 
-  if (offersQuery.isLoading || partnersQuery.isLoading) {
+  if (
+    (offersQuery.isLoading && !offersQuery.data) ||
+    (partnersQuery.isLoading && !partnersQuery.data)
+  ) {
     return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
   }
 
@@ -149,6 +152,7 @@ export const BankOffersListPage = () => {
           }
         }}
         onClearAll={() => {
+          setSearch('');
           setPartnerFilter('');
           setPublicationFilter('');
         }}

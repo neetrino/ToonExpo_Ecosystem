@@ -9,13 +9,12 @@ import { useMemo, useState } from 'react';
 import { UsersTable } from '@/features/admin/components/users-table';
 import {
   ADMIN_INVENTORY_DEFAULT_PAGE_SIZE,
-  ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS,
   ADMIN_VIEW_MODE_KEYS,
 } from '@/features/admin/constants';
 import { useAdminUsersQuery } from '@/features/admin/hooks/use-admin-users';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
 import { usePathname, useRouter } from '@/i18n/navigation';
-import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
+import { useDebouncedSearch } from '@/shared/hooks/use-debounced-search';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import type { IntegratedSearchFilterConfig } from '@/shared/ui/integrated-search-filters.types';
 import { ListPageHeader } from '@/shared/ui/list-page-header';
@@ -73,10 +72,7 @@ export const UsersListPage = () => {
     ADMIN_VIEW_MODE_KEYS.users,
   );
   const [search, setSearch] = useState('');
-  const trimmedSearch = search.trim();
-  const debouncedSearch = useDebouncedValue(trimmedSearch, ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS);
-  /* Typing is debounced; clearing applies at once so the full list returns immediately. */
-  const activeSearch = trimmedSearch.length === 0 ? '' : debouncedSearch;
+  const activeSearch = useDebouncedSearch(search);
 
   const usersQuery = useAdminUsersQuery({
     page,

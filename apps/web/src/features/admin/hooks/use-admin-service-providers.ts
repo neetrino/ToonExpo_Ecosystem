@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type {
   CreateServiceProviderBody,
   CreateServiceProviderCategoryBody,
@@ -83,6 +83,7 @@ export const useAdminServiceProvidersQuery = (
   useQuery({
     queryKey: [...ADMIN_SERVICE_PROVIDERS_QUERY_KEY, params],
     queryFn: () => listAdminServiceProviders(params),
+    placeholderData: keepPreviousData,
   });
 
 export const useCreateServiceProviderMutation = () => {
