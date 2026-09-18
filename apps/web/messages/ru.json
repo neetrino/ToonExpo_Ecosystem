@@ -151,6 +151,27 @@
       "builder_buyer_qr_scan": "QR строителя",
       "manual_builder_entry": "Вручную",
       "event_interaction": "Событие"
+    },
+    "tabs": {
+      "ariaLabel": "Разделы сделки",
+      "deal": "Сделка",
+      "payment": "Оплата",
+      "notes": "Заметки"
+    },
+    "payments": {
+      "noApartment": "Прикрепите квартиру, чтобы фиксировать платежи.",
+      "apartmentPrice": "Цена квартиры",
+      "paidTotal": "Оплачено",
+      "remaining": "Остаток",
+      "priceEmpty": "Цена по запросу",
+      "historyTitle": "История платежей",
+      "historyEmpty": "Платежей пока нет.",
+      "columns": {
+        "date": "Дата",
+        "amount": "Сумма",
+        "by": "Кто записал",
+        "note": "Заметка"
+      }
     }
   },
   "HomePage": {
@@ -3877,6 +3898,10 @@
         "unassigned": "Не назначен",
         "saveAssignee": "Сохранить",
         "saving": "Сохранение…",
+        "paymentAmount": "Сумма оплаты",
+        "paymentAmountPlaceholder": "0",
+        "paymentNotePlaceholder": "Необязательная заметка",
+        "addPayment": "Записать платёж",
         "notesTitle": "Заметки",
         "notesEmpty": "Заметок пока нет",
         "notePlaceholder": "Внутренняя заметка…",
@@ -3917,6 +3942,7 @@
         "requestsEmpty": "Заявок пока нет",
         "errors": {
           "generic": "Что-то пошло не так. Попробуйте ещё раз.",
+          "invalidPaymentAmount": "Введите корректную сумму (минимум 0.01).",
           "unlinkBlocked": "Нельзя открепить: статус сделки требует прикреплённую квартиру.",
           "reservedConflict": "Эта квартира уже забронирована другой сделкой.",
           "alreadySold": "Эта квартира уже продана.",

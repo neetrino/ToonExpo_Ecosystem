@@ -151,6 +151,27 @@
       "builder_buyer_qr_scan": "Builder QR",
       "manual_builder_entry": "Ձեռքով",
       "event_interaction": "Միջոցառում"
+    },
+    "tabs": {
+      "ariaLabel": "Գործարքի բաժիններ",
+      "deal": "Գործարք",
+      "payment": "Վճարում",
+      "notes": "Նշումներ"
+    },
+    "payments": {
+      "noApartment": "Կցեք բնակարան՝ վճարումներ գրանցելու համար։",
+      "apartmentPrice": "Բնակարանի գին",
+      "paidTotal": "Վճարված",
+      "remaining": "Մնացորդ",
+      "priceEmpty": "Գինը ըստ հարցման",
+      "historyTitle": "Վճարումների պատմություն",
+      "historyEmpty": "Վճարումներ դեռ չկան։",
+      "columns": {
+        "date": "Ամսաթիվ",
+        "amount": "Գումար",
+        "by": "Գրանցող",
+        "note": "Նշում"
+      }
     }
   },
   "HomePage": {
@@ -3877,6 +3898,10 @@
         "unassigned": "Չնշանակված",
         "saveAssignee": "Պահպանել",
         "saving": "Պահպանվում է…",
+        "paymentAmount": "Վճարված գումար",
+        "paymentAmountPlaceholder": "0",
+        "paymentNotePlaceholder": "Նշում (ոչ պարտադիր)",
+        "addPayment": "Գրանցել վճարում",
         "notesTitle": "Նշումներ",
         "notesEmpty": "Նշումներ դեռ չկան",
         "notePlaceholder": "Ներքին նշում…",
@@ -3917,6 +3942,7 @@
         "requestsEmpty": "Հայտեր դեռ չկան",
         "errors": {
           "generic": "Ինչ-որ սխալ տեղի ունեցավ։ Կրկին փորձեք։",
+          "invalidPaymentAmount": "Մուտքագրեք ճիշտ գումար (նվազագույնը 0.01)։",
           "unlinkBlocked": "Հնարավոր չէ ապակցել․ կարգավիճակը պահանջում է կցված բնակարան։",
           "reservedConflict": "Այս բնակարանը արդեն ամրագրված է այլ գործարքով։",
           "alreadySold": "Այս բնակարանը արդեն վաճառված է։",

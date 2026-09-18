@@ -5,6 +5,7 @@ import type {
   AttachCrmDealApartmentBody,
   CreateCrmActivityBody,
   CreateCrmNoteBody,
+  CreateCrmPaymentBody,
   CreateDealFromScanBody,
   CreateManualDealBody,
   UpdateCrmActivityBody,
@@ -14,6 +15,7 @@ import type {
 import { ADMIN_APARTMENTS_QUERY_KEY } from '@/features/admin/constants';
 import {
   addCrmActivity,
+  addCrmDealPayment,
   addCrmNote,
   attachCrmDealApartment,
   createCrmDealFromScan,
@@ -156,6 +158,22 @@ export const useDetachDealApartmentMutation = (dealId: string) => {
       });
       invalidateCrmLists(queryClient);
       invalidateCrmInventoryQueries(queryClient);
+    },
+  });
+};
+
+/**
+ * Records a payment against the linked apartment.
+ */
+export const useAddCrmPaymentMutation = (dealId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (body: CreateCrmPaymentBody) => addCrmDealPayment(dealId, body),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: portalCrmDealQueryKey(dealId),
+      });
+      invalidateCrmLists(queryClient);
     },
   });
 };

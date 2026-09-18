@@ -6,6 +6,7 @@ import { CrmDealActivitiesSection } from '@/features/builder/components/crm-deal
 import { CrmDealApartmentsSection } from '@/features/builder/components/crm-deal-apartments-section';
 import { CrmDealAssigneeControl } from '@/features/builder/components/crm-deal-assignee-control';
 import { CrmDealNotesSection } from '@/features/builder/components/crm-deal-notes-section';
+import { CrmDealPaymentsSection } from '@/features/builder/components/crm-deal-payments-section';
 import { CrmDealRequestsSection } from '@/features/builder/components/crm-deal-requests-section';
 import { CrmDealStatusControl } from '@/features/builder/components/crm-deal-status-control';
 import { useCrmDealQuery } from '@/features/builder/hooks/use-portal-crm';
@@ -81,6 +82,7 @@ export const CrmDealDetailPage = ({ dealId }: CrmDealDetailPageProps) => {
       </div>
 
       <CrmDealApartmentsSection deal={deal} />
+      <CrmDealPaymentsSection deal={deal} />
       <CrmDealNotesSection deal={deal} />
       <CrmDealActivitiesSection deal={deal} />
       <CrmDealRequestsSection deal={deal} />

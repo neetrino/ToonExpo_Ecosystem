@@ -85,6 +85,14 @@ internal
 
 Buyer-facing messages can be added later if messaging is implemented.
 
+## Payments
+
+CRM payments are internal installment records against the linked apartment price.
+
+They are not a payment gateway.
+
+A deal must have a linked apartment before a payment can be recorded.
+
 ## Communication Log
 
 v1 can manually log communications.

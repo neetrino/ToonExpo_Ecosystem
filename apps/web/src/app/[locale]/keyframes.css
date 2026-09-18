@@ -287,3 +287,29 @@
     transform: scale(1.16) translate3d(0, 0, 0);
   }
 }
+
+/** CRM deal sheet tab panel — enter from the right. */
+@keyframes crm-deal-sheet-panel-forward {
+  from {
+    opacity: 0;
+    transform: translate3d(0.75rem, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/** CRM deal sheet tab panel — enter from the left. */
+@keyframes crm-deal-sheet-panel-back {
+  from {
+    opacity: 0;
+    transform: translate3d(-0.75rem, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}

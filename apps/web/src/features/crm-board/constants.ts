@@ -50,3 +50,7 @@ export type CrmBoardMode = 'edit' | 'readonly';
 
 /** Debounce for CRM lead search before hitting the API. */
 export const CRM_BOARD_SEARCH_DEBOUNCE_MS = 300;
+
+export const CRM_DEAL_SHEET_TABS = ['deal', 'payment', 'notes'] as const;
+
+export type CrmDealSheetTab = (typeof CRM_DEAL_SHEET_TABS)[number];

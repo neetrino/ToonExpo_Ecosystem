@@ -24,6 +24,7 @@ import type {
   CrmDealDetail,
   CrmDealListResponse,
   CrmNoteItem,
+  CrmPaymentItem,
   IntakeCreateResult,
 } from '@toonexpo/contracts';
 
@@ -35,6 +36,7 @@ import { CurrentCompanyMember } from '../../company/decorators/current-company-m
 import { CompanyMemberGuard } from '../../company/guards/company-member.guard.js';
 import type { CompanyMemberContext } from '../../company/types/company-member-context.js';
 import { AttachCrmDealApartmentDto } from '../dto/attach-deal-apartment.dto.js';
+import { CreateCrmPaymentDto } from '../dto/create-crm-payment.dto.js';
 import { ListCrmDealsQueryDto, UpdateCrmDealDto } from '../dto/crm-deal-query.dto.js';
 import {
   CreateCrmActivityDto,
@@ -45,6 +47,7 @@ import { CreateDealFromScanDto, CreateManualDealDto } from '../dto/create-portal
 import { PortalCrmDealApartmentsService } from './portal-crm-deal-apartments.service.js';
 import { PortalCrmDealsService } from './portal-crm-deals.service.js';
 import { PortalCrmNotesActivitiesService } from './portal-crm-notes-activities.service.js';
+import { PortalCrmPaymentsService } from './portal-crm-payments.service.js';
 
 @ApiTags('portal-crm')
 @AccountTypes('company_member')
@@ -56,6 +59,7 @@ export class PortalCrmDealsController {
     private readonly deals: PortalCrmDealsService,
     private readonly notesActivities: PortalCrmNotesActivitiesService,
     private readonly apartments: PortalCrmDealApartmentsService,
+    private readonly payments: PortalCrmPaymentsService,
   ) {}
 
   @Get()
@@ -151,6 +155,19 @@ export class PortalCrmDealsController {
     @Param('apartmentId') apartmentId: string,
   ): Promise<void> {
     await this.apartments.detach(member, id, user.id, apartmentId);
+  }
+
+  @Post(':id/payments')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Record a CRM deal payment' })
+  @ApiCreatedResponse({ description: 'Created payment' })
+  addPayment(
+    @CurrentCompanyMember() member: CompanyMemberContext,
+    @CurrentUser() user: AuthenticatedUser,
+    @Param('id') id: string,
+    @Body() body: CreateCrmPaymentDto,
+  ): Promise<CrmPaymentItem> {
+    return this.payments.addPayment(member, id, user.id, body);
   }
 
   @Post(':id/notes')

@@ -18,6 +18,7 @@ import {
   type CrmDealFiltersState,
 } from '@/features/builder/components/crm-deal-filters';
 import { CrmDealNotesSection } from '@/features/builder/components/crm-deal-notes-section';
+import { CrmDealPaymentsSection } from '@/features/builder/components/crm-deal-payments-section';
 import { CrmDealRequestsSection } from '@/features/builder/components/crm-deal-requests-section';
 import { CrmDealStatusControl } from '@/features/builder/components/crm-deal-status-control';
 import { CrmNewDealPanel } from '@/features/builder/components/crm-new-deal-panel';
@@ -259,6 +260,15 @@ export const CrmDealsListPage = () => {
                 <CrmDealAssigneeControl deal={dealQuery.data} />
               </div>
               <CrmDealApartmentsSection deal={dealQuery.data} />
+            </div>
+          ) : null
+        }
+        paymentSection={
+          dealQuery.data ? <CrmDealPaymentsSection deal={dealQuery.data} /> : null
+        }
+        notesSection={
+          dealQuery.data ? (
+            <div className="flex flex-col gap-4">
               <CrmDealNotesSection deal={dealQuery.data} />
               <CrmDealActivitiesSection deal={dealQuery.data} />
               <CrmDealRequestsSection deal={dealQuery.data} />

@@ -2,6 +2,7 @@ import type {
   AttachCrmDealApartmentBody,
   CreateCrmActivityBody,
   CreateCrmNoteBody,
+  CreateCrmPaymentBody,
   CreateDealFromScanBody,
   CreateManualDealBody,
   CrmActivityItem,
@@ -10,6 +11,7 @@ import type {
   CrmDealListResponse,
   CrmDealStatus,
   CrmNoteItem,
+  CrmPaymentItem,
   IntakeCreateResult,
   RequestSource,
   UpdateCrmActivityBody,
@@ -111,6 +113,20 @@ export const createManualCrmDeal = (body: CreateManualDealBody): Promise<IntakeC
 export const createCrmDealFromScan = (body: CreateDealFromScanBody): Promise<IntakeCreateResult> =>
   apiFetch({
     path: '/portal/crm/deals/from-scan',
+    method: 'POST',
+    ...jsonCredentials,
+    body: JSON.stringify(body),
+  });
+
+/**
+ * POST /portal/crm/deals/:id/payments
+ */
+export const addCrmDealPayment = (
+  dealId: string,
+  body: CreateCrmPaymentBody,
+): Promise<CrmPaymentItem> =>
+  apiFetch({
+    path: `/portal/crm/deals/${encodeURIComponent(dealId)}/payments`,
     method: 'POST',
     ...jsonCredentials,
     body: JSON.stringify(body),

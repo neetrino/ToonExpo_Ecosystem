@@ -15,9 +15,13 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useState, type ReactNode } from 'react';
 
 import { formatBuyerDateTime } from '@/features/buyer/utils/format-datetime';
-import type { CrmBoardMode } from '@/features/crm-board/constants';
+import type { CrmBoardMode, CrmDealSheetTab } from '@/features/crm-board/constants';
 import { CrmDealPipeline } from '@/features/crm-board/crm-deal-pipeline';
-import { CrmDealReadonlyExtras } from '@/features/crm-board/crm-deal-readonly-extras';
+import {
+  CrmDealSheetAnimatedPanel,
+  CrmDealSheetPanels,
+} from '@/features/crm-board/crm-deal-sheet-panels';
+import { CrmDealSheetTabs } from '@/features/crm-board/crm-deal-sheet-tabs';
 import { AdminDeleteModal } from '@/shared/ui/admin-delete-modal';
 import { IconButton } from '@/shared/ui/icon-button';
 import { SideSheet } from '@/shared/ui/side-sheet';
@@ -47,8 +51,12 @@ type CrmDealSheetProps = {
   isLoading: boolean;
   isError: boolean;
   mode: CrmBoardMode;
-  /** Edit-mode action sections (status, assignee, apartments, notes, …). */
+  /** Deal tab — status, assignee, apartments. */
   editSections?: ReactNode;
+  /** Payment tab — builder write UI. Falls back to read-only history. */
+  paymentSection?: ReactNode;
+  /** Notes tab — notes, activities, requests. */
+  notesSection?: ReactNode;
   onDelete?: (() => void) | undefined;
   isDeleting?: boolean | undefined;
 };
@@ -64,6 +72,8 @@ export const CrmDealSheet = ({
   isError,
   mode,
   editSections,
+  paymentSection,
+  notesSection,
   onDelete,
   isDeleting = false,
 }: CrmDealSheetProps) => {
@@ -72,6 +82,7 @@ export const CrmDealSheet = ({
   const tSources = useTranslations('CrmBoard.sources');
   const locale = useLocale();
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [tab, setTab] = useState<CrmDealSheetTab>('deal');
 
   const title =
     deal?.buyer.name?.trim() ||
@@ -82,6 +93,7 @@ export const CrmDealSheet = ({
   useEffect(() => {
     if (!open) {
       setConfirmDeleteOpen(false);
+      setTab('deal');
     }
   }, [open]);
 
@@ -163,7 +175,17 @@ export const CrmDealSheet = ({
               </div>
             ) : null}
 
-            {mode === 'edit' ? editSections : <CrmDealReadonlyExtras deal={deal} />}
+            <CrmDealSheetTabs active={tab} onChange={setTab} />
+            <CrmDealSheetAnimatedPanel tab={tab}>
+              <CrmDealSheetPanels
+                deal={deal}
+                tab={tab}
+                mode={mode}
+                dealPanel={editSections}
+                paymentPanel={paymentSection}
+                notesPanel={notesSection}
+              />
+            </CrmDealSheetAnimatedPanel>
           </div>
         ) : null}
       </SideSheet>

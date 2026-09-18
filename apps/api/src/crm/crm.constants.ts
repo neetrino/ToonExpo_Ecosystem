@@ -60,3 +60,15 @@ export const CRM_STATUSES_REQUIRING_APARTMENT: readonly CrmDealStatus[] = [
 
 /** A CRM deal may hold only one apartment at a time. */
 export const CRM_MAX_LINKED_APARTMENTS_PER_DEAL = 1;
+
+/** Default currency for CRM payment rows (matches apartment priceCurrency). */
+export const CRM_DEFAULT_PAYMENT_CURRENCY = 'AMD';
+
+/** Decimal(14, 2) upper bound for a single payment. */
+export const CRM_PAYMENT_AMOUNT_MAX = 999_999_999_999.99;
+
+/** Smallest recordable payment. */
+export const CRM_PAYMENT_AMOUNT_MIN = 0.01;
+
+/** Optional note on a payment row. */
+export const CRM_PAYMENT_NOTE_MAX_LENGTH = 500;

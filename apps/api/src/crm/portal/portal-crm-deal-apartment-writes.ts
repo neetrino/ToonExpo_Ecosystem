@@ -89,7 +89,9 @@ const upsertLinkedApartment = async (
       isPrimary: input.existingCount === 0,
     },
     update: {},
-    include: { apartment: { select: { number: true } } },
+    include: {
+      apartment: { select: { number: true, price: true, priceCurrency: true } },
+    },
   });
   await writeLinkActivity(tx, {
     dealId: input.deal.id,

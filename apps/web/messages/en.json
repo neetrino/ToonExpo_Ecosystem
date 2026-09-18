@@ -151,6 +151,27 @@
       "builder_buyer_qr_scan": "Builder QR",
       "manual_builder_entry": "Manual",
       "event_interaction": "Event"
+    },
+    "tabs": {
+      "ariaLabel": "Deal sections",
+      "deal": "Deal",
+      "payment": "Payment",
+      "notes": "Notes"
+    },
+    "payments": {
+      "noApartment": "Link an apartment to record payments.",
+      "apartmentPrice": "Apartment price",
+      "paidTotal": "Paid",
+      "remaining": "Remaining",
+      "priceEmpty": "Price on request",
+      "historyTitle": "Payment history",
+      "historyEmpty": "No payments recorded yet.",
+      "columns": {
+        "date": "Date",
+        "amount": "Amount",
+        "by": "Recorded by",
+        "note": "Note"
+      }
     }
   },
   "HomePage": {
@@ -4137,6 +4158,10 @@
         "unassigned": "Unassigned",
         "saveAssignee": "Update assignee",
         "saving": "Saving…",
+        "paymentAmount": "Amount paid",
+        "paymentAmountPlaceholder": "0",
+        "paymentNotePlaceholder": "Optional note",
+        "addPayment": "Record payment",
         "notesTitle": "Notes",
         "notesEmpty": "No notes yet",
         "notePlaceholder": "Add an internal note…",
@@ -4177,6 +4202,7 @@
         "requestsEmpty": "No requests yet",
         "errors": {
           "generic": "Something went wrong. Please try again.",
+          "invalidPaymentAmount": "Enter a valid amount (minimum 0.01).",
           "unlinkBlocked": "Cannot unlink: deal status requires a linked apartment.",
           "reservedConflict": "This apartment is already reserved by another deal.",
           "alreadySold": "This apartment is already sold.",

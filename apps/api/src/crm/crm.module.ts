@@ -11,6 +11,7 @@ import { PortalCrmDealApartmentsService } from './portal/portal-crm-deal-apartme
 import { PortalCrmDealsController } from './portal/portal-crm-deals.controller.js';
 import { PortalCrmDealsService } from './portal/portal-crm-deals.service.js';
 import { PortalCrmNotesActivitiesService } from './portal/portal-crm-notes-activities.service.js';
+import { PortalCrmPaymentsService } from './portal/portal-crm-payments.service.js';
 import { DealStatusService } from './status/deal-status.service.js';
 
 @Module({
@@ -27,6 +28,7 @@ import { DealStatusService } from './status/deal-status.service.js';
     PortalCrmDealsService,
     PortalCrmDealApartmentsService,
     PortalCrmNotesActivitiesService,
+    PortalCrmPaymentsService,
     AdminCrmDealsService,
     DealStatusService,
     CompanyMemberGuard,

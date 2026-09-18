@@ -52,7 +52,8 @@ describe("PortalCrmDealApartmentsService", () => {
       linkType: CrmDealApartmentLinkType.interest,
       isPrimary: true,
       createdAt: new Date("2026-01-01T00:00:00.000Z"),
-      apartment: { number: "101" },
+      priceAtLink: null,
+      apartment: { number: "101", price: null, priceCurrency: "AMD" },
     });
     transaction.mockImplementation(
       async (callback: (tx: unknown) => Promise<unknown>) =>
