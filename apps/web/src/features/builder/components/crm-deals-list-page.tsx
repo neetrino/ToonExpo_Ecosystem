@@ -27,6 +27,7 @@ import {
   PORTAL_MAX_PAGE_SIZE,
 } from '@/features/builder/constants';
 import {
+  invalidateCrmInventoryQueries,
   useCrmDealQuery,
   useCrmDealsQuery,
   useDeleteCrmDealMutation,
@@ -138,6 +139,7 @@ export const CrmDealsListPage = () => {
     try {
       await updateCrmDeal(dealId, { status });
       await queryClient.invalidateQueries({ queryKey: PORTAL_CRM_DEALS_QUERY_KEY });
+      invalidateCrmInventoryQueries(queryClient);
       return true;
     } catch {
       setBoardError(t('errors.generic'));

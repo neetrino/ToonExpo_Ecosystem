@@ -14,6 +14,7 @@ import {
   usePortalProjectQuery,
   usePortalProjectsQuery,
 } from '@/features/builder/hooks/use-portal-projects';
+import { crmApartmentAttachErrorKey } from '@/features/builder/utils/crm-apartment-attach-error';
 import { Button } from '@/shared/ui/button';
 import { ConfirmDeleteModal } from '@/shared/ui/confirm-delete-modal';
 import { FormField } from '@/shared/ui/form-field';
@@ -98,8 +99,8 @@ export const CrmDealApartmentsSection = ({ deal }: CrmDealApartmentsSectionProps
       await attachMutation.mutateAsync({ apartmentId });
       showSuccess(t('linkSuccess'));
       setApartmentId('');
-    } catch {
-      setError(t('errors.generic'));
+    } catch (error) {
+      setError(t(`errors.${crmApartmentAttachErrorKey(error)}`));
     }
   };
 

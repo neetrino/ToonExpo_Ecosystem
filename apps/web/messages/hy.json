@@ -142,7 +142,7 @@
       "follow_up_needed": "Հետևում",
       "apartment_selected": "Բնակարան",
       "reserved": "Ամրագրված",
-      "converted": "Հաղթանակ",
+      "converted": "Գնված",
       "closed": "Փակված",
       "lost": "Կորած"
     },
@@ -1303,7 +1303,7 @@
       "follow_up_needed": "Հետևում",
       "apartment_selected": "Բնակարան ընտրված",
       "reserved": "Ամրագրված",
-      "converted": "Փոխարկված",
+      "converted": "Գնված",
       "closed": "Փակված",
       "lost": "Կորցրած"
     },
@@ -3823,7 +3823,7 @@
         "follow_up_needed": "Հետևում",
         "apartment_selected": "Բնակարան ընտրված",
         "reserved": "Ամրագրված",
-        "converted": "Կնքված",
+        "converted": "Գնված",
         "closed": "Փակված",
         "lost": "Կորած"
       },
@@ -3916,7 +3916,9 @@
         "requestsEmpty": "Հայտեր դեռ չկան",
         "errors": {
           "generic": "Ինչ-որ սխալ տեղի ունեցավ։ Կրկին փորձեք։",
-          "unlinkBlocked": "Հնարավոր չէ ապակցել․ կարգավիճակը պահանջում է կցված բնակարան։"
+          "unlinkBlocked": "Հնարավոր չէ ապակցել․ կարգավիճակը պահանջում է կցված բնակարան։",
+          "reservedConflict": "Այս բնակարանը արդեն ամրագրված է այլ գործարքով։",
+          "alreadySold": "Այս բնակարանը արդեն վաճառված է։"
         },
         "unlinkApartment": "Ապակցել",
         "unlinkConfirm": "Ապակցե՞լ բնակարան {apartment}-ը այս գործարքից",

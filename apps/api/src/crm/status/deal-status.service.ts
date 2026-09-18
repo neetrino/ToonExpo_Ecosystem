@@ -7,13 +7,20 @@ import {
   ApartmentSalesStatus,
   CrmDealApartmentLinkType,
   CrmDealStatus,
-  CrmStatusSource,
   CompanyMemberStatus,
 } from "@toonexpo/db";
 
 import { PrismaService } from "../../prisma/prisma.service.js";
 import { AnalyticsService } from "../../analytics/analytics.service.js";
 import { CRM_STATUSES_REQUIRING_APARTMENT } from "../crm.constants.js";
+import {
+  CRM_APARTMENT_ALREADY_SOLD,
+  applyCrmApartmentSalesWrite,
+  assertApartmentReservableByDeal,
+  isApartmentInventorySynced,
+  shouldReleaseCrmReservation,
+  type CrmApartmentSalesWriteInput,
+} from "./crm-inventory-sync.js";
 import { isCrmStatusTransitionAllowed } from "./deal-status.transitions.js";
 
 /**
@@ -111,10 +118,7 @@ export class DealStatusService {
       await this.markPrimaryApartmentSold(input);
       return;
     }
-    if (
-      input.from === CrmDealStatus.reserved &&
-      (input.to === CrmDealStatus.lost || input.to === CrmDealStatus.closed)
-    ) {
+    if (shouldReleaseCrmReservation(input.to)) {
       await this.releaseReservation(input);
     }
   }
@@ -147,17 +151,15 @@ export class DealStatusService {
       throw new NotFoundException("Apartment not found");
     }
     if (
-      apartment.salesStatus === ApartmentSalesStatus.reserved &&
-      apartment.activeCrmDealId &&
-      apartment.activeCrmDealId !== input.dealId
+      isApartmentInventorySynced(
+        apartment,
+        input.dealId,
+        ApartmentSalesStatus.reserved,
+      )
     ) {
-      throw new BadRequestException(
-        "Apartment is already reserved by another deal",
-      );
+      return;
     }
-    if (apartment.salesStatus === ApartmentSalesStatus.sold) {
-      throw new BadRequestException("Apartment is already sold");
-    }
+    assertApartmentReservableByDeal(apartment, input.dealId);
     await this.writeApartmentStatus({
       apartmentId,
       previous: apartment.salesStatus,
@@ -175,10 +177,26 @@ export class DealStatusService {
     const apartmentId = await this.loadPrimaryApartmentId(input.dealId);
     const apartment = await this.prisma.db.apartment.findUnique({
       where: { id: apartmentId },
-      select: { salesStatus: true },
+      select: { salesStatus: true, activeCrmDealId: true },
     });
     if (!apartment) {
       throw new NotFoundException("Apartment not found");
+    }
+    if (
+      isApartmentInventorySynced(
+        apartment,
+        input.dealId,
+        ApartmentSalesStatus.sold,
+      )
+    ) {
+      return;
+    }
+    if (
+      apartment.salesStatus === ApartmentSalesStatus.sold &&
+      apartment.activeCrmDealId &&
+      apartment.activeCrmDealId !== input.dealId
+    ) {
+      throw new BadRequestException(CRM_APARTMENT_ALREADY_SOLD);
     }
     await this.writeApartmentStatus({
       apartmentId,
@@ -222,43 +240,11 @@ export class DealStatusService {
     }
   }
 
-  private async writeApartmentStatus(input: {
-    apartmentId: string;
-    previous: ApartmentSalesStatus;
-    next: ApartmentSalesStatus;
-    dealId: string;
-    actorUserId: string;
-    linkType: CrmDealApartmentLinkType;
-    clearActiveDeal?: boolean;
-  }): Promise<void> {
+  private async writeApartmentStatus(
+    input: CrmApartmentSalesWriteInput,
+  ): Promise<void> {
     await this.prisma.db.$transaction(async (tx) => {
-      await tx.apartment.update({
-        where: { id: input.apartmentId },
-        data: {
-          salesStatus: input.next,
-          crmStatusSource: CrmStatusSource.crm,
-          activeCrmDealId: input.clearActiveDeal ? null : input.dealId,
-          lastStatusChangedAt: new Date(),
-          lastStatusChangedByUserId: input.actorUserId,
-        },
-      });
-      await tx.apartmentStatusHistory.create({
-        data: {
-          apartmentId: input.apartmentId,
-          previousStatus: input.previous,
-          newStatus: input.next,
-          changedByUserId: input.actorUserId,
-          linkedDealId: input.dealId,
-          reason: `crm_status:${input.next}`,
-        },
-      });
-      await tx.crmDealApartmentLink.updateMany({
-        where: {
-          crmDealId: input.dealId,
-          apartmentId: input.apartmentId,
-        },
-        data: { linkType: input.linkType },
-      });
+      await applyCrmApartmentSalesWrite(tx, input);
     });
   }
 }

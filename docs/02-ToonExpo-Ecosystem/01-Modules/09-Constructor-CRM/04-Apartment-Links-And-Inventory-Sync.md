@@ -40,11 +40,10 @@ converted
 Recommended v1 mapping:
 
 ```text
-CRM status apartment_selected -> apartment remains available
-CRM status reserved -> apartment becomes reserved
-CRM status converted -> apartment becomes sold
-CRM status lost after reservation -> apartment returns to available if no other active hold exists
-CRM status closed without sale -> no automatic sold status
+CRM apartment linked -> apartment becomes reserved
+CRM status reserved -> apartment stays / becomes reserved
+CRM status converted (Buy) -> apartment becomes sold
+CRM status lost / closed / unlink after reservation -> apartment returns to available if this deal held the unit
 ```
 
 ## Reservation Conflict

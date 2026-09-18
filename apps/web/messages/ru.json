@@ -142,7 +142,7 @@
       "follow_up_needed": "Повторный контакт",
       "apartment_selected": "Квартира",
       "reserved": "Бронь",
-      "converted": "Выигран",
+      "converted": "Куплено",
       "closed": "Закрыт",
       "lost": "Потерян"
     },
@@ -1303,7 +1303,7 @@
       "follow_up_needed": "Нужен follow-up",
       "apartment_selected": "Квартира выбрана",
       "reserved": "Бронь",
-      "converted": "Конверсия",
+      "converted": "Куплено",
       "closed": "Закрыта",
       "lost": "Потеряна"
     },
@@ -3823,7 +3823,7 @@
         "follow_up_needed": "Нужен follow-up",
         "apartment_selected": "Квартира выбрана",
         "reserved": "Бронь",
-        "converted": "Сделка",
+        "converted": "Куплено",
         "closed": "Закрыта",
         "lost": "Потеряна"
       },
@@ -3870,7 +3870,7 @@
         "lostReason": "Причина потери",
         "lostReasonRequired": "Укажите причину потери",
         "apartmentRequired": "Сначала прикрепите квартиру",
-        "apartmentHint": "Для статусов «квартира выбрана», «бронь» и «сделка» нужна прикреплённая квартира.",
+        "apartmentHint": "Для статусов «квартира выбрана», «бронь» и «куплено» нужна прикреплённая квартира.",
         "saveStatus": "Обновить статус",
         "assigneeTitle": "Ответственный",
         "assignee": "Ответственный",
@@ -3916,7 +3916,9 @@
         "requestsEmpty": "Заявок пока нет",
         "errors": {
           "generic": "Что-то пошло не так. Попробуйте ещё раз.",
-          "unlinkBlocked": "Нельзя открепить: статус сделки требует прикреплённую квартиру."
+          "unlinkBlocked": "Нельзя открепить: статус сделки требует прикреплённую квартиру.",
+          "reservedConflict": "Эта квартира уже забронирована другой сделкой.",
+          "alreadySold": "Эта квартира уже продана."
         },
         "unlinkApartment": "Открепить",
         "unlinkConfirm": "Открепить квартиру {apartment} от этой сделки?",

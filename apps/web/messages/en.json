@@ -142,7 +142,7 @@
       "follow_up_needed": "Follow-up",
       "apartment_selected": "Apartment",
       "reserved": "Reserved",
-      "converted": "Won",
+      "converted": "Buy",
       "closed": "Closed",
       "lost": "Lost"
     },
@@ -1303,7 +1303,7 @@
       "follow_up_needed": "Follow-up",
       "apartment_selected": "Apartment selected",
       "reserved": "Reserved",
-      "converted": "Converted",
+      "converted": "Buy",
       "closed": "Closed",
       "lost": "Lost"
     },
@@ -4083,7 +4083,7 @@
         "follow_up_needed": "Follow-up",
         "apartment_selected": "Apartment selected",
         "reserved": "Reserved",
-        "converted": "Converted",
+        "converted": "Buy",
         "closed": "Closed",
         "lost": "Lost"
       },
@@ -4130,7 +4130,7 @@
         "lostReason": "Lost reason",
         "lostReasonRequired": "Lost reason is required",
         "apartmentRequired": "Link an apartment before this status",
-        "apartmentHint": "Reserved / converted / apartment selected require a linked apartment.",
+        "apartmentHint": "Reserved / Buy / apartment selected require a linked apartment.",
         "saveStatus": "Update status",
         "assigneeTitle": "Assignee",
         "assignee": "Responsible",
@@ -4176,7 +4176,9 @@
         "requestsEmpty": "No requests yet",
         "errors": {
           "generic": "Something went wrong. Please try again.",
-          "unlinkBlocked": "Cannot unlink: deal status requires a linked apartment."
+          "unlinkBlocked": "Cannot unlink: deal status requires a linked apartment.",
+          "reservedConflict": "This apartment is already reserved by another deal.",
+          "alreadySold": "This apartment is already sold."
         },
         "unlinkApartment": "Unlink",
         "unlinkConfirm": "Unlink apartment {apartment} from this deal?",

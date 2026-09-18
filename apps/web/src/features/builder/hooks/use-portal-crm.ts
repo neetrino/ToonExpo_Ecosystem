@@ -11,6 +11,7 @@ import type {
   UpdateCrmDealBody,
 } from '@toonexpo/contracts';
 
+import { ADMIN_APARTMENTS_QUERY_KEY } from '@/features/admin/constants';
 import {
   addCrmActivity,
   addCrmNote,
@@ -25,7 +26,13 @@ import {
   updateCrmDeal,
   type ListCrmDealsParams,
 } from '@/features/builder/api/portal-crm-api';
-import { PORTAL_CRM_DEALS_QUERY_KEY, portalCrmDealQueryKey } from '@/features/builder/constants';
+import {
+  PORTAL_CRM_DEALS_QUERY_KEY,
+  PORTAL_INVENTORY_APARTMENTS_QUERY_KEY,
+  PORTAL_INVENTORY_BUILDINGS_QUERY_KEY,
+  PORTAL_INVENTORY_FLOORS_QUERY_KEY,
+  portalCrmDealQueryKey,
+} from '@/features/builder/constants';
 
 /**
  * Paginated CRM deals with optional filters.
@@ -49,6 +56,18 @@ export const useCrmDealQuery = (id: string) =>
 
 const invalidateCrmLists = (queryClient: ReturnType<typeof useQueryClient>) => {
   void queryClient.invalidateQueries({ queryKey: PORTAL_CRM_DEALS_QUERY_KEY });
+};
+
+/**
+ * CRM apartment link / pipeline changes also update inventory sales badges.
+ */
+export const invalidateCrmInventoryQueries = (
+  queryClient: ReturnType<typeof useQueryClient>,
+): void => {
+  void queryClient.invalidateQueries({ queryKey: ADMIN_APARTMENTS_QUERY_KEY });
+  void queryClient.invalidateQueries({ queryKey: PORTAL_INVENTORY_APARTMENTS_QUERY_KEY });
+  void queryClient.invalidateQueries({ queryKey: PORTAL_INVENTORY_BUILDINGS_QUERY_KEY });
+  void queryClient.invalidateQueries({ queryKey: PORTAL_INVENTORY_FLOORS_QUERY_KEY });
 };
 
 /**
@@ -87,6 +106,7 @@ export const useUpdateCrmDealMutation = (dealId: string) => {
     onSuccess: (deal) => {
       queryClient.setQueryData(portalCrmDealQueryKey(dealId), deal);
       invalidateCrmLists(queryClient);
+      invalidateCrmInventoryQueries(queryClient);
     },
   });
 };
@@ -101,6 +121,7 @@ export const useDeleteCrmDealMutation = () => {
     onSuccess: (_result, dealId) => {
       queryClient.removeQueries({ queryKey: portalCrmDealQueryKey(dealId) });
       invalidateCrmLists(queryClient);
+      invalidateCrmInventoryQueries(queryClient);
     },
   });
 };
@@ -117,6 +138,7 @@ export const useAttachDealApartmentMutation = (dealId: string) => {
         queryKey: portalCrmDealQueryKey(dealId),
       });
       invalidateCrmLists(queryClient);
+      invalidateCrmInventoryQueries(queryClient);
     },
   });
 };
@@ -133,6 +155,7 @@ export const useDetachDealApartmentMutation = (dealId: string) => {
         queryKey: portalCrmDealQueryKey(dealId),
       });
       invalidateCrmLists(queryClient);
+      invalidateCrmInventoryQueries(queryClient);
     },
   });
 };
