@@ -66,7 +66,9 @@ const toFormValues = (project: PortalProjectDetail): UpdateProjectFormValues => 
   districtHy: project.translations?.district?.hy ?? project.district ?? '',
   districtRu: project.translations?.district?.ru ?? '',
   districtEn: project.translations?.district?.en ?? '',
-  projectType: project.projectType ?? '',
+  projectTypeHy: project.translations?.projectType?.hy ?? project.projectType ?? '',
+  projectTypeRu: project.translations?.projectType?.ru ?? '',
+  projectTypeEn: project.translations?.projectType?.en ?? '',
   constructionStatus: project.constructionStatus ?? '',
   completionDate: project.completionDate ?? '',
   ...catalogJsonToFormSlice(project.amenities, project.nearbyPlaces),
@@ -186,17 +188,26 @@ const EditProjectFormInner = ({ project }: EditProjectFormProps) => {
       <TranslationTabs focusLocale={focusLocale} focusTick={focusTick}>
         {(locale) => (
           <div className="flex flex-col gap-4">
-            <FormField
-              id={`edit-name-${locale}`}
-              label={t('form.name')}
-              error={locale === 'hy' && errors.nameHy ? t('validation.name') : undefined}
-            >
-              <Input
+            <div className="grid gap-4 sm:grid-cols-2">
+              <FormField
                 id={`edit-name-${locale}`}
-                placeholder={getProjectFormPlaceholder(locale, 'name')}
-                {...register(projectLocaleField('name', locale))}
-              />
-            </FormField>
+                label={t('form.name')}
+                error={locale === 'hy' && errors.nameHy ? t('validation.name') : undefined}
+              >
+                <Input
+                  id={`edit-name-${locale}`}
+                  placeholder={getProjectFormPlaceholder(locale, 'name')}
+                  {...register(projectLocaleField('name', locale))}
+                />
+              </FormField>
+              <FormField id={`edit-type-${locale}`} label={t('form.projectType')}>
+                <Input
+                  id={`edit-type-${locale}`}
+                  placeholder={getProjectFormPlaceholder(locale, 'projectType')}
+                  {...register(projectLocaleField('projectType', locale))}
+                />
+              </FormField>
+            </div>
             <FormField id={`edit-short-${locale}`} label={t('form.shortDescription')}>
               <textarea
                 id={`edit-short-${locale}`}
@@ -247,13 +258,6 @@ const EditProjectFormInner = ({ project }: EditProjectFormProps) => {
               lockSlugAuto();
               void slugField.onChange(event);
             }}
-          />
-        </FormField>
-        <FormField id="edit-type" label={t('form.projectType')}>
-          <Input
-            id="edit-type"
-            placeholder={getProjectFormPlaceholder(siteLocale, 'projectType')}
-            {...register('projectType')}
           />
         </FormField>
         <FormField id="edit-completion" label={t('form.completionDate')}>

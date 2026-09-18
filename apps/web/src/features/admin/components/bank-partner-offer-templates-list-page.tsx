@@ -2,7 +2,7 @@
 
 import type { BankPartnerOfferTemplateItem } from '@toonexpo/contracts';
 import { FileStack, Trash2 } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 
 import { BankPartnerOfferTemplateForm } from '@/features/admin/components/bank-partner-offer-template-form';
@@ -23,12 +23,15 @@ import { IconButton } from '@/shared/ui/icon-button';
 import { ListPageHeader } from '@/shared/ui/list-page-header';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
+const ARMENIAN_LOCALE = 'hy';
+
 /**
  * Admin Templates — reusable finance offer templates (Import into project Finance).
  */
 export const BankPartnerOfferTemplatesListPage = () => {
   const t = useTranslations('Admin.templates');
   const tCommon = useTranslations('Common.integratedSearch');
+  const locale = useLocale();
   const [search, setSearch] = useState('');
   const [editing, setEditing] = useState<BankPartnerOfferTemplateItem | null>(null);
   const [creating, setCreating] = useState(false);
@@ -79,6 +82,7 @@ export const BankPartnerOfferTemplatesListPage = () => {
         onClearAll={() => {
           setSearch('');
         }}
+        stackControls={locale === ARMENIAN_LOCALE}
         actions={
           <>
             <ViewModeToggle value={viewMode} onChange={setViewMode} />

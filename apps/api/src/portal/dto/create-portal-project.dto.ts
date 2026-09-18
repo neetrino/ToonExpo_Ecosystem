@@ -18,6 +18,7 @@ import {
   PORTAL_DESCRIPTION_MAX_LENGTH,
   PORTAL_LOCATION_MAX_LENGTH,
   PORTAL_PROJECT_NAME_MAX_LENGTH,
+  PORTAL_PROJECT_TYPE_MAX_LENGTH,
   PORTAL_SLUG_MAX_LENGTH,
 } from "../portal.constants.js";
 import { PortalTranslationsDto } from "./portal-translations.dto.js";
@@ -85,7 +86,7 @@ export class CreatePortalProjectDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  @MaxLength(120)
+  @MaxLength(PORTAL_PROJECT_TYPE_MAX_LENGTH)
   projectType?: string;
 
   @ApiPropertyOptional()

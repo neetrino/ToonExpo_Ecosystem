@@ -27,6 +27,7 @@ export type PortalTranslationsInput = {
   fullDescription?: LocaleTextMap;
   locationText?: LocaleTextMap;
   district?: LocaleTextMap;
+  projectType?: LocaleTextMap;
   description?: LocaleTextMap;
 };
 

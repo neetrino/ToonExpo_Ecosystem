@@ -298,7 +298,14 @@ export const mapProjectDetail = (project: ProjectDetailSource, ctx: MapContext):
   return {
     ...listBase,
     fullDescription,
-    projectType: project.projectType,
+    projectType: resolveTranslatedValue(
+      ctx.translations,
+      TRANSLATION_ENTITY.project,
+      project.id,
+      TRANSLATION_FIELD.projectType,
+      ctx.locale,
+      project.projectType,
+    ),
     constructionStatus: project.constructionStatus,
     completionDate: project.completionDate
       ? project.completionDate.toISOString().slice(0, 10)

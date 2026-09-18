@@ -14,6 +14,7 @@ export const PROJECT_LOCALE_FIELDS = {
   },
   locationText: { hy: 'locationTextHy', ru: 'locationTextRu', en: 'locationTextEn' },
   district: { hy: 'districtHy', ru: 'districtRu', en: 'districtEn' },
+  projectType: { hy: 'projectTypeHy', ru: 'projectTypeRu', en: 'projectTypeEn' },
 } as const;
 
 export const projectLocaleField = <K extends keyof typeof PROJECT_LOCALE_FIELDS>(

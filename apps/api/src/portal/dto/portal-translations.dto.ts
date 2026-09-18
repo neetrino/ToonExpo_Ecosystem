@@ -71,5 +71,12 @@ export class PortalTranslationsDto {
   @IsObject()
   @ValidateNested()
   @Type(() => LocaleTextMapDto)
+  projectType?: LocaleTextMapDto;
+
+  @ApiPropertyOptional({ type: LocaleTextMapDto })
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => LocaleTextMapDto)
   description?: LocaleTextMapDto;
 }
