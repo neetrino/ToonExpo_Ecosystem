@@ -14,6 +14,15 @@ const CITY_ALIAS_GROUPS: readonly (readonly string[])[] = [
 
 const PINNED_GROUP_ID = 'yerevan';
 
+/** Popular cities always shown in the home hero and Buy location pickers. */
+export const POPULAR_CITY_KEYS = [
+  'yerevan',
+  'gyumri',
+  'vanadzor',
+  'dilijan',
+  'tsaghkadzor',
+] as const;
+
 const aliasToGroupId = (() => {
   const map = new Map<string, string>();
   for (const group of CITY_ALIAS_GROUPS) {
@@ -129,4 +138,27 @@ export const mergeLocationOptions = (
   }
 
   return result.sort(compareLocationOptions);
+};
+
+/**
+ * Maps a shareable `city` query (comma-separated, any locale spelling) back to
+ * picker option labels currently on screen.
+ */
+export const matchSelectedLocationOptions = (
+  options: readonly string[],
+  cityParam: string | undefined,
+): string[] => {
+  if (!cityParam) {
+    return [];
+  }
+
+  const selectedKeys = new Set(
+    cityParam
+      .split(',')
+      .map((city) => city.trim())
+      .filter((city) => city.length > 0)
+      .map(cityDedupeKey),
+  );
+
+  return options.filter((option) => selectedKeys.has(cityDedupeKey(option)));
 };

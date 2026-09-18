@@ -4,6 +4,7 @@ import {
   collectProjectCities,
   compareLocationOptions,
   expandCityFilterValues,
+  matchSelectedLocationOptions,
   mergeLocationOptions,
 } from './location-options';
 
@@ -77,5 +78,17 @@ describe('expandCityFilterValues', () => {
 
   it('passes through unknown cities', () => {
     expect(expandCityFilterValues(['Ashtarak'])).toEqual(['Ashtarak']);
+  });
+});
+
+describe('matchSelectedLocationOptions', () => {
+  it('maps expanded URL spellings back to the visible option label', () => {
+    expect(
+      matchSelectedLocationOptions(['Երևան', 'Գյումրի'], 'Yerevan,Երևան,Ереван'),
+    ).toEqual(['Երևան']);
+  });
+
+  it('returns empty when the query is missing', () => {
+    expect(matchSelectedLocationOptions(['Երևան'], undefined)).toEqual([]);
   });
 });

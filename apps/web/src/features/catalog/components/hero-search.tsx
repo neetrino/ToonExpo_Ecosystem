@@ -11,6 +11,7 @@ import { PriceRangeSelect } from '@/features/catalog/components/price-range-sele
 import {
   expandCityFilterValues,
   mergeLocationOptions,
+  POPULAR_CITY_KEYS,
 } from '@/features/catalog/utils/location-options';
 import { Link, useRouter } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
@@ -25,8 +26,6 @@ type HeroSearchProps = {
 };
 
 const BED_OPTIONS = [1, 2, 3, 4] as const;
-
-const POPULAR_CITY_KEYS = ['yerevan', 'gyumri', 'vanadzor', 'dilijan', 'tsaghkadzor'] as const;
 
 type HeroSearchHrefInput = {
   q: string;
