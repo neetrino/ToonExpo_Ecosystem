@@ -477,13 +477,13 @@
       "signInToSee": "Մուտք գործեք՝ գինը տեսնելու համար"
     },
     "status": {
-      "available": "Ազատ",
+      "available": "Հասանելի",
       "reserved": "Ամրագրված",
       "sold": "Վաճառված"
     },
     "availability": {
       "total": "Ընդամենը",
-      "available": "Ազատ",
+      "available": "Հասանելի",
       "reserved": "Ամրագրված",
       "sold": "Վաճառված",
       "summary": "Հասանելիություն",
