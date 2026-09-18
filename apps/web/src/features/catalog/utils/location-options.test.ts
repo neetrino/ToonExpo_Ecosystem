@@ -69,6 +69,10 @@ describe('mergeLocationOptions', () => {
       'Գյումրի',
     ]);
   });
+
+  it('keeps Jermuk when it is not yet in the catalog', () => {
+    expect(mergeLocationOptions([], ['Yerevan', 'Jermuk'])).toEqual(['Yerevan', 'Jermuk']);
+  });
 });
 
 describe('expandCityFilterValues', () => {
@@ -78,6 +82,10 @@ describe('expandCityFilterValues', () => {
 
   it('passes through unknown cities', () => {
     expect(expandCityFilterValues(['Ashtarak'])).toEqual(['Ashtarak']);
+  });
+
+  it('expands Jermuk to all locale spellings', () => {
+    expect(expandCityFilterValues(['Jermuk'])).toEqual(['Jermuk', 'Ջերմուկ', 'Джермук']);
   });
 });
 

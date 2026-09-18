@@ -10,6 +10,7 @@ import { LocationSearchSelect } from '@/features/catalog/components/location-sea
 import { PriceRangeSelect } from '@/features/catalog/components/price-range-select';
 import {
   expandCityFilterValues,
+  HERO_POPULAR_CITY_CHIP_KEYS,
   mergeLocationOptions,
   POPULAR_CITY_KEYS,
 } from '@/features/catalog/utils/location-options';
@@ -167,7 +168,7 @@ export const HeroSearch = ({ className, locations = [], projects = [] }: HeroSea
       <div className="mt-8 flex flex-col gap-2">
         <span className="text-sm font-medium leading-5 text-on-dark">{t('popular')}</span>
         <div className="flex flex-wrap gap-2">
-          {POPULAR_CITY_KEYS.map((key) => {
+          {HERO_POPULAR_CITY_CHIP_KEYS.map((key) => {
             const city = t(`popularCities.${key}`);
             const cityParam = expandCityFilterValues([city]).join(',');
             return (

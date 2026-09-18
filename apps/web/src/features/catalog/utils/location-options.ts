@@ -8,20 +8,57 @@ const CITY_ALIAS_GROUPS: readonly (readonly string[])[] = [
   ['Yerevan', 'Երևան', 'Ереван'],
   ['Gyumri', 'Գյումրի', 'Гюмри'],
   ['Vanadzor', 'Վանաձոր', 'Ванадзор'],
+  ['Abovyan', 'Աբովյան', 'Абовян'],
+  ['Kapan', 'Կապան', 'Капан'],
+  ['Hrazdan', 'Հրազդան', 'Раздан'],
+  ['Armavir', 'Արմավիր', 'Армавир'],
+  ['Etchmiadzin', 'Էջմիածին', 'Эчмиадзин'],
+  ['Ijevan', 'Իջևան', 'Иджеван'],
+  ['Artashat', 'Արտաշատ', 'Арташат'],
+  ['Goris', 'Գորիս', 'Горис'],
+  ['Sisian', 'Սիսիան', 'Сисиан'],
+  ['Meghri', 'Մեղրի', 'Мегри'],
+  ['Qajaran', 'Քաջարան', 'Каджаран'],
+  ['Agarak', 'Ագարակ', 'Агарак'],
+  ['Yeghegnadzor', 'Եղեգնաձոր', 'Ехегнадзор'],
+  ['Vayk', 'Վայք', 'Вайк'],
+  ['Jermuk', 'Ջերմուկ', 'Джермук'],
   ['Dilijan', 'Դիլիջան', 'Дилижан'],
   ['Tsaghkadzor', 'Ծաղկաձոր', 'Цахкадзор'],
 ];
 
 const PINNED_GROUP_ID = 'yerevan';
 
-/** Popular cities always shown in the home hero and Buy location pickers. */
+/** Cities always shown in the home hero and Buy location pickers. No "Other". */
 export const POPULAR_CITY_KEYS = [
   'yerevan',
   'gyumri',
   'vanadzor',
-  'dilijan',
-  'tsaghkadzor',
+  'abovyan',
+  'kapan',
+  'hrazdan',
+  'armavir',
+  'etchmiadzin',
+  'ijevan',
+  'artashat',
+  'goris',
+  'sisian',
+  'meghri',
+  'qajaran',
+  'agarak',
+  'yeghegnadzor',
+  'vayk',
+  'jermuk',
 ] as const;
+
+/** Compact Popular chips under home search — first five of the official list. */
+export const HERO_POPULAR_CITY_CHIP_KEYS = [
+  'yerevan',
+  'gyumri',
+  'vanadzor',
+  'abovyan',
+  'kapan',
+] as const satisfies readonly (typeof POPULAR_CITY_KEYS)[number][];
 
 const aliasToGroupId = (() => {
   const map = new Map<string, string>();
