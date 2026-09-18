@@ -44,7 +44,9 @@ const emptyValues = (): CreateProjectFormValues => ({
   districtHy: '',
   districtRu: '',
   districtEn: '',
-  projectType: '',
+  projectTypeHy: '',
+  projectTypeRu: '',
+  projectTypeEn: '',
   constructionStatus: '',
   completionDate: '',
   coverMediaId: '',
@@ -109,18 +111,27 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
       <TranslationTabs focusLocale={focusLocale} focusTick={focusTick}>
         {(locale) => (
           <div className="flex flex-col gap-4">
-            <FormField
-              id={`name-${locale}`}
-              label={t('form.name')}
-              error={locale === 'hy' && errors.nameHy ? t('validation.name') : undefined}
-            >
-              <Input
+            <div className="grid gap-4 sm:grid-cols-2">
+              <FormField
                 id={`name-${locale}`}
-                placeholder={getProjectFormPlaceholder(locale, 'name')}
-                aria-invalid={locale === 'hy' && Boolean(errors.nameHy)}
-                {...register(projectLocaleField('name', locale))}
-              />
-            </FormField>
+                label={t('form.name')}
+                error={locale === 'hy' && errors.nameHy ? t('validation.name') : undefined}
+              >
+                <Input
+                  id={`name-${locale}`}
+                  placeholder={getProjectFormPlaceholder(locale, 'name')}
+                  aria-invalid={locale === 'hy' && Boolean(errors.nameHy)}
+                  {...register(projectLocaleField('name', locale))}
+                />
+              </FormField>
+              <FormField id={`projectType-${locale}`} label={t('form.projectType')}>
+                <Input
+                  id={`projectType-${locale}`}
+                  placeholder={getProjectFormPlaceholder(locale, 'projectType')}
+                  {...register(projectLocaleField('projectType', locale))}
+                />
+              </FormField>
+            </div>
             <FormField id={`short-${locale}`} label={t('form.shortDescription')}>
               <textarea
                 id={`short-${locale}`}
@@ -175,13 +186,6 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
           />
         </FormField>
         <div className="grid gap-4 sm:grid-cols-2">
-          <FormField id="projectType" label={t('form.projectType')}>
-            <Input
-              id="projectType"
-              placeholder={getProjectFormPlaceholder(siteLocale, 'projectType')}
-              {...register('projectType')}
-            />
-          </FormField>
           <VerifiedStatusField id="project-verified" control={control} name="verified" />
           <FormField id="completionDate" label={t('form.completionDate')}>
             <Controller

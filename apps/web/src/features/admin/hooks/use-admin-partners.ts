@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type {
   CreateAdminPartnerBody,
   CreatePartnerOfferBody,
@@ -29,6 +29,7 @@ export const useAdminPartnersQuery = (params: ListAdminPartnersParams) =>
   useQuery({
     queryKey: [...ADMIN_PARTNERS_QUERY_KEY, params],
     queryFn: () => listAdminPartners(params),
+    placeholderData: keepPreviousData,
   });
 
 export const useAdminPartnerQuery = (id: string) =>

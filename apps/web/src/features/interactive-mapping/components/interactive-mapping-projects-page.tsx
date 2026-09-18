@@ -10,7 +10,7 @@ import { AdminCreateProjectSheet } from '@/features/admin/components/admin-creat
 import { CreateProjectSheet } from '@/features/builder/components/create-project-sheet';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
-import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
+import { useDebouncedSearch } from '@/shared/hooks/use-debounced-search';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
 import { Button } from '@/shared/ui/button';
@@ -19,7 +19,6 @@ import { LIST_CONTENT_BASE_DELAY_MS, Reveal } from '@/shared/ui/motion';
 
 import {
   INTERACTIVE_MAPPING_DEFAULT_PAGE_SIZE,
-  INTERACTIVE_MAPPING_SEARCH_DEBOUNCE_MS,
   interactiveMappingProjectsQueryKey,
 } from '../constants';
 import { useInteractiveMappingProjectsQuery } from '../hooks/use-interactive-mapping';
@@ -58,9 +57,7 @@ export const InteractiveMappingProjectsPage = () => {
   const pageSize = INTERACTIVE_MAPPING_DEFAULT_PAGE_SIZE;
   const [search, setSearch] = useState('');
   const [createOpen, setCreateOpen] = useState(false);
-  const trimmedSearch = search.trim();
-  const debouncedSearch = useDebouncedValue(trimmedSearch, INTERACTIVE_MAPPING_SEARCH_DEBOUNCE_MS);
-  const activeSearch = trimmedSearch.length === 0 ? '' : debouncedSearch;
+  const activeSearch = useDebouncedSearch(search);
 
   const projectsQuery = useInteractiveMappingProjectsQuery({
     page,
@@ -82,27 +79,16 @@ export const InteractiveMappingProjectsPage = () => {
     router.push(`${basePath}/${projectId}`);
   };
 
-  if (projectsQuery.isLoading) {
-    return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
-  }
-
-  if (projectsQuery.isError || !projectsQuery.data) {
-    return (
-      <p role="alert" className="text-sm text-danger">
-        {t('error')}
-      </p>
-    );
-  }
-
   const response = projectsQuery.data;
-  const projects = response.data;
+  const projects = response?.data ?? [];
+  const totalCount = response?.meta.total ?? 0;
 
   return (
     <div className="flex flex-col gap-6">
       <ListPageHeader
         icon={Map}
         title={t('title')}
-        subtitle={t('subtitle', { count: response.meta.total })}
+        subtitle={projectsQuery.isLoading ? t('loading') : t('subtitle', { count: totalCount })}
         search={search}
         searchPlaceholder={t('filters.searchPlaceholder')}
         searchAriaLabel={tCommon('searchLabel')}
@@ -125,7 +111,11 @@ export const InteractiveMappingProjectsPage = () => {
         }
       />
 
-      {projects.length === 0 ? (
+      {projectsQuery.isLoading ? null : projectsQuery.isError || !response ? (
+        <p role="alert" className="text-sm text-danger">
+          {t('error')}
+        </p>
+      ) : projects.length === 0 ? (
         <Reveal force delayMs={LIST_CONTENT_BASE_DELAY_MS}>
           <p className="text-sm text-ink-secondary">
             {activeSearch ? t('noResults', { query: activeSearch }) : t('empty')}
@@ -143,23 +133,25 @@ export const InteractiveMappingProjectsPage = () => {
         </AdminListCardGrid>
       )}
 
-      <CatalogPagination
-        page={response.meta.page}
-        totalPages={response.meta.totalPages}
-        previousHref={
-          response.meta.page > 1
-            ? buildListHref(pathname, response.meta.page - 1)
-            : null
-        }
-        nextHref={
-          response.meta.page < response.meta.totalPages
-            ? buildListHref(pathname, response.meta.page + 1)
-            : null
-        }
-        previousLabel={t('pagination.previous')}
-        nextLabel={t('pagination.next')}
-        ariaLabel={t('pagination.ariaLabel')}
-      />
+      {response && !projectsQuery.isLoading ? (
+        <CatalogPagination
+          page={response.meta.page}
+          totalPages={response.meta.totalPages}
+          previousHref={
+            response.meta.page > FIRST_PAGE
+              ? buildListHref(pathname, response.meta.page - 1)
+              : null
+          }
+          nextHref={
+            response.meta.page < response.meta.totalPages
+              ? buildListHref(pathname, response.meta.page + 1)
+              : null
+          }
+          previousLabel={t('pagination.previous')}
+          nextLabel={t('pagination.next')}
+          ariaLabel={t('pagination.ariaLabel')}
+        />
+      ) : null}
 
       {showLabLink ? (
         <Reveal force delayMs={LIST_CONTENT_BASE_DELAY_MS}>

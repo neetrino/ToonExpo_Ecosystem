@@ -9,6 +9,10 @@ import { ProjectDetailFavorite } from '@/features/buyer/components/project-detai
 import { CatalogEntityQr } from '@/features/catalog/components/catalog-entity-qr';
 import { ProjectPriceCta } from '@/features/catalog/components/project-price-cta';
 import { usePriceOverlay } from '@/features/catalog/components/price-overlay-scope';
+import {
+  CATALOG_HERO_CARD_DESCRIPTION_CLASS,
+  CATALOG_HERO_CARD_DESCRIPTION_DESKTOP_CLASS,
+} from '@/features/catalog/constants/catalog-hero-card';
 import { buildProjectCatalogQrUrl } from '@/features/catalog/utils/build-catalog-entity-qr-url';
 import { computeSoldPercent, resolveBadge } from '@/features/catalog/utils/development-progress';
 import { formatCompactPrice } from '@/features/catalog/utils/format-price';
@@ -101,7 +105,7 @@ const ProjectHeroSummary = ({
       <h1 className="font-brand text-[clamp(2rem,5vw,3.75rem)] font-bold leading-[1.15] tracking-[-0.03em] text-ink-navy">
         {project.name}
       </h1>
-      <p className="mt-3 text-lg leading-6 text-header-muted">{description}</p>
+      <p className={CATALOG_HERO_CARD_DESCRIPTION_CLASS}>{description}</p>
     </div>
 
     {/* Desktop / tablet */}
@@ -126,7 +130,7 @@ const ProjectHeroSummary = ({
             entityName={project.name}
           />
         </div>
-        <p className="mt-3 max-w-2xl text-lg leading-6 text-header-muted">{description}</p>
+        <p className={CATALOG_HERO_CARD_DESCRIPTION_DESKTOP_CLASS}>{description}</p>
       </div>
     </div>
   </div>

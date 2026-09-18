@@ -140,13 +140,13 @@ export class CreateAdminPartnerDto {
   @IsEnum(CreatePartnerCompanyTypeDto)
   type!: PartnerCompanyType;
 
-  @ApiProperty({ example: 'John Doe' })
+  @ApiProperty({ example: 'John Smith' })
   @IsString()
   @MinLength(1)
   @MaxLength(NAME_MAX_LENGTH)
   adminName!: string;
 
-  @ApiProperty({ example: 'john.doe@example.com' })
+  @ApiProperty({ example: 'john.smith@example.com' })
   @IsEmail()
   @MaxLength(EMAIL_MAX_LENGTH)
   adminEmail!: string;

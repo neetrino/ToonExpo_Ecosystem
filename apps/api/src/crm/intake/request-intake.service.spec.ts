@@ -42,7 +42,7 @@ describe("RequestIntakeService", () => {
           },
           request: { create: requestCreate },
           crmFollowUpActivity: { create: activityCreate },
-          crmDealApartmentLink: { upsert: vi.fn() },
+          crmDealApartmentLink: { upsert: vi.fn(), count: vi.fn().mockResolvedValue(0) },
           apartment: { findUnique: vi.fn() },
         }),
     );

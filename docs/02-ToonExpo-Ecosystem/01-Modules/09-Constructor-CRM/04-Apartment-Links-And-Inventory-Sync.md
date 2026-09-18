@@ -8,13 +8,7 @@ Constructor CRM is the source of truth for apartment sales status after CRM is a
 
 ## Deal Apartment Link
 
-A CRM deal can link to one or more apartments.
-
-Reasons:
-
-- buyer is choosing between several apartments;
-- family/group is discussing options;
-- builder wants to keep alternatives in one deal.
+A CRM deal can link to **one** apartment. Unlink it before choosing another.
 
 ## Required Apartment Link Stages
 
@@ -40,11 +34,10 @@ converted
 Recommended v1 mapping:
 
 ```text
-CRM status apartment_selected -> apartment remains available
-CRM status reserved -> apartment becomes reserved
-CRM status converted -> apartment becomes sold
-CRM status lost after reservation -> apartment returns to available if no other active hold exists
-CRM status closed without sale -> no automatic sold status
+CRM apartment linked -> apartment becomes reserved
+CRM status reserved -> apartment stays / becomes reserved
+CRM status converted (Buy) -> apartment becomes sold
+CRM status lost / closed / unlink after reservation -> apartment returns to available if this deal held the unit
 ```
 
 ## Reservation Conflict
@@ -58,14 +51,9 @@ If another active deal already reserved the apartment:
 
 ## Multiple Apartments
 
-If deal links multiple apartments and moves to `reserved`:
+A deal may not hold more than one apartment link.
 
-v1 should choose one clear rule.
-
-Recommended:
-
-- user must choose which apartment(s) to reserve;
-- do not reserve all linked alternatives automatically unless explicitly selected.
+To change the unit: unlink the current apartment, then link the new one.
 
 ## Sold Status
 

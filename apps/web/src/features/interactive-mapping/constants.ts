@@ -11,9 +11,6 @@ export const INTERACTIVE_MAPPING_PORTAL_API_PREFIX = '/portal/interactive-mappin
 
 export const INTERACTIVE_MAPPING_PROJECTS_QUERY_KEY = ['interactive-mapping', 'projects'] as const;
 
-/** Debounce before interactive-mapping project search hits the API. */
-export const INTERACTIVE_MAPPING_SEARCH_DEBOUNCE_MS = 300;
-
 /** Page size for the interactive-mapping project list (matches admin inventory). */
 export const INTERACTIVE_MAPPING_DEFAULT_PAGE_SIZE = 18;
 

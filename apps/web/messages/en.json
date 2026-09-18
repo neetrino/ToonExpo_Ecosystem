@@ -142,7 +142,7 @@
       "follow_up_needed": "Follow-up",
       "apartment_selected": "Apartment",
       "reserved": "Reserved",
-      "converted": "Won",
+      "converted": "Buy",
       "closed": "Closed",
       "lost": "Lost"
     },
@@ -151,6 +151,27 @@
       "builder_buyer_qr_scan": "Builder QR",
       "manual_builder_entry": "Manual",
       "event_interaction": "Event"
+    },
+    "tabs": {
+      "ariaLabel": "Deal sections",
+      "deal": "Deal",
+      "payment": "Payment",
+      "notes": "Notes"
+    },
+    "payments": {
+      "noApartment": "Link an apartment to record payments.",
+      "apartmentPrice": "Apartment price",
+      "paidTotal": "Paid",
+      "remaining": "Remaining",
+      "priceEmpty": "Price on request",
+      "historyTitle": "Payment history",
+      "historyEmpty": "No payments recorded yet.",
+      "columns": {
+        "date": "Date",
+        "amount": "Amount",
+        "by": "Recorded by",
+        "note": "Note"
+      }
     }
   },
   "HomePage": {
@@ -204,8 +225,21 @@
         "yerevan": "Yerevan",
         "gyumri": "Gyumri",
         "vanadzor": "Vanadzor",
-        "dilijan": "Dilijan",
-        "tsaghkadzor": "Tsaghkadzor"
+        "abovyan": "Abovyan",
+        "kapan": "Kapan",
+        "hrazdan": "Hrazdan",
+        "armavir": "Armavir",
+        "etchmiadzin": "Etchmiadzin",
+        "ijevan": "Ijevan",
+        "artashat": "Artashat",
+        "goris": "Goris",
+        "sisian": "Sisian",
+        "meghri": "Meghri",
+        "qajaran": "Qajaran",
+        "agarak": "Agarak",
+        "yeghegnadzor": "Yeghegnadzor",
+        "vayk": "Vayk",
+        "jermuk": "Jermuk"
       }
     },
     "stats": {
@@ -1012,7 +1046,7 @@
       "noAccount": "No account yet?",
       "registerLink": "Create one",
       "placeholders": {
-        "email": "john.doe@example.com",
+        "email": "john.smith@example.com",
         "password": "********"
       }
     },
@@ -1033,9 +1067,9 @@
       "loginLink": "Sign in",
       "placeholders": {
         "firstName": "John",
-        "surname": "Doe",
+        "surname": "Smith",
         "phone": "37491111222",
-        "email": "john.doe@example.com",
+        "email": "john.smith@example.com",
         "password": "********",
         "confirmPassword": "********"
       }
@@ -1303,7 +1337,7 @@
       "follow_up_needed": "Follow-up",
       "apartment_selected": "Apartment selected",
       "reserved": "Reserved",
-      "converted": "Converted",
+      "converted": "Buy",
       "closed": "Closed",
       "lost": "Lost"
     },
@@ -2156,8 +2190,11 @@
         "company": "Company",
         "project": "Project",
         "status": "Status",
-        "sales": "Sales"
+        "sales": "Sales",
+        "price": "Price"
       },
+      "price": "Price",
+      "priceEmpty": "—",
       "sales": {
         "available": "Available",
         "reserved": "Reserved",
@@ -2244,8 +2281,8 @@
         "placeholders": {
           "name": "Acme Partners",
           "adminFirstName": "John",
-          "adminSurname": "Doe",
-          "adminEmail": "john.doe@example.com",
+          "adminSurname": "Smith",
+          "adminEmail": "john.smith@example.com",
           "adminPhone": "+37491111222"
         },
         "submit": "Create & send invite",
@@ -4080,7 +4117,7 @@
         "follow_up_needed": "Follow-up",
         "apartment_selected": "Apartment selected",
         "reserved": "Reserved",
-        "converted": "Converted",
+        "converted": "Buy",
         "closed": "Closed",
         "lost": "Lost"
       },
@@ -4094,11 +4131,11 @@
         "cta": "+ New Deal",
         "title": "New deal",
         "contactName": "Full name",
-        "contactNamePlaceholder": "John Doe",
+        "contactNamePlaceholder": "John Smith",
         "contactPhone": "Phone",
         "contactPhonePlaceholder": "37491111222",
         "contactEmail": "Email",
-        "contactEmailPlaceholder": "john.doe@example.com",
+        "contactEmailPlaceholder": "john.smith@example.com",
         "project": "Project",
         "projectOptional": "No project",
         "note": "Note",
@@ -4127,13 +4164,17 @@
         "lostReason": "Lost reason",
         "lostReasonRequired": "Lost reason is required",
         "apartmentRequired": "Link an apartment before this status",
-        "apartmentHint": "Reserved / converted / apartment selected require a linked apartment.",
+        "apartmentHint": "Reserved / Buy / apartment selected require a linked apartment.",
         "saveStatus": "Update status",
         "assigneeTitle": "Assignee",
         "assignee": "Responsible",
         "unassigned": "Unassigned",
         "saveAssignee": "Update assignee",
         "saving": "Saving…",
+        "paymentAmount": "Amount paid",
+        "paymentAmountPlaceholder": "0",
+        "paymentNotePlaceholder": "Optional note",
+        "addPayment": "Record payment",
         "notesTitle": "Notes",
         "notesEmpty": "No notes yet",
         "notePlaceholder": "Add an internal note…",
@@ -4162,6 +4203,7 @@
         "loadingApartments": "Loading apartments…",
         "linkApartmentAction": "Link apartment",
         "linkSuccess": "Apartment linked",
+        "oneApartmentHint": "This deal already has an apartment. Unlink it to choose another.",
         "primary": "Primary",
         "linkTypes": {
           "interest": "Interest",
@@ -4173,7 +4215,11 @@
         "requestsEmpty": "No requests yet",
         "errors": {
           "generic": "Something went wrong. Please try again.",
-          "unlinkBlocked": "Cannot unlink: deal status requires a linked apartment."
+          "invalidPaymentAmount": "Enter a valid amount (minimum 0.01).",
+          "unlinkBlocked": "Cannot unlink: deal status requires a linked apartment.",
+          "reservedConflict": "This apartment is already reserved by another deal.",
+          "alreadySold": "This apartment is already sold.",
+          "alreadyLinked": "This deal already has a linked apartment."
         },
         "unlinkApartment": "Unlink",
         "unlinkConfirm": "Unlink apartment {apartment} from this deal?",

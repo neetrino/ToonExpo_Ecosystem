@@ -142,7 +142,7 @@
       "follow_up_needed": "Հետևում",
       "apartment_selected": "Բնակարան",
       "reserved": "Ամրագրված",
-      "converted": "Հաղթանակ",
+      "converted": "Գնված",
       "closed": "Փակված",
       "lost": "Կորած"
     },
@@ -151,6 +151,27 @@
       "builder_buyer_qr_scan": "Builder QR",
       "manual_builder_entry": "Ձեռքով",
       "event_interaction": "Միջոցառում"
+    },
+    "tabs": {
+      "ariaLabel": "Գործարքի բաժիններ",
+      "deal": "Գործարք",
+      "payment": "Վճարում",
+      "notes": "Նշումներ"
+    },
+    "payments": {
+      "noApartment": "Կցեք բնակարան՝ վճարումներ գրանցելու համար։",
+      "apartmentPrice": "Բնակարանի գին",
+      "paidTotal": "Վճարված",
+      "remaining": "Մնացորդ",
+      "priceEmpty": "Գինը ըստ հարցման",
+      "historyTitle": "Վճարումների պատմություն",
+      "historyEmpty": "Վճարումներ դեռ չկան։",
+      "columns": {
+        "date": "Ամսաթիվ",
+        "amount": "Գումար",
+        "by": "Գրանցող",
+        "note": "Նշում"
+      }
     }
   },
   "HomePage": {
@@ -204,8 +225,21 @@
         "yerevan": "Երևան",
         "gyumri": "Գյումրի",
         "vanadzor": "Վանաձոր",
-        "dilijan": "Դիլիջան",
-        "tsaghkadzor": "Ծաղկաձոր"
+        "abovyan": "Աբովյան",
+        "kapan": "Կապան",
+        "hrazdan": "Հրազդան",
+        "armavir": "Արմավիր",
+        "etchmiadzin": "Էջմիածին",
+        "ijevan": "Իջևան",
+        "artashat": "Արտաշատ",
+        "goris": "Գորիս",
+        "sisian": "Սիսիան",
+        "meghri": "Մեղրի",
+        "qajaran": "Քաջարան",
+        "agarak": "Ագարակ",
+        "yeghegnadzor": "Եղեգնաձոր",
+        "vayk": "Վայք",
+        "jermuk": "Ջերմուկ"
       }
     },
     "stats": {
@@ -456,13 +490,13 @@
       "signInToSee": "Մուտք գործեք՝ գինը տեսնելու համար"
     },
     "status": {
-      "available": "Ազատ",
+      "available": "Հասանելի",
       "reserved": "Ամրագրված",
       "sold": "Վաճառված"
     },
     "availability": {
       "total": "Ընդամենը",
-      "available": "Ազատ",
+      "available": "Հասանելի",
       "reserved": "Ամրագրված",
       "sold": "Վաճառված",
       "summary": "Հասանելիություն",
@@ -1012,7 +1046,7 @@
       "noAccount": "Դեռ հաշիվ չունե՞ք",
       "registerLink": "Գրանցվել",
       "placeholders": {
-        "email": "john.doe@example.com",
+        "email": "john.smith@example.com",
         "password": "********"
       }
     },
@@ -1033,9 +1067,9 @@
       "loginLink": "Մուտք",
       "placeholders": {
         "firstName": "John",
-        "surname": "Doe",
+        "surname": "Smith",
         "phone": "37491111222",
-        "email": "john.doe@example.com",
+        "email": "john.smith@example.com",
         "password": "********",
         "confirmPassword": "********"
       }
@@ -1303,7 +1337,7 @@
       "follow_up_needed": "Հետևում",
       "apartment_selected": "Բնակարան ընտրված",
       "reserved": "Ամրագրված",
-      "converted": "Փոխարկված",
+      "converted": "Գնված",
       "closed": "Փակված",
       "lost": "Կորցրած"
     },
@@ -2156,8 +2190,11 @@
         "company": "Ընկերություն",
         "project": "Նախագիծ",
         "status": "Կարգավիճակ",
-        "sales": "Վաճառք"
+        "sales": "Վաճառք",
+        "price": "Գին"
       },
+      "price": "Գին",
+      "priceEmpty": "—",
       "sales": {
         "available": "Հասանելի",
         "reserved": "Ամրագրված",
@@ -2244,8 +2281,8 @@
         "placeholders": {
           "name": "Acme Partners",
           "adminFirstName": "John",
-          "adminSurname": "Doe",
-          "adminEmail": "john.doe@example.com",
+          "adminSurname": "Smith",
+          "adminEmail": "john.smith@example.com",
           "adminPhone": "+37491111222"
         },
         "submit": "Ստեղծել և ուղարկել հրավեր",
@@ -3820,7 +3857,7 @@
         "follow_up_needed": "Հետևում",
         "apartment_selected": "Բնակարան ընտրված",
         "reserved": "Ամրագրված",
-        "converted": "Կնքված",
+        "converted": "Գնված",
         "closed": "Փակված",
         "lost": "Կորած"
       },
@@ -3834,11 +3871,11 @@
         "cta": "+ Նոր գործարք",
         "title": "Նոր գործարք",
         "contactName": "Ամբողջական անուն",
-        "contactNamePlaceholder": "John Doe",
+        "contactNamePlaceholder": "John Smith",
         "contactPhone": "Հեռախոս",
         "contactPhonePlaceholder": "37491111222",
         "contactEmail": "Էլ․ փոստ",
-        "contactEmailPlaceholder": "john.doe@example.com",
+        "contactEmailPlaceholder": "john.smith@example.com",
         "project": "Նախագիծ",
         "projectOptional": "Առանց նախագծի",
         "note": "Նշում",
@@ -3874,6 +3911,10 @@
         "unassigned": "Չնշանակված",
         "saveAssignee": "Պահպանել",
         "saving": "Պահպանվում է…",
+        "paymentAmount": "Վճարված գումար",
+        "paymentAmountPlaceholder": "0",
+        "paymentNotePlaceholder": "Նշում (ոչ պարտադիր)",
+        "addPayment": "Գրանցել վճարում",
         "notesTitle": "Նշումներ",
         "notesEmpty": "Նշումներ դեռ չկան",
         "notePlaceholder": "Ներքին նշում…",
@@ -3902,6 +3943,7 @@
         "loadingApartments": "Բնակարանները բեռնվում են…",
         "linkApartmentAction": "Կցել բնակարան",
         "linkSuccess": "Բնակարանը կցված է",
+        "oneApartmentHint": "Այս գործարքին արդեն կցված է բնակարան։ Ապակցեք այն՝ այլ բնակարան ընտրելու համար։",
         "primary": "Հիմնական",
         "linkTypes": {
           "interest": "Հետաքրքրություն",
@@ -3913,7 +3955,11 @@
         "requestsEmpty": "Հայտեր դեռ չկան",
         "errors": {
           "generic": "Ինչ-որ սխալ տեղի ունեցավ։ Կրկին փորձեք։",
-          "unlinkBlocked": "Հնարավոր չէ ապակցել․ կարգավիճակը պահանջում է կցված բնակարան։"
+          "invalidPaymentAmount": "Մուտքագրեք ճիշտ գումար (նվազագույնը 0.01)։",
+          "unlinkBlocked": "Հնարավոր չէ ապակցել․ կարգավիճակը պահանջում է կցված բնակարան։",
+          "reservedConflict": "Այս բնակարանը արդեն ամրագրված է այլ գործարքով։",
+          "alreadySold": "Այս բնակարանը արդեն վաճառված է։",
+          "alreadyLinked": "Այս գործարքին արդեն կցված է բնակարան։"
         },
         "unlinkApartment": "Ապակցել",
         "unlinkConfirm": "Ապակցե՞լ բնակարան {apartment}-ը այս գործարքից",

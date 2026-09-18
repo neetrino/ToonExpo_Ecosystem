@@ -2,6 +2,12 @@ import type { PublicPartnerDetail } from '@toonexpo/contracts';
 import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 
+import {
+  CATALOG_OVERLAY_HERO_BODY_CLASS,
+  CATALOG_OVERLAY_HERO_COPY_WIDTH_CLASS,
+  CATALOG_OVERLAY_HERO_SCRIM_CLASS,
+  CATALOG_OVERLAY_HERO_TITLE_CLASS,
+} from '@/features/catalog/constants/catalog-overlay-hero';
 import { PARTNER_DEMO_PHOTO_SRC } from '@/features/catalog/constants/partner-media';
 import { PartnerTypeLabel } from '@/features/partners/components/partner-type-label';
 import { cn } from '@/shared/ui/cn';
@@ -30,7 +36,7 @@ export const PartnerDetailHero = async ({ partner }: PartnerDetailHeroProps) => 
           className="object-cover object-center"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-ink/15 to-ink/25" />
+        <div className={CATALOG_OVERLAY_HERO_SCRIM_CLASS} />
       </div>
 
       <div
@@ -39,7 +45,12 @@ export const PartnerDetailHero = async ({ partner }: PartnerDetailHeroProps) => 
           'pt-[clamp(6.25rem,4.75rem+3.5vw,9.5rem)] pb-[clamp(2.5rem,2rem+2vw,4rem)]',
         )}
       >
-        <div className="flex max-w-3xl flex-col gap-[clamp(0.75rem,0.4rem+1.2vw,1.25rem)]">
+        <div
+          className={cn(
+            'flex flex-col gap-[clamp(0.75rem,0.4rem+1.2vw,1.25rem)]',
+            CATALOG_OVERLAY_HERO_COPY_WIDTH_CLASS,
+          )}
+        >
           <p
             className={cn(
               'font-bold uppercase text-on-dark',
@@ -50,15 +61,8 @@ export const PartnerDetailHero = async ({ partner }: PartnerDetailHeroProps) => 
             <PartnerTypeLabel type={partner.type} />
           </p>
 
-          <h1
-            className={cn(
-              'inline-flex flex-wrap items-center gap-3',
-              'font-brand font-bold text-on-dark',
-              'text-[clamp(2rem,1.05rem+3.8vw,3.75rem)]',
-              'leading-none tracking-[-0.025em]',
-            )}
-          >
-            <span className="text-balance">{partner.name}</span>
+          <h1 className={cn('flex flex-wrap items-center gap-3', CATALOG_OVERLAY_HERO_TITLE_CLASS)}>
+            <span className="min-w-0 break-words text-balance">{partner.name}</span>
             {partner.featured ? (
               <span
                 className={cn(
@@ -76,7 +80,7 @@ export const PartnerDetailHero = async ({ partner }: PartnerDetailHeroProps) => 
               aria-label={tCatalog('detail.mortgageRate')}
               className={cn(
                 'font-brand font-bold text-on-dark',
-                'text-[clamp(1.5rem,1.1rem+1.6vw,2.25rem)]',
+                'text-[clamp(1.25rem,1rem+1.1vw,1.75rem)]',
                 'leading-none tracking-[-0.02em]',
               )}
             >
@@ -84,14 +88,7 @@ export const PartnerDetailHero = async ({ partner }: PartnerDetailHeroProps) => 
             </p>
           ) : null}
 
-          <p
-            className={cn(
-              'max-w-xl text-on-dark/95',
-              'text-[clamp(0.9375rem,0.82rem+0.45vw,1.125rem)]',
-              'leading-[1.55]',
-              'text-pretty',
-            )}
-          >
+          <p className={CATALOG_OVERLAY_HERO_BODY_CLASS}>
             {partner.shortDescription ?? tCatalog('metaFallback', { name: partner.name })}
           </p>
         </div>

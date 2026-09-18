@@ -6,14 +6,19 @@ import type {
   CrmDealDetail,
   CrmDealListItem,
   CrmNoteItem,
+  CrmPaymentItem,
   CrmRequestHistoryItem,
 } from '@toonexpo/contracts';
-import type { CrmDealStatus, RequestSource } from '@toonexpo/db';
+import type { CrmDealStatus, Prisma, RequestSource } from '@toonexpo/db';
 
+import { CRM_DEFAULT_PAYMENT_CURRENCY } from '../crm.constants.js';
 import { mapDealStatusToBuyerFacing } from '../status/deal-status.transitions.js';
 
 const toIso = (value: Date | null | undefined): string | null =>
   value == null ? null : value.toISOString();
+
+const decimalToString = (value: Prisma.Decimal | null | undefined): string | null =>
+  value == null ? null : value.toString();
 
 type BuyerProfileRow = {
   id: string;
@@ -104,13 +109,38 @@ export const mapApartmentLinkItem = (row: {
   linkType: CrmApartmentLinkItem['linkType'];
   isPrimary: boolean;
   createdAt: Date;
-  apartment: { number: string } | null;
+  priceAtLink: Prisma.Decimal | null;
+  apartment: {
+    number: string;
+    price: Prisma.Decimal | null;
+    priceCurrency: string;
+  } | null;
 }): CrmApartmentLinkItem => ({
   id: row.id,
   apartmentId: row.apartmentId,
   apartmentNumber: row.apartment?.number ?? null,
   linkType: row.linkType,
   isPrimary: row.isPrimary,
+  price: decimalToString(row.apartment?.price) ?? decimalToString(row.priceAtLink),
+  priceCurrency: row.apartment?.priceCurrency ?? CRM_DEFAULT_PAYMENT_CURRENCY,
+  createdAt: row.createdAt.toISOString(),
+});
+
+export const mapPaymentItem = (row: {
+  id: string;
+  amount: Prisma.Decimal;
+  currency: string;
+  note: string | null;
+  createdByUserId: string;
+  createdAt: Date;
+  createdBy: { name: string };
+}): CrmPaymentItem => ({
+  id: row.id,
+  amount: row.amount.toString(),
+  currency: row.currency,
+  note: row.note,
+  createdByUserId: row.createdByUserId,
+  createdByName: row.createdBy.name,
   createdAt: row.createdAt.toISOString(),
 });
 
@@ -165,6 +195,7 @@ export const mapDealDetail = (
     primaryRequestId: string | null;
     requests: Parameters<typeof mapRequestHistoryItem>[0][];
     apartmentLinks: Parameters<typeof mapApartmentLinkItem>[0][];
+    payments: Parameters<typeof mapPaymentItem>[0][];
     notes: Parameters<typeof mapNoteItem>[0][];
     activities: Parameters<typeof mapActivityItem>[0][];
   },
@@ -175,6 +206,7 @@ export const mapDealDetail = (
   primaryRequestId: row.primaryRequestId,
   requests: row.requests.map(mapRequestHistoryItem),
   apartments: row.apartmentLinks.map(mapApartmentLinkItem),
+  payments: row.payments.map(mapPaymentItem),
   notes: row.notes.map(mapNoteItem),
   activities: row.activities.map(mapActivityItem),
 });

@@ -1,6 +1,6 @@
 'use client';
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type {
   CreateReadinessAssessmentBody,
   CreateReadinessInternalNoteBody,
@@ -44,6 +44,7 @@ export const useAdminReadinessAssessmentsQuery = (params: ListReadinessAssessmen
   useQuery({
     queryKey: [...ADMIN_READINESS_ASSESSMENTS_QUERY_KEY, params],
     queryFn: () => listAdminReadinessAssessments(params),
+    placeholderData: keepPreviousData,
   });
 
 export const useAdminReadinessAssessmentQuery = (id: string) =>

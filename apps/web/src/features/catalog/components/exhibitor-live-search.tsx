@@ -3,8 +3,7 @@
 import { Search } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
-import { EXHIBITOR_SEARCH_DEBOUNCE_MS } from '@/features/catalog/constants';
-import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
+import { useDebouncedSearch } from '@/shared/hooks/use-debounced-search';
 import { cn } from '@/shared/ui/cn';
 import { Input } from '@/shared/ui/input';
 
@@ -27,9 +26,7 @@ export const ExhibitorLiveSearch = ({
   const isUserInputRef = useRef(false);
   const onSearchRef = useRef(onSearch);
   const [search, setSearch] = useState(q ?? '');
-  const trimmedSearch = search.trim();
-  const debouncedSearch = useDebouncedValue(trimmedSearch, EXHIBITOR_SEARCH_DEBOUNCE_MS);
-  const activeSearch = trimmedSearch.length === 0 ? '' : debouncedSearch;
+  const activeSearch = useDebouncedSearch(search);
   const urlQ = q ?? '';
 
   onSearchRef.current = onSearch;

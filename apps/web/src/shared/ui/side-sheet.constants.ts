@@ -16,7 +16,7 @@ export const SIDE_SHEET_COMPACT_MAX_WIDTH_PX = 420;
 export const SIDE_SHEET_COMFORTABLE_MAX_WIDTH_PX = 500;
 
 /** Wider sheet (px) — company profile with contact fields. */
-export const SIDE_SHEET_WIDE_MAX_WIDTH_PX = 640;
+export const SIDE_SHEET_WIDE_MAX_WIDTH_PX = 720;
 
 /** Panel slide duration (ms) — matches `--duration-slow` for a softer glide. */
 export const SIDE_SHEET_PANEL_TRANSITION_MS = 400;

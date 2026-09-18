@@ -11,6 +11,12 @@ export const CRM_NOTE_MAX_LENGTH = 4000;
 export const CRM_ACTIVITY_TITLE_MAX_LENGTH = 200;
 export const CRM_LOST_REASON_MAX_LENGTH = 500;
 export const CRM_CONTACT_NAME_MAX_LENGTH = 200;
+/** Mirrors API CRM_PAYMENT_AMOUNT_MIN. */
+export const CRM_PAYMENT_AMOUNT_MIN = 0.01;
+/** Mirrors API CRM_PAYMENT_AMOUNT_MAX (Decimal 14,2). */
+export const CRM_PAYMENT_AMOUNT_MAX = 999_999_999_999.99;
+/** Mirrors API CRM_PAYMENT_NOTE_MAX_LENGTH. */
+export const CRM_PAYMENT_NOTE_MAX_LENGTH = 500;
 
 export const CRM_DEAL_STATUSES = [
   "new_request",

@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
+import { AdminApartmentPriceStat } from '@/features/admin/components/admin-apartment-price';
 import { AdminFeaturedOnHomeButton } from '@/features/admin/components/admin-featured-on-home-button';
 import {
   AdminInventoryCardMetaRow,
@@ -154,22 +155,25 @@ export const AdminApartmentCard = ({
         </AdminInventoryCardMetaRow>
       </div>
 
-      <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-border pt-3">
-        <ApartmentSalesStatusBadge status={salesStatus} label={t(`sales.${salesStatus}`)} />
-        {showFeatured ? (
-          <div className={cn('ml-auto', LIST_CARD_FOREGROUND_CLASS)}>
-            <AdminFeaturedOnHomeButton
-              featuredOnHome={apartment.featuredOnHome}
-              limitLabel={tFeatured('apartmentLimit', { count: HOME_FEATURED_APARTMENT_LIMIT })}
-              onToggle={async (next) =>
-                featuredMutation.mutateAsync({
-                  apartmentId: apartment.id,
-                  featuredOnHome: next,
-                })
-              }
-            />
-          </div>
-        ) : null}
+      <div className="mt-auto flex flex-col gap-3 border-t border-border pt-3">
+        <AdminApartmentPriceStat apartment={apartment} />
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+          <ApartmentSalesStatusBadge status={salesStatus} label={t(`sales.${salesStatus}`)} />
+          {showFeatured ? (
+            <div className={cn('ml-auto', LIST_CARD_FOREGROUND_CLASS)}>
+              <AdminFeaturedOnHomeButton
+                featuredOnHome={apartment.featuredOnHome}
+                limitLabel={tFeatured('apartmentLimit', { count: HOME_FEATURED_APARTMENT_LIMIT })}
+                onToggle={async (next) =>
+                  featuredMutation.mutateAsync({
+                    apartmentId: apartment.id,
+                    featuredOnHome: next,
+                  })
+                }
+              />
+            </div>
+          ) : null}
+        </div>
       </div>
     </article>
   );

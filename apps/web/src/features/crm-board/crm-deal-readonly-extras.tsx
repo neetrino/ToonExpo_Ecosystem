@@ -7,17 +7,18 @@ import { formatBuyerDateTime } from '@/features/buyer/utils/format-datetime';
 
 type CrmDealReadonlyExtrasProps = {
   deal: CrmDealDetail;
+  variant: 'deal' | 'notes';
 };
 
 /**
- * Read-only apartments / notes / activities for Admin CRM sheet.
+ * Read-only apartments (deal tab) or notes / activities (notes tab).
  */
-export const CrmDealReadonlyExtras = ({ deal }: CrmDealReadonlyExtrasProps) => {
+export const CrmDealReadonlyExtras = ({ deal, variant }: CrmDealReadonlyExtrasProps) => {
   const t = useTranslations('CrmBoard');
   const locale = useLocale();
 
-  return (
-    <div className="flex flex-col gap-4">
+  if (variant === 'deal') {
+    return (
       <section className="rounded-sm border border-border p-3">
         <h3 className="mb-2 text-sm font-semibold text-ink">{t('apartmentsTitle')}</h3>
         {deal.apartments.length === 0 ? (
@@ -32,7 +33,11 @@ export const CrmDealReadonlyExtras = ({ deal }: CrmDealReadonlyExtrasProps) => {
           </ul>
         )}
       </section>
+    );
+  }
 
+  return (
+    <div className="flex flex-col gap-4">
       <section className="rounded-sm border border-border p-3">
         <h3 className="mb-2 text-sm font-semibold text-ink">{t('notesTitle')}</h3>
         {deal.notes.length === 0 ? (
@@ -50,7 +55,6 @@ export const CrmDealReadonlyExtras = ({ deal }: CrmDealReadonlyExtrasProps) => {
           </ul>
         )}
       </section>
-
       <section className="rounded-sm border border-border p-3">
         <h3 className="mb-2 text-sm font-semibold text-ink">{t('activitiesTitle')}</h3>
         {deal.activities.length === 0 ? (

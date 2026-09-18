@@ -13,7 +13,10 @@ import { cascadePublishProjectInventory } from '../utils/ensure-published-invent
 import { groupPortalTranslations } from '../utils/group-translations.js';
 import { requireOwnedProject } from '../utils/ownership.js';
 import { buildProjectSlug } from '../utils/slug.js';
-import { upsertTranslations } from '../utils/upsert-translations.js';
+import {
+  upsertTranslations,
+  type TranslationFieldPayload,
+} from '../utils/upsert-translations.js';
 import type { CreatePortalProjectDto } from '../dto/create-portal-project.dto.js';
 import type { UpdatePortalProjectDto } from '../dto/update-portal-project.dto.js';
 import type { UpdatePortalPublicationDto } from '../dto/update-portal-publication.dto.js';
@@ -25,7 +28,19 @@ const PROJECT_TRANSLATION_FIELDS = [
   TRANSLATION_FIELD.fullDescription,
   TRANSLATION_FIELD.locationText,
   TRANSLATION_FIELD.district,
+  TRANSLATION_FIELD.projectType,
 ] as const;
+
+const toProjectTranslationFields = (
+  translations: NonNullable<CreatePortalProjectDto['translations']>,
+): TranslationFieldPayload => ({
+  [TRANSLATION_FIELD.name]: translations.name,
+  [TRANSLATION_FIELD.shortDescription]: translations.shortDescription,
+  [TRANSLATION_FIELD.fullDescription]: translations.fullDescription,
+  [TRANSLATION_FIELD.locationText]: translations.locationText,
+  [TRANSLATION_FIELD.district]: translations.district,
+  [TRANSLATION_FIELD.projectType]: translations.projectType,
+});
 
 const PROJECT_MEDIA_SELECT = {
   id: true,
@@ -151,13 +166,7 @@ export class PortalProjectsService {
       await upsertTranslations(this.prisma.db, {
         entityType: TRANSLATION_ENTITY.project,
         entityId: project.id,
-        fields: {
-          [TRANSLATION_FIELD.name]: dto.translations.name,
-          [TRANSLATION_FIELD.shortDescription]: dto.translations.shortDescription,
-          [TRANSLATION_FIELD.fullDescription]: dto.translations.fullDescription,
-          [TRANSLATION_FIELD.locationText]: dto.translations.locationText,
-          [TRANSLATION_FIELD.district]: dto.translations.district,
-        },
+        fields: toProjectTranslationFields(dto.translations),
         updatedByUserId: userId,
       });
     }
@@ -212,13 +221,7 @@ export class PortalProjectsService {
       await upsertTranslations(this.prisma.db, {
         entityType: TRANSLATION_ENTITY.project,
         entityId: project.id,
-        fields: {
-          [TRANSLATION_FIELD.name]: dto.translations.name,
-          [TRANSLATION_FIELD.shortDescription]: dto.translations.shortDescription,
-          [TRANSLATION_FIELD.fullDescription]: dto.translations.fullDescription,
-          [TRANSLATION_FIELD.locationText]: dto.translations.locationText,
-          [TRANSLATION_FIELD.district]: dto.translations.district,
-        },
+        fields: toProjectTranslationFields(dto.translations),
         updatedByUserId: userId,
       });
     }

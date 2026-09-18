@@ -122,8 +122,14 @@ export class AdminCrmDealsService {
         assignedUser: { select: { id: true, name: true } },
         requests: { orderBy: { createdAt: 'asc' } },
         apartmentLinks: {
-          include: { apartment: { select: { number: true } } },
+          include: {
+            apartment: { select: { number: true, price: true, priceCurrency: true } },
+          },
           orderBy: { createdAt: 'asc' },
+        },
+        payments: {
+          include: { createdBy: { select: { name: true } } },
+          orderBy: { createdAt: 'desc' },
         },
         notes: {
           include: { author: { select: { name: true } } },

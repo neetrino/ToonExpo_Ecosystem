@@ -52,9 +52,6 @@ export const adminProjectsQueryKey = (params: {
   search?: string;
 }) => [...ADMIN_PROJECTS_QUERY_KEY, params] as const;
 
-/** Debounce before the admin projects search hits the API. */
-export const ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS = 300;
-
 export const adminProjectScopeQueryKey = (projectId: string) =>
   [...ADMIN_PROJECTS_QUERY_KEY, projectId, 'scope'] as const;
 

@@ -52,7 +52,7 @@ export const ReadinessCategoriesPage = () => {
     return rows.filter((category) => matchesCategorySearch(category, trimmedSearch));
   }, [query.data?.data, trimmedSearch]);
 
-  if (query.isLoading) {
+  if (query.isLoading && !query.data) {
     return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
   }
 

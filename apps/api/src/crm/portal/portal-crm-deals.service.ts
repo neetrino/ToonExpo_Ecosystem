@@ -127,7 +127,7 @@ export class PortalCrmDealsService {
   }
 
   /**
-   * Permanently deletes a company CRM deal (notes / activities / apartment links cascade).
+   * Permanently deletes a company CRM deal (notes / activities / payments / apartment links cascade).
    */
   async delete(member: CompanyMemberContext, dealId: string): Promise<void> {
     const deal = await this.prisma.db.crmDeal.findFirst({
@@ -228,8 +228,14 @@ export class PortalCrmDealsService {
         assignedUser: { select: { id: true, name: true } },
         requests: { orderBy: { createdAt: 'asc' } },
         apartmentLinks: {
-          include: { apartment: { select: { number: true } } },
+          include: {
+            apartment: { select: { number: true, price: true, priceCurrency: true } },
+          },
           orderBy: { createdAt: 'asc' },
+        },
+        payments: {
+          include: { createdBy: { select: { name: true } } },
+          orderBy: { createdAt: 'desc' },
         },
         notes: {
           include: { author: { select: { name: true } } },

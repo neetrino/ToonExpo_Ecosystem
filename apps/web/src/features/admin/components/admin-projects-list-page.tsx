@@ -3,19 +3,17 @@
 import { FolderOpen, SearchX, FolderKanban } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { AdminCreateProjectSheet } from '@/features/admin/components/admin-create-project-sheet';
 import {
   AdminProjectBuildingsSheet,
   type AdminProjectBuildingsTarget,
 } from '@/features/admin/components/admin-project-buildings-sheet';
-import { AdminProjectsResultsSkeleton } from '@/features/admin/components/admin-projects-results-skeleton';
 import { AdminProjectsTable } from '@/features/admin/components/admin-projects-table';
 import {
   ADMIN_COMPANIES_MAX_PAGE_SIZE,
   ADMIN_INVENTORY_DEFAULT_PAGE_SIZE,
-  ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS,
   ADMIN_VIEW_MODE_KEYS,
 } from '@/features/admin/constants';
 import {
@@ -25,7 +23,7 @@ import {
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
 import { HOME_FEATURED_PROJECT_LIMIT } from '@/features/catalog/constants/home-featured';
 import { usePathname, useRouter } from '@/i18n/navigation';
-import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
+import { useDebouncedSearch } from '@/shared/hooks/use-debounced-search';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
@@ -78,10 +76,7 @@ export const AdminProjectsListPage = () => {
   const [buildingsProject, setBuildingsProject] = useState<AdminProjectBuildingsTarget | null>(
     null,
   );
-  const trimmedSearch = search.trim();
-  const debouncedSearch = useDebouncedValue(trimmedSearch, ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS);
-  /* Typing is debounced; clearing applies at once so the full list returns immediately. */
-  const activeSearch = trimmedSearch.length === 0 ? '' : debouncedSearch;
+  const activeSearch = useDebouncedSearch(search);
 
   const projectsQuery = useAdminProjectsQuery({
     page,
@@ -90,16 +85,6 @@ export const AdminProjectsListPage = () => {
     ...(activeSearch ? { search: activeSearch } : {}),
   });
   const companiesQuery = useAdminBuilderCompaniesQuery(ADMIN_COMPANIES_MAX_PAGE_SIZE);
-
-  /*
-   * Kept results are the previous term's rows, so track which term the rendered
-   * data belongs to: until it matches the input, the list must not be shown.
-   */
-  const loadedSearchRef = useRef(activeSearch);
-  if (!projectsQuery.isPlaceholderData && projectsQuery.data) {
-    loadedSearchRef.current = activeSearch;
-  }
-  const isSearchSettling = loadedSearchRef.current !== trimmedSearch;
 
   const builderCompanies = useMemo(() => {
     const companies = companiesQuery.data?.data ?? [];
@@ -137,7 +122,10 @@ export const AdminProjectsListPage = () => {
     [builderCompanies, t],
   );
 
-  if (projectsQuery.isLoading || companiesQuery.isLoading) {
+  if (
+    (projectsQuery.isLoading && !projectsQuery.data) ||
+    (companiesQuery.isLoading && !companiesQuery.data)
+  ) {
     return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
   }
 
@@ -194,9 +182,7 @@ export const AdminProjectsListPage = () => {
         }
       />
 
-      {isSearchSettling ? (
-        <AdminProjectsResultsSkeleton label={t('loading')} viewMode={effectiveViewMode} />
-      ) : response.data.length === 0 ? (
+      {response.data.length === 0 ? (
         <div className="flex min-h-72 items-center justify-center">
           <EmptyState
             icon={activeSearch ? SearchX : FolderOpen}

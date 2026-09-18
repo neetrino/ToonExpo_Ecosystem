@@ -78,6 +78,7 @@ model User {
   createdCrmActivities CrmFollowUpActivity[] @relation("CrmActivityCreatedBy")
   assignedCrmActivities CrmFollowUpActivity[] @relation("CrmActivityAssignee")
   createdApartmentLinks CrmDealApartmentLink[] @relation("CrmApartmentLinkCreatedBy")
+  createdCrmPayments    CrmDealPayment[]       @relation("CrmPaymentCreatedBy")
   evaluatedReadinessAssessments ReadinessAssessment[] @relation("ReadinessAssessmentEvaluator")
   evaluatedReadinessScores      ReadinessScore[]      @relation("ReadinessScoreEvaluator")
   createdReadinessRecommendations ReadinessRecommendation[] @relation("ReadinessRecommendationCreator")

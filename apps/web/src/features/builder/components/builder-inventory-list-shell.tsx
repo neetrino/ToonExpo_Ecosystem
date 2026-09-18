@@ -126,23 +126,14 @@ export const BuilderInventoryListShell = ({
     ];
   }, [buildingOptions, showBuildingFilter, tFilters]);
 
-  if (isLoading || (showBuildingFilter && buildingsQuery.isLoading)) {
-    return <p className="text-sm text-ink-secondary">{loading}</p>;
-  }
-
-  if (isError) {
-    return (
-      <p role="alert" className="text-sm text-danger">
-        {error}
-      </p>
-    );
-  }
+  const filtersLoading = showBuildingFilter && buildingsQuery.isLoading && !buildingsQuery.data;
+  const showInitialLoading = (isLoading || filtersLoading) && total === 0 && !isError;
 
   return (
     <div className="flex flex-col gap-6">
       <ListPageHeader
         title={title}
-        subtitle={subtitle}
+        subtitle={showInitialLoading ? loading : subtitle}
         {...(icon ? { icon } : {})}
         search={search}
         searchPlaceholder={tCommon('searchPlaceholder')}
@@ -169,17 +160,27 @@ export const BuilderInventoryListShell = ({
         }
       />
 
-      {total === 0 ? <p className="text-sm text-ink-secondary">{empty}</p> : children}
+      {showInitialLoading ? (
+        <p className="text-sm text-ink-secondary">{loading}</p>
+      ) : isError ? (
+        <p role="alert" className="text-sm text-danger">
+          {error}
+        </p>
+      ) : (
+        <>
+          {total === 0 ? <p className="text-sm text-ink-secondary">{empty}</p> : children}
 
-      <CatalogPagination
-        page={page}
-        totalPages={totalPages}
-        previousHref={page > FIRST_PAGE ? buildListHref({ page: page - 1 }) : null}
-        nextHref={page < totalPages ? buildListHref({ page: page + 1 }) : null}
-        previousLabel={t('pagination.previous')}
-        nextLabel={t('pagination.next')}
-        ariaLabel={t('pagination.ariaLabel')}
-      />
+          <CatalogPagination
+            page={page}
+            totalPages={totalPages}
+            previousHref={page > FIRST_PAGE ? buildListHref({ page: page - 1 }) : null}
+            nextHref={page < totalPages ? buildListHref({ page: page + 1 }) : null}
+            previousLabel={t('pagination.previous')}
+            nextLabel={t('pagination.next')}
+            ariaLabel={t('pagination.ariaLabel')}
+          />
+        </>
+      )}
     </div>
   );
 };

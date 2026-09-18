@@ -135,7 +135,24 @@ export type CrmApartmentLinkItem = {
   apartmentNumber: string | null;
   linkType: CrmDealApartmentLinkType;
   isPrimary: boolean;
+  price: string | null;
+  priceCurrency: string;
   createdAt: string;
+};
+
+export type CrmPaymentItem = {
+  id: string;
+  amount: string;
+  currency: string;
+  note: string | null;
+  createdByUserId: string;
+  createdByName: string;
+  createdAt: string;
+};
+
+export type CreateCrmPaymentBody = {
+  amount: number;
+  note?: string;
 };
 
 export type CrmNoteItem = {
@@ -168,6 +185,7 @@ export type CrmDealDetail = CrmDealListItem & {
   primaryRequestId: string | null;
   requests: CrmRequestHistoryItem[];
   apartments: CrmApartmentLinkItem[];
+  payments: CrmPaymentItem[];
   notes: CrmNoteItem[];
   activities: CrmActivityItem[];
 };

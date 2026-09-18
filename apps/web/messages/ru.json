@@ -142,7 +142,7 @@
       "follow_up_needed": "Повторный контакт",
       "apartment_selected": "Квартира",
       "reserved": "Бронь",
-      "converted": "Выигран",
+      "converted": "Куплено",
       "closed": "Закрыт",
       "lost": "Потерян"
     },
@@ -151,6 +151,27 @@
       "builder_buyer_qr_scan": "QR строителя",
       "manual_builder_entry": "Вручную",
       "event_interaction": "Событие"
+    },
+    "tabs": {
+      "ariaLabel": "Разделы сделки",
+      "deal": "Сделка",
+      "payment": "Оплата",
+      "notes": "Заметки"
+    },
+    "payments": {
+      "noApartment": "Прикрепите квартиру, чтобы фиксировать платежи.",
+      "apartmentPrice": "Цена квартиры",
+      "paidTotal": "Оплачено",
+      "remaining": "Остаток",
+      "priceEmpty": "Цена по запросу",
+      "historyTitle": "История платежей",
+      "historyEmpty": "Платежей пока нет.",
+      "columns": {
+        "date": "Дата",
+        "amount": "Сумма",
+        "by": "Кто записал",
+        "note": "Заметка"
+      }
     }
   },
   "HomePage": {
@@ -204,8 +225,21 @@
         "yerevan": "Ереван",
         "gyumri": "Гюмри",
         "vanadzor": "Ванадзор",
-        "dilijan": "Дилижан",
-        "tsaghkadzor": "Цахкадзор"
+        "abovyan": "Абовян",
+        "kapan": "Капан",
+        "hrazdan": "Раздан",
+        "armavir": "Армавир",
+        "etchmiadzin": "Эчмиадзин",
+        "ijevan": "Иджеван",
+        "artashat": "Арташат",
+        "goris": "Горис",
+        "sisian": "Сисиан",
+        "meghri": "Мегри",
+        "qajaran": "Каджаран",
+        "agarak": "Агарак",
+        "yeghegnadzor": "Ехегнадзор",
+        "vayk": "Вайк",
+        "jermuk": "Джермук"
       }
     },
     "stats": {
@@ -1012,7 +1046,7 @@
       "noAccount": "Ещё нет аккаунта?",
       "registerLink": "Зарегистрироваться",
       "placeholders": {
-        "email": "john.doe@example.com",
+        "email": "john.smith@example.com",
         "password": "********"
       }
     },
@@ -1033,9 +1067,9 @@
       "loginLink": "Войти",
       "placeholders": {
         "firstName": "John",
-        "surname": "Doe",
+        "surname": "Smith",
         "phone": "37491111222",
-        "email": "john.doe@example.com",
+        "email": "john.smith@example.com",
         "password": "********",
         "confirmPassword": "********"
       }
@@ -1303,7 +1337,7 @@
       "follow_up_needed": "Нужен follow-up",
       "apartment_selected": "Квартира выбрана",
       "reserved": "Бронь",
-      "converted": "Конверсия",
+      "converted": "Куплено",
       "closed": "Закрыта",
       "lost": "Потеряна"
     },
@@ -2161,8 +2195,11 @@
         "company": "Компания",
         "project": "Проект",
         "status": "Статус",
-        "sales": "Продажи"
+        "sales": "Продажи",
+        "price": "Цена"
       },
+      "price": "Цена",
+      "priceEmpty": "—",
       "create": {
         "cta": "+ Добавить квартиры",
         "title": "Добавить квартиры",
@@ -2511,8 +2548,8 @@
         "placeholders": {
           "name": "Acme Partners",
           "adminFirstName": "John",
-          "adminSurname": "Doe",
-          "adminEmail": "john.doe@example.com",
+          "adminSurname": "Smith",
+          "adminEmail": "john.smith@example.com",
           "adminPhone": "+37491111222"
         },
         "submit": "Создать и отправить приглашение",
@@ -3820,7 +3857,7 @@
         "follow_up_needed": "Нужен follow-up",
         "apartment_selected": "Квартира выбрана",
         "reserved": "Бронь",
-        "converted": "Сделка",
+        "converted": "Куплено",
         "closed": "Закрыта",
         "lost": "Потеряна"
       },
@@ -3834,11 +3871,11 @@
         "cta": "+ Новая сделка",
         "title": "Новая сделка",
         "contactName": "Полное имя",
-        "contactNamePlaceholder": "John Doe",
+        "contactNamePlaceholder": "John Smith",
         "contactPhone": "Телефон",
         "contactPhonePlaceholder": "37491111222",
         "contactEmail": "Email",
-        "contactEmailPlaceholder": "john.doe@example.com",
+        "contactEmailPlaceholder": "john.smith@example.com",
         "project": "Проект",
         "projectOptional": "Без проекта",
         "note": "Заметка",
@@ -3867,13 +3904,17 @@
         "lostReason": "Причина потери",
         "lostReasonRequired": "Укажите причину потери",
         "apartmentRequired": "Сначала прикрепите квартиру",
-        "apartmentHint": "Для статусов «квартира выбрана», «бронь» и «сделка» нужна прикреплённая квартира.",
+        "apartmentHint": "Для статусов «квартира выбрана», «бронь» и «куплено» нужна прикреплённая квартира.",
         "saveStatus": "Обновить статус",
         "assigneeTitle": "Ответственный",
         "assignee": "Ответственный",
         "unassigned": "Не назначен",
         "saveAssignee": "Сохранить",
         "saving": "Сохранение…",
+        "paymentAmount": "Сумма оплаты",
+        "paymentAmountPlaceholder": "0",
+        "paymentNotePlaceholder": "Необязательная заметка",
+        "addPayment": "Записать платёж",
         "notesTitle": "Заметки",
         "notesEmpty": "Заметок пока нет",
         "notePlaceholder": "Внутренняя заметка…",
@@ -3902,6 +3943,7 @@
         "loadingApartments": "Загрузка квартир…",
         "linkApartmentAction": "Прикрепить квартиру",
         "linkSuccess": "Квартира прикреплена",
+        "oneApartmentHint": "У сделки уже есть квартира. Открепите её, чтобы выбрать другую.",
         "primary": "Основная",
         "linkTypes": {
           "interest": "Интерес",
@@ -3913,7 +3955,11 @@
         "requestsEmpty": "Заявок пока нет",
         "errors": {
           "generic": "Что-то пошло не так. Попробуйте ещё раз.",
-          "unlinkBlocked": "Нельзя открепить: статус сделки требует прикреплённую квартиру."
+          "invalidPaymentAmount": "Введите корректную сумму (минимум 0.01).",
+          "unlinkBlocked": "Нельзя открепить: статус сделки требует прикреплённую квартиру.",
+          "reservedConflict": "Эта квартира уже забронирована другой сделкой.",
+          "alreadySold": "Эта квартира уже продана.",
+          "alreadyLinked": "У этой сделки уже есть прикреплённая квартира."
         },
         "unlinkApartment": "Открепить",
         "unlinkConfirm": "Открепить квартиру {apartment} от этой сделки?",

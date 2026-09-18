@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
 import {
@@ -68,6 +68,7 @@ export const useExhibitorCatalogQuery = ({
   return useQuery({
     queryKey: exhibitorCatalogQueryKey(locale, filters.tab, filters.page, filters.q ?? ''),
     queryFn: () => loadExhibitorCatalog(filters, locale),
+    placeholderData: keepPreviousData,
     ...(seedInitial ? { initialData: initialCatalog } : {}),
   });
 };
