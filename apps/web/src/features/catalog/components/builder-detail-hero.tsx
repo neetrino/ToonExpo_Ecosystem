@@ -2,6 +2,7 @@ import type { BuilderDetail } from '@toonexpo/contracts';
 import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 
+import { CATALOG_HERO_CARD_DESCRIPTION_DESKTOP_CLASS } from '@/features/catalog/constants/catalog-hero-card';
 import { resolveBuilderHeroAddress } from '@/features/catalog/utils/resolve-builder-hero-address';
 import { resolvePublicAssetUrl } from '@/shared/lib/static-asset-url';
 import { cn } from '@/shared/ui/cn';
@@ -66,7 +67,7 @@ const BuilderHeroSummary = ({
         {name}
       </h1>
       {description ? (
-        <p className="mt-3 max-w-2xl text-lg leading-6 text-header-muted">{description}</p>
+        <p className={CATALOG_HERO_CARD_DESCRIPTION_DESKTOP_CLASS}>{description}</p>
       ) : null}
     </div>
   </div>
