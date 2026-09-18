@@ -252,7 +252,7 @@ export const CrmDealsListPage = () => {
         editSections={
           dealQuery.data ? (
             <div className="flex flex-col gap-4">
-              <div className="grid gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <CrmDealStatusControl deal={dealQuery.data} />
                 <CrmDealAssigneeControl deal={dealQuery.data} />
               </div>

@@ -92,7 +92,7 @@ export const CrmDealSheet = ({
         onClose={onClose}
         title={title}
         description={mode === 'readonly' ? t('readonlyHint') : undefined}
-        size="comfortable"
+        size="wide"
         escapeEnabled={!confirmDeleteOpen}
         headerActions={
           deal ? (
