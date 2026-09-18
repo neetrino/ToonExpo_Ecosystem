@@ -13,6 +13,11 @@ describe('crmApartmentAttachErrorKey', () => {
     expect(
       crmApartmentAttachErrorKey(new ApiError(400, 'Bad Request', 'Apartment is already sold')),
     ).toBe('alreadySold');
+    expect(
+      crmApartmentAttachErrorKey(
+        new ApiError(400, 'Bad Request', 'Deal already has a linked apartment'),
+      ),
+    ).toBe('alreadyLinked');
   });
 
   it('falls back to generic', () => {

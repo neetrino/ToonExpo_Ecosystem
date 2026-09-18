@@ -11,6 +11,8 @@ import {
 export const CRM_APARTMENT_RESERVED_BY_OTHER_DEAL =
   "Apartment is already reserved by another deal";
 export const CRM_APARTMENT_ALREADY_SOLD = "Apartment is already sold";
+export const CRM_DEAL_ALREADY_HAS_APARTMENT =
+  "Deal already has a linked apartment";
 
 export type CrmInventoryClient = PrismaClient | Prisma.TransactionClient;
 

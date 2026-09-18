@@ -1012,7 +1012,7 @@
       "noAccount": "Ещё нет аккаунта?",
       "registerLink": "Зарегистрироваться",
       "placeholders": {
-        "email": "john.doe@example.com",
+        "email": "john.smith@example.com",
         "password": "********"
       }
     },
@@ -1033,9 +1033,9 @@
       "loginLink": "Войти",
       "placeholders": {
         "firstName": "John",
-        "surname": "Doe",
+        "surname": "Smith",
         "phone": "37491111222",
-        "email": "john.doe@example.com",
+        "email": "john.smith@example.com",
         "password": "********",
         "confirmPassword": "********"
       }
@@ -2514,8 +2514,8 @@
         "placeholders": {
           "name": "Acme Partners",
           "adminFirstName": "John",
-          "adminSurname": "Doe",
-          "adminEmail": "john.doe@example.com",
+          "adminSurname": "Smith",
+          "adminEmail": "john.smith@example.com",
           "adminPhone": "+37491111222"
         },
         "submit": "Создать и отправить приглашение",
@@ -3837,11 +3837,11 @@
         "cta": "+ Новая сделка",
         "title": "Новая сделка",
         "contactName": "Полное имя",
-        "contactNamePlaceholder": "John Doe",
+        "contactNamePlaceholder": "John Smith",
         "contactPhone": "Телефон",
         "contactPhonePlaceholder": "37491111222",
         "contactEmail": "Email",
-        "contactEmailPlaceholder": "john.doe@example.com",
+        "contactEmailPlaceholder": "john.smith@example.com",
         "project": "Проект",
         "projectOptional": "Без проекта",
         "note": "Заметка",
@@ -3905,6 +3905,7 @@
         "loadingApartments": "Загрузка квартир…",
         "linkApartmentAction": "Прикрепить квартиру",
         "linkSuccess": "Квартира прикреплена",
+        "oneApartmentHint": "У сделки уже есть квартира. Открепите её, чтобы выбрать другую.",
         "primary": "Основная",
         "linkTypes": {
           "interest": "Интерес",
@@ -3918,7 +3919,8 @@
           "generic": "Что-то пошло не так. Попробуйте ещё раз.",
           "unlinkBlocked": "Нельзя открепить: статус сделки требует прикреплённую квартиру.",
           "reservedConflict": "Эта квартира уже забронирована другой сделкой.",
-          "alreadySold": "Эта квартира уже продана."
+          "alreadySold": "Эта квартира уже продана.",
+          "alreadyLinked": "У этой сделки уже есть прикреплённая квартира."
         },
         "unlinkApartment": "Открепить",
         "unlinkConfirm": "Открепить квартиру {apartment} от этой сделки?",

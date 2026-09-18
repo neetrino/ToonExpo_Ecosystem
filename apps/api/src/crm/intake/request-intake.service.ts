@@ -253,6 +253,15 @@ export class RequestIntakeService {
     if (!apartment) {
       return;
     }
+    const otherCount = await tx.crmDealApartmentLink.count({
+      where: {
+        crmDealId: dealId,
+        apartmentId: { not: context.apartmentId },
+      },
+    });
+    if (otherCount > 0) {
+      return;
+    }
     const linkData = toApartmentLinkCreateData({
       apartmentId: context.apartmentId,
       createdByUserId: context.createdByUserId ?? null,

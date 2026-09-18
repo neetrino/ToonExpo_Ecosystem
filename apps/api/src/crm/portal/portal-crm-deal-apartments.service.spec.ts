@@ -111,4 +111,13 @@ describe("PortalCrmDealApartmentsService", () => {
     );
     expect(transaction).not.toHaveBeenCalled();
   });
+
+  it("rejects a second apartment on the same deal", async () => {
+    linkCount.mockResolvedValue(1);
+
+    await expect(service.attach(MEMBER, "deal_1", "user_1", "apt_2")).rejects.toThrow(
+      "Deal already has a linked apartment",
+    );
+    expect(transaction).not.toHaveBeenCalled();
+  });
 });

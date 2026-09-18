@@ -1012,7 +1012,7 @@
       "noAccount": "Դեռ հաշիվ չունե՞ք",
       "registerLink": "Գրանցվել",
       "placeholders": {
-        "email": "john.doe@example.com",
+        "email": "john.smith@example.com",
         "password": "********"
       }
     },
@@ -1033,9 +1033,9 @@
       "loginLink": "Մուտք",
       "placeholders": {
         "firstName": "John",
-        "surname": "Doe",
+        "surname": "Smith",
         "phone": "37491111222",
-        "email": "john.doe@example.com",
+        "email": "john.smith@example.com",
         "password": "********",
         "confirmPassword": "********"
       }
@@ -2247,8 +2247,8 @@
         "placeholders": {
           "name": "Acme Partners",
           "adminFirstName": "John",
-          "adminSurname": "Doe",
-          "adminEmail": "john.doe@example.com",
+          "adminSurname": "Smith",
+          "adminEmail": "john.smith@example.com",
           "adminPhone": "+37491111222"
         },
         "submit": "Ստեղծել և ուղարկել հրավեր",
@@ -3837,11 +3837,11 @@
         "cta": "+ Նոր գործարք",
         "title": "Նոր գործարք",
         "contactName": "Ամբողջական անուն",
-        "contactNamePlaceholder": "John Doe",
+        "contactNamePlaceholder": "John Smith",
         "contactPhone": "Հեռախոս",
         "contactPhonePlaceholder": "37491111222",
         "contactEmail": "Էլ․ փոստ",
-        "contactEmailPlaceholder": "john.doe@example.com",
+        "contactEmailPlaceholder": "john.smith@example.com",
         "project": "Նախագիծ",
         "projectOptional": "Առանց նախագծի",
         "note": "Նշում",
@@ -3905,6 +3905,7 @@
         "loadingApartments": "Բնակարանները բեռնվում են…",
         "linkApartmentAction": "Կցել բնակարան",
         "linkSuccess": "Բնակարանը կցված է",
+        "oneApartmentHint": "Այս գործարքին արդեն կցված է բնակարան։ Ապակցեք այն՝ այլ բնակարան ընտրելու համար։",
         "primary": "Հիմնական",
         "linkTypes": {
           "interest": "Հետաքրքրություն",
@@ -3918,7 +3919,8 @@
           "generic": "Ինչ-որ սխալ տեղի ունեցավ։ Կրկին փորձեք։",
           "unlinkBlocked": "Հնարավոր չէ ապակցել․ կարգավիճակը պահանջում է կցված բնակարան։",
           "reservedConflict": "Այս բնակարանը արդեն ամրագրված է այլ գործարքով։",
-          "alreadySold": "Այս բնակարանը արդեն վաճառված է։"
+          "alreadySold": "Այս բնակարանը արդեն վաճառված է։",
+          "alreadyLinked": "Այս գործարքին արդեն կցված է բնակարան։"
         },
         "unlinkApartment": "Ապակցել",
         "unlinkConfirm": "Ապակցե՞լ բնակարան {apartment}-ը այս գործարքից",

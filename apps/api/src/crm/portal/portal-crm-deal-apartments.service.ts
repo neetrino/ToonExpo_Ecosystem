@@ -5,9 +5,13 @@ import type { CrmDealStatus } from "@toonexpo/db";
 import type { CompanyMemberContext } from "../../company/types/company-member-context.js";
 import { PrismaService } from "../../prisma/prisma.service.js";
 import { entityNotFound } from "../../portal/utils/access.js";
-import { CRM_STATUSES_REQUIRING_APARTMENT } from "../crm.constants.js";
+import {
+  CRM_MAX_LINKED_APARTMENTS_PER_DEAL,
+  CRM_STATUSES_REQUIRING_APARTMENT,
+} from "../crm.constants.js";
 import { mapApartmentLinkItem } from "../mappers/crm.mapper.js";
 import {
+  CRM_DEAL_ALREADY_HAS_APARTMENT,
   assertApartmentReservableByDeal,
   inventorySalesStatusForDeal,
   isApartmentInventorySynced,
@@ -36,6 +40,7 @@ export class PortalCrmDealApartmentsService {
   ): Promise<CrmApartmentLinkItem> {
     const deal = await this.requireCompanyDeal(member.companyId, dealId);
     const apartment = await this.loadOwnedApartment(member.companyId, apartmentId);
+    await this.assertSingleApartmentSlot(deal.id, apartment.id);
     const nextStatus = inventorySalesStatusForDeal(deal.status);
     if (!isApartmentInventorySynced(apartment, deal.id, nextStatus)) {
       assertApartmentReservableByDeal(apartment, deal.id);
@@ -70,6 +75,18 @@ export class PortalCrmDealApartmentsService {
     await this.prisma.db.$transaction((tx) =>
       persistDealApartmentDetach(tx, { dealId: deal.id, actorUserId, link }),
     );
+  }
+
+  private async assertSingleApartmentSlot(
+    dealId: string,
+    apartmentId: string,
+  ): Promise<void> {
+    const otherCount = await this.prisma.db.crmDealApartmentLink.count({
+      where: { crmDealId: dealId, apartmentId: { not: apartmentId } },
+    });
+    if (otherCount >= CRM_MAX_LINKED_APARTMENTS_PER_DEAL) {
+      throw new BadRequestException(CRM_DEAL_ALREADY_HAS_APARTMENT);
+    }
   }
 
   private async loadOwnedApartment(

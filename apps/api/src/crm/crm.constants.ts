@@ -57,3 +57,6 @@ export const CRM_STATUSES_REQUIRING_APARTMENT: readonly CrmDealStatus[] = [
   CrmDealStatus.reserved,
   CrmDealStatus.converted,
 ] as const;
+
+/** A CRM deal may hold only one apartment at a time. */
+export const CRM_MAX_LINKED_APARTMENTS_PER_DEAL = 1;

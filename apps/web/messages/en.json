@@ -1012,7 +1012,7 @@
       "noAccount": "No account yet?",
       "registerLink": "Create one",
       "placeholders": {
-        "email": "john.doe@example.com",
+        "email": "john.smith@example.com",
         "password": "********"
       }
     },
@@ -1033,9 +1033,9 @@
       "loginLink": "Sign in",
       "placeholders": {
         "firstName": "John",
-        "surname": "Doe",
+        "surname": "Smith",
         "phone": "37491111222",
-        "email": "john.doe@example.com",
+        "email": "john.smith@example.com",
         "password": "********",
         "confirmPassword": "********"
       }
@@ -2247,8 +2247,8 @@
         "placeholders": {
           "name": "Acme Partners",
           "adminFirstName": "John",
-          "adminSurname": "Doe",
-          "adminEmail": "john.doe@example.com",
+          "adminSurname": "Smith",
+          "adminEmail": "john.smith@example.com",
           "adminPhone": "+37491111222"
         },
         "submit": "Create & send invite",
@@ -4097,11 +4097,11 @@
         "cta": "+ New Deal",
         "title": "New deal",
         "contactName": "Full name",
-        "contactNamePlaceholder": "John Doe",
+        "contactNamePlaceholder": "John Smith",
         "contactPhone": "Phone",
         "contactPhonePlaceholder": "37491111222",
         "contactEmail": "Email",
-        "contactEmailPlaceholder": "john.doe@example.com",
+        "contactEmailPlaceholder": "john.smith@example.com",
         "project": "Project",
         "projectOptional": "No project",
         "note": "Note",
@@ -4165,6 +4165,7 @@
         "loadingApartments": "Loading apartments…",
         "linkApartmentAction": "Link apartment",
         "linkSuccess": "Apartment linked",
+        "oneApartmentHint": "This deal already has an apartment. Unlink it to choose another.",
         "primary": "Primary",
         "linkTypes": {
           "interest": "Interest",
@@ -4178,7 +4179,8 @@
           "generic": "Something went wrong. Please try again.",
           "unlinkBlocked": "Cannot unlink: deal status requires a linked apartment.",
           "reservedConflict": "This apartment is already reserved by another deal.",
-          "alreadySold": "This apartment is already sold."
+          "alreadySold": "This apartment is already sold.",
+          "alreadyLinked": "This deal already has a linked apartment."
         },
         "unlinkApartment": "Unlink",
         "unlinkConfirm": "Unlink apartment {apartment} from this deal?",

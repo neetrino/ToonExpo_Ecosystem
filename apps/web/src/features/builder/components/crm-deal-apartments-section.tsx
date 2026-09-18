@@ -116,6 +116,7 @@ export const CrmDealApartmentsSection = ({ deal }: CrmDealApartmentsSectionProps
   };
 
   const busy = attachMutation.isPending || detachMutation.isPending;
+  const hasLinkedApartment = deal.apartments.length > 0;
 
   return (
     <section className="flex flex-col gap-3 rounded-sm border border-border p-4">
@@ -156,47 +157,63 @@ export const CrmDealApartmentsSection = ({ deal }: CrmDealApartmentsSectionProps
         </ul>
       )}
 
-      <div className="grid grid-cols-2 gap-3">
-        <FormField id="link-project" label={t('linkProject')}>
-          <Select
-            id="link-project"
-            value={projectId}
-            aria-label={t('linkProject')}
-            onChange={(event) => {
-              setProjectId(event.target.value);
-              setApartmentId('');
-            }}
-          >
-            <option value="">{t('selectProject')}</option>
-            {(projectsQuery.data?.data ?? []).map((project) => (
-              <option key={project.id} value={project.id}>
-                {project.name}
-              </option>
-            ))}
-          </Select>
-        </FormField>
+      {hasLinkedApartment ? (
+        <p className="text-sm text-ink-muted">{t('oneApartmentHint')}</p>
+      ) : (
+        <>
+          <div className="grid grid-cols-2 gap-3">
+            <FormField id="link-project" label={t('linkProject')}>
+              <Select
+                id="link-project"
+                value={projectId}
+                aria-label={t('linkProject')}
+                onChange={(event) => {
+                  setProjectId(event.target.value);
+                  setApartmentId('');
+                }}
+              >
+                <option value="">{t('selectProject')}</option>
+                {(projectsQuery.data?.data ?? []).map((project) => (
+                  <option key={project.id} value={project.id}>
+                    {project.name}
+                  </option>
+                ))}
+              </Select>
+            </FormField>
 
-        <FormField id="link-apartment" label={t('linkApartment')}>
-          <Select
-            id="link-apartment"
-            value={apartmentId}
-            disabled={!projectId || loadingApartments}
-            aria-label={t('linkApartment')}
-            onChange={(event) => {
-              setApartmentId(event.target.value);
+            <FormField id="link-apartment" label={t('linkApartment')}>
+              <Select
+                id="link-apartment"
+                value={apartmentId}
+                disabled={!projectId || loadingApartments}
+                aria-label={t('linkApartment')}
+                onChange={(event) => {
+                  setApartmentId(event.target.value);
+                }}
+              >
+                <option value="">
+                  {loadingApartments ? t('loadingApartments') : t('selectApartment')}
+                </option>
+                {apartments.map((apartment) => (
+                  <option key={apartment.id} value={apartment.id}>
+                    {apartment.label}
+                  </option>
+                ))}
+              </Select>
+            </FormField>
+          </div>
+          <Button
+            type="button"
+            size="sm"
+            disabled={busy || !apartmentId}
+            onClick={() => {
+              void onLink();
             }}
           >
-            <option value="">
-              {loadingApartments ? t('loadingApartments') : t('selectApartment')}
-            </option>
-            {apartments.map((apartment) => (
-              <option key={apartment.id} value={apartment.id}>
-                {apartment.label}
-              </option>
-            ))}
-          </Select>
-        </FormField>
-      </div>
+            {attachMutation.isPending ? t('saving') : t('linkApartmentAction')}
+          </Button>
+        </>
+      )}
 
       {error ? (
         <p role="alert" className="text-sm text-danger">
@@ -205,16 +222,6 @@ export const CrmDealApartmentsSection = ({ deal }: CrmDealApartmentsSectionProps
       ) : null}
       {successToast}
 
-      <Button
-        type="button"
-        size="sm"
-        disabled={busy || !apartmentId}
-        onClick={() => {
-          void onLink();
-        }}
-      >
-        {attachMutation.isPending ? t('saving') : t('linkApartmentAction')}
-      </Button>
       <ConfirmDeleteModal
         open={pendingUnlink != null}
         message={
