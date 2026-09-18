@@ -9,11 +9,13 @@ import { useMemo, useState } from 'react';
 import { UsersTable } from '@/features/admin/components/users-table';
 import {
   ADMIN_INVENTORY_DEFAULT_PAGE_SIZE,
+  ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS,
   ADMIN_VIEW_MODE_KEYS,
 } from '@/features/admin/constants';
 import { useAdminUsersQuery } from '@/features/admin/hooks/use-admin-users';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
 import { usePathname, useRouter } from '@/i18n/navigation';
+import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import type { IntegratedSearchFilterConfig } from '@/shared/ui/integrated-search-filters.types';
 import { ListPageHeader } from '@/shared/ui/list-page-header';
@@ -21,6 +23,7 @@ import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
 const FILTER_ACCOUNT_TYPE_KEY = 'accountType';
 const FILTER_STATUS_KEY = 'status';
+const FIRST_PAGE = 1;
 
 const ACCOUNT_TYPES: AccountType[] = [
   'buyer',
@@ -33,8 +36,8 @@ const USER_STATUSES: UserStatus[] = ['invited', 'active', 'inactive', 'blocked']
 
 const parsePage = (raw: string | null): number => {
   const parsed = Number(raw);
-  if (!Number.isFinite(parsed) || parsed < 1) {
-    return 1;
+  if (!Number.isFinite(parsed) || parsed < FIRST_PAGE) {
+    return FIRST_PAGE;
   }
   return Math.floor(parsed);
 };
@@ -70,13 +73,17 @@ export const UsersListPage = () => {
     ADMIN_VIEW_MODE_KEYS.users,
   );
   const [search, setSearch] = useState('');
+  const trimmedSearch = search.trim();
+  const debouncedSearch = useDebouncedValue(trimmedSearch, ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS);
+  /* Typing is debounced; clearing applies at once so the full list returns immediately. */
+  const activeSearch = trimmedSearch.length === 0 ? '' : debouncedSearch;
 
   const usersQuery = useAdminUsersQuery({
     page,
     pageSize,
     ...(accountType ? { accountType } : {}),
     ...(status ? { status } : {}),
-    ...(search.trim() ? { search: search.trim() } : {}),
+    ...(activeSearch ? { search: activeSearch } : {}),
   });
 
   const buildListHref = (next: {
@@ -96,12 +103,19 @@ export const UsersListPage = () => {
     if (nextStatus) {
       params.set(FILTER_STATUS_KEY, nextStatus);
     }
-    if (nextPage > 1) {
+    if (nextPage > FIRST_PAGE) {
       params.set('page', String(nextPage));
     }
 
     const query = params.toString();
     return query.length > 0 ? `${pathname}?${query}` : pathname;
+  };
+
+  const handleSearchChange = (value: string): void => {
+    setSearch(value);
+    if (page > FIRST_PAGE) {
+      router.replace(buildListHref({ page: FIRST_PAGE }));
+    }
   };
 
   const filterConfigs = useMemo(
@@ -128,26 +142,15 @@ export const UsersListPage = () => {
     [t],
   );
 
-  if (usersQuery.isLoading) {
-    return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
-  }
-
-  if (usersQuery.isError || !usersQuery.data) {
-    return (
-      <p role="alert" className="text-sm text-danger">
-        {t('error')}
-      </p>
-    );
-  }
-
   const response = usersQuery.data;
+  const totalCount = response?.meta.total ?? 0;
 
   return (
     <div className="flex flex-col gap-6">
       <ListPageHeader
         icon={Users}
         title={t('title')}
-        subtitle={t('subtitle', { count: response.meta.total })}
+        subtitle={usersQuery.isLoading ? t('loading') : t('subtitle', { count: totalCount })}
         search={search}
         searchPlaceholder={t('filters.searchPlaceholder')}
         searchAriaLabel={tCommon('searchLabel')}
@@ -156,48 +159,56 @@ export const UsersListPage = () => {
           [FILTER_ACCOUNT_TYPE_KEY]: accountType ?? '',
           [FILTER_STATUS_KEY]: status ?? '',
         }}
-        onSearchChange={setSearch}
+        onSearchChange={handleSearchChange}
         onFilterChange={(key, value) => {
           if (key === FILTER_ACCOUNT_TYPE_KEY) {
             router.replace(
-              buildListHref({ page: 1, accountType: (value as AccountType | '') || '' }),
+              buildListHref({ page: FIRST_PAGE, accountType: (value as AccountType | '') || '' }),
             );
             return;
           }
           if (key === FILTER_STATUS_KEY) {
-            router.replace(buildListHref({ page: 1, status: (value as UserStatus | '') || '' }));
+            router.replace(
+              buildListHref({ page: FIRST_PAGE, status: (value as UserStatus | '') || '' }),
+            );
           }
         }}
         onClearAll={() => {
-          setSearch('');
-          router.replace(buildListHref({ page: 1, accountType: '', status: '' }));
+          handleSearchChange('');
+          router.replace(buildListHref({ page: FIRST_PAGE, accountType: '', status: '' }));
         }}
         actions={<ViewModeToggle value={viewMode} onChange={setViewMode} />}
       />
 
-      {response.data.length === 0 ? (
+      {usersQuery.isLoading ? null : usersQuery.isError || !response ? (
+        <p role="alert" className="text-sm text-danger">
+          {t('error')}
+        </p>
+      ) : response.data.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>
       ) : (
         <UsersTable users={response.data} viewMode={effectiveViewMode} />
       )}
 
-      <CatalogPagination
-        page={response.meta.page}
-        totalPages={response.meta.totalPages}
-        previousHref={
-          response.meta.page > 1
-            ? buildListHref({ page: response.meta.page - 1 })
-            : null
-        }
-        nextHref={
-          response.meta.page < response.meta.totalPages
-            ? buildListHref({ page: response.meta.page + 1 })
-            : null
-        }
-        previousLabel={t('pagination.previous')}
-        nextLabel={t('pagination.next')}
-        ariaLabel={t('pagination.ariaLabel')}
-      />
+      {response && !usersQuery.isLoading ? (
+        <CatalogPagination
+          page={response.meta.page}
+          totalPages={response.meta.totalPages}
+          previousHref={
+            response.meta.page > FIRST_PAGE
+              ? buildListHref({ page: response.meta.page - 1 })
+              : null
+          }
+          nextHref={
+            response.meta.page < response.meta.totalPages
+              ? buildListHref({ page: response.meta.page + 1 })
+              : null
+          }
+          previousLabel={t('pagination.previous')}
+          nextLabel={t('pagination.next')}
+          ariaLabel={t('pagination.ariaLabel')}
+        />
+      ) : null}
     </div>
   );
 };
