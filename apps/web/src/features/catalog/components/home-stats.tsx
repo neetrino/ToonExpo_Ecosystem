@@ -82,7 +82,7 @@ export const HomeStats = async () => {
               <div
                 key={stat.id}
                 className={cn(
-                  'row-span-3 grid min-w-0 grid-rows-subgrid px-0.5 py-3 text-center',
+                  'row-span-3 grid min-w-0 grid-rows-subgrid justify-items-center px-0.5 py-3 text-center',
                   'last:col-span-2 md:col-span-2 lg:col-span-1 lg:last:col-span-1',
                   index === TABLET_ROW_SIZE && 'md:col-start-2 lg:col-start-auto',
                 )}
@@ -90,16 +90,16 @@ export const HomeStats = async () => {
                 {/* Desktop: keep every label on one line so the 5-col bar stays even. */}
                 <p
                   className={cn(
-                    'self-end min-w-0 text-balance text-[10px] font-bold uppercase',
-                    'leading-snug tracking-[0.08em] text-canvas/50',
-                    'lg:whitespace-nowrap lg:leading-none lg:tracking-[0.04em]',
+                    'self-end max-w-full min-w-0 text-balance text-[10px] font-bold uppercase',
+                    'leading-snug tracking-[0.08em] -me-[0.08em] text-canvas/50',
+                    'lg:whitespace-nowrap lg:leading-none lg:tracking-[0.04em] lg:-me-[0.04em]',
                   )}
                 >
                   {stat.label}
                 </p>
                 <p
                   className={cn(
-                    'mt-1.5 self-start font-brand font-bold tracking-tight text-canvas tabular-nums',
+                    'mt-1.5 self-start font-brand font-bold tracking-normal text-canvas tabular-nums',
                     'text-[clamp(1rem,0.75rem+2.2vw,1.75rem)] leading-none',
                   )}
                 >
@@ -111,7 +111,7 @@ export const HomeStats = async () => {
                 </p>
                 <p
                   className={cn(
-                    'mt-1 text-balance text-xs font-medium leading-4',
+                    'mt-1 max-w-full text-balance text-xs font-medium leading-4 tracking-normal',
                     stat.tone === 'positive' ? 'text-stat-positive' : 'text-stat-caution',
                   )}
                 >
