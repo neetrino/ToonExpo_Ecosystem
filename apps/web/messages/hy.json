@@ -248,11 +248,11 @@
       "projectCountHint": "+18 այս ամիս",
       "apartmentCount": "Բնակարանների քանակ",
       "apartmentCountHint": "+240 այս շաբաթ",
-      "marketValue": "Շուկայի ընդհանուր արժեք (մլն)",
+      "marketValue": "Շուկայի արժեք (մլն)",
       "marketValueHint": "+4.2% տարեկան",
       "participantCount": "Մասնակիցների քանակ",
       "participantCountHint": "Աճող",
-      "avgMortgagePayment": "Միջին ամսական հիփոթեքային վճար",
+      "avgMortgagePayment": "Միջին հիփոթեքային վճար",
       "avgMortgagePaymentHint": "Կայուն"
     },
     "featured": {

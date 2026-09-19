@@ -87,10 +87,12 @@ export const HomeStats = async () => {
                   index === TABLET_ROW_SIZE && 'md:col-start-2 lg:col-start-auto',
                 )}
               >
+                {/* Desktop: keep every label on one line so the 5-col bar stays even. */}
                 <p
                   className={cn(
-                    'self-end text-balance text-[10px] font-bold uppercase leading-snug',
-                    'tracking-[0.08em] text-canvas/50',
+                    'self-end min-w-0 text-balance text-[10px] font-bold uppercase',
+                    'leading-snug tracking-[0.08em] text-canvas/50',
+                    'lg:whitespace-nowrap lg:leading-none lg:tracking-[0.04em]',
                   )}
                 >
                   {stat.label}

@@ -248,11 +248,11 @@
       "projectCountHint": "+18 за месяц",
       "apartmentCount": "Количество квартир",
       "apartmentCountHint": "+240 за неделю",
-      "marketValue": "Общая рыночная стоимость (млн)",
+      "marketValue": "Рыночная стоимость (млн)",
       "marketValueHint": "+4.2% г/г",
       "participantCount": "Количество участников",
       "participantCountHint": "Растёт",
-      "avgMortgagePayment": "Средний ежемесячный ипотечный платёж",
+      "avgMortgagePayment": "Средний ипотечный платёж",
       "avgMortgagePaymentHint": "Стабильно"
     },
     "featured": {
