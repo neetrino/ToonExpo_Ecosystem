@@ -2,6 +2,7 @@ import type {
   CompanyResponse,
   CompanySource,
   CompanyStatus,
+  CompanyTranslationsInput,
   CompanyType,
 } from '@toonexpo/contracts';
 
@@ -43,7 +44,10 @@ type CompanyRecord = {
 /**
  * Maps a persistence company record to the public API contract.
  */
-export const toCompanyResponse = (company: CompanyRecord): CompanyResponse => ({
+export const toCompanyResponse = (
+  company: CompanyRecord,
+  translations?: CompanyTranslationsInput,
+): CompanyResponse => ({
   id: company.id,
   name: company.name,
   description: company.description,
@@ -68,6 +72,7 @@ export const toCompanyResponse = (company: CompanyRecord): CompanyResponse => ({
   advertisingMaterialsUrl: company.advertisingMaterialsUrl,
   createdAt: company.createdAt.toISOString(),
   updatedAt: company.updatedAt.toISOString(),
+  ...(translations ? { translations } : {}),
 });
 
 type NullableStringPatch = {

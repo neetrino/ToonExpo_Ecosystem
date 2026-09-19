@@ -31,7 +31,7 @@ export const CompanyMediaFields = ({
   const t = useTranslations('Admin.companies.form');
 
   return (
-    <div className="grid min-h-0 items-start gap-4 sm:grid-cols-2">
+    <div className="grid min-h-0 min-w-0 items-start gap-4 sm:grid-cols-2 [&>*]:min-w-0">
       <Controller
         control={control}
         name="logoMediaId"

@@ -1,15 +1,20 @@
 import { describe, expect, it } from "vitest";
 
+import { emptyCompanyCopyValues } from "./company-copy-fields.schema";
 import { createCompanySchema } from "./create-company.schema";
 import { updateCompanySchema } from "./update-company.schema";
+
+const copyFields = {
+  ...emptyCompanyCopyValues(),
+  nameHy: "Glendale Hills",
+};
 
 describe("createCompanySchema", () => {
   it("accepts a valid provisioning payload", () => {
     const result = createCompanySchema.safeParse({
-      name: "Glendale Hills",
+      ...copyFields,
       type: "builder",
-      description: "Residential developer",
-      shortDescription: "",
+      descriptionHy: "Residential developer",
       adminName: "Anna Admin",
       adminEmail: "Anna@Builder.Example",
       adminPhone: "+37491111222",
@@ -23,10 +28,9 @@ describe("createCompanySchema", () => {
 
   it("allows empty optional phone and description", () => {
     const result = createCompanySchema.safeParse({
-      name: "Partner Co",
+      ...copyFields,
+      nameHy: "Partner Co",
       type: "partner",
-      description: "",
-      shortDescription: "",
       adminName: "Bob",
       adminEmail: "bob@example.com",
       adminPhone: "",
@@ -37,10 +41,9 @@ describe("createCompanySchema", () => {
 
   it("allows plus-only optional phone", () => {
     const result = createCompanySchema.safeParse({
-      name: "Partner Co",
+      ...copyFields,
+      nameHy: "Partner Co",
       type: "partner",
-      description: "",
-      shortDescription: "",
       adminName: "Bob",
       adminEmail: "bob@example.com",
       adminPhone: "+",
@@ -51,9 +54,9 @@ describe("createCompanySchema", () => {
 
   it("rejects invalid company type", () => {
     const result = createCompanySchema.safeParse({
-      name: "Bad Co",
+      ...copyFields,
+      nameHy: "Bad Co",
       type: "agency",
-      description: "",
       adminName: "Bob",
       adminEmail: "bob@example.com",
       adminPhone: "",
@@ -64,12 +67,25 @@ describe("createCompanySchema", () => {
 
   it("rejects invalid optional phone", () => {
     const result = createCompanySchema.safeParse({
-      name: "Bad Phone Co",
+      ...copyFields,
+      nameHy: "Bad Phone Co",
       type: "bank",
-      description: "",
       adminName: "Bob",
       adminEmail: "bob@example.com",
       adminPhone: "12",
+    });
+
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects empty Armenian name", () => {
+    const result = createCompanySchema.safeParse({
+      ...copyFields,
+      nameHy: "   ",
+      type: "builder",
+      adminName: "Anna Admin",
+      adminEmail: "anna@builder.example",
+      adminPhone: "",
     });
 
     expect(result.success).toBe(false);
@@ -79,9 +95,9 @@ describe("createCompanySchema", () => {
 describe("updateCompanySchema", () => {
   it("accepts a valid update payload", () => {
     const result = updateCompanySchema.safeParse({
-      name: "Updated Co",
-      description: "New copy",
-      shortDescription: "",
+      ...copyFields,
+      nameHy: "Updated Co",
+      descriptionHy: "New copy",
       status: "inactive",
       logoMediaId: "",
       coverMediaId: "",
@@ -102,8 +118,8 @@ describe("updateCompanySchema", () => {
 
   it("rejects empty name", () => {
     const result = updateCompanySchema.safeParse({
-      name: "   ",
-      description: "",
+      ...copyFields,
+      nameHy: "   ",
       status: "active",
     });
 
@@ -112,8 +128,8 @@ describe("updateCompanySchema", () => {
 
   it("rejects invalid status", () => {
     const result = updateCompanySchema.safeParse({
-      name: "Updated Co",
-      description: "",
+      ...copyFields,
+      nameHy: "Updated Co",
       status: "archived",
     });
 

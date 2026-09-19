@@ -110,7 +110,7 @@ export const listAdminCompanyProjects = (
 export type ListAdminProjectsParams = {
   page: number;
   pageSize: number;
-  companyId?: string;
+  companyId?: string | readonly string[];
   search?: string;
 };
 
@@ -136,7 +136,12 @@ export const listAdminProjects = (
     pageSize: String(params.pageSize),
   });
   if (params.companyId) {
-    query.set('companyId', params.companyId);
+    const ids = (Array.isArray(params.companyId) ? params.companyId : [params.companyId])
+      .map((id) => id.trim())
+      .filter((id) => id.length > 0);
+    if (ids.length > 0) {
+      query.set('companyId', ids.join(','));
+    }
   }
   const search = params.search?.trim();
   if (search) {

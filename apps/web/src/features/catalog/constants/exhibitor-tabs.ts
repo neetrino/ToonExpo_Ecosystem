@@ -6,6 +6,9 @@ export const EXHIBITOR_TAB_ALL = 'all' as const;
 /** Builders lead the typed exhibitors tabs; partner types follow. */
 export const EXHIBITOR_TAB_BUILDER = 'builder' as const;
 
+/** Catch-all partner type — always offered in the public filter. */
+export const EXHIBITOR_TAB_OTHER = 'other' as const;
+
 /** Sliding underline + scroll-into-view — matches `--duration-slow`. */
 export const EXHIBITOR_TAB_SLIDE_MS = 400;
 

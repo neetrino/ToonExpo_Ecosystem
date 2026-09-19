@@ -12,6 +12,12 @@ export const HOME_HERO_CROSSFADE_MS = 1_800;
 /** Max banners — keep in sync with API `HOME_HERO_MAX_SLIDES`. */
 export const HOME_HERO_MAX_SLIDES = 8;
 
+/** Max characters for the home hero H1 — keep in sync with API. */
+export const HOME_HERO_TITLE_MAX_LENGTH = 200;
+
+/** Max characters for the home hero subheadline — keep in sync with API. */
+export const HOME_HERO_SUBTITLE_MAX_LENGTH = 400;
+
 /** Mobile prev/next — compact so they sit in the gutter between stacked search fields. */
 export const HOME_HERO_NAV_MOBILE_BUTTON_CLASS = 'size-9';
 export const HOME_HERO_NAV_MOBILE_ICON_CLASS = 'size-4';

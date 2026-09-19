@@ -7,6 +7,11 @@ import { useMemo, useState } from 'react';
 
 import { AdminCreateProjectSheet } from '@/features/admin/components/admin-create-project-sheet';
 import {
+  decodeIntegratedFilterIds,
+  encodeIntegratedFilterIds,
+  parseIdListParam,
+} from '@/features/admin/components/admin-inventory-list-filters';
+import {
   AdminProjectBuildingsSheet,
   type AdminProjectBuildingsTarget,
 } from '@/features/admin/components/admin-project-buildings-sheet';
@@ -14,6 +19,7 @@ import { AdminProjectsTable } from '@/features/admin/components/admin-projects-t
 import {
   ADMIN_COMPANIES_MAX_PAGE_SIZE,
   ADMIN_INVENTORY_DEFAULT_PAGE_SIZE,
+  ADMIN_INVENTORY_SEARCH_WIDTH_CLASS,
   ADMIN_VIEW_MODE_KEYS,
 } from '@/features/admin/constants';
 import {
@@ -44,10 +50,15 @@ const parsePage = (raw: string | null): number => {
   return Math.floor(parsed);
 };
 
-const buildAdminProjectsHref = (pathname: string, page: number, companyId?: string): string => {
+const buildAdminProjectsHref = (
+  pathname: string,
+  page: number,
+  companyIds: readonly string[],
+): string => {
   const params = new URLSearchParams();
-  if (companyId) {
-    params.set('companyId', companyId);
+  const companyEncoded = encodeIntegratedFilterIds(companyIds);
+  if (companyEncoded) {
+    params.set('companyId', companyEncoded);
   }
   if (page > FIRST_PAGE) {
     params.set('page', String(page));
@@ -57,7 +68,7 @@ const buildAdminProjectsHref = (pathname: string, page: number, companyId?: stri
 };
 
 /**
- * Admin projects hub: all projects with optional company filter.
+ * Admin projects hub: all projects with optional company filters.
  */
 export const AdminProjectsListPage = () => {
   const t = useTranslations('Admin.projects');
@@ -66,7 +77,7 @@ export const AdminProjectsListPage = () => {
   const router = useRouter();
   const pathname = usePathname();
   const page = parsePage(searchParams.get('page'));
-  const companyId = searchParams.get('companyId')?.trim() || undefined;
+  const companyIds = parseIdListParam(searchParams, 'companyId');
   const pageSize = ADMIN_INVENTORY_DEFAULT_PAGE_SIZE;
   const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(
     ADMIN_VIEW_MODE_KEYS.projects,
@@ -81,7 +92,7 @@ export const AdminProjectsListPage = () => {
   const projectsQuery = useAdminProjectsQuery({
     page,
     pageSize,
-    ...(companyId ? { companyId } : {}),
+    ...(companyIds.length > 0 ? { companyId: companyIds } : {}),
     ...(activeSearch ? { search: activeSearch } : {}),
   });
   const companiesQuery = useAdminBuilderCompaniesQuery(ADMIN_COMPANIES_MAX_PAGE_SIZE);
@@ -91,14 +102,16 @@ export const AdminProjectsListPage = () => {
     return companies.slice().sort((a, b) => a.name.localeCompare(b.name));
   }, [companiesQuery.data]);
 
-  const buildListHref = (nextPage: number, nextCompanyId?: string): string =>
-    buildAdminProjectsHref(pathname, nextPage, nextCompanyId);
+  const buildListHref = (
+    nextPage: number,
+    nextCompanyIds: readonly string[] = companyIds,
+  ): string => buildAdminProjectsHref(pathname, nextPage, nextCompanyIds);
 
   /** Search always looks at the whole list, so a new term restarts pagination. */
   const handleSearchChange = (value: string): void => {
     setSearch(value);
     if (page > FIRST_PAGE) {
-      router.replace(buildListHref(FIRST_PAGE, companyId));
+      router.replace(buildListHref(FIRST_PAGE));
     }
   };
 
@@ -113,13 +126,15 @@ export const AdminProjectsListPage = () => {
         label: t('filters.builder'),
         allOptionLabel: t('filters.allBuilders'),
         searchable: true,
+        multiple: true,
+        selectedCountLabel: (count) => tCommon('selectedCount', { count }),
         options: builderCompanies.map((company) => ({
           value: company.id,
           label: company.name,
         })),
       },
     ],
-    [builderCompanies, t],
+    [builderCompanies, t, tCommon],
   );
 
   if (
@@ -152,17 +167,28 @@ export const AdminProjectsListPage = () => {
         search={search}
         searchPlaceholder={t('filters.searchPlaceholder')}
         searchAriaLabel={tCommon('searchLabel')}
+        searchClassName={ADMIN_INVENTORY_SEARCH_WIDTH_CLASS}
         filters={filterConfigs}
-        filterValues={{ [ADMIN_PROJECTS_FILTER_COMPANY_KEY]: companyId ?? '' }}
+        filterValues={{
+          [ADMIN_PROJECTS_FILTER_COMPANY_KEY]: encodeIntegratedFilterIds(companyIds),
+        }}
         onSearchChange={handleSearchChange}
+        onApplyFilters={(draft) => {
+          router.replace(
+            buildListHref(
+              FIRST_PAGE,
+              decodeIntegratedFilterIds(draft[ADMIN_PROJECTS_FILTER_COMPANY_KEY]),
+            ),
+          );
+        }}
         onFilterChange={(key, value) => {
           if (key === ADMIN_PROJECTS_FILTER_COMPANY_KEY) {
-            router.replace(buildListHref(FIRST_PAGE, value || undefined));
+            router.replace(buildListHref(FIRST_PAGE, decodeIntegratedFilterIds(value)));
           }
         }}
         onClearAll={() => {
           setSearch('');
-          router.replace(buildListHref(FIRST_PAGE, undefined));
+          router.replace(buildListHref(FIRST_PAGE, []));
         }}
         actions={
           <>
@@ -212,11 +238,11 @@ export const AdminProjectsListPage = () => {
         page={response.meta.page}
         totalPages={response.meta.totalPages}
         previousHref={
-          response.meta.page > 1 ? buildListHref(response.meta.page - 1, companyId) : null
+          response.meta.page > 1 ? buildListHref(response.meta.page - 1) : null
         }
         nextHref={
           response.meta.page < response.meta.totalPages
-            ? buildListHref(response.meta.page + 1, companyId)
+            ? buildListHref(response.meta.page + 1)
             : null
         }
         previousLabel={t('pagination.previous')}
@@ -229,7 +255,7 @@ export const AdminProjectsListPage = () => {
         onClose={() => {
           setCreateOpen(false);
         }}
-        defaultCompanyId={companyId}
+        defaultCompanyId={companyIds.length === 1 ? companyIds[0] : undefined}
       />
 
       <AdminProjectBuildingsSheet

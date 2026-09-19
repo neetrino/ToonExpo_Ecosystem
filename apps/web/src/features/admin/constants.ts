@@ -48,7 +48,7 @@ export const ADMIN_PROJECTS_QUERY_KEY = ['admin', 'projects'] as const;
 export const adminProjectsQueryKey = (params: {
   page: number;
   pageSize: number;
-  companyId?: string;
+  companyId?: string | readonly string[];
   search?: string;
 }) => [...ADMIN_PROJECTS_QUERY_KEY, params] as const;
 

@@ -1,11 +1,14 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { Type } from "class-transformer";
 import {
   IsEmail,
   IsEnum,
+  IsObject,
   IsOptional,
   IsString,
   MaxLength,
   MinLength,
+  ValidateNested,
 } from "class-validator";
 
 import {
@@ -16,6 +19,7 @@ import {
   NAME_MAX_LENGTH,
   PHONE_MAX_LENGTH,
 } from "../../../common/constants/app.constants.js";
+import { CompanyTranslationsDto } from "./company-translations.dto.js";
 
 enum CompanyTypeDto {
   builder = "builder",
@@ -71,4 +75,11 @@ export class CreateCompanyDto {
   @MinLength(2)
   @MaxLength(8)
   locale?: string;
+
+  @ApiPropertyOptional({ type: CompanyTranslationsDto })
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => CompanyTranslationsDto)
+  translations?: CompanyTranslationsDto;
 }

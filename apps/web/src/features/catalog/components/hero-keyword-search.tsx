@@ -17,6 +17,7 @@ import {
 import {
   HERO_KEYWORD_BLUR_CLOSE_DELAY_MS,
   HERO_KEYWORD_MIN_QUERY_LENGTH,
+  HERO_KEYWORD_SUGGESTIONS_SCROLL_CLASS,
 } from '@/features/catalog/constants/hero-search';
 import type { HeroSearchSuggestion } from '@/features/catalog/utils/build-hero-search-suggestions';
 import { buildHeroSearchSuggestions } from '@/features/catalog/utils/build-hero-search-suggestions';
@@ -204,58 +205,94 @@ const SuggestionsList = ({
   kindLabel,
   onActiveIndexChange,
   onSelectIndex,
-}: SuggestionsListProps) => (
-  <ul
-    id={listboxId}
-    role="listbox"
-    aria-label={listLabel}
-    className={cn(
-      'absolute top-full left-0 z-30 mt-1 max-h-56 overflow-y-auto',
-      'w-[min(100%,calc(100vw-2rem))] min-w-full',
-      'sm:w-[min(24rem,calc(100vw-2rem))] lg:w-[26rem]',
-      HERO_FILTER_PANEL_CLASS,
-    )}
+}: SuggestionsListProps) => {
+  const listRef = useRef<HTMLUListElement>(null);
+
+  useEffect(() => {
+    const activeOption = listRef.current?.querySelector('[aria-selected="true"]');
+    activeOption?.scrollIntoView({ block: 'nearest' });
+  }, [activeIndex]);
+
+  return (
+    <div
+      className={cn(
+        'absolute top-full left-0 z-30 mt-1',
+        'w-[min(100%,calc(100vw-2rem))] min-w-full',
+        'sm:w-[min(24rem,calc(100vw-2rem))] lg:w-[26rem]',
+        HERO_FILTER_PANEL_CLASS,
+      )}
+    >
+      <ul
+        ref={listRef}
+        id={listboxId}
+        role="listbox"
+        aria-label={listLabel}
+        className={HERO_KEYWORD_SUGGESTIONS_SCROLL_CLASS}
+      >
+        {showEmpty ? (
+          <li className="px-4 py-3 text-sm text-header-muted">{emptyLabel}</li>
+        ) : (
+          suggestions.map((suggestion, index) => (
+            <SuggestionOption
+              key={suggestion.id}
+              listboxId={listboxId}
+              suggestion={suggestion}
+              isActive={index === activeIndex}
+              kindLabel={kindLabel(suggestion.kind)}
+              onHover={() => onActiveIndexChange(index)}
+              onSelect={() => onSelectIndex(index)}
+            />
+          ))
+        )}
+      </ul>
+    </div>
+  );
+};
+
+type SuggestionOptionProps = {
+  listboxId: string;
+  suggestion: HeroSearchSuggestion;
+  isActive: boolean;
+  kindLabel: string;
+  onHover: () => void;
+  onSelect: () => void;
+};
+
+const SuggestionOption = ({
+  listboxId,
+  suggestion,
+  isActive,
+  kindLabel,
+  onHover,
+  onSelect,
+}: SuggestionOptionProps) => (
+  <li
+    id={`${listboxId}-option-${suggestion.id}`}
+    role="option"
+    aria-selected={isActive}
   >
-    {showEmpty ? (
-      <li className="px-4 py-3 text-sm text-header-muted">{emptyLabel}</li>
-    ) : (
-      suggestions.map((suggestion, index) => {
-        const isActive = index === activeIndex;
-        return (
-          <li
-            key={suggestion.id}
-            id={`${listboxId}-option-${suggestion.id}`}
-            role="option"
-            aria-selected={isActive}
-          >
-            <button
-              type="button"
-              tabIndex={-1}
-              className={cn(
-                'flex w-full flex-col gap-0.5 px-4 py-3 text-left',
-                heroFilterOptionStateClass(isActive),
-              )}
-              onMouseDown={(event) => event.preventDefault()}
-              onMouseEnter={() => onActiveIndexChange(index)}
-              onClick={() => onSelectIndex(index)}
-            >
-              <span className="flex items-start justify-between gap-4">
-                <span className="min-w-0 flex-1 text-pretty break-words">
-                  {suggestion.label}
-                </span>
-                <span className="shrink-0 pt-0.5 text-[10px] font-bold tracking-wider text-header-muted uppercase">
-                  {kindLabel(suggestion.kind)}
-                </span>
-              </span>
-              {suggestion.meta ? (
-                <span className="text-pretty break-words text-xs font-normal text-header-muted">
-                  {suggestion.meta}
-                </span>
-              ) : null}
-            </button>
-          </li>
-        );
-      })
-    )}
-  </ul>
+    <button
+      type="button"
+      tabIndex={-1}
+      className={cn(
+        'flex w-full flex-col gap-0.5 px-4 py-3 text-left',
+        heroFilterOptionStateClass(isActive),
+      )}
+      onMouseDown={(event) => event.preventDefault()}
+      onMouseEnter={onHover}
+      onClick={onSelect}
+    >
+      <span className="flex items-start justify-between gap-4">
+        <span className="min-w-0 flex-1 text-pretty break-words">{suggestion.label}</span>
+        <span className="shrink-0 pt-0.5 text-[10px] font-bold tracking-wider text-header-muted uppercase">
+          {kindLabel}
+        </span>
+      </span>
+      {suggestion.meta ? (
+        <span className="text-pretty break-words text-xs font-normal text-header-muted">
+          {suggestion.meta}
+        </span>
+      ) : null}
+    </button>
+  </li>
 );
