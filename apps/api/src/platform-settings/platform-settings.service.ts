@@ -3,7 +3,13 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import type { AdminHomeHero, HomeHeroSlide, PublicHomeHero } from '@toonexpo/contracts';
+import type {
+  AdminHomeHero,
+  HomeHeroCopy,
+  HomeHeroSlide,
+  PublicHomeHero,
+  UpdateHomeHeroRequest,
+} from '@toonexpo/contracts';
 import { MediaAssetType } from '@toonexpo/db';
 
 import {
@@ -13,12 +19,17 @@ import {
 import { PrismaService } from '../prisma/prisma.service.js';
 import {
   HOME_HERO_MAX_SLIDES,
+  PLATFORM_SETTING_HOME_HERO_COPY,
+  PLATFORM_SETTING_HOME_HERO_COPY_DESCRIPTION,
   PLATFORM_SETTING_HOME_HERO_DESCRIPTION,
   PLATFORM_SETTING_HOME_HERO_MEDIA_ID,
   PLATFORM_SETTING_HOME_HERO_SLIDES,
 } from './platform-settings.constants.js';
-
-const emptyPublicHero = (): PublicHomeHero => ({ slides: [] });
+import {
+  isHomeHeroCopyEmpty,
+  normalizeHomeHeroCopy,
+  parseHomeHeroCopy,
+} from './utils/home-hero-copy.js';
 
 /**
  * Reads/writes platform settings used by public surfaces (home hero, etc.).
@@ -35,15 +46,45 @@ export class PlatformSettingsService {
   }
 
   async getAdminHomeHero(): Promise<AdminHomeHero> {
-    const { ids, updatedAt } = await this.readStoredSlideIds();
+    const [{ ids, updatedAt }, copy] = await Promise.all([
+      this.readStoredSlideIds(),
+      this.readStoredCopy(),
+    ]);
     const slides = await this.resolveSlides(ids);
-    return { slides, updatedAt };
+    return { slides, ...copy, updatedAt };
   }
 
   async updateHomeHero(
-    mediaAssetIds: string[] | null,
+    body: UpdateHomeHeroRequest,
     updatedByUserId: string,
   ): Promise<AdminHomeHero> {
+    await this.applySlideUpdate(body.mediaAssetIds, updatedByUserId);
+    if (body.title !== undefined || body.subtitle !== undefined) {
+      await this.upsertCopy(
+        {
+          title: body.title ?? {},
+          subtitle: body.subtitle ?? {},
+        },
+        updatedByUserId,
+      );
+    }
+    this.revalidateHome();
+    return this.getAdminHomeHero();
+  }
+
+  private async resolveHomeHero(): Promise<PublicHomeHero> {
+    const [{ ids }, copy] = await Promise.all([
+      this.readStoredSlideIds(),
+      this.readStoredCopy(),
+    ]);
+    const slides = await this.resolveSlides(ids);
+    return { slides, ...copy };
+  }
+
+  private async applySlideUpdate(
+    mediaAssetIds: string[] | null,
+    updatedByUserId: string,
+  ): Promise<void> {
     if (mediaAssetIds === null || mediaAssetIds.length === 0) {
       await this.prisma.db.platformSetting.deleteMany({
         where: {
@@ -52,17 +93,15 @@ export class PlatformSettingsService {
           },
         },
       });
-      this.revalidateHome();
-      return { ...emptyPublicHero(), updatedAt: null };
+      return;
     }
 
-    if (mediaAssetIds.length > HOME_HERO_MAX_SLIDES) {
-      throw new BadRequestException(`At most ${HOME_HERO_MAX_SLIDES} hero slides are allowed`);
-    }
-
-    const uniqueIds = [...new Set(mediaAssetIds.map((id) => id.trim()).filter(Boolean))];
+    const uniqueIds = uniqueMediaIds(mediaAssetIds);
     if (uniqueIds.length !== mediaAssetIds.length) {
       throw new BadRequestException('mediaAssetIds must be non-empty and unique');
+    }
+    if (uniqueIds.length > HOME_HERO_MAX_SLIDES) {
+      throw new BadRequestException(`At most ${HOME_HERO_MAX_SLIDES} hero slides are allowed`);
     }
 
     const slides = await this.resolveSlides(uniqueIds);
@@ -70,7 +109,14 @@ export class PlatformSettingsService {
       throw new NotFoundException('One or more media assets were not found or are not images');
     }
 
-    const setting = await this.prisma.db.platformSetting.upsert({
+    await this.upsertSlideIds(uniqueIds, updatedByUserId);
+  }
+
+  private async upsertSlideIds(
+    uniqueIds: readonly string[],
+    updatedByUserId: string,
+  ): Promise<void> {
+    await this.prisma.db.platformSetting.upsert({
       where: { key: PLATFORM_SETTING_HOME_HERO_SLIDES },
       create: {
         key: PLATFORM_SETTING_HOME_HERO_SLIDES,
@@ -86,23 +132,43 @@ export class PlatformSettingsService {
       },
     });
 
-    // Drop legacy single-id key after migrating to slides JSON.
     await this.prisma.db.platformSetting.deleteMany({
       where: { key: PLATFORM_SETTING_HOME_HERO_MEDIA_ID },
     });
-
-    this.revalidateHome();
-
-    return {
-      slides,
-      updatedAt: setting.updatedAt.toISOString(),
-    };
   }
 
-  private async resolveHomeHero(): Promise<PublicHomeHero> {
-    const { ids } = await this.readStoredSlideIds();
-    const slides = await this.resolveSlides(ids);
-    return { slides };
+  private async upsertCopy(copy: HomeHeroCopy, updatedByUserId: string): Promise<void> {
+    const next = normalizeHomeHeroCopy(copy);
+    if (isHomeHeroCopyEmpty(next)) {
+      await this.prisma.db.platformSetting.deleteMany({
+        where: { key: PLATFORM_SETTING_HOME_HERO_COPY },
+      });
+      return;
+    }
+
+    await this.prisma.db.platformSetting.upsert({
+      where: { key: PLATFORM_SETTING_HOME_HERO_COPY },
+      create: {
+        key: PLATFORM_SETTING_HOME_HERO_COPY,
+        value: JSON.stringify(next),
+        valueType: 'json',
+        description: PLATFORM_SETTING_HOME_HERO_COPY_DESCRIPTION,
+        updatedByUserId,
+      },
+      update: {
+        value: JSON.stringify(next),
+        valueType: 'json',
+        updatedByUserId,
+      },
+    });
+  }
+
+  private async readStoredCopy(): Promise<HomeHeroCopy> {
+    const row = await this.prisma.db.platformSetting.findUnique({
+      where: { key: PLATFORM_SETTING_HOME_HERO_COPY },
+      select: { value: true },
+    });
+    return parseHomeHeroCopy(row?.value);
   }
 
   private async readStoredSlideIds(): Promise<{
@@ -165,6 +231,9 @@ export class PlatformSettingsService {
   }
 }
 
+const uniqueMediaIds = (ids: readonly string[]): string[] =>
+  [...new Set(ids.map((id) => id.trim()).filter(Boolean))];
+
 const parseSlideIds = (raw: string): string[] => {
   const trimmed = raw.trim();
   if (!trimmed) {
@@ -181,7 +250,6 @@ const parseSlideIds = (raw: string): string[] => {
       .map((item) => item.trim())
       .slice(0, HOME_HERO_MAX_SLIDES);
   } catch {
-    // Legacy accidental plain string under the slides key.
     return [trimmed];
   }
 };
