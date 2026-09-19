@@ -1,6 +1,7 @@
 import {
   EXHIBITOR_TAB_ALL,
   EXHIBITOR_TAB_BUILDER,
+  EXHIBITOR_TAB_OTHER,
   EXHIBITOR_TABS,
   isExhibitorTab,
   type ExhibitorTab,
@@ -12,6 +13,7 @@ import {
 
 /**
  * Combined tab first, then builders, then partner types that have published profiles.
+ * `other` stays in the filter even when that type has no published profiles yet.
  */
 export const resolveVisibleExhibitorTabs = (
   hasBuilders: boolean,
@@ -19,7 +21,7 @@ export const resolveVisibleExhibitorTabs = (
 ): ExhibitorTab[] => {
   const available = new Set(partnerTypes.filter(isExhibitorTab));
   return EXHIBITOR_TABS.filter((tab) => {
-    if (tab === EXHIBITOR_TAB_ALL) {
+    if (tab === EXHIBITOR_TAB_ALL || tab === EXHIBITOR_TAB_OTHER) {
       return hasBuilders || available.size > 0;
     }
     if (tab === EXHIBITOR_TAB_BUILDER) {

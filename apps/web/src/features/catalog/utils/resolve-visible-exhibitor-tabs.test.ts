@@ -6,17 +6,18 @@ import {
 } from './resolve-visible-exhibitor-tabs';
 
 describe('resolveVisibleExhibitorTabs', () => {
-  it('keeps the combined tab first, then builders, and skips empty partner types', () => {
+  it('keeps the combined tab first, then builders, and skips empty partner types except Other', () => {
     expect(resolveVisibleExhibitorTabs(true, ['it_company', 'bank'])).toEqual([
       'all',
       'builder',
       'bank',
       'it_company',
+      'other',
     ]);
   });
 
   it('omits builders when none are published', () => {
-    expect(resolveVisibleExhibitorTabs(false, ['bank'])).toEqual(['all', 'bank']);
+    expect(resolveVisibleExhibitorTabs(false, ['bank'])).toEqual(['all', 'bank', 'other']);
   });
 
   it('returns no tabs when every category is empty', () => {
