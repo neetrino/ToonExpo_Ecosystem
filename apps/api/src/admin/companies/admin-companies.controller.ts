@@ -26,6 +26,8 @@ import type {
 import { CompanyStatus, CompanyType } from '@toonexpo/db';
 
 import { AccountTypes } from '../../auth/decorators/account-types.decorator.js';
+import { CurrentUser } from '../../auth/decorators/current-user.decorator.js';
+import type { AuthenticatedUser } from '../../auth/types/authenticated-user.js';
 import { AdminCompaniesService } from './admin-companies.service.js';
 import { CreateCompanyDto } from './dto/create-company.dto.js';
 import { CompanyIdParamDto } from './dto/company-id.param.dto.js';
@@ -42,8 +44,11 @@ export class AdminCompaniesController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Provision a company with first company_admin' })
   @ApiCreatedResponse({ description: 'Company and invited admin created' })
-  create(@Body() body: CreateCompanyDto): Promise<ProvisionCompanyResponse> {
-    return this.companiesService.create({
+  create(
+    @CurrentUser() user: AuthenticatedUser,
+    @Body() body: CreateCompanyDto,
+  ): Promise<ProvisionCompanyResponse> {
+    return this.companiesService.create(user.id, {
       name: body.name,
       type: body.type as CompanyType,
       adminName: body.adminName,
@@ -52,6 +57,7 @@ export class AdminCompaniesController {
       ...(body.shortDescription !== undefined ? { shortDescription: body.shortDescription } : {}),
       ...(body.adminPhone !== undefined ? { adminPhone: body.adminPhone } : {}),
       ...(body.locale !== undefined ? { locale: body.locale } : {}),
+      ...(body.translations !== undefined ? { translations: body.translations } : {}),
     });
   }
 
@@ -86,8 +92,12 @@ export class AdminCompaniesController {
   @Patch(':id')
   @ApiOperation({ summary: 'Update company basic fields or status' })
   @ApiOkResponse({ description: 'Updated company' })
-  update(@Param('id') id: string, @Body() body: UpdateCompanyDto): Promise<CompanyResponse> {
-    return this.companiesService.update(id, {
+  update(
+    @CurrentUser() user: AuthenticatedUser,
+    @Param('id') id: string,
+    @Body() body: UpdateCompanyDto,
+  ): Promise<CompanyResponse> {
+    return this.companiesService.update(id, user.id, {
       ...(body.name !== undefined ? { name: body.name } : {}),
       ...(body.description !== undefined ? { description: body.description } : {}),
       ...(body.shortDescription !== undefined ? { shortDescription: body.shortDescription } : {}),
@@ -108,6 +118,7 @@ export class AdminCompaniesController {
       ...(body.advertisingMaterialsUrl !== undefined
         ? { advertisingMaterialsUrl: body.advertisingMaterialsUrl }
         : {}),
+      ...(body.translations !== undefined ? { translations: body.translations } : {}),
     });
   }
 

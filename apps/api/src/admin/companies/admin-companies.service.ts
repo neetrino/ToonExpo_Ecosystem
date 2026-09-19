@@ -5,6 +5,7 @@ import type {
   AdminProjectScope,
   CompanyListResponse,
   CompanyResponse,
+  CompanyTranslationsInput,
   ProvisionCompanyResponse,
 } from '@toonexpo/contracts';
 import {
@@ -29,6 +30,10 @@ import {
   COMPANY_MEDIA_INCLUDE,
   toCompanyResponse,
 } from '../../companies/mappers/company.mapper.js';
+import {
+  loadGroupedCompanyTranslations,
+  upsertCompanyTranslations,
+} from '../../companies/utils/company-translations.util.js';
 import { CompanyProvisioningService } from '../../company/provisioning/company-provisioning.service.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { AdminReadinessAssessmentsService } from '../../readiness/admin/admin-readiness-assessments.service.js';
@@ -45,12 +50,14 @@ type CreateCompanyInput = {
   adminEmail: string;
   adminPhone?: string;
   locale?: string;
+  translations?: CompanyTranslationsInput;
 };
 
 type UpdateCompanyInput = {
   name?: string;
   description?: string | null;
   shortDescription?: string | null;
+  translations?: CompanyTranslationsInput;
   status?: CompanyStatus;
   logoMediaId?: string | null;
   coverMediaId?: string | null;
@@ -66,14 +73,34 @@ type UpdateCompanyInput = {
   advertisingMaterialsUrl?: string | null;
 };
 
+const toCompanyIds = (value: string | readonly string[] | undefined): string[] => {
+  if (value == null) {
+    return [];
+  }
+  const list = Array.isArray(value) ? [...value] : [value];
+  return list.map((id) => id.trim()).filter((id) => id.length > 0);
+};
+
+const builderCompanyWhere = (
+  companyIds: readonly string[],
+): Prisma.ProjectWhereInput => {
+  if (companyIds.length === 0) {
+    return {};
+  }
+  if (companyIds.length === 1) {
+    return { builderCompanyId: companyIds[0]! };
+  }
+  return { builderCompanyId: { in: [...companyIds] } };
+};
+
 /**
  * Company scope plus optional case-insensitive search for the admin projects list.
  */
 const buildAdminProjectsWhere = (
-  companyId: string | undefined,
+  companyIds: readonly string[],
   search: string | undefined,
 ): Prisma.ProjectWhereInput => {
-  const where: Prisma.ProjectWhereInput = companyId ? { builderCompanyId: companyId } : {};
+  const where: Prisma.ProjectWhereInput = builderCompanyWhere(companyIds);
   const needle = search?.trim();
   if (!needle) {
     return where;
@@ -120,7 +147,7 @@ export class AdminCompaniesService {
     private readonly readinessAssessments: AdminReadinessAssessmentsService,
   ) {}
 
-  async create(input: CreateCompanyInput): Promise<ProvisionCompanyResponse> {
+  async create(userId: string, input: CreateCompanyInput): Promise<ProvisionCompanyResponse> {
     await this.provisioning.assertEmailAvailable(input.adminEmail);
 
     const result = await this.provisioning.createCompanyWithPrimaryAdmin({
@@ -133,6 +160,13 @@ export class AdminCompaniesService {
       adminEmail: input.adminEmail,
       adminPhone: input.adminPhone?.trim() || null,
     });
+
+    await upsertCompanyTranslations(
+      this.prisma.db,
+      result.company.id,
+      userId,
+      input.translations,
+    );
 
     if (input.type === CompanyType.builder) {
       await this.readinessAssessments.create({
@@ -149,7 +183,10 @@ export class AdminCompaniesService {
     });
 
     return {
-      company: toCompanyResponse(result.company),
+      company: toCompanyResponse(
+        result.company,
+        await loadGroupedCompanyTranslations(this.prisma.db, result.company.id),
+      ),
       adminUser: toUserResponse(result.adminUser),
     };
   }
@@ -174,7 +211,7 @@ export class AdminCompaniesService {
     ]);
 
     return {
-      data: rows.map(toCompanyResponse),
+      data: rows.map((row) => toCompanyResponse(row)),
       meta: {
         page,
         pageSize,
@@ -185,18 +222,15 @@ export class AdminCompaniesService {
   }
 
   async getById(id: string): Promise<CompanyResponse> {
-    const company = await this.prisma.db.company.findUnique({
-      where: { id },
-      include: COMPANY_MEDIA_INCLUDE,
-    });
-    if (!company) {
-      throw new NotFoundException('Company not found');
-    }
-    return toCompanyResponse(company);
+    const company = await this.requireCompanyRecord(id);
+    return toCompanyResponse(
+      company,
+      await loadGroupedCompanyTranslations(this.prisma.db, id),
+    );
   }
 
   async listProjects(companyId: string): Promise<AdminCompanyProjectListResponse> {
-    await this.getById(companyId);
+    await this.requireCompanyRecord(companyId);
 
     const projects = await this.prisma.db.project.findMany({
       where: { builderCompanyId: companyId },
@@ -222,19 +256,20 @@ export class AdminCompaniesService {
   }
 
   /**
-   * Lists projects across builder companies, optionally filtered by company and search term.
+   * Lists projects across builder companies, optionally filtered by company ids and search term.
    */
   async listAllProjects(
     page: number,
     pageSize: number,
-    companyId?: string,
+    companyId?: string | readonly string[],
     search?: string,
   ): Promise<AdminProjectListResponse> {
-    if (companyId) {
-      await this.getById(companyId);
+    const companyIds = toCompanyIds(companyId);
+    if (companyIds.length === 1) {
+      await this.requireCompanyRecord(companyIds[0]!);
     }
 
-    const where = buildAdminProjectsWhere(companyId, search);
+    const where = buildAdminProjectsWhere(companyIds, search);
 
     const [total, featuredOnHomeTotal, projects] = await Promise.all([
       this.prisma.db.project.count({ where }),
@@ -325,8 +360,12 @@ export class AdminCompaniesService {
     };
   }
 
-  async update(id: string, input: UpdateCompanyInput): Promise<CompanyResponse> {
-    await this.getById(id);
+  async update(
+    id: string,
+    userId: string,
+    input: UpdateCompanyInput,
+  ): Promise<CompanyResponse> {
+    await this.requireCompanyRecord(id);
     const logoMediaId = await resolveOptionalCompanyLogoMediaId(this.prisma, input.logoMediaId, id);
     const coverMediaId = await resolveOptionalCompanyLogoMediaId(
       this.prisma,
@@ -334,7 +373,7 @@ export class AdminCompaniesService {
       id,
     );
     const profilePatch = buildCompanyProfilePatch(input);
-    const company = await this.prisma.db.company.update({
+    await this.prisma.db.company.update({
       where: { id },
       data: {
         ...(input.name !== undefined ? { name: input.name.trim() } : {}),
@@ -343,9 +382,9 @@ export class AdminCompaniesService {
         ...(coverMediaId !== undefined ? { coverMediaId } : {}),
         ...profilePatch,
       },
-      include: COMPANY_MEDIA_INCLUDE,
     });
-    return toCompanyResponse(company);
+    await upsertCompanyTranslations(this.prisma.db, id, userId, input.translations);
+    return this.getById(id);
   }
 
   async resendInvite(companyId: string, locale?: string): Promise<void> {
@@ -377,7 +416,7 @@ export class AdminCompaniesService {
    * Clears readiness assessments and translations first (Restrict FKs).
    */
   async remove(id: string): Promise<void> {
-    await this.getById(id);
+    await this.requireCompanyRecord(id);
 
     const [projectsCount, requestsCount, dealsCount, canvasesCount] = await Promise.all([
       this.prisma.db.project.count({ where: { builderCompanyId: id } }),
@@ -399,5 +438,16 @@ export class AdminCompaniesService {
       });
       await tx.company.delete({ where: { id } });
     });
+  }
+
+  private async requireCompanyRecord(id: string) {
+    const company = await this.prisma.db.company.findUnique({
+      where: { id },
+      include: COMPANY_MEDIA_INCLUDE,
+    });
+    if (!company) {
+      throw new NotFoundException('Company not found');
+    }
+    return company;
   }
 }

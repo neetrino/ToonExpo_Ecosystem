@@ -10,8 +10,12 @@ type TranslationLocale = (typeof TRANSLATION_LOCALES)[number];
 
 export type { TranslationLocale };
 
+type TranslationTabContext = {
+  isActive: boolean;
+};
+
 type TranslationTabsProps = {
-  children: (locale: TranslationLocale) => ReactNode;
+  children: (locale: TranslationLocale, context: TranslationTabContext) => ReactNode;
   /** Jump to this locale when `focusTick` changes (hidden-tab validation). */
   focusLocale?: TranslationLocale | undefined;
   focusTick?: number | undefined;
@@ -164,7 +168,7 @@ export const TranslationTabs = ({
               'motion-reduce:animate-none',
             )}
           >
-            {children(locale)}
+            {children(locale, { isActive })}
           </div>
         );
       })}

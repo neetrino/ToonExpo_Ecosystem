@@ -24,14 +24,14 @@ export class AdminProjectsController {
 
   @Get()
   @ApiOperation({
-    summary: 'List all projects across companies (optional company filter and search)',
+    summary: 'List all projects across companies (optional company filter(s) and search)',
   })
   @ApiOkResponse({ description: 'Paginated admin projects list' })
   list(@Query() query: ListAdminProjectsQueryDto): Promise<AdminProjectListResponse> {
     return this.companiesService.listAllProjects(
       query.page,
       query.pageSize,
-      query.companyId?.[0],
+      query.companyId,
       query.search,
     );
   }

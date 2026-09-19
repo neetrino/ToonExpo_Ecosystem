@@ -44,6 +44,7 @@ export const CreateCompanySheet = ({ open, onClose }: CreateCompanySheetProps) =
     <AdminCreateSheet
       open={open}
       onClose={handleClose}
+      size="comfortable"
       title={invitedEmail ? t('inviteSuccess.title') : t('new.title')}
     >
       {invitedEmail ? (

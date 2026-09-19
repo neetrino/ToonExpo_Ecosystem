@@ -1,13 +1,16 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsEmail,
   IsEnum,
+  IsObject,
   IsOptional,
   IsString,
   IsUrl,
   MaxLength,
   MinLength,
   ValidateIf,
+  ValidateNested,
 } from 'class-validator';
 
 import {
@@ -15,6 +18,7 @@ import {
   COMPANY_NAME_MAX_LENGTH,
   COMPANY_SHORT_DESCRIPTION_MAX_LENGTH,
 } from '../../../common/constants/app.constants.js';
+import { CompanyTranslationsDto } from './company-translations.dto.js';
 
 enum CompanyStatusDto {
   active = 'active',
@@ -134,4 +138,11 @@ export class UpdateCompanyDto {
   @IsUrl({ require_protocol: true })
   @MaxLength(2000)
   advertisingMaterialsUrl?: string | null;
+
+  @ApiPropertyOptional({ type: CompanyTranslationsDto })
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => CompanyTranslationsDto)
+  translations?: CompanyTranslationsDto;
 }

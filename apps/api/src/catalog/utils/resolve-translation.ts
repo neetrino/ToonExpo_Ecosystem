@@ -83,9 +83,8 @@ export const resolveTranslatedName = (
 
 /**
  * Company / builder display name.
- * Admin stores a single scalar name (no per-locale company UI). Use the
- * locale translation when present; otherwise show the scalar name so public
- * EN/RU pages are not blank.
+ * Use the locale translation when present; otherwise show the scalar name so
+ * public EN/RU pages stay readable for companies without translations yet.
  */
 export const resolveCompanyDisplayName = (
   rows: TranslationRow[],
@@ -109,7 +108,7 @@ export const resolveCompanyDisplayName = (
 };
 
 /**
- * Company scalar text from admin (no per-locale company UI).
+ * Company scalar text (canonical store) plus optional per-locale translations.
  * Use the locale translation when present; otherwise show the scalar text.
  */
 const resolveCompanyScalarField = (
