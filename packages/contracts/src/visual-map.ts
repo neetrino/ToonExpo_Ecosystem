@@ -5,7 +5,7 @@
  * content box. Markers: xPercent/yPercent 0–100. Polygons: svgPath in viewBox px.
  */
 
-import type { MediaAssetSummary, PublicationStatus } from './catalog.js';
+import type { ApartmentSalesStatus, MediaAssetSummary, PublicationStatus } from './catalog.js';
 
 export type VisualMapContextType = 'project' | 'district' | 'building' | 'floor';
 
@@ -144,6 +144,7 @@ export type PublicVisualHotspotItem = {
   svgPath: string | null;
   markerStyle: string | null;
   sortOrder: number | null;
+  salesStatus?: ApartmentSalesStatus;
   target: {
     type: VisualHotspotTargetType;
     id: string;

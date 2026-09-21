@@ -116,15 +116,15 @@ This prevents invisible apartments/floors.
 
 ## Status Display
 
-Apartment visual markers should reflect sales status if possible:
+Apartment polygons on the public floor plan are filled by sales status:
 
 ```text
-available
-reserved
-sold
+available — green
+reserved — yellow
+sold — red
 ```
 
-Use simple colors/labels, but never rely only on color.
+A text legend sits under the floor plan. Color is never the only signal.
 
 ## Performance
 

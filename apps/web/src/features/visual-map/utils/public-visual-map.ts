@@ -28,6 +28,10 @@ export const pickPrimaryVisualCanvas = (
   return withHotspots ?? canvases[0] ?? null;
 };
 
+/** True when the canvas has apartment polygons that carry a sales status. */
+export const hasApartmentSalesStatusLegend = (hotspots: PublicVisualHotspotItem[]): boolean =>
+  hotspots.some((hotspot) => hotspot.salesStatus != null);
+
 export const buildApartmentHref = (apartmentId: string): string =>
   buildApartmentPublicHref(apartmentId);
 

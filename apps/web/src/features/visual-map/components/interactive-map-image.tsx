@@ -1,6 +1,10 @@
 'use client';
 
-import type { PublicVisualCanvasItem, VisualMapContextType } from '@toonexpo/contracts';
+import type {
+  ApartmentSalesStatus,
+  PublicVisualCanvasItem,
+  VisualMapContextType,
+} from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState, type SyntheticEvent } from 'react';
 
@@ -41,6 +45,23 @@ const resolveInitialViewBox = (canvas: PublicVisualCanvasItem): ViewBoxSize => {
   return { width: FALLBACK_VIEWBOX_WIDTH, height: FALLBACK_VIEWBOX_HEIGHT };
 };
 
+const toSalesAwarePolygonItem = (
+  hotspot: PublicVisualCanvasItem['hotspots'][number],
+  selectedHotspotId: string | null,
+  statusLabel: (status: ApartmentSalesStatus) => string,
+) => ({
+  id: hotspot.id,
+  label: hotspot.label,
+  svgPath: hotspot.svgPath as string,
+  xPercent: hotspot.xPercent,
+  yPercent: hotspot.yPercent,
+  selected: selectedHotspotId === hotspot.id,
+  salesStatus: hotspot.salesStatus,
+  ariaLabel: hotspot.salesStatus
+    ? `${hotspot.label}, ${statusLabel(hotspot.salesStatus)}`
+    : hotspot.label,
+});
+
 /**
  * Stage image with proportional polygon + marker overlays (Admin coordinate contract).
  */
@@ -51,6 +72,7 @@ export const InteractiveMapImage = ({
   onSelectHotspot,
 }: InteractiveMapImageProps) => {
   const t = useTranslations('Catalog.visualMap');
+  const tStatus = useTranslations('Catalog.status');
   const [viewBox, setViewBox] = useState<ViewBoxSize>(() => resolveInitialViewBox(canvas));
   const mediaWidth = canvas.media.width;
   const mediaHeight = canvas.media.height;
@@ -91,14 +113,9 @@ export const InteractiveMapImage = ({
 
   const polygonItems = canvas.hotspots
     .filter((hotspot) => isFillableSvgPath(hotspot.svgPath))
-    .map((hotspot) => ({
-      id: hotspot.id,
-      label: hotspot.label,
-      svgPath: hotspot.svgPath as string,
-      xPercent: hotspot.xPercent,
-      yPercent: hotspot.yPercent,
-      selected: selectedHotspotId === hotspot.id,
-    }));
+    .map((hotspot) =>
+      toSalesAwarePolygonItem(hotspot, selectedHotspotId, (status) => tStatus(status)),
+    );
 
   const onImageLoad = (event: SyntheticEvent<HTMLImageElement>) => {
     const hasStoredSize =
