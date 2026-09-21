@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 
+import type { ApartmentSalesStatus } from '@toonexpo/contracts';
+
 import { resolvePolygonLabelPoint } from '@/features/visual-map/utils/resolve-polygon-label-point';
 
 export type PolygonHotspotOverlayItem = {
@@ -11,6 +13,8 @@ export type PolygonHotspotOverlayItem = {
   xPercent?: string | number;
   yPercent?: string | number;
   selected?: boolean;
+  salesStatus?: ApartmentSalesStatus;
+  ariaLabel?: string;
 };
 
 type PolygonHotspotOverlayProps = {
@@ -56,11 +60,12 @@ export const PolygonHotspotOverlay = ({
               d={item.svgPath}
               className="map-hotspot-path"
               data-selected={selected ? 'true' : undefined}
+              data-sales-status={item.salesStatus}
               /* `fill` keeps hit-testing when fill-opacity is 0 (idle). */
               pointerEvents={interactive ? 'fill' : 'none'}
               role={interactive ? 'button' : undefined}
               tabIndex={interactive ? 0 : undefined}
-              aria-label={interactive ? item.label : undefined}
+              aria-label={interactive ? (item.ariaLabel ?? item.label) : undefined}
               onMouseEnter={() => setHoveredId(item.id)}
               onMouseLeave={() => setHoveredId((current) => (current === item.id ? null : current))}
               onFocus={() => setHoveredId(item.id)}
@@ -113,6 +118,7 @@ export const PolygonHotspotOverlay = ({
               className={`map-hotspot-badge ${compact ? 'map-hotspot-badge--compact' : 'map-hotspot-badge--pill'} ${
                 visible ? 'map-hotspot-badge--visible' : ''
               }`}
+              data-sales-status={item.salesStatus}
               style={{ left: `${leftPercent}%`, top: `${topPercent}%` }}
             >
               {item.label}

@@ -10,6 +10,7 @@ import {
   CRM_APARTMENT_ALREADY_SOLD,
   applyCrmApartmentSalesWrite,
   assertApartmentReservableByDeal,
+  dealStatusForManualInventory,
   inventorySalesStatusForDeal,
   isApartmentInventorySynced,
   linkTypeForInventoryStatus,
@@ -24,6 +25,12 @@ describe("crm-inventory-sync", () => {
     );
     expect(inventorySalesStatusForDeal(CrmDealStatus.new_request)).toBe(
       ApartmentSalesStatus.reserved,
+    );
+    expect(dealStatusForManualInventory(ApartmentSalesStatus.sold)).toBe(
+      CrmDealStatus.converted,
+    );
+    expect(dealStatusForManualInventory(ApartmentSalesStatus.available)).toBe(
+      CrmDealStatus.new_request,
     );
     expect(linkTypeForInventoryStatus(ApartmentSalesStatus.sold)).toBe(
       CrmDealApartmentLinkType.sold,

@@ -755,6 +755,7 @@
       "finalStage": "End of interactive map for this area.",
       "stageUnavailable": "This area has no published interactive map yet.",
       "stageLoadError": "Could not load the next map stage. Try again.",
+      "legend": "Apartment status",
       "hotspot": {
         "close": "Close",
         "openTarget": "Open details",
@@ -773,6 +774,9 @@
       "bathrooms": "{count, plural, one {# bath} other {# baths}}",
       "area": "{area} m²",
       "statusLabel": "Status",
+      "salesStatusAria": "Apartment sales status",
+      "salesStatusSaved": "Sales status updated",
+      "salesStatusSaveError": "Could not update sales status. Try again.",
       "roomsLabel": "Rooms",
       "areaLabel": "Area",
       "bedroomsLabel": "Bedrooms",

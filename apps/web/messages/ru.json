@@ -755,6 +755,7 @@
       "finalStage": "Интерактивная карта для этой зоны закончилась.",
       "stageUnavailable": "Для этой зоны ещё нет опубликованной интерактивной карты.",
       "stageLoadError": "Не удалось загрузить следующий этап карты. Попробуйте снова.",
+      "legend": "Статус квартир",
       "hotspot": {
         "close": "Закрыть",
         "openTarget": "Открыть",
@@ -773,6 +774,9 @@
       "bathrooms": "{count, plural, one {# ванная} few {# ванные} many {# ванных} other {# ванных}}",
       "area": "{area} м²",
       "statusLabel": "Статус",
+      "salesStatusAria": "Статус квартиры",
+      "salesStatusSaved": "Статус обновлён",
+      "salesStatusSaveError": "Не удалось обновить статус. Попробуйте ещё раз.",
       "roomsLabel": "Комнаты",
       "areaLabel": "Площадь",
       "bedroomsLabel": "Спальни",

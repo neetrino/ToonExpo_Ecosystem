@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { PublicationStatus } from '@toonexpo/db';
+import { ApartmentSalesStatus, PublicationStatus } from '@toonexpo/db';
 
 import type { PrismaService } from '../../prisma/prisma.service.js';
 import { mapPublicCanvas } from '../mappers/visual-map.mapper.js';
@@ -224,6 +224,60 @@ describe('mapPublicCanvas target filtering', () => {
     const mapped = mapPublicCanvas(canvas, entities);
     expect(mapped.hotspots).toHaveLength(1);
     expect(mapped.hotspots[0]?.id).toBe('hs_ok');
+  });
+
+  it('includes apartment salesStatus on public floor hotspots', () => {
+    const entities = {
+      districts: new Map(),
+      buildings: new Map(),
+      floors: new Map(),
+      apartments: new Map([
+        [
+          'apt_1',
+          {
+            number: '10',
+            publicationStatus: PublicationStatus.published,
+            salesStatus: ApartmentSalesStatus.reserved,
+          },
+        ],
+      ]),
+    };
+
+    const canvas = {
+      id: 'canvas_floor',
+      contextType: 'floor' as const,
+      contextId: 'fl_1',
+      title: 'Floor 1',
+      description: null,
+      mediaAsset: {
+        id: 'media_1',
+        fileUrl: 'https://cdn.example/floor.jpg',
+        thumbnailUrl: null,
+        altText: null,
+        title: null,
+      },
+      hotspots: [
+        {
+          id: 'hs_apt',
+          targetType: 'apartment' as const,
+          targetId: 'apt_1',
+          label: '10',
+          xPercent: { toString: () => '1' },
+          yPercent: { toString: () => '2' },
+          markerStyle: null,
+          shapeType: 'polygon' as const,
+          interactionType: 'polygon' as const,
+          svgPath: 'M 0 0 L 10 0 L 10 10 Z',
+          points: null,
+          sortOrder: 0,
+          publicationStatus: PublicationStatus.published,
+        },
+      ],
+    };
+
+    const mapped = mapPublicCanvas(canvas, entities);
+    expect(mapped.hotspots).toHaveLength(1);
+    expect(mapped.hotspots[0]?.salesStatus).toBe(ApartmentSalesStatus.reserved);
   });
 });
 

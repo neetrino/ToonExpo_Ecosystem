@@ -1,4 +1,4 @@
-import type { VisualHotspotTargetType } from '@toonexpo/contracts';
+import type { ApartmentSalesStatus, VisualHotspotTargetType } from '@toonexpo/contracts';
 
 export const VISUAL_HOTSPOT_TARGET_TYPES: VisualHotspotTargetType[] = [
   'building',
@@ -40,3 +40,16 @@ export const PUBLIC_VISUAL_MAP_CONTAINED_MAX_HEIGHT_CLASS = 'max-h-[min(70dvh,72
 
 /** Context types that use contained (not full-bleed width) stage framing. */
 export const PUBLIC_VISUAL_MAP_CONTAINED_CONTEXT_TYPES = ['building', 'floor'] as const;
+
+/** Sales statuses painted on public floor-plan apartment polygons. */
+export const FLOOR_PLAN_SALES_LEGEND_STATUSES: readonly ApartmentSalesStatus[] = [
+  'available',
+  'reserved',
+  'sold',
+];
+
+export const FLOOR_PLAN_SALES_SWATCH_CLASS: Record<ApartmentSalesStatus, string> = {
+  available: 'bg-success',
+  reserved: 'bg-warning',
+  sold: 'bg-danger',
+};

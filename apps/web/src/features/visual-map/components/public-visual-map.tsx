@@ -5,8 +5,12 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 import { isApiErrorStatus } from '@/shared/api/errors';
+import { FloorPlanSalesLegend } from '@/features/visual-map/components/floor-plan-sales-legend';
 import { InteractiveMapImage } from '@/features/visual-map/components/interactive-map-image';
-import { resolveHotspotHref } from '@/features/visual-map/utils/public-visual-map';
+import {
+  hasApartmentSalesStatusLegend,
+  resolveHotspotHref,
+} from '@/features/visual-map/utils/public-visual-map';
 import { useRouter } from '@/i18n/navigation';
 
 type PublicVisualMapProps = {
@@ -86,6 +90,8 @@ export const PublicVisualMap = ({ canvas, projectId, projectSlug }: PublicVisual
           onSelectHotspot={openHotspot}
         />
       </div>
+
+      {hasApartmentSalesStatusLegend(canvas.hotspots) ? <FloorPlanSalesLegend /> : null}
 
       {errorMessage ? (
         <p role="alert" className="text-sm text-danger">

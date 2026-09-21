@@ -320,10 +320,14 @@
   }
 
   /* Public site map hotspots only (not admin MappingCanvas).
-     Idle: invisible fill; hover/selected: translucent orange (Phase 1–3). */
+     Idle: invisible fill; hover/selected: translucent orange.
+     Floor apartments: always-visible fill by sales status. */
   .map-hotspot-path {
     --map-hotspot-fade-ms: 280ms;
     --map-hotspot-exit-ms: 160ms;
+    --map-hotspot-status-opacity: 0.34;
+    --map-hotspot-status-hover-opacity: 0.5;
+    --map-hotspot-status-selected-opacity: 0.58;
     cursor: pointer;
     fill: var(--color-map-hotspot-active);
     fill-opacity: 0;
@@ -340,6 +344,30 @@
 
   .map-hotspot-path[data-selected='true'] {
     fill-opacity: 0.5;
+  }
+
+  .map-hotspot-path[data-sales-status='available'] {
+    fill: var(--color-success);
+    fill-opacity: var(--map-hotspot-status-opacity);
+  }
+
+  .map-hotspot-path[data-sales-status='reserved'] {
+    fill: var(--color-warning);
+    fill-opacity: var(--map-hotspot-status-opacity);
+  }
+
+  .map-hotspot-path[data-sales-status='sold'] {
+    fill: var(--color-danger);
+    fill-opacity: var(--map-hotspot-status-opacity);
+  }
+
+  .map-hotspot-path[data-sales-status]:hover,
+  .map-hotspot-path[data-sales-status]:focus-visible {
+    fill-opacity: var(--map-hotspot-status-hover-opacity);
+  }
+
+  .map-hotspot-path[data-sales-status][data-selected='true'] {
+    fill-opacity: var(--map-hotspot-status-selected-opacity);
   }
 
   /* HTML badges — true circles (not warped by SVG preserveAspectRatio=none). */
@@ -387,6 +415,18 @@
     transition:
       opacity var(--map-hotspot-fade-ms) ease,
       transform var(--map-hotspot-fade-ms) cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .map-hotspot-badge[data-sales-status='available'] {
+    background: var(--color-success);
+  }
+
+  .map-hotspot-badge[data-sales-status='reserved'] {
+    background: var(--color-warning);
+  }
+
+  .map-hotspot-badge[data-sales-status='sold'] {
+    background: var(--color-danger);
   }
 
   /* Admin MappingCanvas entity markers (letters + floor numbers). */

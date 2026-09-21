@@ -1,5 +1,5 @@
 import type { VisualHotspotTargetType, VisualMapContextType } from '@toonexpo/contracts';
-import { PublicationStatus } from '@toonexpo/db';
+import { type ApartmentSalesStatus, PublicationStatus } from '@toonexpo/db';
 
 import type { PrismaService } from '../../prisma/prisma.service.js';
 import { entityNotFound } from '../../portal/utils/access.js';
@@ -110,7 +110,10 @@ export type LoadedTargetEntities = {
       publicationStatus: PublicationStatus;
     }
   >;
-  apartments: Map<string, { number: string; publicationStatus: PublicationStatus }>;
+  apartments: Map<
+    string,
+    { number: string; publicationStatus: PublicationStatus; salesStatus: ApartmentSalesStatus }
+  >;
 };
 
 /**
@@ -161,7 +164,7 @@ export const loadTargetEntities = async (
     apartmentIds.length
       ? prisma.db.apartment.findMany({
           where: { id: { in: apartmentIds } },
-          select: { id: true, number: true, publicationStatus: true },
+          select: { id: true, number: true, publicationStatus: true, salesStatus: true },
         })
       : [],
   ]);

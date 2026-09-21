@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   buildHotspotHref,
+  hasApartmentSalesStatusLegend,
   pickPrimaryVisualCanvas,
 } from '@/features/visual-map/utils/public-visual-map';
 import type { PublicVisualCanvasItem, PublicVisualHotspotItem } from '@toonexpo/contracts';
@@ -67,6 +68,31 @@ describe('pickPrimaryVisualCanvas', () => {
   it('returns a final stage canvas even without hotspots', () => {
     const finalStage = canvas({ id: 'final' });
     expect(pickPrimaryVisualCanvas([finalStage])?.id).toBe('final');
+  });
+});
+
+describe('hasApartmentSalesStatusLegend', () => {
+  it('is true when any hotspot has a sales status', () => {
+    expect(
+      hasApartmentSalesStatusLegend([
+        hotspot({
+          id: 'hs_1',
+          salesStatus: 'available',
+          target: { type: 'apartment', id: 'apt_1', displayName: '10' },
+        }),
+      ]),
+    ).toBe(true);
+  });
+
+  it('is false when hotspots have no sales status', () => {
+    expect(
+      hasApartmentSalesStatusLegend([
+        hotspot({
+          id: 'hs_1',
+          target: { type: 'building', id: 'bld_1', displayName: 'A' },
+        }),
+      ]),
+    ).toBe(false);
   });
 });
 
