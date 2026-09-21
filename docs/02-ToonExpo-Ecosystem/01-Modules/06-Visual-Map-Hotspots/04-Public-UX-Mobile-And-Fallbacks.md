@@ -126,6 +126,8 @@ sold — red
 
 A text legend sits under the floor plan. Color is never the only signal.
 
+Public apartment detail shows the same sales status as a chip on the gallery (top-right). Platform admins can change it there; the write is manual inventory SoT and syncs the linked CRM deal when one exists.
+
 ## Performance
 
 Visual pages can be image-heavy.

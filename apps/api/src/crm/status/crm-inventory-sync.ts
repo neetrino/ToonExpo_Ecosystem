@@ -41,6 +41,22 @@ export const inventorySalesStatusForDeal = (
     ? ApartmentSalesStatus.sold
     : ApartmentSalesStatus.reserved;
 
+/**
+ * Inverse mapping used when an admin sets inventory by hand.
+ * Available releases the CRM hold by resetting the deal.
+ */
+export const dealStatusForManualInventory = (
+  status: ApartmentSalesStatus,
+): CrmDealStatus => {
+  if (status === ApartmentSalesStatus.sold) {
+    return CrmDealStatus.converted;
+  }
+  if (status === ApartmentSalesStatus.reserved) {
+    return CrmDealStatus.reserved;
+  }
+  return CrmDealStatus.new_request;
+};
+
 export const linkTypeForInventoryStatus = (
   status: ApartmentSalesStatus,
 ): CrmDealApartmentLinkType => {

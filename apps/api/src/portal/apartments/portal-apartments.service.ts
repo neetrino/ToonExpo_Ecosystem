@@ -18,12 +18,13 @@ import { ensurePublishedInventoryChain } from '../utils/ensure-published-invento
 import { groupPortalTranslations } from '../utils/group-translations.js';
 import { requireOwnedApartment, requireOwnedFloor } from '../utils/ownership.js';
 import { upsertTranslations } from '../utils/upsert-translations.js';
-import { buildApartmentUpdateData, createPortalApartmentRow } from './apartment-write.helpers.js';
 import {
   apartmentGalleryInclude,
   replaceApartmentGallery,
   syncApartmentGalleryOnUpdate,
 } from './apartment-gallery.helpers.js';
+import { buildApartmentUpdateData, createPortalApartmentRow } from './apartment-write.helpers.js';
+import { syncManualSalesStatusToCrm } from './sync-manual-sales-status-crm.js';
 
 const APARTMENT_TRANSLATION_FIELDS = [TRANSLATION_FIELD.description] as const;
 
@@ -208,6 +209,7 @@ export class PortalApartmentsService {
             previousStatus: existing.salesStatus,
             newStatus: nextSalesStatus,
             changedByUserId: userId,
+            reason: 'manual',
           },
         });
       }
@@ -221,6 +223,14 @@ export class PortalApartmentsService {
         where: { id: apartmentId },
         data: buildApartmentUpdateData(updatePayload, userId, salesStatusChanged),
       });
+
+      if (salesStatusChanged && nextSalesStatus) {
+        await syncManualSalesStatusToCrm(tx, {
+          apartmentId,
+          nextStatus: nextSalesStatus,
+          activeCrmDealId: existing.activeCrmDealId,
+        });
+      }
 
       if (dto.galleryMediaIds !== undefined || dto.coverMediaId !== undefined) {
         await syncApartmentGalleryOnUpdate({
@@ -252,6 +262,11 @@ export class PortalApartmentsService {
         },
         updatedByUserId: userId,
       });
+    }
+
+    if (salesStatusChanged) {
+      this.webRevalidation.revalidateCatalog(existing.projectId);
+      this.webRevalidation.revalidateVisualMap();
     }
 
     return this.toApartmentDetail(apartment);

@@ -205,6 +205,9 @@ export const buildApartmentUpdateData = (
         lastStatusChangedAt: new Date(),
         lastStatusChangedByUserId: userId,
         crmStatusSource: CrmStatusSource.manual,
+        ...(dto.salesStatus === ApartmentSalesStatus.available
+          ? { activeCrmDealId: null }
+          : {}),
       }
     : {}),
   updatedByUserId: userId,

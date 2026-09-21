@@ -11,6 +11,7 @@ import { ApartmentInquireCard } from '@/features/catalog/components/apartment-in
 import { ApartmentMortgageEstimate } from '@/features/catalog/components/apartment-mortgage-estimate';
 import { ApartmentNeighborhood } from '@/features/catalog/components/apartment-neighborhood';
 import { ApartmentPhotoGallery } from '@/features/catalog/components/apartment-photo-gallery';
+import { ApartmentPublicSalesStatus } from '@/features/catalog/components/apartment-public-sales-status';
 import { ApartmentPriceHistory } from '@/features/catalog/components/apartment-price-history';
 import { ApartmentPricePerArea } from '@/features/catalog/components/apartment-price-per-area';
 import { ApartmentTourSections } from '@/features/catalog/components/apartment-tour-sections';
@@ -108,7 +109,14 @@ export const ApartmentDetailView = async ({
         current="apartment"
       />
 
-      <ApartmentPhotoGallery images={galleryImages} />
+      <div className="relative">
+        <ApartmentPhotoGallery images={galleryImages} />
+        <ApartmentPublicSalesStatus
+          apartmentId={apartment.id}
+          companyId={apartment.builder.id}
+          salesStatus={apartment.salesStatus}
+        />
+      </div>
 
       <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start xl:gap-14">
         <div className="min-w-0">
