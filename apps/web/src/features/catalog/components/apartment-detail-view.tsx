@@ -97,25 +97,35 @@ export const ApartmentDetailView = async ({
     apartment.floor.displayLabel?.trim() ||
     t('project.floor', { number: apartment.floor.number });
 
+  const salesStatusProps = {
+    apartmentId: apartment.id,
+    companyId: apartment.builder.id,
+    salesStatus: apartment.salesStatus,
+  };
+
   return (
     <div className="page-container pb-16 pt-8">
-      <CatalogPathBreadcrumb
-        ariaLabel={t('apartment.breadcrumb')}
-        district={district}
-        project={apartment.project}
-        building={apartment.building}
-        floor={{ id: apartment.floor.id, label: floorLabel }}
-        apartment={{ id: apartment.id, slug: apartment.slug, label: title }}
-        current="apartment"
-      />
+      <div className="mb-6 flex items-center justify-between gap-3">
+        <CatalogPathBreadcrumb
+          className="mb-0 w-auto min-w-0 flex-1"
+          ariaLabel={t('apartment.breadcrumb')}
+          district={district}
+          project={apartment.project}
+          building={apartment.building}
+          floor={{ id: apartment.floor.id, label: floorLabel }}
+          apartment={{ id: apartment.id, slug: apartment.slug, label: title }}
+          current="apartment"
+        />
+        <div className="hidden shrink-0 md:block">
+          <ApartmentPublicSalesStatus placement="inline" {...salesStatusProps} />
+        </div>
+      </div>
 
       <div className="relative">
         <ApartmentPhotoGallery images={galleryImages} />
-        <ApartmentPublicSalesStatus
-          apartmentId={apartment.id}
-          companyId={apartment.builder.id}
-          salesStatus={apartment.salesStatus}
-        />
+        <div className="md:hidden">
+          <ApartmentPublicSalesStatus placement="overlay" {...salesStatusProps} />
+        </div>
       </div>
 
       <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start xl:gap-14">

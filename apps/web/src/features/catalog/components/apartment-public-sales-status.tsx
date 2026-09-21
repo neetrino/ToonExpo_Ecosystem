@@ -16,7 +16,14 @@ type ApartmentPublicSalesStatusProps = {
   apartmentId: string;
   companyId: string;
   salesStatus: ApartmentSalesStatus;
+  /** Gallery overlay on mobile; breadcrumb row on desktop. */
+  placement: 'overlay' | 'inline';
 };
+
+const PLACEMENT_CLASS = {
+  overlay: 'absolute top-3 right-3 z-20 flex flex-col items-end gap-1',
+  inline: 'relative z-20 flex flex-col items-end gap-1',
+} as const;
 
 const PUBLIC_SALES_STATUSES: ApartmentSalesStatus[] = ['available', 'reserved', 'sold'];
 
@@ -50,6 +57,7 @@ export const ApartmentPublicSalesStatus = ({
   apartmentId,
   companyId,
   salesStatus,
+  placement,
 }: ApartmentPublicSalesStatusProps) => {
   const t = useTranslations('Catalog.apartment');
   const tStatus = useTranslations('Catalog.status');
@@ -92,7 +100,7 @@ export const ApartmentPublicSalesStatus = ({
   return (
     <div
       ref={rootRef}
-      className="absolute top-3 right-3 z-20 flex flex-col items-end gap-1"
+      className={PLACEMENT_CLASS[placement]}
       onClick={(event) => event.stopPropagation()}
       onMouseDown={(event) => event.stopPropagation()}
     >
@@ -203,7 +211,7 @@ const SalesStatusMenu = ({
   statusLabel,
   onPick,
 }: SalesStatusMenuProps) => (
-  <div ref={menuRef} className="absolute top-full right-0 z-30 pt-1.5">
+  <div ref={menuRef} className="absolute top-full right-0 z-[var(--z-dropdown)] pt-1.5">
     <ul
       id={listId}
       role="listbox"
