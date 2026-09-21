@@ -9,7 +9,10 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useState, type SyntheticEvent } from 'react';
 
 import { PercentMapMarkers } from '@/features/visual-map/components/percent-map-markers';
-import { PolygonHotspotOverlay } from '@/features/visual-map/components/polygon-hotspot-overlay';
+import {
+  PolygonHotspotOverlay,
+  type PolygonHotspotOverlayItem,
+} from '@/features/visual-map/components/polygon-hotspot-overlay';
 import {
   PUBLIC_VISUAL_MAP_CONTAINED_CONTEXT_TYPES,
   PUBLIC_VISUAL_MAP_CONTAINED_MAX_HEIGHT_CLASS,
@@ -49,14 +52,14 @@ const toSalesAwarePolygonItem = (
   hotspot: PublicVisualCanvasItem['hotspots'][number],
   selectedHotspotId: string | null,
   statusLabel: (status: ApartmentSalesStatus) => string,
-) => ({
+): PolygonHotspotOverlayItem => ({
   id: hotspot.id,
   label: hotspot.label,
   svgPath: hotspot.svgPath as string,
   xPercent: hotspot.xPercent,
   yPercent: hotspot.yPercent,
   selected: selectedHotspotId === hotspot.id,
-  salesStatus: hotspot.salesStatus,
+  ...(hotspot.salesStatus ? { salesStatus: hotspot.salesStatus } : {}),
   ariaLabel: hotspot.salesStatus
     ? `${hotspot.label}, ${statusLabel(hotspot.salesStatus)}`
     : hotspot.label,
