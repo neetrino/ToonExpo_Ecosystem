@@ -71,7 +71,7 @@ export const formatCompletionQuarter = (isoDate: string | null | undefined): str
 };
 
 /**
- * Formats a catalog month/year (`MM/YYYY` or ISO) for timeline display.
+ * Formats a catalog date (`YYYY-MM-DD`, `MM/YYYY`, or day-first) for timeline display.
  */
 export const formatTimelineStageDate = (value: string | null | undefined): string | null => {
   if (value == null || value.trim().length === 0) {

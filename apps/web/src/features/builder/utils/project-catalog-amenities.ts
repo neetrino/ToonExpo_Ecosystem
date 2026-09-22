@@ -20,7 +20,7 @@ export type TimelineStageDates = Record<TimelineStageKey, string>;
 
 export type ProjectCatalogFormSlice = {
   catalogDetails: Record<keyof ProjectCatalogDetails, CatalogLocaleText>;
-  /** Month/year (MM/YYYY) per public construction-timeline stage. */
+  /** Full calendar date (`YYYY-MM-DD`) per public construction-timeline stage. */
   timelineStageDates: TimelineStageDates;
   amenityLabelsHy: string;
   amenityLabelsRu: string;

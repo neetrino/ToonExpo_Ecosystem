@@ -1,4 +1,7 @@
 const ISO_DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
+const MONTH_YEAR_PATTERN = /^(\d{1,2})\/(\d{4})$/;
+/** Day-first calendar text: `DD.MM.YYYY` or `DD/MM/YYYY`. */
+const DAY_MONTH_YEAR_PATTERN = /^(\d{1,2})[./](\d{1,2})[./](\d{4})$/;
 const DAYS_IN_WEEK = 7;
 /** Monday-first pad so week rows always fill the grid. */
 const CALENDAR_CELL_COUNT = 42;
@@ -31,6 +34,43 @@ export const parseIsoDate = (value: string): Date | null => {
     return null;
   }
   return date;
+};
+
+/**
+ * Normalizes catalog / form date text to `YYYY-MM-DD` for DatePicker.
+ * Accepts ISO, `MM/YYYY`, `DD.MM.YYYY`, and `DD/MM/YYYY`.
+ */
+export const parseFlexibleDateToIso = (value: string): string => {
+  const trimmed = value.trim();
+  if (trimmed.length === 0) {
+    return '';
+  }
+  if (parseIsoDate(trimmed)) {
+    return trimmed;
+  }
+
+  const monthYear = MONTH_YEAR_PATTERN.exec(trimmed);
+  if (monthYear) {
+    const month = Number(monthYear[1]);
+    const year = Number(monthYear[2]);
+    if (month >= 1 && month <= 12) {
+      return toIsoDate(new Date(year, month - 1, 1));
+    }
+    return '';
+  }
+
+  const dayMonthYear = DAY_MONTH_YEAR_PATTERN.exec(trimmed);
+  if (dayMonthYear) {
+    const day = Number(dayMonthYear[1]);
+    const month = Number(dayMonthYear[2]);
+    const year = Number(dayMonthYear[3]);
+    const date = new Date(year, month - 1, day);
+    if (date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day) {
+      return toIsoDate(date);
+    }
+  }
+
+  return '';
 };
 
 /** Monday-first weekday short labels for the given locale. */
