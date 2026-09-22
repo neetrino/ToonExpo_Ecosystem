@@ -50,7 +50,6 @@ export const AdminFloorApartmentsSheet = ({
   buildingId,
   floorId,
   floorLabel,
-  publicationStatus,
   floorplan,
   onClose,
   stackLevel = 1,
