@@ -3597,6 +3597,10 @@
       "catalog": {
         "title": "Project details (public catalog)",
         "subtitle": "Same layout as the public project page — edit Overview, Details, Finance, Bank partner, Features, and Nearby for each language.",
+        "timelineSubtitle": "Set a date for each construction stage shown on the public project page.",
+        "timelineStage": "Current stage",
+        "timelineStageAuto": "Auto (from sold share)",
+        "timelineStageHint": "Leave on Auto to derive the stage from apartment sales. Pick a stage to set it manually.",
         "listHint": "One item per line.",
         "amenityLabels": "Features list",
         "nearbyPlaces": "Nearby places",

@@ -70,6 +70,30 @@ describe('project-catalog-amenities', () => {
     });
   });
 
+  it('round-trips construction timeline stage dates', () => {
+    const slice = catalogJsonToFormSlice(
+      {
+        timelineStageDates: {
+          preSale: '01/2024',
+          foundation: '06/2024',
+          structure: '01/2025',
+        },
+      },
+      null,
+    );
+    expect(slice.timelineStageDates.preSale).toBe('01/2024');
+    expect(slice.timelineStageDates.foundation).toBe('06/2024');
+    expect(slice.timelineStageDates.structure).toBe('01/2025');
+    expect(slice.timelineStageDates.facade).toBe('');
+    expect(catalogFormSliceToJson(slice).amenities).toEqual({
+      timelineStageDates: {
+        preSale: '01/2024',
+        foundation: '06/2024',
+        structure: '01/2025',
+      },
+    });
+  });
+
   it('returns null JSON when the form slice is empty', () => {
     const written = catalogFormSliceToJson(emptyProjectCatalogFormSlice());
     expect(written.amenities).toBeNull();

@@ -260,6 +260,13 @@ const EditProjectFormInner = ({ project }: EditProjectFormProps) => {
             }}
           />
         </FormField>
+        <FormField id="edit-construction-status" label={t('form.constructionStatus')}>
+          <Input
+            id="edit-construction-status"
+            placeholder={getProjectFormPlaceholder(siteLocale, 'constructionStatus')}
+            {...register('constructionStatus')}
+          />
+        </FormField>
         <FormField id="edit-completion" label={t('form.completionDate')}>
           <Controller
             name="completionDate"

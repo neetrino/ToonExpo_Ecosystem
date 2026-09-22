@@ -102,7 +102,7 @@ const ProjectHeroSummary = ({
     </div>
 
     <div className="mt-3 sm:hidden">
-      <h1 className="font-brand text-[clamp(2rem,5vw,3.75rem)] font-bold leading-[1.15] tracking-[-0.03em] text-ink-navy">
+      <h1 className="font-brand text-[clamp(1.75rem,4vw,2.75rem)] font-bold leading-[1.15] tracking-[-0.03em] text-ink-navy">
         {project.name}
       </h1>
       <p className={CATALOG_HERO_CARD_DESCRIPTION_CLASS}>{description}</p>
@@ -120,7 +120,7 @@ const ProjectHeroSummary = ({
           {project.builder.name}
         </p>
         <div className="mt-2 flex items-start gap-3">
-          <h1 className="min-w-0 flex-1 font-brand text-[clamp(2rem,5vw,3.75rem)] font-bold leading-[1.15] tracking-[-0.03em] text-ink-navy">
+          <h1 className="min-w-0 flex-1 font-brand text-[clamp(1.75rem,4vw,2.75rem)] font-bold leading-[1.15] tracking-[-0.03em] text-ink-navy">
             {project.name}
           </h1>
           <CatalogEntityQr
