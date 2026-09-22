@@ -13,7 +13,7 @@ import type {
 } from '../dto/portal-apartment.dto.js';
 import { DEFAULT_PRICE_CURRENCY } from '../portal.constants.js';
 import { upsertTranslations } from '../utils/upsert-translations.js';
-import { buildApartmentSlug } from '../utils/slug.js';
+import { insertApartmentWithUniqueSlug } from './apartment-slug.js';
 
 type ApartmentRow = {
   id: string;
@@ -47,6 +47,10 @@ type ApartmentRow = {
 
 type DbClient = {
   apartment: {
+    findUnique: (args: {
+      where: { slug: string };
+      select: { id: true };
+    }) => Promise<{ id: string } | null>;
     create: (args: { data: Prisma.ApartmentUncheckedCreateInput }) => Promise<ApartmentRow>;
   };
   translation: {
@@ -78,13 +82,11 @@ export const createPortalApartmentRow = async (
   const dto = params.dto;
   const publicationStatus = params.publicationStatus ?? PublicationStatus.draft;
 
-  const apartment = await db.apartment.create({
-    data: {
+  const apartment = await insertApartmentWithUniqueSlug<ApartmentRow>(db, params.projectSlug, dto.number, {
       projectId: params.projectId,
       buildingId: params.buildingId,
       floorId: params.floorId,
       number: dto.number,
-      slug: buildApartmentSlug(params.projectSlug, dto.number),
       salesStatus,
       publicationStatus,
       priceCurrency: DEFAULT_PRICE_CURRENCY,
@@ -120,7 +122,6 @@ export const createPortalApartmentRow = async (
       ...(dto.coverMediaId !== undefined ? { coverMediaId: dto.coverMediaId } : {}),
       ...(dto.tinderMediaId !== undefined ? { tinderMediaId: dto.tinderMediaId } : {}),
       ...(dto.verified !== undefined ? { verified: dto.verified } : {}),
-    },
   });
 
   if (dto.translations) {

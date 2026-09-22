@@ -21,6 +21,7 @@ import {
 import { useMappingCanvasCommits } from './use-mapping-canvas-commits';
 import { useMappingCanvasInteractions } from './use-mapping-canvas-interactions';
 import { useMappingCanvasKeyboard } from './use-mapping-canvas-keyboard';
+import { useSelectedSvgSubpath } from './use-selected-svg-subpath';
 
 export type { MappingBulkPathUpdate, MappingCanvasHandle, MappingEntity };
 
@@ -64,6 +65,12 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
     const selectedHasMarkerRef = useRef(false);
     const replaceOnCommitRef = useRef(false);
     const toolPresetRef = useRef(toolPreset);
+    const {
+      selectedSubpathIndex,
+      selectedSubpathIndexRef,
+      setSelectedSubpathIndex,
+      selectSubpath,
+    } = useSelectedSvgSubpath(selectedId);
     const [cursorPoint, setCursorPoint] = useState<NormPoint | null>(null);
     const [pendingPolygonConfirm, setPendingPolygonConfirm] = useState<'delete' | 'replace' | null>(
       null,
@@ -170,6 +177,7 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
       entitiesRef,
       modeRef,
       replaceOnCommitRef,
+      selectedSubpathIndexRef,
       toolPresetRef,
     });
 
@@ -232,6 +240,8 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
       onSelect,
       onChangeEntity,
       onPolygonDeleted,
+      selectedSubpathIndex,
+      setSelectedSubpathIndex,
       updateDraftPoints,
       commitAutoStack,
       commitBand,
@@ -271,6 +281,7 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
           setMode={setMode}
           setSelectedDraftIndex={setSelectedDraftIndex}
           replaceEditShape={replaceEditShape}
+          selectedSubpathIndex={selectedSubpathIndex}
           startFreshPolygon={startFreshPolygon}
           deletePolygon={deletePolygon}
           deleteMarker={
@@ -301,6 +312,7 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
           viewBoxHeight={viewBoxHeight}
           entities={entities}
           selectedId={selectedId}
+          selectedSubpathIndex={selectedSubpathIndex}
           mode={mode}
           draftPoints={draftPoints}
           editShape={editShape}
@@ -311,6 +323,9 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
           readNormalized={readNormalized}
           replaceEditShape={replaceEditShape}
           onSelect={onSelect}
+          onSelectSubpath={(id, index) => {
+            selectSubpath(index, onSelect, id);
+          }}
           onMarkerPointerDown={onMarkerPointerDown}
           onMarkerPointerMove={onMarkerPointerMove}
           onMarkerPointerUp={onMarkerPointerUp}

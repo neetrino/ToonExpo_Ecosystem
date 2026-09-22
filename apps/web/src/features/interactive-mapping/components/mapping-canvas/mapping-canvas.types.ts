@@ -38,7 +38,8 @@ export type MappingCanvasProps = {
     patch: Partial<Pick<MappingEntity, 'markerX' | 'markerY' | 'svgPath'>>,
   ) => void;
   onPolygonClosed?: (id: string, svgPath: string) => void;
-  onPolygonDeleted?: (id: string) => void;
+  /** Remaining path after the delete. Null when the entity has no polygons left. */
+  onPolygonDeleted?: (id: string, svgPath: string | null) => void;
   /** Request removing marker/mapping for the selected entity (confirm in parent). */
   onDeleteMarker?: () => void;
   /** Floors preset adds Band + Auto stack tools. */

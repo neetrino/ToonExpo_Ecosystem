@@ -74,6 +74,79 @@ export function appendSvgPaths(
   return `${existing} ${next}`;
 }
 
+const SVG_MOVE_COMMAND = /[Mm]/g;
+
+/** Split a compound path into one string per `M`/`m` subpath. */
+export function splitSvgSubpaths(path: string): string[] {
+  const trimmed = path.trim();
+  if (!trimmed) return [];
+  const starts: number[] = [];
+  SVG_MOVE_COMMAND.lastIndex = 0;
+  let match: RegExpExecArray | null = SVG_MOVE_COMMAND.exec(trimmed);
+  while (match) {
+    starts.push(match.index);
+    match = SVG_MOVE_COMMAND.exec(trimmed);
+  }
+  if (starts.length <= 1) return [trimmed];
+  return starts.map((start, index) =>
+    trimmed.slice(start, starts[index + 1] ?? trimmed.length).trim(),
+  );
+}
+
+/** Drop one subpath. `index` null removes the last. Null when nothing remains. */
+export function removeSvgSubpath(path: string, index: number | null): string | null {
+  const parts = splitSvgSubpaths(path);
+  if (parts.length === 0) return null;
+  const target =
+    index != null && index >= 0 && index < parts.length ? index : parts.length - 1;
+  const next = parts.filter((_, partIndex) => partIndex !== target);
+  return next.length === 0 ? null : next.join(' ');
+}
+
+/** Chosen subpath, or the last one when nothing is picked. */
+export function activeSvgSubpathIndex(path: string, index: number | null): number {
+  const count = splitSvgSubpaths(path).length;
+  if (count === 0) return 0;
+  if (index != null && index >= 0 && index < count) return index;
+  return count - 1;
+}
+
+/** Replace one subpath and keep the others. */
+export function replaceSvgSubpath(path: string, index: number, segment: string): string {
+  const nextSegment = segment.trim();
+  const parts = splitSvgSubpaths(path);
+  if (parts.length === 0) return nextSegment;
+  const target = index >= 0 && index < parts.length ? index : 0;
+  return parts
+    .map((part, partIndex) => (partIndex === target ? nextSegment : part))
+    .join(' ');
+}
+
+/**
+ * Commit a drawn or edited polygon onto an entity path.
+ * Editing replaces only the chosen subpath so sibling polygons stay.
+ */
+export function resolveCommittedSvgPath(input: {
+  existing: string | null;
+  nextSegment: string;
+  editing: boolean;
+  replaceAll: boolean;
+  subpathIndex: number | null;
+}): string {
+  const existing = input.existing?.trim() ?? '';
+  if (input.editing && existing) {
+    return replaceSvgSubpath(
+      existing,
+      activeSvgSubpathIndex(existing, input.subpathIndex),
+      input.nextSegment,
+    );
+  }
+  if (input.replaceAll || !existing) {
+    return input.nextSegment;
+  }
+  return appendSvgPaths(existing, input.nextSegment);
+}
+
 /** Parse simple M/L ... Z path into normalized points. */
 export function svgPathToNormalizedPoints(
   path: string,

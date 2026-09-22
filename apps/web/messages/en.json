@@ -3760,7 +3760,8 @@
         "name": "Enter the Armenian project name"
       },
       "errors": {
-        "generic": "Something went wrong. Please try again."
+        "generic": "Something went wrong. Please try again.",
+        "slugTaken": "This slug is already used by another project. Choose a different slug."
       },
       "detail": {
         "back": "Projects",

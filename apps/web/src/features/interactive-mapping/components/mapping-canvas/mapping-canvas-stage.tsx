@@ -10,6 +10,7 @@ import { useTranslations } from 'next-intl';
 import type { NormPoint } from '../../utils/mapping-math';
 import { polygonShapeToSvgPath, type PolygonShape } from '../../utils/curved-polygon';
 import { formatMarkerLabel } from '../../utils/format-marker-label';
+import { MappingCanvasPolygons } from './mapping-canvas-polygons';
 import { PolygonEditHandles } from './polygon-edit-handles';
 import type { EditorMode, MappingEntity } from './mapping-canvas.types';
 import { snapPolygonCloseCursor } from './use-mapping-canvas-interactions';
@@ -32,6 +33,7 @@ type MappingCanvasStageProps = {
   viewBoxHeight: number;
   entities: MappingEntity[];
   selectedId: string | null;
+  selectedSubpathIndex: number | null;
   mode: EditorMode;
   draftPoints: NormPoint[];
   editShape: PolygonShape | null;
@@ -45,6 +47,7 @@ type MappingCanvasStageProps = {
   ) => NormPoint | null;
   replaceEditShape: (shape: PolygonShape) => void;
   onSelect: (id: string) => void;
+  onSelectSubpath: (id: string, index: number) => void;
   onMarkerPointerDown: (
     event: ReactPointerEvent<HTMLButtonElement>,
     id: string,
@@ -68,6 +71,7 @@ export const MappingCanvasStage = ({
   viewBoxHeight,
   entities,
   selectedId,
+  selectedSubpathIndex,
   mode,
   draftPoints,
   editShape,
@@ -78,6 +82,7 @@ export const MappingCanvasStage = ({
   readNormalized,
   replaceEditShape,
   onSelect,
+  onSelectSubpath,
   onMarkerPointerDown,
   onMarkerPointerMove,
   onMarkerPointerUp,
@@ -85,15 +90,6 @@ export const MappingCanvasStage = ({
   viewportOverlay,
 }: MappingCanvasStageProps) => {
   const t = useTranslations('Admin.interactiveMapping.canvas');
-  const canPickOnCanvas = mode === 'select';
-
-  const handlePolygonClick = (event: ReactMouseEvent<SVGPathElement>, id: string): void => {
-    if (!canPickOnCanvas) {
-      return;
-    }
-    event.stopPropagation();
-    onSelect(id);
-  };
 
   return (
     <div
@@ -151,21 +147,13 @@ export const MappingCanvasStage = ({
           viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`}
           preserveAspectRatio="none"
         >
-          {entities.map((entity) =>
-            entity.svgPath && !(mode === 'edit-polygon' && entity.id === selectedId) ? (
-              <path
-                key={`poly-${entity.id}`}
-                d={entity.svgPath}
-                className={canPickOnCanvas ? 'pointer-events-auto cursor-pointer' : undefined}
-                fill={entity.id === selectedId ? 'rgba(232,140,72,0.32)' : 'rgba(232,140,72,0.16)'}
-                stroke={entity.id === selectedId ? '#c45c26' : '#d4894a'}
-                strokeWidth={entity.id === selectedId ? 3 : 1.5}
-                onClick={(event) => {
-                  handlePolygonClick(event, entity.id);
-                }}
-              />
-            ) : null,
-          )}
+          <MappingCanvasPolygons
+            entities={entities}
+            selectedId={selectedId}
+            selectedSubpathIndex={selectedSubpathIndex}
+            mode={mode}
+            onSelectSubpath={onSelectSubpath}
+          />
           {draftPoints.length > 0 ? (
             mode === 'edit-polygon' && editShape ? (
               <path
