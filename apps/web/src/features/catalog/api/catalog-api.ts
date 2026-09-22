@@ -15,6 +15,7 @@ import type {
 import { apiFetch } from '@/shared/api/client';
 import { ApiError, isApiErrorStatus } from '@/shared/api/errors';
 import {
+  catalogApartmentDetailFetch,
   catalogBuildersFetch,
   catalogListFetch,
   catalogProjectFetch,
@@ -196,7 +197,7 @@ export const getApartment = async (
   try {
     return await apiFetch<ApartmentDetail>({
       path: `/apartments/${encodeURIComponent(apartmentId)}${localeQuery(options.locale)}`,
-      ...catalogListFetch(),
+      ...catalogApartmentDetailFetch(),
     });
   } catch (error) {
     if (isApiErrorStatus(error, 404)) {

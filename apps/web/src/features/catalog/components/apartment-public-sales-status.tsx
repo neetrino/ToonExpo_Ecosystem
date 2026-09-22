@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useId, useRef, useState, type RefObject } from 'react';
 
 import { useMeQuery } from '@/features/auth/hooks/use-auth';
-import { updatePortalApartment } from '@/features/builder/api/portal-apartments-api';
+import { persistApartmentSalesStatus } from '@/features/catalog/components/apartment-public-sales-status-persist';
 import { useRouter } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 import { useListboxDismiss } from '@/shared/ui/use-listbox-dismiss';
@@ -39,19 +39,21 @@ const STATUS_DOT: Record<ApartmentSalesStatus, string> = {
   sold: 'bg-danger',
 };
 
-const CHIP_BUTTON_CLASS = cn(
+const CHIP_PILL_CLASS = cn(
   'inline-flex w-max flex-nowrap items-center gap-2 rounded-full',
   'border border-white/55 py-1.5 pr-2.5 pl-3.5 text-[11px] font-bold tracking-wide uppercase',
   'shadow-sm ring-1 ring-white/30 ring-inset backdrop-blur-[2px]',
+);
+
+const CHIP_BUTTON_CLASS = cn(
+  CHIP_PILL_CLASS,
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70',
   'disabled:cursor-not-allowed disabled:opacity-70',
 );
 
-const CHIP_LABEL_CLASS = 'inline-flex w-fit items-center rounded-[10px] px-3 py-1.5';
-
 /**
  * Public sales-status chip on the apartment gallery.
- * Everyone can read it; platform admins change it from the same control.
+ * Everyone sees the status; only platform admins get the dropdown editor.
  */
 export const ApartmentPublicSalesStatus = ({
   apartmentId,
@@ -68,12 +70,20 @@ export const ApartmentPublicSalesStatus = ({
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
-  const canEdit = me?.accountType === 'platform_admin';
+  const pendingSavedRef = useRef<ApartmentSalesStatus | null>(null);
   const listId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const canEdit = me?.accountType === 'platform_admin';
 
   useEffect(() => {
+    if (pendingSavedRef.current != null) {
+      if (salesStatus === pendingSavedRef.current) {
+        pendingSavedRef.current = null;
+      } else {
+        return;
+      }
+    }
     setCurrentStatus(salesStatus);
   }, [salesStatus]);
 
@@ -81,15 +91,18 @@ export const ApartmentPublicSalesStatus = ({
 
   const onPick = (next: ApartmentSalesStatus): void => {
     setOpen(false);
-    void persistStatus({
+    void persistApartmentSalesStatus({
       apartmentId,
-      companyId,
+      scope: { mode: 'admin', companyId },
       next,
       currentStatus,
       isSaving,
       setCurrentStatus,
       setIsSaving,
       setErrorMessage,
+      onSaved: (status) => {
+        pendingSavedRef.current = status;
+      },
       showSuccess,
       savedLabel: t('salesStatusSaved'),
       errorLabel: t('salesStatusSaveError'),
@@ -117,14 +130,8 @@ export const ApartmentPublicSalesStatus = ({
           onPick={onPick}
         />
       ) : (
-        <span
-          className={cn(
-            CHIP_LABEL_CLASS,
-            STATUS_TONE[currentStatus],
-            'text-[11px] font-bold tracking-wide uppercase shadow-sm',
-          )}
-        >
-          {tStatus(currentStatus)}
+        <span className={cn(CHIP_PILL_CLASS, STATUS_TONE[currentStatus])}>
+          <span className="shrink-0 whitespace-nowrap text-on-dark">{tStatus(currentStatus)}</span>
         </span>
       )}
       {errorMessage ? (
@@ -245,42 +252,3 @@ const SalesStatusMenu = ({
     </ul>
   </div>
 );
-
-type PersistStatusInput = {
-  apartmentId: string;
-  companyId: string;
-  next: ApartmentSalesStatus;
-  currentStatus: ApartmentSalesStatus;
-  isSaving: boolean;
-  setCurrentStatus: (status: ApartmentSalesStatus) => void;
-  setIsSaving: (value: boolean) => void;
-  setErrorMessage: (value: string | null) => void;
-  showSuccess: (message: string) => void;
-  savedLabel: string;
-  errorLabel: string;
-  refresh: () => void;
-};
-
-const persistStatus = async (input: PersistStatusInput): Promise<void> => {
-  if (input.next === input.currentStatus || input.isSaving) {
-    return;
-  }
-  const previous = input.currentStatus;
-  input.setCurrentStatus(input.next);
-  input.setIsSaving(true);
-  input.setErrorMessage(null);
-  try {
-    await updatePortalApartment(
-      input.apartmentId,
-      { salesStatus: input.next },
-      { scope: { mode: 'admin', companyId: input.companyId } },
-    );
-    input.showSuccess(input.savedLabel);
-    input.refresh();
-  } catch {
-    input.setCurrentStatus(previous);
-    input.setErrorMessage(input.errorLabel);
-  } finally {
-    input.setIsSaving(false);
-  }
-};
