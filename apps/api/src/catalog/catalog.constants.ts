@@ -13,10 +13,10 @@ export const CATALOG_MAX_PAGE_SIZE = 50;
 export const CATALOG_MIN_PAGE = 1;
 
 /** Publication status exposed on public catalog endpoints. */
-export const PUBLIC_PUBLICATION_STATUS = "published" as const;
+export const PUBLIC_PUBLICATION_STATUS = 'published' as const;
 
 /** Default ISO currency for Armenian inventory when aggregating prices. */
-export const DEFAULT_CATALOG_CURRENCY = "AMD" as const;
+export const DEFAULT_CATALOG_CURRENCY = 'AMD' as const;
 
 /** Max project ids per authenticated price-range overlay batch (matches max page size). */
 export const CATALOG_PRICES_MAX_PROJECT_IDS = CATALOG_MAX_PAGE_SIZE;

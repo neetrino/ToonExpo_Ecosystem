@@ -120,7 +120,8 @@ export class PortalProjectsController {
 
   @Patch(':projectId/price-on-request')
   @ApiOperation({
-    summary: 'Enable or disable price-on-request for a project and all its buildings (company_admin)',
+    summary:
+      'Enable or disable price-on-request for a project and all its buildings (company_admin)',
   })
   @ApiOkResponse({ description: 'Updated price-on-request status' })
   updatePriceOnRequest(

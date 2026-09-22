@@ -2,6 +2,11 @@
   "Common": {
     "close": "Close",
     "cancel": "Cancel",
+    "retry": "Retry",
+    "apiUnavailableTitle": "API is not running",
+    "apiUnavailableDescription": "The NestJS API on port 4000 did not respond. Keep `pnpm run dev:api` running in a second terminal, then retry.",
+    "unexpectedErrorTitle": "Something went wrong",
+    "unexpectedErrorDescription": "The page could not finish loading. Retry, or refresh if it happens again.",
     "delete": "Delete",
     "deleteConfirmTitle": "Delete",
     "deleteConfirmMessage": "Are you sure you want to delete this? This cannot be undone.",

@@ -77,9 +77,7 @@ export const useAdminInventoryListFilters = ({
   const floorIds = parseIdListParam(searchParams, 'floorId');
   const salesStatus = parseSalesStatusParam(searchParams.get('salesStatus'));
   const projectId = searchParams.get('projectId')?.trim() || undefined;
-  const [panelDraftFilters, setPanelDraftFilters] = useState<Record<string, string> | null>(
-    null,
-  );
+  const [panelDraftFilters, setPanelDraftFilters] = useState<Record<string, string> | null>(null);
   const companiesQuery = useAdminBuilderCompaniesQuery(ADMIN_COMPANIES_MAX_PAGE_SIZE);
 
   const effectiveCompanyIds = resolveDraftOrAppliedIds(

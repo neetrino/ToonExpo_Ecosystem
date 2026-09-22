@@ -58,11 +58,9 @@ type AdminApartmentImageProps = {
 const AdminApartmentImage = ({ apartment }: AdminApartmentImageProps) => {
   const [imageFailed, setImageFailed] = useState(false);
   const cover = apartment.cover;
-  const imageSource =
-    toSafeImageSource(cover?.thumbnailUrl) ?? toSafeImageSource(cover?.fileUrl);
+  const imageSource = toSafeImageSource(cover?.thumbnailUrl) ?? toSafeImageSource(cover?.fileUrl);
   const validImageSource = imageFailed ? undefined : imageSource;
-  const alt =
-    cover?.altText?.trim() || `${apartment.projectName} — ${apartment.number}`;
+  const alt = cover?.altText?.trim() || `${apartment.projectName} — ${apartment.number}`;
 
   return (
     <div

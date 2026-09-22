@@ -32,8 +32,7 @@ export const resolveDraftOrAppliedIds = (
 };
 
 export const formatFloorOptionLabel = (floor: AdminFloorListItem): string => {
-  const label =
-    floor.displayLabel?.trim() || floor.name?.trim() || `Floor ${floor.number}`;
+  const label = floor.displayLabel?.trim() || floor.name?.trim() || `Floor ${floor.number}`;
   return `${label} · ${floor.buildingName}`;
 };
 

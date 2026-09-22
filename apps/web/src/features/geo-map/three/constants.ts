@@ -15,14 +15,10 @@ export const DEFAULT_MODEL_ROTATION_X_DEG = 90;
 export const DEFAULT_MODEL_ROTATION_Y_DEG = 0;
 export const DEFAULT_MODEL_ROTATION_Z_DEG = 0;
 
-/** Ambient light intensity (POC: 0.45). */
-export const THREE_AMBIENT_LIGHT_INTENSITY = 0.45;
+/** Even ambient only — trees/cars stay lit; GLBs are unlit. */
+export const THREE_AMBIENT_LIGHT_INTENSITY = 1;
 
-/** Primary / fill directional lights (POC: 1.1 / 0.9). */
-export const THREE_DIRECTIONAL_LIGHT_INTENSITY_PRIMARY = 1.1;
-export const THREE_DIRECTIONAL_LIGHT_INTENSITY_FILL = 0.9;
-
-/** Clamp MeshStandardMaterial so GLB textures read more naturally on the shared GL context. */
+/** Clamp MeshStandardMaterial so GLB textures read on the shared GL context. */
 export const THREE_MATERIAL_MAX_METALNESS = 0.2;
 export const THREE_MATERIAL_MIN_ROUGHNESS = 0.4;
 

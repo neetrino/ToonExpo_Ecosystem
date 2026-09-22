@@ -189,23 +189,23 @@ The boundary should be enforced in ESLint/CI, not left as documentation only.
 
 ## 6. Product Modules
 
-| Backend module        | Core ownership                                                                           |
-| --------------------- | ---------------------------------------------------------------------------------------- |
-| Accounts & Access     | Registration, provisioned accounts, sessions, roles, company membership                  |
-| Companies             | Builder, partner and bank organizations and members                                      |
-| Catalog               | Projects, buildings, floors, apartments, statuses and publication                        |
-| Media & Visual Maps   | Media metadata, image maps, hotspots and 3D links                                        |
-| Buyer                 | Buyer profile, favorites, requests and permanent QR identity                             |
-| Lead Intake           | Normalizes buyer-created and builder-created contact requests                            |
-| Constructor CRM       | Builder pipeline, deal stages, notes, follow-up activities and apartment links           |
-| Readiness             | Assessments, categories, scores and recommendations                                      |
-| Partners & Mortgage   | Partner profiles, bank offers and calculator inputs                                      |
-| Service Providers     | Categorized provider directory connected to readiness help                               |
-| Public Exhibition Map | BOS snapshot ingestion, immutable versions, public areas/landmarks, search and rendering |
-| Analytics             | Product/event measurements and role-scoped summaries                                     |
-| Provisioning          | Idempotent BOS account/company provisioning contract                                     |
+| Backend module        | Core ownership                                                                                                                             |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Accounts & Access     | Registration, provisioned accounts, sessions, roles, company membership                                                                    |
+| Companies             | Builder, partner and bank organizations and members                                                                                        |
+| Catalog               | Projects, buildings, floors, apartments, statuses and publication                                                                          |
+| Media & Visual Maps   | Media metadata, image maps, hotspots and 3D links                                                                                          |
+| Buyer                 | Buyer profile, favorites, requests and permanent QR identity                                                                               |
+| Lead Intake           | Normalizes buyer-created and builder-created contact requests                                                                              |
+| Constructor CRM       | Builder pipeline, deal stages, notes, follow-up activities and apartment links                                                             |
+| Readiness             | Assessments, categories, scores and recommendations                                                                                        |
+| Partners & Mortgage   | Partner profiles, bank offers and calculator inputs                                                                                        |
+| Service Providers     | Categorized provider directory connected to readiness help                                                                                 |
+| Public Exhibition Map | BOS snapshot ingestion, immutable versions, public areas/landmarks, search and rendering                                                   |
+| Analytics             | Product/event measurements and role-scoped summaries                                                                                       |
+| Provisioning          | Idempotent BOS account/company provisioning contract                                                                                       |
 | Content               | 🟡 partial — home hero banners + headline copy via `PlatformSetting` (`home.hero.slides`, `home.hero.copy`); full CMS blocks still post-v1 |
-| Audit                 | 📋 post-v1 — global admin audit log (only BOS `IntegrationAuditLog` exists today)        |
+| Audit                 | 📋 post-v1 — global admin audit log (only BOS `IntegrationAuditLog` exists today)                                                          |
 
 Frontend features mirror user workflows, not persistence tables. A single backend module may serve several frontend areas.
 

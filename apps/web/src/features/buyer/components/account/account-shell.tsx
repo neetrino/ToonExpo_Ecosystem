@@ -2,10 +2,11 @@ import type { ReactNode } from 'react';
 import { headers } from 'next/headers';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import { getMeOrNullCached } from '@/features/auth/api/get-me-or-null-cached';
+import { getMeSessionCached } from '@/features/auth/api/get-me-or-null-cached';
 import { AccountMobileStack } from '@/features/buyer/components/account/account-mobile-stack';
 import { AccountNav } from '@/features/buyer/components/account/account-nav';
 import { redirect } from '@/i18n/navigation';
+import { ApiUnavailablePanel } from '@/shared/ui/api-unavailable-panel';
 import { PortalShell } from '@/shared/ui/portal-shell';
 
 type AccountShellProps = {
@@ -21,7 +22,11 @@ export const AccountShell = async ({ children, locale }: AccountShellProps) => {
 
   const headerStore = await headers();
   const cookieHeader = headerStore.get('cookie') ?? undefined;
-  const user = await getMeOrNullCached(cookieHeader);
+  const session = await getMeSessionCached(cookieHeader);
+  if (session.status === 'unavailable') {
+    return <ApiUnavailablePanel />;
+  }
+  const { user } = session;
 
   if (!user) {
     redirect({

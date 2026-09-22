@@ -1,6 +1,6 @@
-import type { Prisma } from "@toonexpo/db";
+import type { Prisma } from '@toonexpo/db';
 
-import type { PrismaService } from "../../prisma/prisma.service.js";
+import type { PrismaService } from '../../prisma/prisma.service.js';
 
 const MAX_URI_DECODE_PASSES = 2;
 

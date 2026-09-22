@@ -62,10 +62,7 @@ const findFloorCanvas = async (
   });
 };
 
-const deleteFloorCanvas = async (
-  prisma: PrismaService,
-  canvas: FloorCanvasRow,
-): Promise<void> => {
+const deleteFloorCanvas = async (prisma: PrismaService, canvas: FloorCanvasRow): Promise<void> => {
   if (canvas.publicationStatus === PublicationStatus.published) {
     await prisma.db.visualMapCanvas.update({
       where: { id: canvas.id },

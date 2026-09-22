@@ -147,4 +147,3 @@ Visual navigation should include non-visual alternatives:
 - text labels;
 - keyboard accessible target list;
 - alt text for images.
-

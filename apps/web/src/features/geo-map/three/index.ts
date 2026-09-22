@@ -8,10 +8,8 @@
  *
  * Layers:
  * - `ThreeBuildingLayer` — project GLB buildings (`use-three-building-layer.ts`)
- *
- * Extension point: optional future layers (e.g. park vegetation, sparse
- * traffic) would add a new `*Layer` class + `ensure*` / `remove*` helpers and
- * mount from a dedicated hook — not shipped in production today.
+ * - Park canopy instances share `ThreeBuildingLayer` (`use-green-canopy-layer.ts`)
+ * - Road traffic instances share `ThreeBuildingLayer` (`use-road-traffic-layer.ts`)
  */
 
 export {

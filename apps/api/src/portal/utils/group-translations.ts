@@ -1,10 +1,10 @@
-import type { LocaleTextMap, PortalTranslationsInput } from "@toonexpo/contracts";
-import { SUPPORTED_LOCALES, type SupportedLocale } from "@toonexpo/shared";
+import type { LocaleTextMap, PortalTranslationsInput } from '@toonexpo/contracts';
+import { SUPPORTED_LOCALES, type SupportedLocale } from '@toonexpo/shared';
 
 import type {
   TranslationFieldName,
   TranslationRow,
-} from "../../catalog/utils/resolve-translation.js";
+} from '../../catalog/utils/resolve-translation.js';
 
 const isSupportedLocale = (value: string): value is SupportedLocale =>
   (SUPPORTED_LOCALES as readonly string[]).includes(value);
@@ -29,10 +29,7 @@ export const groupPortalTranslations = (
   return result;
 };
 
-const toLocaleMap = (
-  rows: TranslationRow[],
-  fieldName: string,
-): LocaleTextMap => {
+const toLocaleMap = (rows: TranslationRow[], fieldName: string): LocaleTextMap => {
   const map: LocaleTextMap = {};
   for (const row of rows) {
     if (row.fieldName !== fieldName || !isSupportedLocale(row.locale)) {
@@ -49,25 +46,25 @@ const assignField = (
   locales: LocaleTextMap,
 ): void => {
   switch (fieldName) {
-    case "name":
+    case 'name':
       result.name = locales;
       break;
-    case "shortDescription":
+    case 'shortDescription':
       result.shortDescription = locales;
       break;
-    case "fullDescription":
+    case 'fullDescription':
       result.fullDescription = locales;
       break;
-    case "locationText":
+    case 'locationText':
       result.locationText = locales;
       break;
-    case "district":
+    case 'district':
       result.district = locales;
       break;
-    case "projectType":
+    case 'projectType':
       result.projectType = locales;
       break;
-    case "description":
+    case 'description':
       result.description = locales;
       break;
     default:

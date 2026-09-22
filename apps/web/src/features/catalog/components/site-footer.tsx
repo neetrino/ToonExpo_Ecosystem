@@ -172,9 +172,7 @@ const FooterNavColumn = ({
   items: readonly FooterNavItem[];
 }): ReactNode => (
   <div className="min-w-0">
-    <p className="font-brand text-xs font-bold tracking-[0.1em] text-ink-navy uppercase">
-      {title}
-    </p>
+    <p className="font-brand text-xs font-bold tracking-[0.1em] text-ink-navy uppercase">{title}</p>
     <ul className="mt-6 flex flex-col gap-3 text-sm text-header-muted">
       {items.map((item) => (
         <li key={item.label}>

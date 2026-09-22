@@ -81,9 +81,7 @@ const toCompanyIds = (value: string | readonly string[] | undefined): string[] =
   return list.map((id) => id.trim()).filter((id) => id.length > 0);
 };
 
-const builderCompanyWhere = (
-  companyIds: readonly string[],
-): Prisma.ProjectWhereInput => {
+const builderCompanyWhere = (companyIds: readonly string[]): Prisma.ProjectWhereInput => {
   if (companyIds.length === 0) {
     return {};
   }
@@ -161,12 +159,7 @@ export class AdminCompaniesService {
       adminPhone: input.adminPhone?.trim() || null,
     });
 
-    await upsertCompanyTranslations(
-      this.prisma.db,
-      result.company.id,
-      userId,
-      input.translations,
-    );
+    await upsertCompanyTranslations(this.prisma.db, result.company.id, userId, input.translations);
 
     if (input.type === CompanyType.builder) {
       await this.readinessAssessments.create({
@@ -223,10 +216,7 @@ export class AdminCompaniesService {
 
   async getById(id: string): Promise<CompanyResponse> {
     const company = await this.requireCompanyRecord(id);
-    return toCompanyResponse(
-      company,
-      await loadGroupedCompanyTranslations(this.prisma.db, id),
-    );
+    return toCompanyResponse(company, await loadGroupedCompanyTranslations(this.prisma.db, id));
   }
 
   async listProjects(companyId: string): Promise<AdminCompanyProjectListResponse> {
@@ -360,11 +350,7 @@ export class AdminCompaniesService {
     };
   }
 
-  async update(
-    id: string,
-    userId: string,
-    input: UpdateCompanyInput,
-  ): Promise<CompanyResponse> {
+  async update(id: string, userId: string, input: UpdateCompanyInput): Promise<CompanyResponse> {
     await this.requireCompanyRecord(id);
     const logoMediaId = await resolveOptionalCompanyLogoMediaId(this.prisma, input.logoMediaId, id);
     const coverMediaId = await resolveOptionalCompanyLogoMediaId(

@@ -30,7 +30,13 @@ const BuilderMark = ({ name, logoUrl, initials }: BuilderMarkProps) =>
         BUILDER_LOGO_SIZE_CLASS,
       )}
     >
-      <Image src={logoUrl} alt={name} fill className="object-cover" sizes={BUILDER_LOGO_IMAGE_SIZES} />
+      <Image
+        src={logoUrl}
+        alt={name}
+        fill
+        className="object-cover"
+        sizes={BUILDER_LOGO_IMAGE_SIZES}
+      />
     </span>
   ) : (
     <span
@@ -62,7 +68,9 @@ const BuilderHeroSummary = ({
   <div className="flex items-start gap-5">
     <BuilderMark name={name} logoUrl={logoUrl} initials={initials} />
     <div className="min-w-0 flex-1">
-      <p className="text-[11px] font-bold tracking-[0.2em] text-brand-secondary uppercase">{eyebrow}</p>
+      <p className="text-[11px] font-bold tracking-[0.2em] text-brand-secondary uppercase">
+        {eyebrow}
+      </p>
       <h1 className="mt-2 font-brand text-[clamp(2rem,5vw,3.75rem)] font-bold leading-[1.15] tracking-[-0.03em] text-ink-navy">
         {name}
       </h1>
@@ -137,8 +145,12 @@ export const BuilderDetailHero = async ({ builder }: BuilderDetailHeroProps) => 
               label={t('buildersPage.detail.projectCount')}
               value={String(builder.publishedProjectCount)}
             />
-            {region ? <HeroStat label={t('buildersPage.detail.statRegion')} value={region} /> : null}
-            {address ? <HeroStat label={t('buildersPage.detail.statAddress')} value={address} /> : null}
+            {region ? (
+              <HeroStat label={t('buildersPage.detail.statRegion')} value={region} />
+            ) : null}
+            {address ? (
+              <HeroStat label={t('buildersPage.detail.statAddress')} value={address} />
+            ) : null}
           </dl>
         </div>
       </div>

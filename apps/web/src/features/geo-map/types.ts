@@ -140,6 +140,16 @@ export type GeoMapCanvasProps = {
   adminSelectionChrome?: GeoMapAdminMapSelectionChromeProps | null | undefined;
   /** Admin-only: session OSM building hides merged into the building-3d filter. */
   adminOsmHideSession?: AdminOsmHideSession | null | undefined;
+  /**
+   * Park canopy. Defaults on so every canvas matches the admin city map.
+   * Trees appear at close zoom and hide when far.
+   */
+  greenCanopyEnabled?: boolean | undefined;
+  /**
+   * Road traffic. Defaults on so every canvas matches the admin city map.
+   * Sparse white cars appear on visible streets at close zoom.
+   */
+  roadTrafficEnabled?: boolean | undefined;
 };
 
 export type GeoMapAdminSelectionKind = 'osm' | 'model';

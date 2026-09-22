@@ -8,10 +8,7 @@ import { useTranslations } from 'next-intl';
 import { useLogoutMutation } from '@/features/auth/hooks/use-auth';
 import { Link, usePathname } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
-import {
-  PORTAL_NAV_ACTIVE_ATTR,
-  PortalNavRailGroup,
-} from '@/shared/ui/portal-nav-rail-group';
+import { PORTAL_NAV_ACTIVE_ATTR, PortalNavRailGroup } from '@/shared/ui/portal-nav-rail-group';
 import { usePortalRailCollapsed } from '@/shared/ui/portal-rail-collapse-context';
 
 type NavKey = 'dashboard' | 'password' | 'qr' | 'requests' | 'favorites' | 'checkin';
@@ -48,9 +45,7 @@ const navLinkClassName = (active: boolean, collapsed: boolean): string =>
     'transition-colors duration-[var(--duration-base)] ease-[var(--ease-out-premium)]',
     'motion-reduce:transition-none',
     collapsed ? 'justify-center px-2' : 'gap-3 px-3.5 py-2 text-base',
-    active
-      ? 'text-brand'
-      : 'text-on-dark/85 hover:bg-on-dark/10 hover:text-on-dark',
+    active ? 'text-brand' : 'text-on-dark/85 hover:bg-on-dark/10 hover:text-on-dark',
   );
 
 const isActive = (pathname: string, href: string): boolean => {

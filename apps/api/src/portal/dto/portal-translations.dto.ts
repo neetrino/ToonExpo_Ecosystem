@@ -1,14 +1,8 @@
-import { ApiPropertyOptional } from "@nestjs/swagger";
-import { Type } from "class-transformer";
-import {
-  IsObject,
-  IsOptional,
-  IsString,
-  MaxLength,
-  ValidateNested,
-} from "class-validator";
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsObject, IsOptional, IsString, MaxLength, ValidateNested } from 'class-validator';
 
-import { PORTAL_DESCRIPTION_MAX_LENGTH } from "../portal.constants.js";
+import { PORTAL_DESCRIPTION_MAX_LENGTH } from '../portal.constants.js';
 
 export class LocaleTextMapDto {
   @ApiPropertyOptional()

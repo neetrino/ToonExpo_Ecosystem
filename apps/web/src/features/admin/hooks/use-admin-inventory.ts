@@ -96,14 +96,7 @@ export const useAdminBuildingsQuery = (
   projectId?: string,
   options?: { enabled?: boolean; search?: string },
 ) => {
-  const params = toListParams(
-    page,
-    pageSize,
-    companyId,
-    undefined,
-    projectId,
-    options?.search,
-  );
+  const params = toListParams(page, pageSize, companyId, undefined, projectId, options?.search);
   return useQuery({
     queryKey: adminBuildingsQueryKey(params),
     queryFn: () => listAdminBuildings(params),

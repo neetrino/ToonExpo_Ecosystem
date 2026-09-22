@@ -8,7 +8,10 @@ import { GeoMapAdminSidebar } from '@/features/geo-map/admin/components/geo-map-
 import type { GeoMapCreateDraft } from '@/features/geo-map/admin/components/geo-map-create-panel';
 import type { GeoMapDragSyncedPosition } from '@/features/geo-map/admin/components/geo-map-edit-panel';
 import type { GeoMapTransformDraft } from '@/features/geo-map/admin/components/geo-map-transform-fields';
-import { GEO_MAP_DEFAULT_CREATE_VALUES, GEO_MAP_PREVIEW_PIN_ID } from '@/features/geo-map/admin/constants';
+import {
+  GEO_MAP_DEFAULT_CREATE_VALUES,
+  GEO_MAP_PREVIEW_PIN_ID,
+} from '@/features/geo-map/admin/constants';
 import { useGeoMapAddressFlyTo } from '@/features/geo-map/admin/hooks/use-geo-map-address-fly-to';
 import {
   useAdminGeoMapModelsQuery,
@@ -25,6 +28,7 @@ import {
   GEO_MAP_REPLACE_GLB_INPUT_ID,
 } from '@/features/geo-map/admin/utils/focus-geo-map-file-input';
 import { GeoMapCanvasLazy } from '@/features/geo-map/components/geo-map-canvas-lazy';
+import { GEO_MAP_CITY_LIFE_PROPS } from '@/features/geo-map/geo-map-city-life-props';
 import type {
   AdminOsmHideSession,
   GeoMapLngLat,
@@ -584,6 +588,7 @@ export const GeoMapAdminPage = () => {
           selectedOsmBuilding={selectedOsmBuilding}
           adminSelectionChrome={adminSelectionChrome}
           adminOsmHideSession={adminOsmHideSession}
+          {...GEO_MAP_CITY_LIFE_PROPS}
           className="absolute inset-0 h-full w-full"
           onObjectClick={selectModel}
           onOsmBuildingSelect={handleOsmBuildingSelect}

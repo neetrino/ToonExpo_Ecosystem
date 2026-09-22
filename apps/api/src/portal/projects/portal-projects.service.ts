@@ -13,10 +13,7 @@ import { cascadePublishProjectInventory } from '../utils/ensure-published-invent
 import { groupPortalTranslations } from '../utils/group-translations.js';
 import { requireOwnedProject } from '../utils/ownership.js';
 import { buildProjectSlug } from '../utils/slug.js';
-import {
-  upsertTranslations,
-  type TranslationFieldPayload,
-} from '../utils/upsert-translations.js';
+import { upsertTranslations, type TranslationFieldPayload } from '../utils/upsert-translations.js';
 import type { CreatePortalProjectDto } from '../dto/create-portal-project.dto.js';
 import type { UpdatePortalProjectDto } from '../dto/update-portal-project.dto.js';
 import type { UpdatePortalPublicationDto } from '../dto/update-portal-publication.dto.js';

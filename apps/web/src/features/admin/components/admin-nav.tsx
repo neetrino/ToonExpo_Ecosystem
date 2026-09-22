@@ -14,10 +14,7 @@ import {
 } from '@/features/admin/admin-nav-items';
 import { Link, usePathname } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
-import {
-  PORTAL_NAV_ACTIVE_ATTR,
-  PortalNavRailGroup,
-} from '@/shared/ui/portal-nav-rail-group';
+import { PORTAL_NAV_ACTIVE_ATTR, PortalNavRailGroup } from '@/shared/ui/portal-nav-rail-group';
 import { usePortalRailCollapsed } from '@/shared/ui/portal-rail-collapse-context';
 
 const NAV_ICON_CLASS = 'block size-[1.125rem] shrink-0 opacity-90';
@@ -52,9 +49,7 @@ const navLinkClassName = (active: boolean, collapsed: boolean, nested = false): 
       : nested
         ? 'min-h-9 gap-2.5 px-3.5 py-1.5 text-sm leading-snug'
         : 'min-h-10 gap-2.5 px-3.5 py-2 text-[0.9375rem] leading-snug',
-    active
-      ? 'text-brand'
-      : 'text-on-dark/85 hover:bg-on-dark/10 hover:text-on-dark',
+    active ? 'text-brand' : 'text-on-dark/85 hover:bg-on-dark/10 hover:text-on-dark',
   );
 
 /**

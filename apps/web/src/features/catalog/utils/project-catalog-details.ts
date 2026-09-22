@@ -158,9 +158,9 @@ const EMPTY_DETAILS: ProjectCatalogDetails = {
 };
 
 /** Stable key list for Admin catalog editors and parsers. */
-export const PROJECT_CATALOG_DETAIL_KEYS = Object.keys(
-  EMPTY_DETAILS,
-) as Array<keyof ProjectCatalogDetails>;
+export const PROJECT_CATALOG_DETAIL_KEYS = Object.keys(EMPTY_DETAILS) as Array<
+  keyof ProjectCatalogDetails
+>;
 
 const DETAIL_KEYS = PROJECT_CATALOG_DETAIL_KEYS;
 

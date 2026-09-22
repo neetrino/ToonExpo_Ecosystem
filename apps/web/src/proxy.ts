@@ -13,10 +13,7 @@ const PATHNAME_HEADER = 'x-pathname';
  * next-intl already returns `NextResponse.next({ request: { headers } })`;
  * cloning the request before calling it does not reach Server Components.
  */
-const withPathnameRequestHeader = (
-  request: NextRequest,
-  response: NextResponse,
-): NextResponse => {
+const withPathnameRequestHeader = (request: NextRequest, response: NextResponse): NextResponse => {
   const pathname = request.nextUrl.pathname;
   const override = response.headers.get('x-middleware-override-headers');
   const keys = override ? override.split(',').filter(Boolean) : [];

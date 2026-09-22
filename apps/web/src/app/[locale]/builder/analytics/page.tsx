@@ -1,7 +1,7 @@
-import { getLocale, setRequestLocale } from "next-intl/server";
-import { Suspense } from "react";
+import { getLocale, setRequestLocale } from 'next-intl/server';
+import { Suspense } from 'react';
 
-import { BuilderAnalyticsPage } from "@/features/builder/components/builder-analytics-page";
+import { BuilderAnalyticsPage } from '@/features/builder/components/builder-analytics-page';
 
 type BuilderAnalyticsRouteProps = {
   params: Promise<{ locale: string }>;
@@ -10,9 +10,7 @@ type BuilderAnalyticsRouteProps = {
 /**
  * Builder portal analytics dashboard route.
  */
-export default async function BuilderAnalyticsRoute({
-  params,
-}: BuilderAnalyticsRouteProps) {
+export default async function BuilderAnalyticsRoute({ params }: BuilderAnalyticsRouteProps) {
   await params;
   const locale = await getLocale();
   setRequestLocale(locale);

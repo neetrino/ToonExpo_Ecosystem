@@ -92,7 +92,9 @@ export const ExhibitorCatalogBrowser = ({
         visibleTabs={visibleTabs}
         emptyLabel={resolveEmptyLabel(showBuilders, filters.q, t)}
         builders={catalog != null && catalog.kind !== 'partners' ? catalog.builders : undefined}
-        partners={catalog != null && catalog.kind !== 'builders' ? catalog.response.data : undefined}
+        partners={
+          catalog != null && catalog.kind !== 'builders' ? catalog.response.data : undefined
+        }
         page={partnerMeta?.page ?? 1}
         totalPages={partnerMeta?.totalPages ?? 1}
         previousLabel={t('pagination.previous')}

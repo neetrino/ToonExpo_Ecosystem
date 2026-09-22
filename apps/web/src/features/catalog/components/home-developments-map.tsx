@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react';
 import { HOME_GEO_MAP_HEIGHT_CLASS } from '@/features/catalog/constants/home-geo-map';
 import { HomeGeoMapProjectSearch } from '@/features/catalog/components/home-geo-map-project-search';
 import { GeoMapCanvasLazy } from '@/features/geo-map/components/geo-map-canvas-lazy';
+import { GEO_MAP_CITY_LIFE_PROPS } from '@/features/geo-map/geo-map-city-life-props';
 import type { GeoMapFocusRequest, GeoMapObject } from '@/features/geo-map/types';
 import { mapPublicGeoMapItemsToObjects } from '@/features/geo-map/utils/map-object-mapper';
 import { GeoMapStatusOverlays } from '@/features/geo-map/public/components/geo-map-status-overlays';
@@ -69,6 +70,7 @@ export const HomeDevelopmentsMap = () => {
           initialZoom={view.zoom}
           focusRequest={focusRequest}
           highlightedObjectId={highlightedObjectId}
+          {...GEO_MAP_CITY_LIFE_PROPS}
           className="absolute inset-0 h-full w-full"
           onObjectClick={onObjectClick}
         />

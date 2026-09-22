@@ -19,9 +19,7 @@ export const ADMIN_BANK_PARTNER_OFFER_TEMPLATES_QUERY_KEY = [
   'bank-partner-offer-templates',
 ] as const;
 
-export const useAdminBankPartnerOfferTemplatesQuery = (
-  params: ListAdminTemplatesParams = {},
-) =>
+export const useAdminBankPartnerOfferTemplatesQuery = (params: ListAdminTemplatesParams = {}) =>
   useQuery({
     queryKey: [...ADMIN_BANK_PARTNER_OFFER_TEMPLATES_QUERY_KEY, params],
     queryFn: () => listAdminBankPartnerOfferTemplates(params),
@@ -44,13 +42,8 @@ export const useCreateBankPartnerOfferTemplateMutation = () => {
 export const useUpdateBankPartnerOfferTemplateMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({
-      id,
-      body,
-    }: {
-      id: string;
-      body: UpdateBankPartnerOfferTemplateBody;
-    }) => updateAdminBankPartnerOfferTemplate(id, body),
+    mutationFn: ({ id, body }: { id: string; body: UpdateBankPartnerOfferTemplateBody }) =>
+      updateAdminBankPartnerOfferTemplate(id, body),
     onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: ADMIN_BANK_PARTNER_OFFER_TEMPLATES_QUERY_KEY,

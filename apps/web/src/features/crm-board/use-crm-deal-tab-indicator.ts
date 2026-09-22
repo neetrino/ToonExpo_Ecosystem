@@ -18,9 +18,7 @@ type UseCrmDealTabIndicatorResult = {
 /**
  * Measures the active CRM sheet tab so the underline can slide between labels.
  */
-export const useCrmDealTabIndicator = (
-  active: CrmDealSheetTab,
-): UseCrmDealTabIndicatorResult => {
+export const useCrmDealTabIndicator = (active: CrmDealSheetTab): UseCrmDealTabIndicatorResult => {
   const listRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<Partial<Record<CrmDealSheetTab, HTMLButtonElement | null>>>({});
   const [indicator, setIndicator] = useState<TabIndicator>({ left: 0, width: 0 });

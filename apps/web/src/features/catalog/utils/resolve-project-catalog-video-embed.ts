@@ -107,9 +107,7 @@ export const extractMatterportModelId = (url: URL): string | null => {
     return fromQuery;
   }
 
-  const pathMatch = url.pathname.match(
-    /\/(?:show|space|models)\/([a-zA-Z0-9_-]{6,})(?:\/|$)/i,
-  );
+  const pathMatch = url.pathname.match(/\/(?:show|space|models)\/([a-zA-Z0-9_-]{6,})(?:\/|$)/i);
   return pathMatch?.[1] ?? null;
 };
 

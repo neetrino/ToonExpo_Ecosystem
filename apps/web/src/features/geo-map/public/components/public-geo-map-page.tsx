@@ -3,10 +3,14 @@
 import { useMemo } from 'react';
 
 import { GeoMapCanvasLazy } from '@/features/geo-map/components/geo-map-canvas-lazy';
+import { GEO_MAP_CITY_LIFE_PROPS } from '@/features/geo-map/geo-map-city-life-props';
 import type { GeoMapObject } from '@/features/geo-map/types';
 import { mapPublicGeoMapItemsToObjects } from '@/features/geo-map/utils/map-object-mapper';
 import { GeoMapStatusOverlays } from '@/features/geo-map/public/components/geo-map-status-overlays';
-import { PUBLIC_GEO_MAP_CAMERA_CONTROLS_POSITION_CLASS, PUBLIC_GEO_MAP_MAP_HEIGHT_CLASS } from '@/features/geo-map/public/constants';
+import {
+  PUBLIC_GEO_MAP_CAMERA_CONTROLS_POSITION_CLASS,
+  PUBLIC_GEO_MAP_MAP_HEIGHT_CLASS,
+} from '@/features/geo-map/public/constants';
 import { usePublicGeoMapModelsQuery } from '@/features/geo-map/public/hooks/use-public-geo-map-models';
 import { buildProjectPublicHref } from '@/features/geo-map/public/utils/build-project-public-href';
 import { resolvePublicGeoMapView } from '@/features/geo-map/public/utils/resolve-public-geo-map-view';
@@ -47,6 +51,7 @@ export const PublicGeoMapPage = () => {
           objects={objects}
           initialCenter={view.center}
           initialZoom={view.zoom}
+          {...GEO_MAP_CITY_LIFE_PROPS}
           className="absolute inset-0 h-full w-full"
           cameraControlsClassName={PUBLIC_GEO_MAP_CAMERA_CONTROLS_POSITION_CLASS}
           onObjectClick={onObjectClick}

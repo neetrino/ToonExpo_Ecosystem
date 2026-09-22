@@ -254,9 +254,7 @@ export const AdminProjectsListPage = () => {
       <CatalogPagination
         page={response.meta.page}
         totalPages={response.meta.totalPages}
-        previousHref={
-          response.meta.page > 1 ? buildListHref(response.meta.page - 1) : null
-        }
+        previousHref={response.meta.page > 1 ? buildListHref(response.meta.page - 1) : null}
         nextHref={
           response.meta.page < response.meta.totalPages
             ? buildListHref(response.meta.page + 1)

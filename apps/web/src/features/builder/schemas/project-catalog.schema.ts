@@ -4,9 +4,7 @@ import { PROJECT_CATALOG_DETAIL_KEYS } from '@/features/catalog/utils/project-ca
 import { PROJECT_CATALOG_LINK_IDS } from '@/features/catalog/utils/project-catalog-links';
 import { TIMELINE_STAGE_KEYS } from '@/features/catalog/utils/project-detail-presentation';
 
-import {
-  PROJECT_CATALOG_FIELD_MAX_LENGTH,
-} from '@/features/builder/constants/project-catalog-editor';
+import { PROJECT_CATALOG_FIELD_MAX_LENGTH } from '@/features/builder/constants/project-catalog-editor';
 
 const catalogLocaleTextSchema = z.object({
   hy: z.string().trim().max(PROJECT_CATALOG_FIELD_MAX_LENGTH),
@@ -35,12 +33,30 @@ const timelineStageDatesShape = Object.fromEntries(
 export const projectCatalogFormSchema = z.object({
   catalogDetails: z.object(catalogDetailsShape),
   timelineStageDates: z.object(timelineStageDatesShape),
-  amenityLabelsHy: z.string().trim().max(PROJECT_CATALOG_FIELD_MAX_LENGTH * 2),
-  amenityLabelsRu: z.string().trim().max(PROJECT_CATALOG_FIELD_MAX_LENGTH * 2),
-  amenityLabelsEn: z.string().trim().max(PROJECT_CATALOG_FIELD_MAX_LENGTH * 2),
-  nearbyPlacesHy: z.string().trim().max(PROJECT_CATALOG_FIELD_MAX_LENGTH * 2),
-  nearbyPlacesRu: z.string().trim().max(PROJECT_CATALOG_FIELD_MAX_LENGTH * 2),
-  nearbyPlacesEn: z.string().trim().max(PROJECT_CATALOG_FIELD_MAX_LENGTH * 2),
+  amenityLabelsHy: z
+    .string()
+    .trim()
+    .max(PROJECT_CATALOG_FIELD_MAX_LENGTH * 2),
+  amenityLabelsRu: z
+    .string()
+    .trim()
+    .max(PROJECT_CATALOG_FIELD_MAX_LENGTH * 2),
+  amenityLabelsEn: z
+    .string()
+    .trim()
+    .max(PROJECT_CATALOG_FIELD_MAX_LENGTH * 2),
+  nearbyPlacesHy: z
+    .string()
+    .trim()
+    .max(PROJECT_CATALOG_FIELD_MAX_LENGTH * 2),
+  nearbyPlacesRu: z
+    .string()
+    .trim()
+    .max(PROJECT_CATALOG_FIELD_MAX_LENGTH * 2),
+  nearbyPlacesEn: z
+    .string()
+    .trim()
+    .max(PROJECT_CATALOG_FIELD_MAX_LENGTH * 2),
   catalogGallery: z.string().trim().max(PROJECT_CATALOG_GALLERY_MAX_LENGTH),
   catalogLinks: z.object(catalogLinksShape),
 });

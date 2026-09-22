@@ -22,12 +22,7 @@ export type ExhibitorCatalog =
       response: PublicPartnerListResponse;
     };
 
-const BUILDER_SEARCH_FIELDS = [
-  'name',
-  'shortDescription',
-  'region',
-  'address',
-] as const;
+const BUILDER_SEARCH_FIELDS = ['name', 'shortDescription', 'region', 'address'] as const;
 
 /**
  * Client-side keyword filter for the full builders list.

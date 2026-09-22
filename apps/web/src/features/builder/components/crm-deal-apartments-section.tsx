@@ -224,9 +224,7 @@ export const CrmDealApartmentsSection = ({ deal }: CrmDealApartmentsSectionProps
 
       <ConfirmDeleteModal
         open={pendingUnlink != null}
-        message={
-          pendingUnlink ? t('unlinkConfirm', { apartment: pendingUnlink.label }) : undefined
-        }
+        message={pendingUnlink ? t('unlinkConfirm', { apartment: pendingUnlink.label }) : undefined}
         confirming={detachMutation.isPending}
         confirmLabel={t('unlinkApartment')}
         onCancel={() => {

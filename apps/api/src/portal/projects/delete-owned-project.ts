@@ -6,10 +6,7 @@ import { TRANSLATION_ENTITY } from '../../catalog/utils/resolve-translation.js';
  * Hard-deletes a project and nested inventory regardless of publication status.
  * Clears Restrict FKs (readiness, CRM apartment links) before the cascade delete.
  */
-export const deleteOwnedProject = async (
-  db: PrismaClient,
-  projectId: string,
-): Promise<void> => {
+export const deleteOwnedProject = async (db: PrismaClient, projectId: string): Promise<void> => {
   const apartments = await db.apartment.findMany({
     where: { projectId },
     select: { id: true },

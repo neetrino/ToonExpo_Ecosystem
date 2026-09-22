@@ -123,9 +123,7 @@ const mapPublicHotspot = (
   }
 
   const salesStatus =
-    targetType === 'apartment'
-      ? entities.apartments.get(hotspot.targetId)?.salesStatus
-      : undefined;
+    targetType === 'apartment' ? entities.apartments.get(hotspot.targetId)?.salesStatus : undefined;
 
   return {
     id: hotspot.id,

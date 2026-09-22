@@ -1,4 +1,4 @@
-import type { PaginatedResponse } from "./catalog.js";
+import type { PaginatedResponse } from './catalog.js';
 
 export type MediaAssetItem = {
   id: string;

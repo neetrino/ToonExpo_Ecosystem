@@ -37,9 +37,7 @@ export const useExhibitorCatalogQuery = ({
 }: UseExhibitorCatalogQueryOptions) => {
   const queryClient = useQueryClient();
   const seedInitial =
-    initialCatalog != null &&
-    initialFilters != null &&
-    isSameFilters(filters, initialFilters);
+    initialCatalog != null && initialFilters != null && isSameFilters(filters, initialFilters);
 
   useEffect(() => {
     if (initialCatalog == null || initialFilters == null) {

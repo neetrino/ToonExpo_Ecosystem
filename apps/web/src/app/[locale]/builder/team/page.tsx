@@ -1,7 +1,7 @@
-import { getLocale, setRequestLocale } from "next-intl/server";
-import { Suspense } from "react";
+import { getLocale, setRequestLocale } from 'next-intl/server';
+import { Suspense } from 'react';
 
-import { TeamPage } from "@/features/builder/components/team-page";
+import { TeamPage } from '@/features/builder/components/team-page';
 
 type BuilderTeamPageProps = {
   params: Promise<{ locale: string }>;
@@ -10,9 +10,7 @@ type BuilderTeamPageProps = {
 /**
  * Company team management route.
  */
-export default async function BuilderTeamPage({
-  params,
-}: BuilderTeamPageProps) {
+export default async function BuilderTeamPage({ params }: BuilderTeamPageProps) {
   await params;
   const locale = await getLocale();
   setRequestLocale(locale);

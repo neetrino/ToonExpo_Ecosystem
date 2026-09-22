@@ -73,11 +73,7 @@ const listFieldName = (
         ? 'amenityLabelsRu'
         : 'amenityLabelsEn';
   }
-  return locale === 'hy'
-    ? 'nearbyPlacesHy'
-    : locale === 'ru'
-      ? 'nearbyPlacesRu'
-      : 'nearbyPlacesEn';
+  return locale === 'hy' ? 'nearbyPlacesHy' : locale === 'ru' ? 'nearbyPlacesRu' : 'nearbyPlacesEn';
 };
 
 type CatalogLinkFieldsProps = {
@@ -213,10 +209,7 @@ export const ProjectCatalogEditor = ({
             control={control}
             name="catalogGallery"
             render={({ field }) => (
-              <ProjectCatalogGalleryEditor
-                value={field.value}
-                onChange={field.onChange}
-              />
+              <ProjectCatalogGalleryEditor value={field.value} onChange={field.onChange} />
             )}
           />
         </ProjectCatalogSectionCard>

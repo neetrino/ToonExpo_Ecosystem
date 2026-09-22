@@ -1,5 +1,5 @@
-import { ApiPropertyOptional } from "@nestjs/swagger";
-import { Type } from "class-transformer";
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsDateString,
@@ -11,7 +11,7 @@ import {
   MinLength,
   ValidateIf,
   ValidateNested,
-} from "class-validator";
+} from 'class-validator';
 
 import {
   PORTAL_ADDRESS_MAX_LENGTH,
@@ -21,8 +21,8 @@ import {
   PORTAL_PROJECT_NAME_MAX_LENGTH,
   PORTAL_PROJECT_TYPE_MAX_LENGTH,
   PORTAL_SLUG_MAX_LENGTH,
-} from "../portal.constants.js";
-import { PortalTranslationsDto } from "./portal-translations.dto.js";
+} from '../portal.constants.js';
+import { PortalTranslationsDto } from './portal-translations.dto.js';
 
 export class UpdatePortalProjectDto {
   @ApiPropertyOptional()

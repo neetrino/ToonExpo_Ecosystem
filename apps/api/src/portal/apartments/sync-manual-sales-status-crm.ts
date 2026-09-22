@@ -1,7 +1,4 @@
-import {
-  ApartmentSalesStatus,
-  type Prisma,
-} from '@toonexpo/db';
+import { ApartmentSalesStatus, type Prisma } from '@toonexpo/db';
 
 import {
   dealStatusForManualInventory,

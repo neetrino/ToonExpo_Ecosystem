@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import type {
   AdminHomeHero,
   HomeHeroCopy,
@@ -73,10 +69,7 @@ export class PlatformSettingsService {
   }
 
   private async resolveHomeHero(): Promise<PublicHomeHero> {
-    const [{ ids }, copy] = await Promise.all([
-      this.readStoredSlideIds(),
-      this.readStoredCopy(),
-    ]);
+    const [{ ids }, copy] = await Promise.all([this.readStoredSlideIds(), this.readStoredCopy()]);
     const slides = await this.resolveSlides(ids);
     return { slides, ...copy };
   }
@@ -231,8 +224,9 @@ export class PlatformSettingsService {
   }
 }
 
-const uniqueMediaIds = (ids: readonly string[]): string[] =>
-  [...new Set(ids.map((id) => id.trim()).filter(Boolean))];
+const uniqueMediaIds = (ids: readonly string[]): string[] => [
+  ...new Set(ids.map((id) => id.trim()).filter(Boolean)),
+];
 
 const parseSlideIds = (raw: string): string[] => {
   const trimmed = raw.trim();

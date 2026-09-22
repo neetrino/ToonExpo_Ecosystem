@@ -6,10 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 
-import {
-  PORTAL_DEFAULT_PAGE_SIZE,
-  PORTAL_MAX_PAGE_SIZE,
-} from '@/features/builder/constants';
+import { PORTAL_DEFAULT_PAGE_SIZE, PORTAL_MAX_PAGE_SIZE } from '@/features/builder/constants';
 import { usePortalInventoryBuildingsQuery } from '@/features/builder/hooks/use-portal-inventory-hub';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
 import { usePathname, useRouter } from '@/i18n/navigation';

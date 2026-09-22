@@ -73,11 +73,7 @@ export const BrandLogo = ({
     <Link
       href={href}
       onClick={onClick}
-      className={cn(
-        'inline-flex gap-2',
-        badge ? 'items-start' : 'items-center',
-        className,
-      )}
+      className={cn('inline-flex gap-2', badge ? 'items-start' : 'items-center', className)}
     >
       <Image
         src={src}

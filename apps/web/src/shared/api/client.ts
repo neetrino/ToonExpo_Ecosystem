@@ -3,7 +3,7 @@ import { API_V1_PREFIX } from '@toonexpo/contracts';
 import { getPublicEnv, getServerApiBaseUrl } from '@/shared/config/env';
 
 import { clearCsrfTokenCache, isMutatingMethod, withCsrfHeaders } from './csrf';
-import { ApiError, isCsrfForbiddenMessage } from './errors';
+import { ApiError, isCsrfForbiddenMessage, toApiNetworkError } from './errors';
 
 /** Public auth mutations establish the session; CSRF is not available yet. */
 const CSRF_EXEMPT_PATHS = new Set([
@@ -106,10 +106,15 @@ export const apiFetch = async <T>(options: ApiFetchOptions): Promise<T> => {
   const requiresCsrf = mutating && !CSRF_EXEMPT_PATHS.has(path);
   const headers = requiresCsrf ? await withCsrfHeaders(init.headers) : toHeaderRecord(init.headers);
 
-  const response = await fetch(buildApiUrl(path), {
-    ...init,
-    headers,
-  });
+  let response: Response;
+  try {
+    response = await fetch(buildApiUrl(path), {
+      ...init,
+      headers,
+    });
+  } catch (error) {
+    throw toApiNetworkError(error);
+  }
 
   if (!response.ok) {
     const { code, message } = await readApiErrorBody(response);

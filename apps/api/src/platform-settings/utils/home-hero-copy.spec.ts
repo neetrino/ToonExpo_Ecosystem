@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-  isHomeHeroCopyEmpty,
-  normalizeHomeHeroCopy,
-  parseHomeHeroCopy,
-} from './home-hero-copy.js';
+import { isHomeHeroCopyEmpty, normalizeHomeHeroCopy, parseHomeHeroCopy } from './home-hero-copy.js';
 
 describe('home-hero-copy', () => {
   it('returns empty maps for missing or invalid JSON', () => {

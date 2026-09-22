@@ -30,10 +30,7 @@ type CrmDealSheetAnimatedPanelProps = {
 /**
  * Remounts tab content so the panel fades/slides with the underline.
  */
-export const CrmDealSheetAnimatedPanel = ({
-  tab,
-  children,
-}: CrmDealSheetAnimatedPanelProps) => {
+export const CrmDealSheetAnimatedPanel = ({ tab, children }: CrmDealSheetAnimatedPanelProps) => {
   const previousTab = useRef(tab);
   const direction = tabIndex(tab) >= tabIndex(previousTab.current) ? 'forward' : 'back';
   previousTab.current = tab;

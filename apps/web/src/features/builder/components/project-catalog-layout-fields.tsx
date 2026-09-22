@@ -14,9 +14,7 @@ import {
   isProjectCatalogDateKey,
   isProjectCatalogTextareaKey,
 } from '@/features/builder/constants/project-catalog-editor';
-import {
-  getCatalogFieldPlaceholder,
-} from '@/features/builder/constants/project-content-placeholders';
+import { getCatalogFieldPlaceholder } from '@/features/builder/constants/project-content-placeholders';
 import type { UpdateProjectFormValues } from '@/features/builder/schemas/project.schema';
 import { DatePicker } from '@/shared/ui/date-picker';
 import { parseIsoDate, toIsoDate } from '@/shared/ui/date-picker-utils';
@@ -120,11 +118,7 @@ type OverviewEditorProps = {
 /**
  * Overview stats editor — equal columns, matches public catalog icon layout.
  */
-export const ProjectCatalogOverviewEditor = ({
-  keys,
-  locale,
-  register,
-}: OverviewEditorProps) => {
+export const ProjectCatalogOverviewEditor = ({ keys, locale, register }: OverviewEditorProps) => {
   return (
     <div
       className={cn(
@@ -161,13 +155,7 @@ type OverviewFieldProps = {
   register: UseFormRegister<UpdateProjectFormValues>;
 };
 
-const OverviewField = ({
-  fieldId,
-  fieldKey,
-  locale,
-  Icon,
-  register,
-}: OverviewFieldProps) => {
+const OverviewField = ({ fieldId, fieldKey, locale, Icon, register }: OverviewFieldProps) => {
   const label = useCatalogFieldLabel(fieldKey);
   const placeholder = getCatalogFieldPlaceholder(locale, fieldKey);
   return (
@@ -217,13 +205,7 @@ type CatalogKvItemProps = {
   register: UseFormRegister<UpdateProjectFormValues>;
 };
 
-const CatalogKvItem = ({
-  sectionId,
-  fieldKey,
-  locale,
-  control,
-  register,
-}: CatalogKvItemProps) => {
+const CatalogKvItem = ({ sectionId, fieldKey, locale, control, register }: CatalogKvItemProps) => {
   const fieldId = `catalog-${sectionId}-${fieldKey}-${locale}`;
   const useTextarea = isProjectCatalogTextareaKey(fieldKey);
   const wide = sectionId === 'bankPartner' ? fieldKey === 'specialTerms' : useTextarea;
@@ -232,12 +214,7 @@ const CatalogKvItem = ({
   const label = useCatalogFieldLabel(fieldKey);
   const placeholder = getCatalogFieldPlaceholder(locale, fieldKey);
   return (
-    <div
-      className={cn(
-        CATALOG_KV_ROW_CLASS,
-        wide && 'sm:col-span-2 sm:grid-cols-1',
-      )}
-    >
+    <div className={cn(CATALOG_KV_ROW_CLASS, wide && 'sm:col-span-2 sm:grid-cols-1')}>
       <label
         htmlFor={fieldId}
         className="flex min-w-0 items-start gap-2 pt-2.5 text-sm text-ink-muted"
@@ -256,12 +233,7 @@ const CatalogKvItem = ({
           {...register(`catalogDetails.${fieldKey}.${locale}`)}
         />
       ) : dateField ? (
-        <CatalogDateValue
-          fieldId={fieldId}
-          fieldKey={fieldKey}
-          locale={locale}
-          control={control}
-        />
+        <CatalogDateValue fieldId={fieldId} fieldKey={fieldKey} locale={locale} control={control} />
       ) : (
         <Input
           id={fieldId}

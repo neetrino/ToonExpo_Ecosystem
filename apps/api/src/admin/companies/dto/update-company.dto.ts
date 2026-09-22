@@ -51,7 +51,6 @@ export class UpdateCompanyDto {
   @MaxLength(COMPANY_SHORT_DESCRIPTION_MAX_LENGTH)
   shortDescription?: string | null;
 
-
   @ApiPropertyOptional({ enum: CompanyStatusDto })
   @IsOptional()
   @IsEnum(CompanyStatusDto)

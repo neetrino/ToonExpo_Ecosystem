@@ -1,15 +1,13 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import type {
-  FieldErrors,
-  FieldValues,
-  Path,
-  UseFormRegister,
-} from 'react-hook-form';
+import type { FieldErrors, FieldValues, Path, UseFormRegister } from 'react-hook-form';
 import { useTranslations } from 'next-intl';
 
-import { TranslationTabs, type TranslationLocale } from '@/features/builder/components/translation-tabs';
+import {
+  TranslationTabs,
+  type TranslationLocale,
+} from '@/features/builder/components/translation-tabs';
 import {
   COMPANY_DESCRIPTION_MAX_LENGTH,
   COMPANY_SHORT_DESCRIPTION_MAX_LENGTH,
@@ -72,17 +70,13 @@ export const CompanyCopyFields = <TFieldValues extends FieldValues>({
         <div className="flex flex-col gap-4">
           <div
             className={
-              nameAside
-                ? 'grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start'
-                : undefined
+              nameAside ? 'grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start' : undefined
             }
           >
             <FormField
               id={`${idPrefix}-name-${locale}`}
               label={t('form.name')}
-              error={
-                locale === 'hy' && fieldErrors.nameHy ? t('validation.name') : undefined
-              }
+              error={locale === 'hy' && fieldErrors.nameHy ? t('validation.name') : undefined}
             >
               <Input
                 id={`${idPrefix}-name-${locale}`}
@@ -106,9 +100,7 @@ export const CompanyCopyFields = <TFieldValues extends FieldValues>({
               rows={2}
               maxLength={COMPANY_SHORT_DESCRIPTION_MAX_LENGTH}
               className="min-h-20"
-              aria-invalid={Boolean(
-                fieldErrors[COMPANY_LOCALE_FIELDS.shortDescription[locale]],
-              )}
+              aria-invalid={Boolean(fieldErrors[COMPANY_LOCALE_FIELDS.shortDescription[locale]])}
               aria-describedby={`${idPrefix}-short-description-hint-${locale}`}
               {...register(copyField<TFieldValues>('shortDescription', locale))}
             />

@@ -2,7 +2,15 @@
 
 import type { PortalProjectListItem } from '@toonexpo/contracts';
 import type { LucideIcon } from 'lucide-react';
-import { Building, Building2, CheckCircle2, CircleDashed, Home, MapPin, QrCode } from 'lucide-react';
+import {
+  Building,
+  Building2,
+  CheckCircle2,
+  CircleDashed,
+  Home,
+  MapPin,
+  QrCode,
+} from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -54,8 +62,7 @@ type BuilderProjectImageProps = {
 const BuilderProjectImage = ({ project }: BuilderProjectImageProps) => {
   const [imageFailed, setImageFailed] = useState(false);
   const cover = project.cover;
-  const imageSource =
-    toSafeImageSource(cover?.thumbnailUrl) ?? toSafeImageSource(cover?.fileUrl);
+  const imageSource = toSafeImageSource(cover?.thumbnailUrl) ?? toSafeImageSource(cover?.fileUrl);
   const validImageSource = imageFailed ? undefined : imageSource;
 
   return (

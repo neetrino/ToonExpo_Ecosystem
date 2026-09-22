@@ -1,18 +1,14 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import {
   ApartmentSalesStatus,
   CrmDealApartmentLinkType,
   CrmDealStatus,
   CompanyMemberStatus,
-} from "@toonexpo/db";
+} from '@toonexpo/db';
 
-import { PrismaService } from "../../prisma/prisma.service.js";
-import { AnalyticsService } from "../../analytics/analytics.service.js";
-import { CRM_STATUSES_REQUIRING_APARTMENT } from "../crm.constants.js";
+import { PrismaService } from '../../prisma/prisma.service.js';
+import { AnalyticsService } from '../../analytics/analytics.service.js';
+import { CRM_STATUSES_REQUIRING_APARTMENT } from '../crm.constants.js';
 import {
   CRM_APARTMENT_ALREADY_SOLD,
   applyCrmApartmentSalesWrite,
@@ -20,8 +16,8 @@ import {
   isApartmentInventorySynced,
   shouldReleaseCrmReservation,
   type CrmApartmentSalesWriteInput,
-} from "./crm-inventory-sync.js";
-import { isCrmStatusTransitionAllowed } from "./deal-status.transitions.js";
+} from './crm-inventory-sync.js';
+import { isCrmStatusTransitionAllowed } from './deal-status.transitions.js';
 
 /**
  * Validates CRM status transitions and syncs apartment inventory.
@@ -42,33 +38,24 @@ export class DealStatusService {
     actorUserId: string;
   }): Promise<void> {
     if (!isCrmStatusTransitionAllowed(input.from, input.to)) {
-      throw new BadRequestException(
-        `Invalid status transition: ${input.from} -> ${input.to}`,
-      );
+      throw new BadRequestException(`Invalid status transition: ${input.from} -> ${input.to}`);
     }
     if (input.to === CrmDealStatus.lost && !input.lostReason?.trim()) {
-      throw new BadRequestException("lostReason is required when status is lost");
+      throw new BadRequestException('lostReason is required when status is lost');
     }
 
     const linkCount = await this.prisma.db.crmDealApartmentLink.count({
       where: { crmDealId: input.dealId },
     });
-    if (
-      CRM_STATUSES_REQUIRING_APARTMENT.includes(input.to) &&
-      linkCount === 0
-    ) {
-      throw new BadRequestException(
-        `Status ${input.to} requires at least one linked apartment`,
-      );
+    if (CRM_STATUSES_REQUIRING_APARTMENT.includes(input.to) && linkCount === 0) {
+      throw new BadRequestException(`Status ${input.to} requires at least one linked apartment`);
     }
 
     await this.prisma.db.crmDeal.update({
       where: { id: input.dealId },
       data: {
         status: input.to,
-        ...(input.to === CrmDealStatus.lost
-          ? { lostReason: input.lostReason ?? null }
-          : {}),
+        ...(input.to === CrmDealStatus.lost ? { lostReason: input.lostReason ?? null } : {}),
         lastActivityAt: new Date(),
       },
     });
@@ -76,7 +63,7 @@ export class DealStatusService {
     await this.syncInventory(input);
 
     this.analytics.track({
-      eventType: "crm_status_changed",
+      eventType: 'crm_status_changed',
       crmDealId: input.dealId,
       companyId: input.companyId,
       actorUserId: input.actorUserId,
@@ -84,10 +71,7 @@ export class DealStatusService {
     });
   }
 
-  async assertAssigneeInCompany(
-    companyId: string,
-    assignedUserId: string,
-  ): Promise<void> {
+  async assertAssigneeInCompany(companyId: string, assignedUserId: string): Promise<void> {
     const membership = await this.prisma.db.companyMember.findFirst({
       where: {
         companyId,
@@ -97,9 +81,7 @@ export class DealStatusService {
       select: { id: true },
     });
     if (!membership) {
-      throw new BadRequestException(
-        "Assignee must be an active member of this company",
-      );
+      throw new BadRequestException('Assignee must be an active member of this company');
     }
   }
 
@@ -126,11 +108,11 @@ export class DealStatusService {
   private async loadPrimaryApartmentId(dealId: string): Promise<string> {
     const link = await this.prisma.db.crmDealApartmentLink.findFirst({
       where: { crmDealId: dealId },
-      orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }],
+      orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }],
       select: { apartmentId: true },
     });
     if (!link) {
-      throw new BadRequestException("Deal has no linked apartment");
+      throw new BadRequestException('Deal has no linked apartment');
     }
     return link.apartmentId;
   }
@@ -148,15 +130,9 @@ export class DealStatusService {
       },
     });
     if (!apartment) {
-      throw new NotFoundException("Apartment not found");
+      throw new NotFoundException('Apartment not found');
     }
-    if (
-      isApartmentInventorySynced(
-        apartment,
-        input.dealId,
-        ApartmentSalesStatus.reserved,
-      )
-    ) {
+    if (isApartmentInventorySynced(apartment, input.dealId, ApartmentSalesStatus.reserved)) {
       return;
     }
     assertApartmentReservableByDeal(apartment, input.dealId);
@@ -180,15 +156,9 @@ export class DealStatusService {
       select: { salesStatus: true, activeCrmDealId: true },
     });
     if (!apartment) {
-      throw new NotFoundException("Apartment not found");
+      throw new NotFoundException('Apartment not found');
     }
-    if (
-      isApartmentInventorySynced(
-        apartment,
-        input.dealId,
-        ApartmentSalesStatus.sold,
-      )
-    ) {
+    if (isApartmentInventorySynced(apartment, input.dealId, ApartmentSalesStatus.sold)) {
       return;
     }
     if (
@@ -208,10 +178,7 @@ export class DealStatusService {
     });
   }
 
-  private async releaseReservation(input: {
-    dealId: string;
-    actorUserId: string;
-  }): Promise<void> {
+  private async releaseReservation(input: { dealId: string; actorUserId: string }): Promise<void> {
     const links = await this.prisma.db.crmDealApartmentLink.findMany({
       where: { crmDealId: input.dealId },
       select: { apartmentId: true },
@@ -240,9 +207,7 @@ export class DealStatusService {
     }
   }
 
-  private async writeApartmentStatus(
-    input: CrmApartmentSalesWriteInput,
-  ): Promise<void> {
+  private async writeApartmentStatus(input: CrmApartmentSalesWriteInput): Promise<void> {
     await this.prisma.db.$transaction(async (tx) => {
       await applyCrmApartmentSalesWrite(tx, input);
     });

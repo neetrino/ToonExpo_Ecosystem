@@ -155,4 +155,3 @@ CrmDeal 0..n CrmDealPayments
 Apartment 0..n ApartmentStatusHistory
 CrmDeal 0..n ApartmentStatusHistory
 ```
-

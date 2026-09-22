@@ -1,4 +1,4 @@
-import { BadRequestException } from "@nestjs/common";
+import { BadRequestException } from '@nestjs/common';
 import {
   ApartmentSalesStatus,
   CrmDealApartmentLinkType,
@@ -6,13 +6,11 @@ import {
   CrmStatusSource,
   type Prisma,
   type PrismaClient,
-} from "@toonexpo/db";
+} from '@toonexpo/db';
 
-export const CRM_APARTMENT_RESERVED_BY_OTHER_DEAL =
-  "Apartment is already reserved by another deal";
-export const CRM_APARTMENT_ALREADY_SOLD = "Apartment is already sold";
-export const CRM_DEAL_ALREADY_HAS_APARTMENT =
-  "Deal already has a linked apartment";
+export const CRM_APARTMENT_RESERVED_BY_OTHER_DEAL = 'Apartment is already reserved by another deal';
+export const CRM_APARTMENT_ALREADY_SOLD = 'Apartment is already sold';
+export const CRM_DEAL_ALREADY_HAS_APARTMENT = 'Deal already has a linked apartment';
 
 export type CrmInventoryClient = PrismaClient | Prisma.TransactionClient;
 
@@ -34,9 +32,7 @@ export type CrmApartmentSalesWriteInput = {
 /**
  * Linked apartments are reserved until the deal is converted (sold).
  */
-export const inventorySalesStatusForDeal = (
-  dealStatus: CrmDealStatus,
-): ApartmentSalesStatus =>
+export const inventorySalesStatusForDeal = (dealStatus: CrmDealStatus): ApartmentSalesStatus =>
   dealStatus === CrmDealStatus.converted
     ? ApartmentSalesStatus.sold
     : ApartmentSalesStatus.reserved;
@@ -45,9 +41,7 @@ export const inventorySalesStatusForDeal = (
  * Inverse mapping used when an admin sets inventory by hand.
  * Available releases the CRM hold by resetting the deal.
  */
-export const dealStatusForManualInventory = (
-  status: ApartmentSalesStatus,
-): CrmDealStatus => {
+export const dealStatusForManualInventory = (status: ApartmentSalesStatus): CrmDealStatus => {
   if (status === ApartmentSalesStatus.sold) {
     return CrmDealStatus.converted;
   }
@@ -73,13 +67,10 @@ export const isApartmentInventorySynced = (
   apartment: ApartmentHoldState,
   dealId: string,
   next: ApartmentSalesStatus,
-): boolean =>
-  apartment.salesStatus === next && apartment.activeCrmDealId === dealId;
+): boolean => apartment.salesStatus === next && apartment.activeCrmDealId === dealId;
 
 export const shouldReleaseCrmReservation = (to: CrmDealStatus): boolean =>
-  to === CrmDealStatus.lost ||
-  to === CrmDealStatus.closed ||
-  to === CrmDealStatus.new_request;
+  to === CrmDealStatus.lost || to === CrmDealStatus.closed || to === CrmDealStatus.new_request;
 
 /**
  * Blocks linking / reserving when another deal already holds the unit.

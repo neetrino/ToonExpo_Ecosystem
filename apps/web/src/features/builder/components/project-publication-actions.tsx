@@ -51,7 +51,8 @@ export const ProjectPublicationActions = ({
   const [error, setError] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const { showSuccess, successToast } = useSuccessToast();
-  const busy = publicationMutation.isPending || verifiedMutation.isPending || deleteMutation.isPending;
+  const busy =
+    publicationMutation.isPending || verifiedMutation.isPending || deleteMutation.isPending;
 
   const changeStatus = async (publicationStatus: 'published' | 'draft') => {
     setError(null);
@@ -165,4 +166,6 @@ export const ProjectPublicationActions = ({
   );
 };
 
-const ToolbarDivider = () => <span className="hidden h-6 w-px shrink-0 bg-border sm:block" aria-hidden />;
+const ToolbarDivider = () => (
+  <span className="hidden h-6 w-px shrink-0 bg-border sm:block" aria-hidden />
+);

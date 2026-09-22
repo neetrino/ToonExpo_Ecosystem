@@ -8,9 +8,7 @@ import {
   ADMIN_FLOORS_QUERY_KEY,
   ADMIN_PROJECTS_QUERY_KEY,
 } from '@/features/admin/constants';
-import {
-  deleteSelectedSequentially,
-} from '@/features/admin/utils/inventory-list-bulk-delete';
+import { deleteSelectedSequentially } from '@/features/admin/utils/inventory-list-bulk-delete';
 import { deletePortalApartment } from '@/features/builder/api/portal-apartments-api';
 import { deletePortalBuilding } from '@/features/builder/api/portal-buildings-api';
 import { deletePortalFloor } from '@/features/builder/api/portal-floors-api';
@@ -54,13 +52,16 @@ export const useBulkDeleteProjectsMutation = (catalogScope?: CatalogScope) => {
 
   return useMutation({
     mutationFn: (targets: readonly BulkDeleteTarget[]) =>
-      deleteSelectedSequentially(targets.map((t) => t.id), async (id) => {
-        const target = targets.find((item) => item.id === id);
-        if (!target) {
-          return;
-        }
-        await deletePortalProject(id, { scope: resolveScope(target.companyId, catalogScope) });
-      }),
+      deleteSelectedSequentially(
+        targets.map((t) => t.id),
+        async (id) => {
+          const target = targets.find((item) => item.id === id);
+          if (!target) {
+            return;
+          }
+          await deletePortalProject(id, { scope: resolveScope(target.companyId, catalogScope) });
+        },
+      ),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ADMIN_PROJECTS_QUERY_KEY });
       void queryClient.invalidateQueries({ queryKey: PORTAL_PROJECTS_QUERY_KEY });
@@ -76,13 +77,16 @@ export const useBulkDeleteBuildingsMutation = (catalogScope?: CatalogScope) => {
 
   return useMutation({
     mutationFn: (targets: readonly BulkDeleteTarget[]) =>
-      deleteSelectedSequentially(targets.map((t) => t.id), async (id) => {
-        const target = targets.find((item) => item.id === id);
-        if (!target) {
-          return;
-        }
-        await deletePortalBuilding(id, { scope: resolveScope(target.companyId, catalogScope) });
-      }),
+      deleteSelectedSequentially(
+        targets.map((t) => t.id),
+        async (id) => {
+          const target = targets.find((item) => item.id === id);
+          if (!target) {
+            return;
+          }
+          await deletePortalBuilding(id, { scope: resolveScope(target.companyId, catalogScope) });
+        },
+      ),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ADMIN_BUILDINGS_QUERY_KEY });
       void queryClient.invalidateQueries({ queryKey: ADMIN_PROJECTS_QUERY_KEY });
@@ -100,13 +104,16 @@ export const useBulkDeleteFloorsMutation = (catalogScope?: CatalogScope) => {
 
   return useMutation({
     mutationFn: (targets: readonly BulkDeleteTarget[]) =>
-      deleteSelectedSequentially(targets.map((t) => t.id), async (id) => {
-        const target = targets.find((item) => item.id === id);
-        if (!target) {
-          return;
-        }
-        await deletePortalFloor(id, { scope: resolveScope(target.companyId, catalogScope) });
-      }),
+      deleteSelectedSequentially(
+        targets.map((t) => t.id),
+        async (id) => {
+          const target = targets.find((item) => item.id === id);
+          if (!target) {
+            return;
+          }
+          await deletePortalFloor(id, { scope: resolveScope(target.companyId, catalogScope) });
+        },
+      ),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ADMIN_FLOORS_QUERY_KEY });
       void queryClient.invalidateQueries({ queryKey: ADMIN_BUILDINGS_QUERY_KEY });
@@ -124,13 +131,16 @@ export const useBulkDeleteApartmentsMutation = (catalogScope?: CatalogScope) => 
 
   return useMutation({
     mutationFn: (targets: readonly BulkDeleteTarget[]) =>
-      deleteSelectedSequentially(targets.map((t) => t.id), async (id) => {
-        const target = targets.find((item) => item.id === id);
-        if (!target) {
-          return;
-        }
-        await deletePortalApartment(id, { scope: resolveScope(target.companyId, catalogScope) });
-      }),
+      deleteSelectedSequentially(
+        targets.map((t) => t.id),
+        async (id) => {
+          const target = targets.find((item) => item.id === id);
+          if (!target) {
+            return;
+          }
+          await deletePortalApartment(id, { scope: resolveScope(target.companyId, catalogScope) });
+        },
+      ),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ADMIN_APARTMENTS_QUERY_KEY });
       void queryClient.invalidateQueries({ queryKey: ADMIN_FLOORS_QUERY_KEY });
