@@ -12,12 +12,14 @@ import { entityNotFound } from '../utils/access.js';
 import { cascadePublishProjectInventory } from '../utils/ensure-published-inventory-chain.js';
 import { groupPortalTranslations } from '../utils/group-translations.js';
 import { requireOwnedProject } from '../utils/ownership.js';
-import { buildProjectSlug } from '../utils/slug.js';
+import { createDraftProject } from './create-draft-project.js';
+import { deleteOwnedProject } from './delete-owned-project.js';
+import { projectDetailInclude } from './project-detail.include.js';
+import { assertProjectSlugAvailable, rethrowProjectSlugConflict } from './project-slug.js';
 import { upsertTranslations, type TranslationFieldPayload } from '../utils/upsert-translations.js';
 import type { CreatePortalProjectDto } from '../dto/create-portal-project.dto.js';
 import type { UpdatePortalProjectDto } from '../dto/update-portal-project.dto.js';
 import type { UpdatePortalPublicationDto } from '../dto/update-portal-publication.dto.js';
-import { deleteOwnedProject } from './delete-owned-project.js';
 
 const PROJECT_TRANSLATION_FIELDS = [
   TRANSLATION_FIELD.name,
@@ -38,26 +40,6 @@ const toProjectTranslationFields = (
   [TRANSLATION_FIELD.district]: translations.district,
   [TRANSLATION_FIELD.projectType]: translations.projectType,
 });
-
-const PROJECT_MEDIA_SELECT = {
-  id: true,
-  fileUrl: true,
-  thumbnailUrl: true,
-  altText: true,
-} as const;
-
-const projectDetailInclude = {
-  coverMedia: { select: PROJECT_MEDIA_SELECT },
-  buildings: {
-    orderBy: [{ displayOrder: 'asc' as const }, { name: 'asc' as const }],
-    include: {
-      floors: {
-        orderBy: [{ displayOrder: 'asc' as const }, { number: 'asc' as const }],
-        include: { _count: { select: { apartments: true } } },
-      },
-    },
-  },
-} satisfies Prisma.ProjectInclude;
 
 @Injectable()
 export class PortalProjectsService {
@@ -89,7 +71,9 @@ export class PortalProjectsService {
               logoMedia: { select: { fileUrl: true } },
             },
           },
-          coverMedia: { select: PROJECT_MEDIA_SELECT },
+          coverMedia: {
+            select: { id: true, fileUrl: true, thumbnailUrl: true, altText: true },
+          },
           _count: { select: { buildings: true, apartments: true } },
         },
       }),
@@ -123,41 +107,7 @@ export class PortalProjectsService {
     userId: string,
     dto: CreatePortalProjectDto,
   ): Promise<PortalProjectDetail> {
-    const slug = dto.slug?.trim() || buildProjectSlug(dto.name);
-    const project = await this.prisma.db.project.create({
-      data: {
-        builderCompanyId: companyId,
-        name: dto.name,
-        slug,
-        publicationStatus: PublicationStatus.draft,
-        createdByUserId: userId,
-        updatedByUserId: userId,
-        ...(dto.shortDescription !== undefined ? { shortDescription: dto.shortDescription } : {}),
-        ...(dto.fullDescription !== undefined ? { fullDescription: dto.fullDescription } : {}),
-        ...(dto.locationText !== undefined ? { locationText: dto.locationText } : {}),
-        ...(dto.address !== undefined ? { address: dto.address } : {}),
-        ...(dto.city !== undefined ? { city: dto.city } : {}),
-        ...(dto.district !== undefined ? { district: dto.district } : {}),
-        ...(dto.latitude !== undefined ? { latitude: dto.latitude } : {}),
-        ...(dto.longitude !== undefined ? { longitude: dto.longitude } : {}),
-        ...(dto.projectType !== undefined ? { projectType: dto.projectType } : {}),
-        ...(dto.constructionStatus !== undefined
-          ? { constructionStatus: dto.constructionStatus }
-          : {}),
-        ...(dto.completionDate !== undefined
-          ? { completionDate: new Date(dto.completionDate) }
-          : {}),
-        ...(dto.amenities !== undefined
-          ? { amenities: dto.amenities as Prisma.InputJsonValue }
-          : {}),
-        ...(dto.nearbyPlaces !== undefined
-          ? { nearbyPlaces: dto.nearbyPlaces as Prisma.InputJsonValue }
-          : {}),
-        ...(dto.coverMediaId !== undefined ? { coverMediaId: dto.coverMediaId } : {}),
-        ...(dto.verified !== undefined ? { verified: dto.verified } : {}),
-      },
-      include: projectDetailInclude,
-    });
+    const project = await createDraftProject(this.prisma.db, companyId, userId, dto);
 
     if (dto.translations) {
       await upsertTranslations(this.prisma.db, {
@@ -178,12 +128,18 @@ export class PortalProjectsService {
     dto: UpdatePortalProjectDto,
   ): Promise<PortalProjectDetail> {
     const owned = await requireOwnedProject(this.prisma, projectRef, companyId);
+    const slug =
+      dto.slug !== undefined
+        ? await assertProjectSlugAvailable(this.prisma.db, owned.id, dto.slug)
+        : undefined;
 
-    const project = await this.prisma.db.project.update({
+    let project: Prisma.ProjectGetPayload<{ include: typeof projectDetailInclude }>;
+    try {
+      project = await this.prisma.db.project.update({
       where: { id: owned.id },
       data: {
         ...(dto.name !== undefined ? { name: dto.name } : {}),
-        ...(dto.slug !== undefined ? { slug: dto.slug } : {}),
+        ...(slug !== undefined ? { slug } : {}),
         ...(dto.shortDescription !== undefined ? { shortDescription: dto.shortDescription } : {}),
         ...(dto.fullDescription !== undefined ? { fullDescription: dto.fullDescription } : {}),
         ...(dto.locationText !== undefined ? { locationText: dto.locationText } : {}),
@@ -212,7 +168,11 @@ export class PortalProjectsService {
         updatedByUserId: userId,
       },
       include: projectDetailInclude,
-    });
+      });
+    } catch (error) {
+      rethrowProjectSlugConflict(error);
+      throw error;
+    }
 
     if (dto.translations) {
       await upsertTranslations(this.prisma.db, {

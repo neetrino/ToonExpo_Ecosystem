@@ -36,6 +36,7 @@ import { catalogJsonToFormSlice } from '@/features/builder/utils/project-catalog
 import { projectLocaleField } from '@/features/builder/utils/project-locale-fields';
 import { toUpdateProjectRequest } from '@/features/builder/utils/project-mappers';
 import { MediaUploadField } from '@/features/media/components/media-upload-field';
+import { isApiErrorStatus } from '@/shared/api/errors';
 import { Button } from '@/shared/ui/button';
 import { cn } from '@/shared/ui/cn';
 import { DatePicker } from '@/shared/ui/date-picker';
@@ -142,14 +143,14 @@ const EditProjectFormInner = ({ project }: EditProjectFormProps) => {
   const slugField = register('slug');
 
   const onSubmit = handleSubmit(async (values) => {
-    try {
-      const shouldSaveProject = isDirty;
-      const shouldSaveOffers = hasUnsavedOfferChanges;
-      if (!shouldSaveProject && !shouldSaveOffers) {
-        return;
-      }
+    const shouldSaveProject = isDirty;
+    const shouldSaveOffers = hasUnsavedOfferChanges;
+    if (!shouldSaveProject && !shouldSaveOffers) {
+      return;
+    }
 
-      if (shouldSaveProject) {
+    if (shouldSaveProject) {
+      try {
         const shouldSendCover = values.coverMediaId.length > 0 || Boolean(dirtyFields.coverMediaId);
         const updated = await updateMutation.mutateAsync(
           toUpdateProjectRequest(values, { includeCoverMediaId: shouldSendCover }),
@@ -160,16 +161,22 @@ const EditProjectFormInner = ({ project }: EditProjectFormProps) => {
         }
         reset(nextValues, { keepDirty: false });
         setPreviewUrl(updated.cover?.thumbnailUrl ?? updated.cover?.fileUrl ?? previewUrl);
+      } catch (error) {
+        showError(isApiErrorStatus(error, 409) ? t('errors.slugTaken') : t('errors.generic'));
+        return;
       }
-
-      if (shouldSaveOffers) {
-        await saveAllOfferChanges();
-      }
-
-      showSuccess(t('detail.saveSuccess'));
-    } catch {
-      showError(t('errors.generic'));
     }
+
+    if (shouldSaveOffers) {
+      try {
+        await saveAllOfferChanges();
+      } catch {
+        showError(t('errors.generic'));
+        return;
+      }
+    }
+
+    showSuccess(t('detail.saveSuccess'));
   }, onInvalid);
 
   const busy = isSubmitting || updateMutation.isPending || isSavingSubForms;

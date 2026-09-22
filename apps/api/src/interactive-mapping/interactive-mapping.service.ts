@@ -1,4 +1,5 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { insertWithUniqueSlug } from '../common/utils/allocate-unique-slug.js';
 import type {
   InteractiveMappingDistrictSummary,
   InteractiveMappingProjectDetail,
@@ -9,12 +10,18 @@ import { Prisma, PublicationStatus } from '@toonexpo/db';
 
 import { entityNotFound } from '../portal/utils/access.js';
 import { requireOwnedBuilding, requireOwnedProject } from '../portal/utils/ownership.js';
+import { PORTAL_SLUG_MAX_LENGTH } from '../portal/portal.constants.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import type {
   CreateDistrictDto,
   SetupBuildingFloorsDto,
   UpdateDistrictDto,
 } from './interactive-mapping.dto.js';
+import {
+  assertDistrictSlugAvailable,
+  districtSlugTaken,
+  rethrowDistrictSlugConflict,
+} from './district-slug.js';
 import {
   loadCanvasSnapshots,
   loadFloorsByProject,
@@ -212,18 +219,23 @@ export class InteractiveMappingService {
     } else {
       await this.requireProject(projectId);
     }
-    const slug = await this.resolveUniqueSlug(projectId, dto.slug ?? slugifyDistrictName(dto.name));
-    const district = await this.prisma.db.district.create({
-      data: {
-        projectId,
-        name: dto.name,
-        slug,
-        displayOrder: dto.displayOrder ?? 0,
-        publicationStatus:
-          (dto.publicationStatus as PublicationStatus) ?? PublicationStatus.published,
-        createdByUserId: userId,
-        updatedByUserId: userId,
-      },
+    const district = await insertWithUniqueSlug({
+      base: slugifyDistrictName(dto.slug ?? dto.name),
+      maxLength: PORTAL_SLUG_MAX_LENGTH,
+      isTaken: (slug) => districtSlugTaken(this.prisma.db, projectId, slug),
+      insert: (slug) =>
+        this.prisma.db.district.create({
+          data: {
+            projectId,
+            name: dto.name,
+            slug,
+            displayOrder: dto.displayOrder ?? 0,
+            publicationStatus:
+              (dto.publicationStatus as PublicationStatus) ?? PublicationStatus.published,
+            createdByUserId: userId,
+            updatedByUserId: userId,
+          },
+        }),
     });
     return mapDistrict(district);
   }
@@ -237,7 +249,7 @@ export class InteractiveMappingService {
     const existing = await this.requireDistrict(districtId, companyId);
     const slug =
       dto.slug !== undefined
-        ? await this.resolveUniqueSlug(existing.projectId, dto.slug, districtId)
+        ? await assertDistrictSlugAvailable(this.prisma.db, existing.projectId, dto.slug, districtId)
         : undefined;
     try {
       const district = await this.prisma.db.district.update({
@@ -302,30 +314,8 @@ export class InteractiveMappingService {
     }
     return existing;
   }
-
-  private async resolveUniqueSlug(
-    projectId: string,
-    slug: string,
-    excludeDistrictId?: string,
-  ): Promise<string> {
-    const normalized = slugifyDistrictName(slug);
-    const existing = await this.prisma.db.district.findFirst({
-      where: {
-        projectId,
-        slug: normalized,
-        ...(excludeDistrictId ? { id: { not: excludeDistrictId } } : {}),
-      },
-      select: { id: true },
-    });
-    if (existing) {
-      throw new ConflictException('District slug already exists for this project');
-    }
-    return normalized;
-  }
 }
 
 const throwIfUniqueSlugConflict = (error: unknown): void => {
-  if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
-    throw new ConflictException('District slug already exists for this project');
-  }
+  rethrowDistrictSlugConflict(error);
 };

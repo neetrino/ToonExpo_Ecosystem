@@ -1,3 +1,4 @@
+import { ConflictException } from "@nestjs/common";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { PrismaService } from "../../prisma/prisma.service.js";
@@ -18,10 +19,10 @@ describe("resolvePartnerSlug", () => {
       "Acme Partner",
     );
 
-    expect(slug).toMatch(/^acme-partner-[a-f0-9]+$/);
+    expect(slug).toBe("acme-partner");
   });
 
-  it("appends suffix when requested slug is already taken", async () => {
+  it("appends a numeric suffix when the requested slug is already taken", async () => {
     partnerCompanyFindUnique
       .mockResolvedValueOnce({ id: "other", slug: "taken-slug" })
       .mockResolvedValue(null);
@@ -33,8 +34,7 @@ describe("resolvePartnerSlug", () => {
       "taken-slug",
     );
 
-    expect(slug).not.toBe("taken-slug");
-    expect(partnerCompanyFindUnique.mock.calls.length).toBeGreaterThan(1);
+    expect(slug).toBe("taken-slug-2");
   });
 
   it("allows keeping slug when updating the same partner", async () => {
@@ -52,6 +52,24 @@ describe("resolvePartnerSlug", () => {
     );
 
     expect(slug).toBe("same-slug");
+  });
+
+  it("rejects an edited slug owned by another partner", async () => {
+    partnerCompanyFindUnique.mockResolvedValue({
+      id: "other",
+      slug: "taken-slug",
+    });
+
+    const { resolvePartnerSlug } = await import("../utils/partner-access.js");
+
+    await expect(
+      resolvePartnerSlug(
+        prismaFromMocks(partnerCompanyFindUnique),
+        "Partner Co",
+        "taken-slug",
+        "pc_1",
+      ),
+    ).rejects.toBeInstanceOf(ConflictException);
   });
 });
 

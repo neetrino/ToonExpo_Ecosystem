@@ -13,9 +13,11 @@ import { WebRevalidationService } from '../../common/web-revalidation/web-revali
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { toAdminPartnerDetail, toAdminPartnerListItem } from '../mappers/partner.mapper.js';
 import {
+  insertPartnerWithUniqueSlug,
   loadPartnerTranslationRows,
   partnerNotFound,
   resolvePartnerSlug,
+  rethrowPartnerSlugConflict,
 } from '../utils/partner-access.js';
 import { mapPartnerTypeToCompanyType } from '../utils/map-partner-type-to-company-type.js';
 import { upsertPartnerProfileTranslations } from '../utils/partner-translations.util.js';
@@ -120,19 +122,19 @@ export class AdminPartnersService {
       adminPhone: dto.adminPhone?.trim() || null,
     });
 
-    const slug = await resolvePartnerSlug(this.prisma.db, companyName);
-
-    const partner = await this.prisma.db.partnerCompany.create({
-      data: {
-        companyId: company.id,
-        type: dto.type,
-        name: companyName,
-        slug,
-        status: PartnerCompanyStatus.active,
-        publicationStatus: PublicationStatus.draft,
-        featured: false,
-      },
-    });
+    const partner = await insertPartnerWithUniqueSlug(this.prisma.db, companyName, (slug) =>
+      this.prisma.db.partnerCompany.create({
+        data: {
+          companyId: company.id,
+          type: dto.type,
+          name: companyName,
+          slug,
+          status: PartnerCompanyStatus.active,
+          publicationStatus: PublicationStatus.draft,
+          featured: false,
+        },
+      }),
+    );
 
     await this.provisioning.sendSetPasswordInviteBestEffort({
       userId: adminUser.id,
@@ -156,7 +158,8 @@ export class AdminPartnersService {
         ? await resolvePartnerSlug(this.prisma.db, dto.name ?? 'partner', dto.slug, id)
         : undefined;
 
-    await this.prisma.db.partnerCompany.update({
+    try {
+      await this.prisma.db.partnerCompany.update({
       where: { id },
       data: {
         ...(dto.type !== undefined ? { type: dto.type } : {}),
@@ -177,7 +180,11 @@ export class AdminPartnersService {
           : {}),
         ...(dto.featured !== undefined ? { featured: dto.featured } : {}),
       },
-    });
+      });
+    } catch (error) {
+      rethrowPartnerSlugConflict(error);
+      throw error;
+    }
 
     await upsertPartnerProfileTranslations(this.prisma.db, id, userId, dto.translations);
 

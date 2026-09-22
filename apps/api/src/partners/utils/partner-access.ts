@@ -3,16 +3,23 @@ import {
   ConflictException,
   NotFoundException,
 } from "@nestjs/common";
-import { CompanyType } from "@toonexpo/db";
+import { CompanyType, type Prisma } from "@toonexpo/db";
 
 import { loadTranslations } from "../../catalog/utils/load-translations.js";
 import { TRANSLATION_ENTITY } from "../../catalog/utils/resolve-translation.js";
+import {
+  allocateUniqueSlug,
+  insertWithUniqueSlug,
+  uniqueConstraintTargetsSlug,
+} from "../../common/utils/allocate-unique-slug.js";
 import { PrismaService } from "../../prisma/prisma.service.js";
-import { SLUG_UNIQUENESS_MAX_ATTEMPTS } from "../../common/constants/slug.constants.js";
-import { buildProjectSlug } from "../../portal/utils/slug.js";
+import { PORTAL_SLUG_MAX_LENGTH } from "../../portal/portal.constants.js";
+import { normalizePortalSlug } from "../../portal/utils/slug.js";
 import { PARTNER_COMPATIBLE_COMPANY_TYPES } from "../partners.constants.js";
 
 type PartnerCompanyClient = PrismaService["db"];
+
+type PartnerSlugDb = PrismaService["db"] | Prisma.TransactionClient;
 
 /**
  * Ensures the company exists and can host a partner profile.
@@ -38,32 +45,61 @@ export const assertPartnerCompatibleCompany = async (
   }
 };
 
+const PARTNER_SLUG_FALLBACK = "partner";
+
+export const PARTNER_SLUG_CONFLICT_MESSAGE = "Partner slug already exists";
+
 /**
- * Resolves a unique slug, generating from name when omitted.
+ * Resolves a unique slug from a name, or rejects an edited slug that another partner owns.
  */
 export const resolvePartnerSlug = async (
-  db: PartnerCompanyClient,
+  db: PartnerSlugDb,
   name: string,
   requestedSlug?: string,
   excludePartnerId?: string,
 ): Promise<string> => {
-  const base = requestedSlug?.trim() || buildProjectSlug(name);
-  let candidate = base;
-  let attempt = 0;
-
-  while (await slugTaken(db, candidate, excludePartnerId)) {
-    attempt += 1;
-    candidate = buildProjectSlug(`${name}-${attempt}`);
-    if (attempt > SLUG_UNIQUENESS_MAX_ATTEMPTS) {
-      throw new ConflictException("Unable to generate a unique slug");
+  const explicit = requestedSlug?.trim();
+  const base = normalizePortalSlug(explicit || name, PARTNER_SLUG_FALLBACK);
+  if (explicit && excludePartnerId) {
+    if (await slugTaken(db, base, excludePartnerId)) {
+      throw new ConflictException(PARTNER_SLUG_CONFLICT_MESSAGE);
     }
+    return base;
   }
 
-  return candidate;
+  return allocateUniqueSlug({
+    base,
+    maxLength: PORTAL_SLUG_MAX_LENGTH,
+    isTaken: (candidate) => slugTaken(db, candidate, excludePartnerId),
+  });
+};
+
+/**
+ * Inserts a partner row, retrying `-2`, `-3` when the slug loses a race.
+ */
+export const insertPartnerWithUniqueSlug = <T>(
+  db: PartnerSlugDb,
+  name: string,
+  insert: (slug: string) => Promise<T>,
+): Promise<T> =>
+  insertWithUniqueSlug({
+    base: normalizePortalSlug(name, PARTNER_SLUG_FALLBACK),
+    maxLength: PORTAL_SLUG_MAX_LENGTH,
+    isTaken: (candidate) => slugTaken(db, candidate),
+    insert,
+  });
+
+/**
+ * Turns a lost partner-slug race on update into a conflict.
+ */
+export const rethrowPartnerSlugConflict = (error: unknown): void => {
+  if (uniqueConstraintTargetsSlug(error)) {
+    throw new ConflictException(PARTNER_SLUG_CONFLICT_MESSAGE);
+  }
 };
 
 const slugTaken = async (
-  db: PartnerCompanyClient,
+  db: PartnerSlugDb,
   slug: string,
   excludePartnerId?: string,
 ): Promise<boolean> => {
