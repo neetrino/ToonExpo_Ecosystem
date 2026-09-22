@@ -6,6 +6,7 @@ import type {
   AdminBuildingListResponse,
   AdminFloorListResponse,
 } from '@toonexpo/contracts';
+import type { ApartmentSalesStatus } from '@toonexpo/db';
 
 import { AccountTypes } from '../../auth/decorators/account-types.decorator.js';
 import { CompanyMember } from '../../company/decorators/company-member.decorator.js';
@@ -94,6 +95,7 @@ export class PortalInventoryController {
       query.buildingId,
       undefined,
       query.search,
+      query.salesStatus as ApartmentSalesStatus | undefined,
     );
   }
 }

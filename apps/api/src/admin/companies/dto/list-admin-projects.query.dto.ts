@@ -2,6 +2,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
+  IsEnum,
   IsInt,
   IsOptional,
   IsString,
@@ -18,6 +19,12 @@ import {
 } from '../../../common/constants/app.constants.js';
 
 const PROJECT_SEARCH_MAX_LENGTH = 120;
+
+enum ApartmentSalesStatusQuery {
+  available = 'available',
+  reserved = 'reserved',
+  sold = 'sold',
+}
 
 const toStringArray = (value: unknown): string[] | undefined => {
   if (value == null || value === '') {
@@ -99,6 +106,14 @@ export class ListAdminProjectsQueryDto {
   @IsString()
   @MinLength(1)
   projectId?: string;
+
+  @ApiPropertyOptional({
+    enum: ApartmentSalesStatusQuery,
+    description: 'Filter apartments by sales status',
+  })
+  @IsOptional()
+  @IsEnum(ApartmentSalesStatusQuery)
+  salesStatus?: ApartmentSalesStatusQuery;
 
   @ApiPropertyOptional({
     description:

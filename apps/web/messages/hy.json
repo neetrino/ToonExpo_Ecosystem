@@ -6,6 +6,16 @@
     "deleteConfirmTitle": "Ջնջել",
     "deleteConfirmMessage": "Համոզվա՞ծ եք, որ ուզում եք ջնջել սա։ Սա հնարավոր չէ հետարկել։",
     "deleteConfirmNamedMessage": "Համոզվա՞ծ եք, որ ուզում եք ջնջել «{name}»-ը։ Սա հնարավոր չէ հետարկել։",
+    "listSelection": {
+      "selectAll": "Ընտրել բոլորը այս էջում",
+      "selectRow": "Ընտրել տողը",
+      "selectedCount": "{count} ընտրված",
+      "clear": "Մաքրել",
+      "delete": "Ջնջել",
+      "deleteConfirmTitle": "Ջնջել ընտրվածը",
+      "deleteConfirm": "Ջնջե՞լ {count} ընտրված տարրերը։ Սա հնարավոր չէ հետարկել։",
+      "deleteError": "Չհաջողվեց ջնջել ընտրված տարրերը։ Փորձեք կրկին։"
+    },
     "integratedSearch": {
       "apply": "Կիրառել",
       "reset": "Մաքրել",
@@ -2020,6 +2030,8 @@
         "floor": "Հարկ",
         "allFloors": "Բոլոր հարկերը",
         "selectBuildingFirst": "Նախ ընտրեք շենքը",
+        "salesStatus": "Վաճառքի կարգավիճակ",
+        "allSalesStatuses": "Բոլոր կարգավիճակները",
         "searchPlaceholder": "Փնտրել ըստ նախագծի, ընկերության կամ քաղաքի"
       },
       "openBuildings": "Դիտել շենքերը՝ {name}",
@@ -2118,9 +2130,9 @@
         "noApartments": "Այս հարկում դեռ բնակարաններ չկան։",
         "apartmentUnit": "Բն. {number}",
         "deleteBuildingTitle": "Ջնջել շենքը",
-        "deleteBuildingConfirm": "Ջնջե՞լ այս սևագիր շենքը։ Հարկերն ու բնակարանները նույնպես կջնջվեն։ Սա հետադարձելի չէ։",
+        "deleteBuildingConfirm": "Ջնջե՞լ այս շենքը։ Հարկերն ու բնակարանները նույնպես կջնջվեն։ Սա հետադարձելի չէ։",
         "deleteFloorTitle": "Ջնջել հարկը",
-        "deleteFloorConfirm": "Ջնջե՞լ այս սևագիր հարկը։ Բնակարանները նույնպես կջնջվեն։ Սա հետադարձելի չէ։",
+        "deleteFloorConfirm": "Ջնջե՞լ այս հարկը։ Բնակարանները նույնպես կջնջվեն։ Սա հետադարձելի չէ։",
         "deleteError": "Չհաջողվեց ջնջել։ Կրկին փորձեք։",
         "sales": {
           "available": "Առկա",
@@ -3711,7 +3723,7 @@
         "publish": "Հրապարակել",
         "unpublish": "Հանել հրապարակումից",
         "delete": "Ջնջել",
-        "deleteConfirm": "Ջնջե՞լ այս սևագիր բնակարանը։ Գործողությունն անդառնալի է։",
+        "deleteConfirm": "Ջնջե՞լ այս բնակարանը։ Գործողությունն անդառնալի է։",
         "deleteConfirmTitle": "Ջնջել բնակարանը",
         "publicationSuccess": "Հրապարակման կարգավիճակը թարմացված է"
       },

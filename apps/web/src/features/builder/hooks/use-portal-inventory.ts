@@ -228,7 +228,7 @@ type DeletePortalApartmentInput = {
 };
 
 /**
- * Deletes a draft apartment.
+ * Deletes an apartment.
  */
 export const useDeletePortalApartmentMutation = () => {
   const queryClient = useQueryClient();

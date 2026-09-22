@@ -5,16 +5,20 @@ import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
+import { useBulkDeleteProjectsMutation } from '@/features/admin/hooks/use-inventory-bulk-delete';
+import { useInventoryListSelection } from '@/features/admin/hooks/use-inventory-list-selection';
 import { CreateProjectSheet } from '@/features/builder/components/create-project-sheet';
 import { ProjectsTable } from '@/features/builder/components/projects-table';
 import { catalogProjectsListHref } from '@/features/builder/catalog-scope';
 import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import { PORTAL_DEFAULT_PAGE_SIZE, PROJECTS_VIEW_MODE_KEY } from '@/features/builder/constants';
+import { useIsCompanyAdmin } from '@/features/builder/hooks/use-company-profile';
 import { usePortalProjectsQuery } from '@/features/builder/hooks/use-portal-projects';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
+import { ListSelectionToolbar } from '@/shared/ui/list-selection-toolbar';
 import { Reveal } from '@/shared/ui/motion';
 import { PageTitleBlock } from '@/shared/ui/page-title-icon';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
@@ -40,6 +44,12 @@ export const ProjectsListPage = () => {
   const listHref = catalogProjectsListHref(scope);
   const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(PROJECTS_VIEW_MODE_KEY);
   const [createOpen, setCreateOpen] = useState(false);
+  const isCompanyAdmin = useIsCompanyAdmin();
+  const projects = query.data?.data ?? [];
+  const listBulk = useInventoryListSelection(projects, effectiveViewMode, {
+    enabled: isCompanyAdmin,
+  });
+  const bulkDeleteMutation = useBulkDeleteProjectsMutation(scope);
 
   if (query.isLoading) {
     return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
@@ -84,7 +94,18 @@ export const ProjectsListPage = () => {
       {response.data.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>
       ) : (
-        <ProjectsTable projects={response.data} viewMode={effectiveViewMode} />
+        <div className="flex flex-col gap-3">
+          <ListSelectionToolbar
+            selectedCount={listBulk.selectedCount}
+            onClear={listBulk.selectionClear}
+            onConfirmDelete={() => bulkDeleteMutation.mutateAsync(listBulk.selectedTargets)}
+          />
+          <ProjectsTable
+            projects={response.data}
+            viewMode={effectiveViewMode}
+            listSelection={listBulk.listSelection}
+          />
+        </div>
       )}
 
       <CatalogPagination

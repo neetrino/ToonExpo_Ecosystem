@@ -14,7 +14,6 @@ import {
   useUpdateApartmentMutation,
   useUpdateApartmentPublicationMutation,
 } from '@/features/builder/hooks/use-portal-inventory';
-import { toCatalogPublicationStatus } from '@/features/catalog/utils/catalog-publication-status';
 import { useRouter } from '@/i18n/navigation';
 import { AdminDeleteModal } from '@/shared/ui/admin-delete-modal';
 import { useSuccessToast } from '@/shared/ui/use-success-toast';
@@ -27,7 +26,7 @@ type ApartmentPublicationActionsProps = {
 const APARTMENT_VERIFIED_SWITCH_ID = 'apartment-verified';
 
 /**
- * Publication / verified controls, plus delete for draft apartments.
+ * Publication / verified controls, plus delete for apartments.
  */
 export const ApartmentPublicationActions = ({
   apartment,
@@ -103,16 +102,14 @@ export const ApartmentPublicationActions = ({
             void changeVerified(verified);
           }}
         />
-        {toCatalogPublicationStatus(apartment.publicationStatus) === 'draft' ? (
-          <CatalogDraftDeleteButton
-            label={t('detail.delete')}
-            iconOnly={scope.mode === 'admin'}
-            disabled={busy}
-            onClick={() => {
-              setConfirmDelete(true);
-            }}
-          />
-        ) : null}
+        <CatalogDraftDeleteButton
+          label={t('detail.delete')}
+          iconOnly={scope.mode === 'admin'}
+          disabled={busy}
+          onClick={() => {
+            setConfirmDelete(true);
+          }}
+        />
       </div>
       {error ? (
         <p role="alert" className="text-sm text-danger">

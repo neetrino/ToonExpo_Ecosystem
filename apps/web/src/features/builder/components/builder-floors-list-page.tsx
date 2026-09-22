@@ -7,6 +7,8 @@ import { useMemo, useState } from 'react';
 
 import { AdminFloorApartmentsSheet } from '@/features/admin/components/admin-floor-apartments-sheet';
 import { AdminFloorsTable } from '@/features/admin/components/admin-floors-table';
+import { useBulkDeleteFloorsMutation } from '@/features/admin/hooks/use-inventory-bulk-delete';
+import { useInventoryListSelection } from '@/features/admin/hooks/use-inventory-list-selection';
 import { useAdminBuildingInventoryGlanceQuery } from '@/features/admin/hooks/use-admin-inventory';
 import { PORTAL_INVENTORY_SHEET_SCOPE } from '@/features/admin/inventory-sheet-scope';
 import { catalogFloorsListHref } from '@/features/builder/catalog-scope';
@@ -17,12 +19,14 @@ import {
 } from '@/features/builder/components/builder-inventory-list-shell';
 import { PortalCreateFloorSheet } from '@/features/builder/components/portal-create-floor-sheet';
 import { FLOORS_VIEW_MODE_KEY } from '@/features/builder/constants';
+import { useIsCompanyAdmin } from '@/features/builder/hooks/use-company-profile';
 import { usePortalInventoryFloorsQuery } from '@/features/builder/hooks/use-portal-inventory-hub';
 import { useRouter } from '@/i18n/navigation';
 import { useDebouncedSearch } from '@/shared/hooks/use-debounced-search';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
+import { ListSelectionToolbar } from '@/shared/ui/list-selection-toolbar';
 
 const FIRST_PAGE = 1;
 
@@ -47,6 +51,12 @@ export const BuilderFloorsListPage = () => {
   const [showCreate, setShowCreate] = useState(false);
   const [selectedFloor, setSelectedFloor] = useState<AdminFloorListItem | null>(null);
   const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(FLOORS_VIEW_MODE_KEY);
+  const isCompanyAdmin = useIsCompanyAdmin();
+  const floors = response?.data ?? [];
+  const listBulk = useInventoryListSelection(floors, effectiveViewMode, {
+    enabled: isCompanyAdmin,
+  });
+  const bulkDeleteMutation = useBulkDeleteFloorsMutation(scope);
 
   const glanceQuery = useAdminBuildingInventoryGlanceQuery(
     selectedFloor?.buildingId ?? '',
@@ -113,12 +123,20 @@ export const BuilderFloorsListPage = () => {
         }
       >
         {response ? (
-          <AdminFloorsTable
-            floors={response.data}
-            viewMode={effectiveViewMode}
-            showCompany={false}
-            onSelectFloor={setSelectedFloor}
-          />
+          <div className="flex flex-col gap-3">
+            <ListSelectionToolbar
+              selectedCount={listBulk.selectedCount}
+              onClear={listBulk.selectionClear}
+              onConfirmDelete={() => bulkDeleteMutation.mutateAsync(listBulk.selectedTargets)}
+            />
+            <AdminFloorsTable
+              floors={response.data}
+              viewMode={effectiveViewMode}
+              showCompany={false}
+              listSelection={listBulk.listSelection}
+              onSelectFloor={setSelectedFloor}
+            />
+          </div>
         ) : null}
       </BuilderInventoryListShell>
 

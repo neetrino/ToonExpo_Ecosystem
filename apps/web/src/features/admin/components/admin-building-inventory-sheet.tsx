@@ -17,7 +17,6 @@ import {
   toCatalogMutationScope,
   type InventorySheetScope,
 } from '@/features/admin/inventory-sheet-scope';
-import { toCatalogPublicationStatus } from '@/features/catalog/utils/catalog-publication-status';
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
 import { LIST_STATUS_BADGE_COMPACT_CLASS } from '@/shared/ui/list-status-badge';
 import { SideSheet } from '@/shared/ui/side-sheet';
@@ -97,8 +96,7 @@ export const AdminBuildingInventorySheet = ({
 
   const title = glance?.name ?? t('sheetTitle');
   const description = glance ? glance.projectName : undefined;
-  const canDelete =
-    glance != null && toCatalogPublicationStatus(glance.publicationStatus) === 'draft';
+  const canDelete = glance != null;
   const deleting = deleteMutation.isPending;
 
   const runDelete = (): void => {

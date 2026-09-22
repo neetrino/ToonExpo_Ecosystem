@@ -14,6 +14,8 @@ import {
   useAdminInventoryListParams,
 } from '@/features/admin/components/admin-inventory-list-shell';
 import { ADMIN_VIEW_MODE_KEYS } from '@/features/admin/constants';
+import { useBulkDeleteFloorsMutation } from '@/features/admin/hooks/use-inventory-bulk-delete';
+import { useInventoryListSelection } from '@/features/admin/hooks/use-inventory-list-selection';
 import {
   useAdminBuildingInventoryGlanceQuery,
   useAdminFloorsQuery,
@@ -23,6 +25,7 @@ import { useDebouncedSearch } from '@/shared/hooks/use-debounced-search';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
+import { ListSelectionToolbar } from '@/shared/ui/list-selection-toolbar';
 
 const FIRST_PAGE = 1;
 
@@ -52,6 +55,9 @@ export const AdminFloorsListPage = () => {
   const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(
     ADMIN_VIEW_MODE_KEYS.floors,
   );
+  const floors = response?.data ?? [];
+  const listBulk = useInventoryListSelection(floors, effectiveViewMode, { enabled: true });
+  const bulkDeleteMutation = useBulkDeleteFloorsMutation();
 
   const glanceQuery = useAdminBuildingInventoryGlanceQuery(selectedFloor?.buildingId ?? '');
   const floorplan = useMemo(() => {
@@ -112,13 +118,21 @@ export const AdminFloorsListPage = () => {
         }
       >
         {response ? (
-          <AdminFloorsTable
-            floors={response.data}
-            viewMode={effectiveViewMode}
-            onSelectFloor={(floor) => {
-              setSelectedFloor(floor);
-            }}
-          />
+          <div className="flex flex-col gap-3">
+            <ListSelectionToolbar
+              selectedCount={listBulk.selectedCount}
+              onClear={listBulk.selectionClear}
+              onConfirmDelete={() => bulkDeleteMutation.mutateAsync(listBulk.selectedTargets)}
+            />
+            <AdminFloorsTable
+              floors={response.data}
+              viewMode={effectiveViewMode}
+              listSelection={listBulk.listSelection}
+              onSelectFloor={(floor) => {
+                setSelectedFloor(floor);
+              }}
+            />
+          </div>
         ) : null}
       </AdminInventoryListShell>
 

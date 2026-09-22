@@ -7,6 +7,7 @@ import type {
   AdminFloorListResponse,
   FeaturedOnHomeResponse,
 } from '@toonexpo/contracts';
+import type { ApartmentSalesStatus } from '@toonexpo/db';
 
 import { AccountTypes } from '../../auth/decorators/account-types.decorator.js';
 import { AdminHomeFeaturedService } from './admin-home-featured.service.js';
@@ -71,6 +72,7 @@ export class AdminInventoryController {
       query.buildingId,
       query.floorId,
       query.search,
+      query.salesStatus as ApartmentSalesStatus | undefined,
     );
   }
 

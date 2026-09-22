@@ -14,6 +14,11 @@ import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
 import { ApartmentSalesStatusBadge } from '@/shared/ui/apartment-sales-status-badge';
 import { cn } from '@/shared/ui/cn';
 import { LIST_STATUS_BADGE_COMPACT_CLASS } from '@/shared/ui/list-status-badge';
+import type { ListTableSelectionProps } from '@/shared/ui/list-selection.types';
+import {
+  ListTableRowCheckbox,
+  ListTableSelectAllCheckbox,
+} from '@/shared/ui/list-table-checkbox';
 import { ListTableReveal } from '@/shared/ui/motion';
 import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 
@@ -28,6 +33,7 @@ type AdminApartmentsTableProps = {
   viewMode?: ViewMode | undefined;
   showCompany?: boolean | undefined;
   catalogScope?: CatalogScope | undefined;
+  listSelection?: ListTableSelectionProps | undefined;
 };
 
 /**
@@ -39,6 +45,7 @@ export const AdminApartmentsTable = ({
   viewMode = VIEW_MODE_CARDS,
   showCompany = true,
   catalogScope,
+  listSelection,
 }: AdminApartmentsTableProps) => {
   const t = useTranslations('Admin.apartments');
   const router = useRouter();
@@ -82,12 +89,23 @@ export const AdminApartmentsTable = ({
     );
   }
 
+  const selection = listSelection?.selection;
+  const selectableIdSet = listSelection?.selectableIdSet;
+
   return (
     <ListTableReveal>
       <div className="overflow-x-auto rounded-sm border border-border">
         <table className="w-full min-w-[56rem] border-collapse text-sm">
           <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
             <tr>
+              {selection && selectableIdSet ? (
+                <ListTableSelectAllCheckbox
+                  checked={selection.allSelected}
+                  indeterminate={selection.someSelected && !selection.allSelected}
+                  disabled={selection.selectableIds.length === 0}
+                  onChange={selection.toggleAll}
+                />
+              ) : null}
               <th className={TABLE_HEAD_CELL_CLASS}>{t('columns.unit')}</th>
               <th className={TABLE_HEAD_CELL_CLASS}>{t('columns.building')}</th>
               <th className={TABLE_HEAD_CELL_CLASS}>{t('columns.floor')}</th>
@@ -103,6 +121,7 @@ export const AdminApartmentsTable = ({
           <tbody>
             {apartments.map((apartment) => {
               const salesStatus = apartment.salesStatus as ApartmentSalesStatus;
+              const canSelect = selectableIdSet?.has(apartment.id) ?? false;
 
               return (
                 <tr
@@ -116,6 +135,15 @@ export const AdminApartmentsTable = ({
                     onRowKeyDown(event, apartment);
                   }}
                 >
+                  {selection && selectableIdSet ? (
+                    <ListTableRowCheckbox
+                      checked={selection.isSelected(apartment.id)}
+                      disabled={!canSelect}
+                      onChange={() => {
+                        selection.toggle(apartment.id);
+                      }}
+                    />
+                  ) : null}
                   <td className={cn(TABLE_BODY_CELL_CLASS, 'font-medium text-brand')}>
                     {t('unit', { number: apartment.number })}
                   </td>

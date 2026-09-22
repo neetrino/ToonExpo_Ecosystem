@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import type { PortalFloorSummary } from '@toonexpo/contracts';
 import { Prisma, PublicationStatus } from '@toonexpo/db';
 
@@ -155,13 +155,10 @@ export class PortalFloorsService {
         id: floorId,
         building: { project: { builderCompanyId: companyId } },
       },
-      select: { id: true, publicationStatus: true },
+      select: { id: true },
     });
     if (!floor) {
       throw entityNotFound('Floor');
-    }
-    if (floor.publicationStatus !== PublicationStatus.draft) {
-      throw new BadRequestException('Only draft floors can be deleted');
     }
     await this.prisma.db.floor.delete({ where: { id: floorId } });
   }

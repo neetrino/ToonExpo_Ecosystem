@@ -53,6 +53,9 @@ const toSearch = (params: ListAdminInventoryParams): string => {
   if (params.projectId) {
     search.set('projectId', params.projectId);
   }
+  if (params.salesStatus) {
+    search.set('salesStatus', params.salesStatus);
+  }
   const needle = params.search?.trim();
   if (needle) {
     search.set('search', needle);

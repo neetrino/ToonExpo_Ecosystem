@@ -5,6 +5,7 @@ import type {
   AdminBuildingListResponse,
   AdminFloorListResponse,
 } from '@toonexpo/contracts';
+import type { ApartmentSalesStatus } from '@toonexpo/db';
 
 import { decimalToString, summarizeSalesStatuses, toMediaSummary } from '../catalog/mappers/catalog.mapper.js';
 import { PrismaService } from '../prisma/prisma.service.js';
@@ -141,8 +142,15 @@ export class InventoryHubService {
     buildingId?: string | readonly string[],
     floorId?: string | readonly string[],
     search?: string,
+    salesStatus?: ApartmentSalesStatus,
   ): Promise<AdminApartmentListResponse> {
-    const where = buildInventoryApartmentsWhere(companyId, buildingId, floorId, search);
+    const where = buildInventoryApartmentsWhere(
+      companyId,
+      buildingId,
+      floorId,
+      search,
+      salesStatus,
+    );
 
     const [total, featuredOnHomeTotal, apartments] = await Promise.all([
       this.prisma.db.apartment.count({ where }),
