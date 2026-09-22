@@ -1,6 +1,6 @@
-import { getLocale, setRequestLocale } from "next-intl/server";
+import { getLocale, setRequestLocale } from 'next-intl/server';
 
-import { AdminEventsListPage } from "@/features/exhibition/components/admin/admin-events-list-page";
+import { AdminEventsListPage } from '@/features/exhibition/components/admin/admin-events-list-page';
 
 type AdminEventsPageProps = {
   params: Promise<{ locale: string }>;

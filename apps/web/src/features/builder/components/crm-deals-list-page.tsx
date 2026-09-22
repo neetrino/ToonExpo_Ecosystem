@@ -174,7 +174,7 @@ export const CrmDealsListPage = () => {
     <div className="crm-board-page">
       <div className="crm-board-page__chrome">
         <ListPageHeader
-        icon={Briefcase}
+          icon={Briefcase}
           eyebrow={t('eyebrow')}
           title={t('title')}
           subtitle={t('subtitle', { count: totalCount })}
@@ -263,9 +263,7 @@ export const CrmDealsListPage = () => {
             </div>
           ) : null
         }
-        paymentSection={
-          dealQuery.data ? <CrmDealPaymentsSection deal={dealQuery.data} /> : null
-        }
+        paymentSection={dealQuery.data ? <CrmDealPaymentsSection deal={dealQuery.data} /> : null}
         notesSection={
           dealQuery.data ? (
             <div className="flex flex-col gap-4">

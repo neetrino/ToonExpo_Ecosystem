@@ -145,4 +145,3 @@ If deal has no activities:
 
 - show "No follow-up activity yet";
 - provide add activity action.
-

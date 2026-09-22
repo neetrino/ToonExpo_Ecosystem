@@ -12,14 +12,14 @@ export const BUILDING_HEIGHT_EXPR: ExpressionSpecification = [
 ];
 
 /**
- * Height-tinted extrusion color — soft warm low-rise → cooler tall.
- * `timeBase` shifts the palette (brand stone / atmosphere tint).
+ * Height-tinted extrusion color — stays bright at every height.
+ * `timeBase` shifts the palette (brand stone).
  */
 export const realisticBuildingColorExpr = (timeBase: string): ExpressionSpecification => {
-  const low = mixHex(timeBase, '#e2d4be', 0.55);
-  const mid = mixHex(timeBase, '#b9b5ad', 0.5);
-  const tall = mixHex(timeBase, '#8e9eac', 0.48);
-  const tower = mixHex(timeBase, '#6f8192', 0.45);
+  const low = mixHex(timeBase, '#f2ebe0', 0.28);
+  const mid = mixHex(timeBase, '#ebe4d8', 0.3);
+  const tall = mixHex(timeBase, '#e4ddd2', 0.28);
+  const tower = mixHex(timeBase, '#ddd8d0', 0.26);
 
   return [
     'interpolate',
@@ -36,7 +36,7 @@ export const realisticBuildingColorExpr = (timeBase: string): ExpressionSpecific
     80,
     tower,
     140,
-    shadeHex(tower, -0.1),
+    shadeHex(tower, 0.06),
   ];
 };
 

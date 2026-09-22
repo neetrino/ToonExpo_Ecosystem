@@ -35,7 +35,11 @@ const StageDateRow = ({ stage, control, label }: StageDateRowProps) => {
         htmlFor={fieldId}
         className="flex min-w-0 items-start gap-2 pt-2.5 text-sm text-ink-muted"
       >
-        <CalendarIcon className="mt-0.5 size-4 shrink-0 text-brand" strokeWidth={1.75} aria-hidden />
+        <CalendarIcon
+          className="mt-0.5 size-4 shrink-0 text-brand"
+          strokeWidth={1.75}
+          aria-hidden
+        />
         <span className="min-w-0 break-words">{label}</span>
       </label>
       <Controller

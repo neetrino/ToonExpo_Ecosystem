@@ -11,10 +11,7 @@ import { PublicationStatusBadge } from '@/features/partners/components/partner-b
 import { useRouter } from '@/i18n/navigation';
 import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
 import type { ListTableSelectionProps } from '@/shared/ui/list-selection.types';
-import {
-  ListTableRowCheckbox,
-  ListTableSelectAllCheckbox,
-} from '@/shared/ui/list-table-checkbox';
+import { ListTableRowCheckbox, ListTableSelectAllCheckbox } from '@/shared/ui/list-table-checkbox';
 import { ListTableReveal } from '@/shared/ui/motion';
 import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 
@@ -50,10 +47,7 @@ export const ProjectsTable = ({
     router.push(catalogProjectDetailHref(scope, projectId));
   };
 
-  const onRowKeyDown = (
-    event: KeyboardEvent<HTMLTableRowElement>,
-    projectId: string,
-  ): void => {
+  const onRowKeyDown = (event: KeyboardEvent<HTMLTableRowElement>, projectId: string): void => {
     if (event.key !== 'Enter' && event.key !== ' ') {
       return;
     }
@@ -110,7 +104,9 @@ export const ProjectsTable = ({
                       }}
                     />
                   ) : null}
-                  <td className="px-3 py-2.5 align-middle font-medium text-brand">{project.name}</td>
+                  <td className="px-3 py-2.5 align-middle font-medium text-brand">
+                    {project.name}
+                  </td>
                   <td className="px-3 py-2.5 align-middle">
                     <div className="flex justify-center">
                       <PublicationStatusBadge status={project.publicationStatus} />

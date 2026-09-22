@@ -35,26 +35,13 @@ export const HEADER_PILL_HEIGHT_CLASS = 'h-16';
  */
 export const HEADER_SPACER_CLASS = 'h-[calc(4.5rem+env(safe-area-inset-top,0px))]';
 /** Shared clear-header offset for fixed chrome below the public SiteHeader. */
-export const HEADER_CLEARANCE_TOP_CLASS =
-  'top-[calc(4.5rem+env(safe-area-inset-top,0px))]';
+export const HEADER_CLEARANCE_TOP_CLASS = 'top-[calc(4.5rem+env(safe-area-inset-top,0px))]';
 
 export type SiteHeaderNavHref =
-  | '/apartments'
-  | '/projects'
-  | '/partners'
-  | '/insights'
-  | '/mortgage'
-  | '/expo'
-  | '/map';
+  '/apartments' | '/projects' | '/partners' | '/insights' | '/mortgage' | '/expo' | '/map';
 
 export type SiteHeaderNavKey =
-  | 'buy'
-  | 'projects'
-  | 'partners'
-  | 'marketInsights'
-  | 'mortgage'
-  | 'venueMap'
-  | 'geoMap';
+  'buy' | 'projects' | 'partners' | 'marketInsights' | 'mortgage' | 'venueMap' | 'geoMap';
 
 export const SITE_HEADER_NAV_HREFS: ReadonlyArray<{
   href: SiteHeaderNavHref;

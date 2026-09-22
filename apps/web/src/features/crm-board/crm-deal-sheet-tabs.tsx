@@ -2,10 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
-import {
-  CRM_DEAL_SHEET_TABS,
-  type CrmDealSheetTab,
-} from '@/features/crm-board/constants';
+import { CRM_DEAL_SHEET_TABS, type CrmDealSheetTab } from '@/features/crm-board/constants';
 import { useCrmDealTabIndicator } from '@/features/crm-board/use-crm-deal-tab-indicator';
 import { cn } from '@/shared/ui/cn';
 
@@ -22,12 +19,7 @@ export const CrmDealSheetTabs = ({ active, onChange }: CrmDealSheetTabsProps) =>
   const { listRef, setTabRef, indicator } = useCrmDealTabIndicator(active);
 
   return (
-    <div
-      ref={listRef}
-      role="tablist"
-      aria-label={t('ariaLabel')}
-      className="crm-deal-sheet-tabs"
-    >
+    <div ref={listRef} role="tablist" aria-label={t('ariaLabel')} className="crm-deal-sheet-tabs">
       <span
         aria-hidden
         className={cn(

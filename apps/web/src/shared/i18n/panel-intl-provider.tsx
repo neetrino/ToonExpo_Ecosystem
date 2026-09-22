@@ -5,10 +5,7 @@ import { setRequestLocale } from 'next-intl/server';
 import type { ReactNode } from 'react';
 
 import { PanelIntlClientProvider } from '@/shared/i18n/panel-intl-client-provider';
-import {
-  PANEL_LOCALE_COOKIE,
-  parsePanelLocaleCookie,
-} from '@/shared/i18n/panel-locale';
+import { PANEL_LOCALE_COOKIE, parsePanelLocaleCookie } from '@/shared/i18n/panel-locale';
 
 type PanelIntlProviderProps = {
   /** Locale from the URL (`[locale]` segment) — public site language. */

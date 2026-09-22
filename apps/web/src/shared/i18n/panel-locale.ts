@@ -35,7 +35,9 @@ export const isPanelPathname = (pathname: string): boolean => {
 /**
  * Parses a panel-locale cookie value; returns null when missing/invalid.
  */
-export const parsePanelLocaleCookie = (value: string | undefined | null): SupportedLocale | null => {
+export const parsePanelLocaleCookie = (
+  value: string | undefined | null,
+): SupportedLocale | null => {
   if (!value || !isSupportedLocale(value)) {
     return null;
   }

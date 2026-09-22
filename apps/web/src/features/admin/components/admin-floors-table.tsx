@@ -8,10 +8,7 @@ import { PublicationStatusBadge } from '@/features/partners/components/partner-b
 import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
 import { LIST_STATUS_BADGE_COMPACT_CLASS } from '@/shared/ui/list-status-badge';
 import type { ListTableSelectionProps } from '@/shared/ui/list-selection.types';
-import {
-  ListTableRowCheckbox,
-  ListTableSelectAllCheckbox,
-} from '@/shared/ui/list-table-checkbox';
+import { ListTableRowCheckbox, ListTableSelectAllCheckbox } from '@/shared/ui/list-table-checkbox';
 import { ListTableReveal } from '@/shared/ui/motion';
 import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 
@@ -111,9 +108,13 @@ export const AdminFloorsTable = ({
                     {floor.buildingName}
                   </td>
                   {showCompany ? (
-                    <td className="px-3 py-2.5 align-middle text-ink-secondary">{floor.companyName}</td>
+                    <td className="px-3 py-2.5 align-middle text-ink-secondary">
+                      {floor.companyName}
+                    </td>
                   ) : null}
-                  <td className="px-3 py-2.5 align-middle text-ink-secondary">{floor.projectName}</td>
+                  <td className="px-3 py-2.5 align-middle text-ink-secondary">
+                    {floor.projectName}
+                  </td>
                   <td className="px-3 py-2.5 text-center align-middle">
                     <PublicationStatusBadge
                       status={floor.publicationStatus}

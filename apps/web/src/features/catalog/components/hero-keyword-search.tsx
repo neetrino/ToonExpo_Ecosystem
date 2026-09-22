@@ -1,14 +1,7 @@
 import type { ProjectListItem } from '@toonexpo/contracts';
 import { Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import {
-  useEffect,
-  useId,
-  useMemo,
-  useRef,
-  useState,
-  type KeyboardEvent,
-} from 'react';
+import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 
 import {
   HERO_FILTER_PANEL_CLASS,
@@ -55,10 +48,7 @@ export const HeroKeywordSearch = ({
     };
   }, []);
 
-  const suggestions = useMemo(
-    () => buildHeroSearchSuggestions(projects, value),
-    [projects, value],
-  );
+  const suggestions = useMemo(() => buildHeroSearchSuggestions(projects, value), [projects, value]);
 
   const canSuggest = value.trim().length >= HERO_KEYWORD_MIN_QUERY_LENGTH;
   const showPanel = isOpen && canSuggest;
@@ -266,11 +256,7 @@ const SuggestionOption = ({
   onHover,
   onSelect,
 }: SuggestionOptionProps) => (
-  <li
-    id={`${listboxId}-option-${suggestion.id}`}
-    role="option"
-    aria-selected={isActive}
-  >
+  <li id={`${listboxId}-option-${suggestion.id}`} role="option" aria-selected={isActive}>
     <button
       type="button"
       tabIndex={-1}

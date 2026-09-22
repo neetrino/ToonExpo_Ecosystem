@@ -3,7 +3,7 @@ import { headers } from 'next/headers';
 import { QrCode } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import { getMeOrNullCached as getMeOrNull } from '@/features/auth/api/get-me-or-null-cached';
+import { getMeSessionCached } from '@/features/auth/api/get-me-or-null-cached';
 import {
   AccountContentReveal,
   AccountPageEnter,
@@ -12,6 +12,7 @@ import { AccountPageHeader } from '@/features/buyer/components/account/account-p
 import { BuyerCheckInStatus } from '@/features/buyer/components/buyer-checkin-status';
 import { isBuyerAccount } from '@/features/buyer/utils/is-buyer-account';
 import { Link, redirect } from '@/i18n/navigation';
+import { ApiUnavailablePanel } from '@/shared/ui/api-unavailable-panel';
 
 type CheckinPageProps = {
   params: Promise<{ locale: string }>;
@@ -36,7 +37,11 @@ export default async function AccountCheckinPage({ params }: CheckinPageProps) {
 
   const headerStore = await headers();
   const cookieHeader = headerStore.get('cookie') ?? undefined;
-  const user = await getMeOrNull(cookieHeader);
+  const session = await getMeSessionCached(cookieHeader);
+  if (session.status === 'unavailable') {
+    return <ApiUnavailablePanel />;
+  }
+  const { user } = session;
 
   if (!user) {
     redirect({ href: '/auth/login?returnUrl=%2Fcheckin', locale });

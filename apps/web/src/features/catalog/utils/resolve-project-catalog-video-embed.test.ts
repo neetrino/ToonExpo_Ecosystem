@@ -10,16 +10,16 @@ import {
 
 describe('extractYoutubeVideoId', () => {
   it('parses watch, short, embed, and youtu.be URLs', () => {
-    expect(
-      extractYoutubeVideoId(new URL('https://www.youtube.com/watch?v=dQw4w9WgXcQ')),
-    ).toBe('dQw4w9WgXcQ');
+    expect(extractYoutubeVideoId(new URL('https://www.youtube.com/watch?v=dQw4w9WgXcQ'))).toBe(
+      'dQw4w9WgXcQ',
+    );
     expect(extractYoutubeVideoId(new URL('https://youtu.be/dQw4w9WgXcQ'))).toBe('dQw4w9WgXcQ');
-    expect(
-      extractYoutubeVideoId(new URL('https://www.youtube.com/embed/dQw4w9WgXcQ')),
-    ).toBe('dQw4w9WgXcQ');
-    expect(
-      extractYoutubeVideoId(new URL('https://www.youtube.com/shorts/dQw4w9WgXcQ')),
-    ).toBe('dQw4w9WgXcQ');
+    expect(extractYoutubeVideoId(new URL('https://www.youtube.com/embed/dQw4w9WgXcQ'))).toBe(
+      'dQw4w9WgXcQ',
+    );
+    expect(extractYoutubeVideoId(new URL('https://www.youtube.com/shorts/dQw4w9WgXcQ'))).toBe(
+      'dQw4w9WgXcQ',
+    );
   });
 });
 
@@ -34,9 +34,9 @@ describe('extractVimeoVideoId', () => {
 
 describe('extractMatterportModelId', () => {
   it('parses show query and space path URLs', () => {
-    expect(
-      extractMatterportModelId(new URL('https://my.matterport.com/show/?m=SxQL3iGyvQQ')),
-    ).toBe('SxQL3iGyvQQ');
+    expect(extractMatterportModelId(new URL('https://my.matterport.com/show/?m=SxQL3iGyvQQ'))).toBe(
+      'SxQL3iGyvQQ',
+    );
     expect(
       extractMatterportModelId(new URL('https://discover.matterport.com/space/SxQL3iGyvQQ')),
     ).toBe('SxQL3iGyvQQ');
@@ -55,9 +55,10 @@ describe('resolveProjectCatalogVideoEmbed', () => {
       kind: 'iframe',
       src: 'https://my.matterport.com/show/?m=SxQL3iGyvQQ',
     });
-    expect(
-      resolveProjectCatalogVideoEmbed('https://cdn.example.com/tour.mp4'),
-    ).toEqual({ kind: 'file', src: 'https://cdn.example.com/tour.mp4' });
+    expect(resolveProjectCatalogVideoEmbed('https://cdn.example.com/tour.mp4')).toEqual({
+      kind: 'file',
+      src: 'https://cdn.example.com/tour.mp4',
+    });
   });
 });
 
@@ -87,8 +88,7 @@ describe('resolveProjectCatalogVideoPreview', () => {
       resolveProjectCatalogVideoPreview('https://my.matterport.com/show/?m=SxQL3iGyvQQ'),
     ).resolves.toEqual({
       kind: 'poster',
-      posterSrc:
-        'https://my.matterport.com/api/v1/player/models/SxQL3iGyvQQ/thumb?width=1280',
+      posterSrc: 'https://my.matterport.com/api/v1/player/models/SxQL3iGyvQQ/thumb?width=1280',
       href: 'https://my.matterport.com/show/?m=SxQL3iGyvQQ',
     });
   });

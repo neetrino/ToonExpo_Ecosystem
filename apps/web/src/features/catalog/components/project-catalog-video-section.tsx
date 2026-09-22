@@ -65,7 +65,5 @@ export const ProjectCatalogVideoSection = async ({
     );
   }
 
-  return (
-    <ProjectCatalogMediaPoster title={title} href={preview.href} openLabel={openLabel} />
-  );
+  return <ProjectCatalogMediaPoster title={title} href={preview.href} openLabel={openLabel} />;
 };

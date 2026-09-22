@@ -49,7 +49,8 @@ export const BuilderBuildingsListPage = () => {
   const response = query.data;
   const [showCreate, setShowCreate] = useState(false);
   const [sheetFloorId, setSheetFloorId] = useState<string | null>(null);
-  const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(BUILDINGS_VIEW_MODE_KEY);
+  const { viewMode, effectiveViewMode, setViewMode } =
+    usePersistedViewMode(BUILDINGS_VIEW_MODE_KEY);
   const isCompanyAdmin = useIsCompanyAdmin();
   const buildings = response?.data ?? [];
   const listBulk = useInventoryListSelection(buildings, effectiveViewMode, {

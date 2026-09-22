@@ -37,7 +37,11 @@ type LocaleSegmentSwitcherProps = {
 export const LocaleSegmentSwitcher = (props: LocaleSegmentSwitcherProps) => (
   <Suspense
     fallback={
-      <LocaleSegmentSwitcherFallback className={props.className} size={props.size} mode={props.mode} />
+      <LocaleSegmentSwitcherFallback
+        className={props.className}
+        size={props.size}
+        mode={props.mode}
+      />
     }
   >
     <LocaleSegmentSwitcherInner {...props} />

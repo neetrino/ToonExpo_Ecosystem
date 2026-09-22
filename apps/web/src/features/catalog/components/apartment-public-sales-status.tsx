@@ -239,11 +239,16 @@ const SalesStatusMenu = ({
               aria-selected={active}
               className={cn(
                 'flex w-full items-center gap-2 px-3 py-2 text-left text-sm whitespace-nowrap',
-                active ? 'bg-brand-soft font-semibold text-brand-deep' : 'font-medium hover:bg-surface',
+                active
+                  ? 'bg-brand-soft font-semibold text-brand-deep'
+                  : 'font-medium hover:bg-surface',
               )}
               onClick={() => onPick(status)}
             >
-              <span className={cn('size-2 shrink-0 rounded-full', STATUS_DOT[status])} aria-hidden />
+              <span
+                className={cn('size-2 shrink-0 rounded-full', STATUS_DOT[status])}
+                aria-hidden
+              />
               {statusLabel(status)}
             </button>
           </li>

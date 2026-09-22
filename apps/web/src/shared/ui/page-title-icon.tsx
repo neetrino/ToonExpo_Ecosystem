@@ -21,14 +21,7 @@ const PAGE_TITLE_ICON_BOX_CLASS =
 
 /** Serializable keys for RSC → client title icons (cannot pass Lucide components). */
 export type PageTitleIconName =
-  | 'dashboard'
-  | 'projects'
-  | 'company'
-  | 'team'
-  | 'crm'
-  | 'scanner'
-  | 'readiness'
-  | 'analytics';
+  'dashboard' | 'projects' | 'company' | 'team' | 'crm' | 'scanner' | 'readiness' | 'analytics';
 
 const PAGE_TITLE_ICONS: Record<PageTitleIconName, LucideIcon> = {
   dashboard: LayoutDashboard,

@@ -53,7 +53,9 @@ export const ListSelectionToolbar = ({
   return (
     <>
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-sm border border-border bg-surface px-3 py-2">
-        <p className="text-sm font-medium text-ink">{t('selectedCount', { count: selectedCount })}</p>
+        <p className="text-sm font-medium text-ink">
+          {t('selectedCount', { count: selectedCount })}
+        </p>
         <div className="flex flex-wrap items-center gap-2">
           <Button type="button" size="sm" variant="outline" disabled={deleting} onClick={onClear}>
             {t('clear')}

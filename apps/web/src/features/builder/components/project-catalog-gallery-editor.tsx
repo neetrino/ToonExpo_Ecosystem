@@ -74,8 +74,15 @@ export const ProjectCatalogGalleryEditor = ({
       {images.length > 0 ? (
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {images.map((src, index) => (
-            <li key={`${src}-${index}`} className="group relative overflow-hidden rounded-sm border border-border bg-surface">
-              <img src={src} alt={t('galleryImageAlt', { index: index + 1 })} className="h-24 w-full object-cover" />
+            <li
+              key={`${src}-${index}`}
+              className="group relative overflow-hidden rounded-sm border border-border bg-surface"
+            >
+              <img
+                src={src}
+                alt={t('galleryImageAlt', { index: index + 1 })}
+                className="h-24 w-full object-cover"
+              />
               <IconButton
                 type="button"
                 size="sm"

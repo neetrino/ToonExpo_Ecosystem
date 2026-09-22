@@ -118,7 +118,9 @@ export const useMappingEditorState = ({
       });
     });
     setSelectedId((current) => {
-      const added = incomingList.find((item) => !entitiesRef.current.some((row) => row.id === item.id));
+      const added = incomingList.find(
+        (item) => !entitiesRef.current.some((row) => row.id === item.id),
+      );
       if (added) {
         return added.id;
       }
@@ -132,7 +134,12 @@ export const useMappingEditorState = ({
       const next = new Set([...prev].filter((id) => validIds.has(id)));
       const prevIds = new Set(entitiesRef.current.map((row) => row.id));
       for (const item of incomingList) {
-        if (!prevIds.has(item.id) && !item.svgPath && item.markerX == null && item.markerY == null) {
+        if (
+          !prevIds.has(item.id) &&
+          !item.svgPath &&
+          item.markerX == null &&
+          item.markerY == null
+        ) {
           next.add(item.id);
         }
       }

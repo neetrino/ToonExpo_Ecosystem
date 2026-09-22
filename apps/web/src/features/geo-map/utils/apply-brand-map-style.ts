@@ -24,6 +24,8 @@ import {
   BRAND_MAP_WATERWAY,
   BRAND_MAP_WOOD,
 } from '@/features/geo-map/utils/brand-map-style-constants';
+import { hideMapPoiSymbolLayers } from '@/features/geo-map/utils/hide-map-poi-symbol-layers';
+import { MAP_BUILDING_EXTRUSION_VERTICAL_GRADIENT } from '@/features/geo-map/utils/map-atmosphere-constants';
 
 type BrandPaintProperty =
   | 'background-color'
@@ -132,7 +134,7 @@ const applyBuildingExtrusionStyle = (map: MapLibreMap): void => {
     map,
     OSM_BUILDING_EXTRUSION_LAYER_ID,
     'fill-extrusion-vertical-gradient',
-    true,
+    MAP_BUILDING_EXTRUSION_VERTICAL_GRADIENT,
   );
 };
 
@@ -149,4 +151,5 @@ export const applyBrandMapStyle = (map: MapLibreMap): void => {
   }
   applyLabelColors(map);
   applyBuildingExtrusionStyle(map);
+  hideMapPoiSymbolLayers(map);
 };

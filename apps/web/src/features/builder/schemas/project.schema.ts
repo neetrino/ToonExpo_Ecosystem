@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 import {
   PORTAL_ADDRESS_MAX_LENGTH,
@@ -8,9 +8,9 @@ import {
   PORTAL_PROJECT_NAME_MAX_LENGTH,
   PORTAL_PROJECT_TYPE_MAX_LENGTH,
   PORTAL_SLUG_MAX_LENGTH,
-} from "@/features/builder/constants";
-import { projectCatalogFormSchema } from "@/features/builder/schemas/project-catalog.schema";
-import { optionalMediaIdField } from "@/features/media/schemas/media-fields.schema";
+} from '@/features/builder/constants';
+import { projectCatalogFormSchema } from '@/features/builder/schemas/project-catalog.schema';
+import { optionalMediaIdField } from '@/features/media/schemas/media-fields.schema';
 
 const localeTextSchema = z.object({
   hy: z.string().trim().max(PORTAL_PROJECT_NAME_MAX_LENGTH),

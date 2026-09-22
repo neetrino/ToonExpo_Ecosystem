@@ -1,14 +1,12 @@
-import { getLocale, setRequestLocale } from "next-intl/server";
+import { getLocale, setRequestLocale } from 'next-intl/server';
 
-import { AdminEventDetailPage } from "@/features/exhibition/components/admin/admin-event-detail-page";
+import { AdminEventDetailPage } from '@/features/exhibition/components/admin/admin-event-detail-page';
 
 type AdminEventDetailRouteProps = {
   params: Promise<{ locale: string; id: string }>;
 };
 
-export default async function AdminEventDetailRoute({
-  params,
-}: AdminEventDetailRouteProps) {
+export default async function AdminEventDetailRoute({ params }: AdminEventDetailRouteProps) {
   const { id } = await params;
   const locale = await getLocale();
   setRequestLocale(locale);

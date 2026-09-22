@@ -108,4 +108,3 @@ If activity has due date, CRM dashboard can show:
 - follow-up needed status.
 
 This remains CRM-local.
-

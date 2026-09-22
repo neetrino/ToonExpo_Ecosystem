@@ -40,11 +40,7 @@ const resolveTranslationLocale = (value: string): TranslationLocale =>
  * All locale panels stay mounted (hidden when inactive) so each language keeps
  * its own form fields. Shared values (media, URLs, slug) belong outside the tabs.
  */
-export const TranslationTabs = ({
-  children,
-  focusLocale,
-  focusTick,
-}: TranslationTabsProps) => {
+export const TranslationTabs = ({ children, focusLocale, focusTick }: TranslationTabsProps) => {
   const t = useTranslations('Builder.locales');
   const siteLocale = resolveTranslationLocale(useLocale());
   const tabsId = useId();
@@ -163,8 +159,7 @@ export const TranslationTabs = ({
             aria-labelledby={`translation-tab-${tabsId}-${locale}`}
             hidden={!isActive}
             className={cn(
-              isActive &&
-                'animate-[page-enter_var(--duration-base)_var(--ease-out-premium)_both]',
+              isActive && 'animate-[page-enter_var(--duration-base)_var(--ease-out-premium)_both]',
               'motion-reduce:animate-none',
             )}
           >

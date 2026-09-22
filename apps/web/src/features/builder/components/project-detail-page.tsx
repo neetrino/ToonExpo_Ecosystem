@@ -3,7 +3,10 @@
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
-import { catalogProjectDetailHref, catalogProjectsListHref } from '@/features/builder/catalog-scope';
+import {
+  catalogProjectDetailHref,
+  catalogProjectsListHref,
+} from '@/features/builder/catalog-scope';
 import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import { EditProjectForm } from '@/features/builder/components/edit-project-form';
 import { ProjectInventorySection } from '@/features/builder/components/project-inventory-section';

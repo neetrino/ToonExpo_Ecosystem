@@ -4,10 +4,7 @@ import type { HomeHeroSlide, MediaAssetItem } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
-import {
-  getAdminHomeHero,
-  updateAdminHomeHero,
-} from '@/features/admin/api/admin-home-hero-api';
+import { getAdminHomeHero, updateAdminHomeHero } from '@/features/admin/api/admin-home-hero-api';
 import {
   AdminHomeBannerCopyFields,
   emptyHomeHeroCopyDraft,

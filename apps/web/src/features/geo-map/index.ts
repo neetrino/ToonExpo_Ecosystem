@@ -2,6 +2,7 @@
 
 export { GeoMapCanvas } from './components/geo-map-canvas';
 export { GeoMapCanvasLazy } from './components/geo-map-canvas-lazy';
+export { GEO_MAP_CITY_LIFE_PROPS } from './geo-map-city-life-props';
 export { GeoMapInfoCard } from './components/geo-map-info-card';
 export { GeoMapWebglFallback } from './components/geo-map-webgl-fallback';
 

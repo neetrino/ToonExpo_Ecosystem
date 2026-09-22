@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useDebouncedValue } from "@/shared/hooks/use-debounced-value";
+import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
 
 export const LIST_SEARCH_DEBOUNCE_MS = 300;
 
@@ -10,5 +10,5 @@ export const LIST_SEARCH_DEBOUNCE_MS = 300;
 export const useDebouncedSearch = (search: string): string => {
   const trimmed = search.trim();
   const debounced = useDebouncedValue(trimmed, LIST_SEARCH_DEBOUNCE_MS);
-  return trimmed.length === 0 ? "" : debounced;
+  return trimmed.length === 0 ? '' : debounced;
 };

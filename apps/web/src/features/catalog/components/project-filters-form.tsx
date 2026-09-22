@@ -27,8 +27,7 @@ type ProjectFiltersFormProps = {
 
 /** Compact control height for the projects filter toolbar. */
 const FILTER_CONTROL_CLASS = 'h-10 px-3.5 text-base lg:text-sm';
-const FILTER_FIELD_CLASS =
-  'flex min-w-0 flex-col gap-1 text-xs font-medium text-ink-secondary';
+const FILTER_FIELD_CLASS = 'flex min-w-0 flex-col gap-1 text-xs font-medium text-ink-secondary';
 const FILTER_PRICE_MOBILE_CLASS =
   'col-span-3 row-start-2 sm:col-auto sm:row-auto sm:min-w-[6.5rem] sm:flex-none';
 

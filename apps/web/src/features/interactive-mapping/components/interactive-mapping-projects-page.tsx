@@ -138,9 +138,7 @@ export const InteractiveMappingProjectsPage = () => {
           page={response.meta.page}
           totalPages={response.meta.totalPages}
           previousHref={
-            response.meta.page > FIRST_PAGE
-              ? buildListHref(pathname, response.meta.page - 1)
-              : null
+            response.meta.page > FIRST_PAGE ? buildListHref(pathname, response.meta.page - 1) : null
           }
           nextHref={
             response.meta.page < response.meta.totalPages

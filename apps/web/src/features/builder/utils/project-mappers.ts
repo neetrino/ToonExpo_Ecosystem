@@ -3,18 +3,17 @@ import type {
   CreatePortalProjectRequest,
   PortalTranslationsInput,
   UpdatePortalProjectRequest,
-} from "@toonexpo/contracts";
+} from '@toonexpo/contracts';
 
-import type { BulkApartmentsFormValues } from "@/features/builder/schemas/inventory.schema";
+import type { BulkApartmentsFormValues } from '@/features/builder/schemas/inventory.schema';
 import type {
   CreateProjectFormValues,
   UpdateProjectFormValues,
-} from "@/features/builder/schemas/project.schema";
-import { catalogFormSliceToJson } from "@/features/builder/utils/project-catalog-amenities";
-import { toNullableMediaId } from "@/features/media/schemas/media-fields.schema";
+} from '@/features/builder/schemas/project.schema';
+import { catalogFormSliceToJson } from '@/features/builder/utils/project-catalog-amenities';
+import { toNullableMediaId } from '@/features/media/schemas/media-fields.schema';
 
-const optionalText = (value: string): string | undefined =>
-  value.length > 0 ? value : undefined;
+const optionalText = (value: string): string | undefined => (value.length > 0 ? value : undefined);
 
 const buildLocaleMap = (
   hy: string,
@@ -38,7 +37,7 @@ const buildLocaleMap = (
  * Builds translation payload from form locale fields.
  */
 export const buildProjectTranslations = (
-  values: Omit<CreateProjectFormValues, "verified">,
+  values: Omit<CreateProjectFormValues, 'verified'>,
 ): PortalTranslationsInput | undefined => {
   const translations: PortalTranslationsInput = {};
   const name = buildLocaleMap(values.nameHy, values.nameRu, values.nameEn);
@@ -102,24 +101,16 @@ export const toCreateProjectRequest = (
     ...(optionalText(values.fullDescriptionHy)
       ? { fullDescription: values.fullDescriptionHy }
       : {}),
-    ...(optionalText(values.locationTextHy)
-      ? { locationText: values.locationTextHy }
-      : {}),
+    ...(optionalText(values.locationTextHy) ? { locationText: values.locationTextHy } : {}),
     ...(optionalText(values.address) ? { address: values.address } : {}),
     ...(optionalText(values.city) ? { city: values.city } : {}),
     ...(optionalText(values.districtHy) ? { district: values.districtHy } : {}),
-    ...(optionalText(values.projectTypeHy)
-      ? { projectType: values.projectTypeHy }
-      : {}),
+    ...(optionalText(values.projectTypeHy) ? { projectType: values.projectTypeHy } : {}),
     ...(optionalText(values.constructionStatus)
       ? { constructionStatus: values.constructionStatus }
       : {}),
-    ...(optionalText(values.completionDate)
-      ? { completionDate: values.completionDate }
-      : {}),
-    ...(optionalText(values.coverMediaId)
-      ? { coverMediaId: values.coverMediaId }
-      : {}),
+    ...(optionalText(values.completionDate) ? { completionDate: values.completionDate } : {}),
+    ...(optionalText(values.coverMediaId) ? { coverMediaId: values.coverMediaId } : {}),
     verified: values.verified,
     ...(translations ? { translations } : {}),
   };

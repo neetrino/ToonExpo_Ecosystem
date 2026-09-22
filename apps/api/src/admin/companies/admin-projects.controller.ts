@@ -50,9 +50,6 @@ export class AdminProjectsController {
     @Param() params: AdminProjectIdParamDto,
     @Body() body: SetFeaturedOnHomeDto,
   ): Promise<FeaturedOnHomeResponse> {
-    return this.homeFeaturedService.setProjectFeaturedOnHome(
-      params.projectId,
-      body.featuredOnHome,
-    );
+    return this.homeFeaturedService.setProjectFeaturedOnHome(params.projectId, body.featuredOnHome);
   }
 }

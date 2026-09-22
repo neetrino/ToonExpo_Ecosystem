@@ -21,7 +21,9 @@ import {
 } from '@/features/geo-map/constants';
 import { THREE_BUILDING_LAYER_ID } from '@/features/geo-map/three/constants';
 import type { GeoMapLngLat, PreservedOsmSiblingPart } from '@/features/geo-map/types';
+import { applyOsmBuildingCornerRadius } from '@/features/geo-map/utils/apply-osm-building-corner-radius';
 import { BRAND_MAP_BUILDING_EXTRUSION_TOP } from '@/features/geo-map/utils/brand-map-style-constants';
+import { MAP_BUILDING_EXTRUSION_VERTICAL_GRADIENT } from '@/features/geo-map/utils/map-atmosphere-constants';
 import {
   buildingGeometryContainsPoint,
   extractSiblingPolygons,
@@ -256,9 +258,10 @@ export const syncPreservedOsmSiblingParts = (
         'fill-extrusion-height': ['coalesce', ['get', 'height'], DEFAULT_SIBLING_HEIGHT_M],
         'fill-extrusion-base': ['coalesce', ['get', 'min_height'], 0],
         'fill-extrusion-opacity': 1,
-        'fill-extrusion-vertical-gradient': true,
+        'fill-extrusion-vertical-gradient': MAP_BUILDING_EXTRUSION_VERTICAL_GRADIENT,
       },
     });
+    applyOsmBuildingCornerRadius(map, PRESERVED_OSM_PARTS_LAYER_ID);
   }
 
   if (map.getLayer(THREE_BUILDING_LAYER_ID) && map.getLayer(PRESERVED_OSM_PARTS_LAYER_ID)) {

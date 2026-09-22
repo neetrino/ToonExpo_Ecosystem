@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 import { PROJECT_CATALOG_GEO_MAP_HEIGHT_CLASS } from '@/features/catalog/constants/project-catalog-geo-map';
 import { resolveMapObjectForProject } from '@/features/catalog/utils/resolve-map-object-for-project';
 import { GeoMapCanvasLazy } from '@/features/geo-map/components/geo-map-canvas-lazy';
+import { GEO_MAP_CITY_LIFE_PROPS } from '@/features/geo-map/geo-map-city-life-props';
 import { mapPublicGeoMapItemsToObjects } from '@/features/geo-map/utils/map-object-mapper';
 import { GeoMapStatusOverlays } from '@/features/geo-map/public/components/geo-map-status-overlays';
 import { usePublicGeoMapModelsQuery } from '@/features/geo-map/public/hooks/use-public-geo-map-models';
@@ -49,6 +50,7 @@ export const ProjectCatalogGeoMap = ({ projectId }: ProjectCatalogGeoMapProps) =
           initialCenter={view.center}
           initialZoom={view.zoom}
           highlightedObjectId={projectObject?.id ?? null}
+          {...GEO_MAP_CITY_LIFE_PROPS}
           className="absolute inset-0 h-full w-full"
         />
       ) : null}

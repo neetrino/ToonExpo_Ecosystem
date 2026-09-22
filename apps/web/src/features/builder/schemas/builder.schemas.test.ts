@@ -1,13 +1,9 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from 'vitest';
 
-import { updateApartmentSchema } from "./apartment.schema";
-import {
-  bulkApartmentsSchema,
-  createBuildingSchema,
-  createFloorSchema,
-} from "./inventory.schema";
-import { createProjectSchema } from "./project.schema";
-import { inviteMemberSchema } from "./team.schema";
+import { updateApartmentSchema } from './apartment.schema';
+import { bulkApartmentsSchema, createBuildingSchema, createFloorSchema } from './inventory.schema';
+import { createProjectSchema } from './project.schema';
+import { inviteMemberSchema } from './team.schema';
 
 const apartmentFields = {
   finishingStatusHy: "",
@@ -20,65 +16,65 @@ const apartmentFields = {
   external3dUrl: "",
 };
 
-describe("createProjectSchema", () => {
-  it("requires Armenian name", () => {
+describe('createProjectSchema', () => {
+  it('requires Armenian name', () => {
     const result = createProjectSchema.safeParse({
-      nameHy: "",
-      nameRu: "Проект",
-      nameEn: "Project",
-      slug: "",
-      shortDescriptionHy: "",
-      shortDescriptionRu: "",
-      shortDescriptionEn: "",
-      fullDescriptionHy: "",
-      fullDescriptionRu: "",
-      fullDescriptionEn: "",
-      locationTextHy: "",
-      locationTextRu: "",
-      locationTextEn: "",
-      address: "",
-      city: "",
-      districtHy: "",
-      districtRu: "",
-      districtEn: "",
-      projectTypeHy: "",
-      projectTypeRu: "",
-      projectTypeEn: "",
-      constructionStatus: "",
-      completionDate: "",
-      coverMediaId: "",
+      nameHy: '',
+      nameRu: 'Проект',
+      nameEn: 'Project',
+      slug: '',
+      shortDescriptionHy: '',
+      shortDescriptionRu: '',
+      shortDescriptionEn: '',
+      fullDescriptionHy: '',
+      fullDescriptionRu: '',
+      fullDescriptionEn: '',
+      locationTextHy: '',
+      locationTextRu: '',
+      locationTextEn: '',
+      address: '',
+      city: '',
+      districtHy: '',
+      districtRu: '',
+      districtEn: '',
+      projectTypeHy: '',
+      projectTypeRu: '',
+      projectTypeEn: '',
+      constructionStatus: '',
+      completionDate: '',
+      coverMediaId: '',
       verified: false,
     });
 
     expect(result.success).toBe(false);
   });
 
-  it("accepts a valid create payload", () => {
+  it('accepts a valid create payload', () => {
     const result = createProjectSchema.safeParse({
-      nameHy: "Հյուսիսային",
-      nameRu: "Северный",
-      nameEn: "Northern",
-      slug: "northern",
-      shortDescriptionHy: "Նկարագրություն",
-      shortDescriptionRu: "",
-      shortDescriptionEn: "",
-      fullDescriptionHy: "",
-      fullDescriptionRu: "",
-      fullDescriptionEn: "",
-      locationTextHy: "Երևան",
-      locationTextRu: "",
-      locationTextEn: "",
-      address: "Address 1",
-      city: "Yerevan",
-      districtHy: "Kentron",
-      districtRu: "",
-      districtEn: "",
-      projectTypeHy: "residential",
-      projectTypeRu: "",
-      projectTypeEn: "",
-      constructionStatus: "under_construction",
-      completionDate: "2027-06-01",
-      coverMediaId: "",
+      nameHy: 'Հյուսիսային',
+      nameRu: 'Северный',
+      nameEn: 'Northern',
+      slug: 'northern',
+      shortDescriptionHy: 'Նկարագրություն',
+      shortDescriptionRu: '',
+      shortDescriptionEn: '',
+      fullDescriptionHy: '',
+      fullDescriptionRu: '',
+      fullDescriptionEn: '',
+      locationTextHy: 'Երևան',
+      locationTextRu: '',
+      locationTextEn: '',
+      address: 'Address 1',
+      city: 'Yerevan',
+      districtHy: 'Kentron',
+      districtRu: '',
+      districtEn: '',
+      projectTypeHy: 'residential',
+      projectTypeRu: '',
+      projectTypeEn: '',
+      constructionStatus: 'under_construction',
+      completionDate: '2027-06-01',
+      coverMediaId: '',
       verified: false,
     });
 
@@ -86,114 +82,114 @@ describe("createProjectSchema", () => {
   });
 });
 
-describe("createBuildingSchema", () => {
-  it("rejects empty name", () => {
+describe('createBuildingSchema', () => {
+  it('rejects empty name', () => {
     expect(
       createBuildingSchema.safeParse({
-        name: "  ",
-        description: "",
-        coverMediaId: "",
+        name: '  ',
+        description: '',
+        coverMediaId: '',
         verified: false,
       }).success,
     ).toBe(false);
   });
 });
 
-describe("createFloorSchema", () => {
-  it("accepts a floor number", () => {
+describe('createFloorSchema', () => {
+  it('accepts a floor number', () => {
     const result = createFloorSchema.safeParse({
-      floorNumber: "3",
-      name: "",
-      displayLabel: "3F",
-      floorplanMediaId: "",
+      floorNumber: '3',
+      name: '',
+      displayLabel: '3F',
+      floorplanMediaId: '',
     });
     expect(result.success).toBe(true);
   });
 });
 
-describe("bulkApartmentsSchema", () => {
-  it("accepts a bulk template", () => {
+describe('bulkApartmentsSchema', () => {
+  it('accepts a bulk template', () => {
     const result = bulkApartmentsSchema.safeParse({
-      count: "5",
-      numberPrefix: "A-",
-      startNumber: "1",
-      rooms: "2",
-      bedrooms: "1",
-      bathrooms: "1",
-      areaTotal: "65",
-      price: "50000",
+      count: '5',
+      numberPrefix: 'A-',
+      startNumber: '1',
+      rooms: '2',
+      bedrooms: '1',
+      bathrooms: '1',
+      areaTotal: '65',
+      price: '50000',
     });
     expect(result.success).toBe(true);
   });
 
-  it("rejects count above max", () => {
+  it('rejects count above max', () => {
     const result = bulkApartmentsSchema.safeParse({
-      count: "500",
-      numberPrefix: "",
-      startNumber: "1",
-      rooms: "",
-      bedrooms: "",
-      bathrooms: "",
-      areaTotal: "",
-      price: "",
+      count: '500',
+      numberPrefix: '',
+      startNumber: '1',
+      rooms: '',
+      bedrooms: '',
+      bathrooms: '',
+      areaTotal: '',
+      price: '',
     });
     expect(result.success).toBe(false);
   });
 });
 
-describe("updateApartmentSchema", () => {
-  it("accepts reserved status", () => {
+describe('updateApartmentSchema', () => {
+  it('accepts reserved status', () => {
     const result = updateApartmentSchema.safeParse({
-      number: "12A",
-      rooms: "2",
-      bedrooms: "1",
-      bathrooms: "1",
-      areaTotal: "70",
-      areaLiving: "",
-      balconyArea: "",
-      price: "100000",
-      priceVisibility: "public",
-      salesStatus: "reserved",
-      descriptionHy: "",
-      descriptionRu: "",
-      descriptionEn: "",
+      number: '12A',
+      rooms: '2',
+      bedrooms: '1',
+      bathrooms: '1',
+      areaTotal: '70',
+      areaLiving: '',
+      balconyArea: '',
+      price: '100000',
+      priceVisibility: 'public',
+      salesStatus: 'reserved',
+      descriptionHy: '',
+      descriptionRu: '',
+      descriptionEn: '',
       ...apartmentFields,
     });
     expect(result.success).toBe(true);
   });
 
-  it("accepts available status", () => {
+  it('accepts available status', () => {
     const result = updateApartmentSchema.safeParse({
-      number: "12A",
-      rooms: "2",
-      bedrooms: "",
-      bathrooms: "",
-      areaTotal: "70",
-      areaLiving: "",
-      balconyArea: "",
-      price: "",
-      priceVisibility: "by_request",
-      salesStatus: "available",
-      descriptionHy: "Նկարագրություն",
-      descriptionRu: "",
-      descriptionEn: "",
+      number: '12A',
+      rooms: '2',
+      bedrooms: '',
+      bathrooms: '',
+      areaTotal: '70',
+      areaLiving: '',
+      balconyArea: '',
+      price: '',
+      priceVisibility: 'by_request',
+      salesStatus: 'available',
+      descriptionHy: 'Նկարագրություն',
+      descriptionRu: '',
+      descriptionEn: '',
       ...apartmentFields,
     });
     expect(result.success).toBe(true);
   });
 });
 
-describe("inviteMemberSchema", () => {
-  it("normalizes email and accepts invite", () => {
+describe('inviteMemberSchema', () => {
+  it('normalizes email and accepts invite', () => {
     const result = inviteMemberSchema.safeParse({
-      name: "Anna",
-      email: "Anna@Builder.Example",
-      phone: "+37491111222",
-      role: "member",
+      name: 'Anna',
+      email: 'Anna@Builder.Example',
+      phone: '+37491111222',
+      role: 'member',
     });
     expect(result.success).toBe(true);
     if (result.success) {
-      expect(result.data.email).toBe("anna@builder.example");
+      expect(result.data.email).toBe('anna@builder.example');
     }
   });
 });

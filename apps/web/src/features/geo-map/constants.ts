@@ -180,6 +180,27 @@ export const OSM_BUILDING_EXTRUSION_LAYER_ID = 'building-3d';
 export const OSM_BUILDING_FILL_LAYER_ID = 'building';
 export const OSM_BUILDING_EXTRUSION_MIN_ZOOM = 15;
 
+/** Legacy overlay ids — kept so an old GeoJSON copy can be removed if present. */
+export const ROUNDED_OSM_BUILDINGS_SOURCE_ID = 'geo-map-rounded-buildings';
+export const ROUNDED_OSM_BUILDINGS_LAYER_ID = 'geo-map-rounded-buildings-3d';
+/** GPU corner radius on `building-3d` (`fill-extrusion-rounded-corner-distance`). */
+export const OSM_BUILDING_CORNER_RADIUS_M = 12;
+export const OSM_BUILDING_CORNER_SEGMENTS = 3;
+/** CPU fillet for admin highlight / rounded overlay rings (meters). */
+export const OSM_BUILDING_CPU_FILLET_RADIUS_M = 6;
+export const OSM_BUILDING_ROUND_MIN_EDGE_M = 10;
+export const OSM_BUILDING_ROUND_MAX_FEATURES = 280;
+export const OSM_BUILDING_ROUND_MAX_RING_POINTS = 48;
+/**
+ * Control points for a circular overlay. Keep few so GPU corner rounding
+ * can fillet each wall into a cylinder (a 96-gon has no corners left to round).
+ */
+export const OSM_SMOOTH_CIRCLE_SEGMENTS = 12;
+export const OSM_SMOOTH_CIRCLE_COVER_PAD = 1.04;
+export const OSM_SMOOTH_CIRCLE_OPACITY = 1;
+export const OSM_SMOOTH_CIRCLE_CORNER_RADIUS_M = 48;
+export const OSM_SMOOTH_CIRCLE_MAX_FEATURES = 60;
+
 /**
  * Hide OSM `building-3d` fill-extrusions under published GLB anchors.
  * Prefer feature `id` / `osm_id` scoped by distance; bare distance is a

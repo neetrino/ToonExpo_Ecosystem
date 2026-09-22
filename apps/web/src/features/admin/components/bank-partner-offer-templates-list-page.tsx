@@ -54,8 +54,7 @@ export const BankPartnerOfferTemplatesListPage = () => {
     return templates.filter((template) => template.name.toLowerCase().includes(q));
   }, [templatesQuery.data, search]);
 
-  const busy =
-    createMutation.isPending || updateMutation.isPending || deleteMutation.isPending;
+  const busy = createMutation.isPending || updateMutation.isPending || deleteMutation.isPending;
 
   if (templatesQuery.isLoading && !templatesQuery.data) {
     return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
@@ -102,11 +101,7 @@ export const BankPartnerOfferTemplatesListPage = () => {
         }
       />
 
-      <AdminCreateSheet
-        open={creating}
-        onClose={() => setCreating(false)}
-        title={t('createTitle')}
-      >
+      <AdminCreateSheet open={creating} onClose={() => setCreating(false)} title={t('createTitle')}>
         <BankPartnerOfferTemplateForm
           key="create"
           isBusy={busy}
@@ -168,9 +163,7 @@ export const BankPartnerOfferTemplatesListPage = () => {
       <AdminDeleteModal
         open={pendingDelete != null}
         title={t('deleteConfirmTitle')}
-        message={
-          pendingDelete ? t('deleteConfirmMessage', { title: pendingDelete.name }) : ''
-        }
+        message={pendingDelete ? t('deleteConfirmMessage', { title: pendingDelete.name }) : ''}
         confirming={deleteMutation.isPending}
         onCancel={() => {
           if (!deleteMutation.isPending) {

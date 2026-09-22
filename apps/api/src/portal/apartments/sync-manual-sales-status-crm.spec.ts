@@ -6,9 +6,7 @@ import { isCrmStatusTransitionAllowed } from '../../crm/status/deal-status.trans
 
 describe('dealStatusForManualInventory', () => {
   it('maps sold to converted, reserved to reserved, available to pipeline reset', () => {
-    expect(dealStatusForManualInventory(ApartmentSalesStatus.sold)).toBe(
-      CrmDealStatus.converted,
-    );
+    expect(dealStatusForManualInventory(ApartmentSalesStatus.sold)).toBe(CrmDealStatus.converted);
     expect(dealStatusForManualInventory(ApartmentSalesStatus.reserved)).toBe(
       CrmDealStatus.reserved,
     );

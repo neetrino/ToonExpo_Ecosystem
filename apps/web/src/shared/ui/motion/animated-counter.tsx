@@ -2,6 +2,7 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
+import { formatAmdCurrency, formatCounterInteger } from '@/shared/ui/motion/format-counter-value';
 import {
   isEntranceMotionSettled,
   markEntranceMotionSettled,
@@ -124,32 +125,6 @@ export const AnimatedCounter = ({
   );
 };
 
-const NBSP_GROUP_SEPARATOR = '\u00a0';
-const COMMA_GROUP_SEPARATOR = ',';
-const AMD_CURRENCY_SYMBOL = '֏';
-
-/** Base languages that group thousands with a comma (`hy` / `ru` use NBSP). */
-const COMMA_GROUPING_LANGUAGES = new Set(['en']);
-
-/**
- * Groups thousands with a fixed separator instead of `Intl.NumberFormat`.
- * Node and browser ICU disagree on when to group (e.g. `hy` skips grouping
- * below five digits), which breaks hydration for server-rendered counters.
- */
-const groupThousands = (value: number, separator: string): string => {
-  return String(Math.round(value)).replace(/\B(?=(\d{3})+(?!\d))/g, separator);
-};
-
-const resolveGroupSeparator = (locale: string): string => {
-  const [language = ''] = locale.toLowerCase().split('-');
-  return COMMA_GROUPING_LANGUAGES.has(language) ? COMMA_GROUP_SEPARATOR : NBSP_GROUP_SEPARATOR;
-};
-
-const formatAmdCurrency = (value: number): string => {
-  const grouped = groupThousands(value, NBSP_GROUP_SEPARATOR);
-  return `${grouped}${NBSP_GROUP_SEPARATOR}${AMD_CURRENCY_SYMBOL}`;
-};
-
 const createFormatter = (
   formatStyle: AnimatedCounterFormatStyle,
   locale: string,
@@ -157,7 +132,5 @@ const createFormatter = (
   if (formatStyle === 'currencyAmd') {
     return (n) => formatAmdCurrency(n);
   }
-
-  const separator = resolveGroupSeparator(locale);
-  return (n) => groupThousands(n, separator);
+  return (n) => formatCounterInteger(n, locale);
 };

@@ -21,10 +21,7 @@ import { ListPageHeader } from '@/shared/ui/list-page-header';
 import { VIEW_MODE_CARDS } from '@/shared/ui/view-mode';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
-const matchesCategorySearch = (
-  category: ServiceProviderCategoryItem,
-  needle: string,
-): boolean => {
+const matchesCategorySearch = (category: ServiceProviderCategoryItem, needle: string): boolean => {
   const haystack = [category.name, category.description ?? ''].join(' ').toLowerCase();
   return haystack.includes(needle);
 };

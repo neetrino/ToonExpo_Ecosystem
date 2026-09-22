@@ -64,10 +64,7 @@ describe('mergeLocationOptions', () => {
   });
 
   it('collapses EN and HY Yerevan when UI is Armenian', () => {
-    expect(mergeLocationOptions(['Yerevan'], ['Երևան', 'Գյումրի'])).toEqual([
-      'Երևան',
-      'Գյումրի',
-    ]);
+    expect(mergeLocationOptions(['Yerevan'], ['Երևան', 'Գյումրի'])).toEqual(['Երևան', 'Գյումրի']);
   });
 
   it('keeps Jermuk when it is not yet in the catalog', () => {
@@ -91,9 +88,9 @@ describe('expandCityFilterValues', () => {
 
 describe('matchSelectedLocationOptions', () => {
   it('maps expanded URL spellings back to the visible option label', () => {
-    expect(
-      matchSelectedLocationOptions(['Երևան', 'Գյումրի'], 'Yerevan,Երևան,Ереван'),
-    ).toEqual(['Երևան']);
+    expect(matchSelectedLocationOptions(['Երևան', 'Գյումրի'], 'Yerevan,Երևան,Ереван')).toEqual([
+      'Երևան',
+    ]);
   });
 
   it('returns empty when the query is missing', () => {

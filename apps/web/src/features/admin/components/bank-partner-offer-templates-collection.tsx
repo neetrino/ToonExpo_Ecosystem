@@ -108,11 +108,7 @@ export const BankPartnerOfferTemplatesCollection = ({
     return (
       <AdminListCardGrid className={TEMPLATES_CARD_GRID_CLASS}>
         {templates.map((template) => (
-          <TemplateCard
-            key={template.id}
-            template={template}
-            onEdit={() => onEdit(template)}
-          />
+          <TemplateCard key={template.id} template={template} onEdit={() => onEdit(template)} />
         ))}
       </AdminListCardGrid>
     );

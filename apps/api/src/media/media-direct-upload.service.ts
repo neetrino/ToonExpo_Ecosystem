@@ -177,10 +177,7 @@ export class MediaDirectUploadService {
   }
 }
 
-const assertModel3dFilename = (
-  filename: string,
-  allowedExtensions: readonly string[],
-): void => {
+const assertModel3dFilename = (filename: string, allowedExtensions: readonly string[]): void => {
   const lower = filename.trim().toLowerCase();
   const hasAllowedExt = allowedExtensions.some((ext) => lower.endsWith(ext));
   if (!hasAllowedExt) {

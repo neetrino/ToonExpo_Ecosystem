@@ -68,8 +68,7 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
   const siteLocale = useLocale();
   const router = useRouter();
   const createMutation = useCreatePortalProjectMutation();
-  const { showError, onInvalid, errorToast, focusLocale, focusTick } =
-    useProjectFormErrorToast();
+  const { showError, onInvalid, errorToast, focusLocale, focusTick } = useProjectFormErrorToast();
 
   const {
     register,
@@ -86,8 +85,7 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
   const { lockSlugAuto } = useAutoProjectSlug({
     control,
     getSlug: () => getValues('slug'),
-    setSlug: (slug) =>
-      setValue('slug', slug, { shouldDirty: true, shouldValidate: true }),
+    setSlug: (slug) => setValue('slug', slug, { shouldDirty: true, shouldValidate: true }),
   });
   const slugField = register('slug');
 

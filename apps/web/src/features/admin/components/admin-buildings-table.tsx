@@ -9,10 +9,7 @@ import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
 import { Button } from '@/shared/ui/button';
 import { LIST_STATUS_BADGE_COMPACT_CLASS } from '@/shared/ui/list-status-badge';
 import type { ListTableSelectionProps } from '@/shared/ui/list-selection.types';
-import {
-  ListTableRowCheckbox,
-  ListTableSelectAllCheckbox,
-} from '@/shared/ui/list-table-checkbox';
+import { ListTableRowCheckbox, ListTableSelectAllCheckbox } from '@/shared/ui/list-table-checkbox';
 import { ListTableReveal } from '@/shared/ui/motion';
 import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 

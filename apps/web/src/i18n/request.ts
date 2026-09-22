@@ -17,9 +17,7 @@ import {
  */
 export default getRequestConfig(async ({ requestLocale }) => {
   const requested = await requestLocale;
-  const urlLocale = hasLocale(routing.locales, requested)
-    ? requested
-    : routing.defaultLocale;
+  const urlLocale = hasLocale(routing.locales, requested) ? requested : routing.defaultLocale;
 
   const headerStore = await headers();
   const pathname = headerStore.get('x-pathname') ?? '';
@@ -27,9 +25,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
   const panelLocale = parsePanelLocaleCookie(cookieStore.get(PANEL_LOCALE_COOKIE)?.value);
 
   const locale =
-    pathname.length > 0 && isPanelPathname(pathname) && panelLocale
-      ? panelLocale
-      : urlLocale;
+    pathname.length > 0 && isPanelPathname(pathname) && panelLocale ? panelLocale : urlLocale;
 
   return {
     locale,

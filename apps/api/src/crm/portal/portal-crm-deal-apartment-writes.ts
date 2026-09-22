@@ -5,17 +5,17 @@ import {
   CrmDealApartmentLinkType,
   type PriceVisibility,
   type Prisma,
-} from "@toonexpo/db";
+} from '@toonexpo/db';
 
-import { toApartmentLinkCreateData } from "../intake/intake.helpers.js";
+import { toApartmentLinkCreateData } from '../intake/intake.helpers.js';
 import {
   applyCrmApartmentSalesWrite,
   isApartmentInventorySynced,
   linkTypeForInventoryStatus,
-} from "../status/crm-inventory-sync.js";
+} from '../status/crm-inventory-sync.js';
 
-const ATTACH_ACTIVITY_TITLE = "Apartment linked to deal";
-const DETACH_ACTIVITY_TITLE = "Apartment unlinked from deal";
+const ATTACH_ACTIVITY_TITLE = 'Apartment linked to deal';
+const DETACH_ACTIVITY_TITLE = 'Apartment unlinked from deal';
 
 export type DealApartmentDealRow = {
   id: string;
@@ -103,9 +103,7 @@ const upsertLinkedApartment = async (
     where: { id: input.deal.id },
     data: {
       lastActivityAt: new Date(),
-      ...(input.deal.projectId == null
-        ? { projectId: input.apartment.projectId }
-        : {}),
+      ...(input.deal.projectId == null ? { projectId: input.apartment.projectId } : {}),
     },
   });
   await syncLinkedApartmentInventory(tx, input);

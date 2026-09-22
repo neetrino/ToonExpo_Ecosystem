@@ -47,20 +47,46 @@ export const isFloorNumberDuplicateApiError = (error: unknown): error is ApiErro
 /**
  * Raw Prisma / DB errors should not be shown in product UI.
  */
-export const isTechnicalApiMessage = (message: string): boolean => TECHNICAL_API_MESSAGE.test(message);
+export const isTechnicalApiMessage = (message: string): boolean =>
+  TECHNICAL_API_MESSAGE.test(message);
 
-const NETWORK_FETCH_MESSAGE = /fetch failed|failed to fetch|networkerror|load failed/i;
+/** Stable message — Next.js error boundaries serialize this, not the class. */
+export const API_UNREACHABLE_MESSAGE = 'API is unreachable';
+
+const NETWORK_FETCH_MESSAGE =
+  /fetch failed|failed to fetch|networkerror|load failed|api is unreachable/i;
 const NETWORK_CAUSE_CODE = /ECONNREFUSED|ENOTFOUND|ECONNRESET|ETIMEDOUT|UND_ERR/i;
+
+/**
+ * `fetch` never got an HTTP response (Nest down, proxy refused, DNS, reset).
+ * Thrown by `apiFetch` so RSC pages do not surface a raw `TypeError: fetch failed`.
+ */
+export class ApiNetworkError extends Error {
+  constructor(cause?: unknown) {
+    super(API_UNREACHABLE_MESSAGE);
+    this.name = 'ApiNetworkError';
+    if (cause !== undefined) {
+      this.cause = cause;
+    }
+  }
+}
+
+/** Wrap a low-level `fetch` failure as {@link ApiNetworkError}. */
+export const toApiNetworkError = (error: unknown): ApiNetworkError =>
+  error instanceof ApiNetworkError ? error : new ApiNetworkError(error);
 
 /**
  * True when `fetch` failed before an HTTP response (API down, DNS, connection reset).
  */
 export const isNetworkFetchError = (error: unknown): boolean => {
+  if (error instanceof ApiNetworkError) {
+    return true;
+  }
   if (!(error instanceof Error)) {
     return false;
   }
 
-  if (NETWORK_FETCH_MESSAGE.test(error.message)) {
+  if (error.name === 'ApiNetworkError' || NETWORK_FETCH_MESSAGE.test(error.message)) {
     return true;
   }
 

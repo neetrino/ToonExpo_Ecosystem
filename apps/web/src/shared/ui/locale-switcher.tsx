@@ -8,9 +8,7 @@ import { Suspense, useEffect, useId, useOptimistic, useRef, useState, useTransit
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
 import { usePanelLocale } from '@/shared/i18n/panel-intl-client-provider';
-import {
-  buildPanelLocaleCookie,
-} from '@/shared/i18n/panel-locale';
+import { buildPanelLocaleCookie } from '@/shared/i18n/panel-locale';
 import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
 import { cn } from '@/shared/ui/cn';
 import type { SupportedLocale } from '@toonexpo/shared';

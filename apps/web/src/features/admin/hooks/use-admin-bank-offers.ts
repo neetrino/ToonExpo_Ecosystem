@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { CreateBankOfferBody, UpdateBankOfferBody } from "@toonexpo/contracts";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { CreateBankOfferBody, UpdateBankOfferBody } from '@toonexpo/contracts';
 
 import {
   createAdminBankOffer,
@@ -9,8 +9,8 @@ import {
   listAdminBankOffers,
   updateAdminBankOffer,
   type ListAdminBankOffersParams,
-} from "@/features/admin/api/admin-bank-offers-api";
-import { ADMIN_BANK_OFFERS_QUERY_KEY } from "@/features/mortgage/constants";
+} from '@/features/admin/api/admin-bank-offers-api';
+import { ADMIN_BANK_OFFERS_QUERY_KEY } from '@/features/mortgage/constants';
 
 export const useAdminBankOffersQuery = (params: ListAdminBankOffersParams = {}) =>
   useQuery({

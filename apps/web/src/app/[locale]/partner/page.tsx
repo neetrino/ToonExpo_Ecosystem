@@ -1,6 +1,6 @@
-import { getLocale, setRequestLocale } from "next-intl/server";
+import { getLocale, setRequestLocale } from 'next-intl/server';
 
-import { PartnerProfilePage } from "@/features/partner/components/partner-profile-page";
+import { PartnerProfilePage } from '@/features/partner/components/partner-profile-page';
 
 type PartnerPageProps = {
   params: Promise<{ locale: string }>;

@@ -5,8 +5,7 @@ import {
   type CompanyCopyFieldsValues,
 } from '@/features/admin/schemas/company-copy-fields.schema';
 
-const optionalText = (value: string): string | undefined =>
-  value.length > 0 ? value : undefined;
+const optionalText = (value: string): string | undefined => (value.length > 0 ? value : undefined);
 
 const buildLocaleMap = (
   hy: string,

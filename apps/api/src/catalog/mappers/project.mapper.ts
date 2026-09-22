@@ -314,8 +314,7 @@ export const mapProjectDetail = (project: ProjectDetailSource, ctx: MapContext):
     nearbyPlaces: project.nearbyPlaces,
     bankPartnerOffers: project.bankPartnerOffers.map(mapBankPartnerOfferSummary),
     buildings: project.buildings.map((building) => {
-      const priceOnRequestEnabled =
-        project.priceOnRequestEnabled || building.priceOnRequestEnabled;
+      const priceOnRequestEnabled = project.priceOnRequestEnabled || building.priceOnRequestEnabled;
       return {
         id: building.id,
         name: building.name,

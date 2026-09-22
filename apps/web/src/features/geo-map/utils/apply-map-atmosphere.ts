@@ -1,6 +1,7 @@
 import type { LightSpecification, MapLibreMap, SkySpecification } from 'maplibre-gl';
 
 import { OSM_BUILDING_EXTRUSION_LAYER_ID } from '@/features/geo-map/constants';
+import { applyOsmBuildingCornerRadius } from '@/features/geo-map/utils/apply-osm-building-corner-radius';
 import {
   BRAND_MAP_BUILDING_EXTRUSION_OPACITY,
   BRAND_MAP_BUILDING_EXTRUSION_TOP,
@@ -16,6 +17,7 @@ import {
   MAP_ATMOSPHERE_SKY_HORIZON_BLEND,
   MAP_BUILDING_EXTRUSION_AO_INTENSITY,
   MAP_BUILDING_EXTRUSION_AO_RADIUS,
+  MAP_BUILDING_EXTRUSION_VERTICAL_GRADIENT,
   MAP_LIGHT_ANCHOR,
   MAP_LIGHT_COLOR,
   MAP_LIGHT_INTENSITY,
@@ -81,7 +83,7 @@ const polishBuildingExtrusions = (map: MapLibreMap): void => {
     map,
     OSM_BUILDING_EXTRUSION_LAYER_ID,
     'fill-extrusion-vertical-gradient',
-    true,
+    MAP_BUILDING_EXTRUSION_VERTICAL_GRADIENT,
   );
   setExtrusionPaintSafe(
     map,
@@ -95,10 +97,11 @@ const polishBuildingExtrusions = (map: MapLibreMap): void => {
     'fill-extrusion-ambient-occlusion-radius',
     MAP_BUILDING_EXTRUSION_AO_RADIUS,
   );
+  applyOsmBuildingCornerRadius(map, OSM_BUILDING_EXTRUSION_LAYER_ID);
 };
 
 /**
- * Applies daytime sky, fog, map light, and roof/side extrusion polish.
+ * Applies even daylight sky, map light, and extrusion polish (no wall shine).
  * Safe on MapLibre v6 — sky/light failures are ignored when unsupported.
  */
 export const applyMapAtmosphere = (map: MapLibreMap): void => {

@@ -4,13 +4,18 @@ import {
   type MapLibreMap,
   MercatorCoordinate,
 } from 'maplibre-gl';
-import { AmbientLight, Camera, DirectionalLight, type Object3D, Scene, WebGLRenderer } from 'three';
+import {
+  AmbientLight,
+  Camera,
+  type InstancedMesh,
+  type Object3D,
+  Scene,
+  WebGLRenderer,
+} from 'three';
 
 import {
   THREE_AMBIENT_LIGHT_INTENSITY,
   THREE_BUILDING_LAYER_ID,
-  THREE_DIRECTIONAL_LIGHT_INTENSITY_FILL,
-  THREE_DIRECTIONAL_LIGHT_INTENSITY_PRIMARY,
 } from '@/features/geo-map/three/constants';
 import { disposeThreeObject } from '@/features/geo-map/three/dispose-three-object';
 import { loadPreparedGlbModel } from '@/features/geo-map/three/load-glb-model';
@@ -18,7 +23,28 @@ import {
   composeCameraProjectionMatrix,
   composeModelTransformMatrix,
 } from '@/features/geo-map/three/model-transform-matrix';
+import {
+  createBuildingCanopyMesh,
+  disposeBuildingCanopyMesh,
+  renderBuildingCanopy,
+  writeBuildingCanopyInstances,
+} from '@/features/geo-map/three/building-layer-canopy';
+import { BuildingTrafficController } from '@/features/geo-map/three/building-layer-traffic';
 import type { GeoMapObject } from '@/features/geo-map/types';
+import type { RoadTrafficState } from '@/features/geo-map/traffic/types';
+import type { CanopyTreeInstance, GreenLngLat } from '@/features/geo-map/trees/types';
+
+const canopySignature = (instances: readonly CanopyTreeInstance[], origin: GreenLngLat): string => {
+  const first = instances[0];
+  const last = instances[instances.length - 1];
+  return [
+    origin.longitude.toFixed(5),
+    origin.latitude.toFixed(5),
+    instances.length,
+    first?.longitude.toFixed(5) ?? '0',
+    last?.latitude.toFixed(5) ?? '0',
+  ].join(':');
+};
 
 type ManagedModel = {
   config: GeoMapObject;
@@ -42,6 +68,14 @@ export class ThreeBuildingLayer implements CustomLayerInterface {
   private scene = new Scene();
   private camera = new Camera();
   private readonly models = new Map<string, ManagedModel>();
+  private canopy: InstancedMesh | null = null;
+  private canopyOrigin: GreenLngLat = { longitude: 0, latitude: 0 };
+  private pendingCanopy: {
+    instances: readonly CanopyTreeInstance[];
+    origin: GreenLngLat;
+  } | null = null;
+  private canopySignature = '';
+  private readonly traffic = new BuildingTrafficController();
   private contextLost = false;
 
   onAdd(map: MapLibreMap, gl: WebGLRenderingContext | WebGL2RenderingContext): void {
@@ -49,6 +83,11 @@ export class ThreeBuildingLayer implements CustomLayerInterface {
     this.camera = new Camera();
     this.scene = new Scene();
     this.addLights();
+    if (this.pendingCanopy) {
+      this.applyCanopy(this.pendingCanopy.instances, this.pendingCanopy.origin);
+      this.pendingCanopy = null;
+    }
+    this.traffic.flushPending(this.scene);
     this.renderer = new WebGLRenderer({
       canvas: map.getCanvas(),
       context: gl as WebGLRenderingContext,
@@ -67,6 +106,9 @@ export class ThreeBuildingLayer implements CustomLayerInterface {
       this.disposeManaged(managed);
     }
     this.models.clear();
+    disposeBuildingCanopyMesh(this.scene, this.canopy);
+    this.canopy = null;
+    this.traffic.dispose(this.scene);
     this.scene.clear();
     this.renderer?.dispose();
     this.renderer = null;
@@ -81,17 +123,68 @@ export class ThreeBuildingLayer implements CustomLayerInterface {
       return;
     }
     const visible = this.collectVisibleModels();
-    if (visible.length === 0) {
-      return;
-    }
     for (const managed of visible) {
       this.renderOne(managed, visible, options);
+    }
+    for (const managed of visible) {
+      if (managed.object) {
+        managed.object.visible = false;
+      }
+    }
+    if (this.canopy) {
+      renderBuildingCanopy(
+        this.renderer,
+        this.scene,
+        this.camera,
+        this.canopy,
+        this.canopyOrigin,
+        options,
+      );
+    }
+    if (this.traffic.render(this.renderer, this.scene, this.camera, options)) {
+      this.map.triggerRepaint();
     }
     for (const managed of visible) {
       if (managed.object) {
         managed.object.visible = true;
       }
     }
+  }
+
+  /** Viewport park trees — same renderer as buildings, never a second WebGL context. */
+  setCanopyInstances(instances: readonly CanopyTreeInstance[], origin: GreenLngLat): void {
+    const signature = canopySignature(instances, origin);
+    if (signature === this.canopySignature) {
+      return;
+    }
+    this.canopySignature = signature;
+    this.canopyOrigin = origin;
+    if (!this.renderer) {
+      this.pendingCanopy = { instances, origin };
+      return;
+    }
+    this.applyCanopy(instances, origin);
+    this.map?.triggerRepaint();
+  }
+
+  /** Viewport road cars — same renderer as buildings, never a second WebGL context. */
+  setRoadTraffic(state: RoadTrafficState | null): void {
+    this.traffic.setState(state, this.renderer ? this.scene : null);
+    this.map?.triggerRepaint();
+  }
+
+  private applyCanopy(instances: readonly CanopyTreeInstance[], origin: GreenLngLat): void {
+    if (instances.length === 0) {
+      if (this.canopy) {
+        this.canopy.count = 0;
+      }
+      return;
+    }
+    if (!this.canopy) {
+      this.canopy = createBuildingCanopyMesh();
+      this.scene.add(this.canopy);
+    }
+    writeBuildingCanopyInstances(this.canopy, instances, origin);
   }
 
   /** Sync viewport-visible (or admin-preview) model configs; loads new GLBs as needed. */
@@ -206,11 +299,7 @@ export class ThreeBuildingLayer implements CustomLayerInterface {
   }
 
   private addLights(): void {
-    const primary = new DirectionalLight(0xffffff, THREE_DIRECTIONAL_LIGHT_INTENSITY_PRIMARY);
-    primary.position.set(0, -70, 100).normalize();
-    const fill = new DirectionalLight(0xffffff, THREE_DIRECTIONAL_LIGHT_INTENSITY_FILL);
-    fill.position.set(0, 70, 100).normalize();
-    this.scene.add(primary, fill, new AmbientLight(0xffffff, THREE_AMBIENT_LIGHT_INTENSITY));
+    this.scene.add(new AmbientLight(0xffffff, THREE_AMBIENT_LIGHT_INTENSITY));
   }
 
   private readonly onContextLost = (event: Event): void => {
@@ -225,6 +314,14 @@ export class ThreeBuildingLayer implements CustomLayerInterface {
 }
 
 const layersByMap = new WeakMap<MapLibreMap, ThreeBuildingLayer>();
+
+export const getThreeBuildingLayer = (map: MapLibreMap): ThreeBuildingLayer | null => {
+  const existing = layersByMap.get(map);
+  if (existing && map.getLayer(THREE_BUILDING_LAYER_ID)) {
+    return existing;
+  }
+  return null;
+};
 
 /** Ensure a single `ThreeBuildingLayer` is attached to the map. */
 export const ensureThreeBuildingLayer = (map: MapLibreMap): ThreeBuildingLayer => {

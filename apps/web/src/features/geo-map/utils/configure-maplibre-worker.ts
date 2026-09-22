@@ -3,8 +3,10 @@ import { setWorkerUrl } from 'maplibre-gl';
 /**
  * Public path for the MapLibre v6 tile worker (and its sibling shared chunk),
  * populated by `apps/web/scripts/copy-maplibre-worker.mjs`.
+ * Query busts a stale 6.1 worker that throws `_classRegistryKey` against 6.2.
  */
-export const MAPLIBRE_WORKER_PUBLIC_URL = '/maplibre/maplibre-gl-worker.mjs';
+export const MAPLIBRE_WORKER_VERSION = '6.2.0';
+export const MAPLIBRE_WORKER_PUBLIC_URL = `/maplibre/maplibre-gl-worker.mjs?v=${MAPLIBRE_WORKER_VERSION}`;
 
 let hasConfiguredWorker = false;
 
@@ -20,3 +22,5 @@ export const configureMaplibreWorker = (): void => {
   setWorkerUrl(MAPLIBRE_WORKER_PUBLIC_URL);
   hasConfiguredWorker = true;
 };
+
+configureMaplibreWorker();

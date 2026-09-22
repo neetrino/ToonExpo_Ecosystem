@@ -201,10 +201,7 @@ type ProjectCatalogCheckListProps = {
   columns?: CatalogChecklistColumns | undefined;
 };
 
-export const ProjectCatalogCheckList = ({
-  items,
-  columns = 3,
-}: ProjectCatalogCheckListProps) => (
+export const ProjectCatalogCheckList = ({ items, columns = 3 }: ProjectCatalogCheckListProps) => (
   <ul className={cn('grid grid-cols-1 gap-3', CATALOG_CHECKLIST_GRID_CLASS[columns])}>
     {items.map((item) => (
       <li key={item} className="flex items-start gap-2.5 text-sm text-ink-navy">

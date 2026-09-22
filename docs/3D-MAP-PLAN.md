@@ -21,7 +21,7 @@ Scale target: ~200–300 objects now, up to ~1000 buildings long-term.
 - **MapLibre GL** (OSM vector tiles) — basemap, OSM building pick/hide, camera
   only; free, no tokens.
 - **Three.js MapLibre custom layer(s)** — custom 3D content (GLB buildings;
-  optional future vegetation/traffic layers). Orientation matches the proven
+  admin park canopy). Orientation matches the proven
   Manvel-Lambaryan/Map POC matrix:
   `camera.projectionMatrix = mainMatrix * translate(mercator)
   - scale(s, -s, s) * rotX * rotY * rotZ`with`DEFAULT_MODEL_ROTATION_X_DEG = 90` (`pitchDeg`↔ Rotation X,`headingDeg`↔ Y,`rollDeg`↔ Z). See`apps/web/src/features/geo-map/three/`.
@@ -50,17 +50,18 @@ existing distance mask. Publish requires an attached project; public list is
   extrusions (`utils/apply-map-atmosphere.ts`, `utils/building-color-expr.ts`,
   brand map paint in `utils/brand-map-style-constants.ts`). Wired on map load
   after brand style via `use-maplibre-map.ts`.
+- **Park trees (admin)** — code-driven InstancedMesh oaks on rendered `park` /
+  `landcover_wood` / `landcover_grass` in the current window. No database.
+  Appear at zoom ≥ 15, hide beyond 480 m, hard-capped at 1 400 instances.
+  Public/home maps stay unchanged.
 
 ### Future polish backlog
 
 - Yerevan pink-tuff brand paint on the basemap.
 - Optional time-of-day / weather atmosphere presets (daytime default is enough).
-- **Park vegetation** — zoom-gated park trees + grass (Three.js custom layer;
-  Kenney-style cutouts; collision vs buildings/roads; hide park POI symbols when
-  active). Not shipped — prior attempt had incorrect world placement.
 - **Sparse traffic** — vector-tile roads only, no Overpass; close-range animated
-  cars (max ~16). Not shipped — same placement issues as vegetation.
-- Tree wind animation at zoom ≥ 18 (when vegetation ships).
+  cars (max ~16). Not shipped.
+- Tree wind animation at zoom ≥ 18.
 
 ## Data model (packages/db)
 

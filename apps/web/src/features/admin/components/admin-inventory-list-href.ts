@@ -1,4 +1,8 @@
-import type { ApartmentSalesStatus, AdminBuildingListItem, AdminFloorListItem } from '@toonexpo/contracts';
+import type {
+  ApartmentSalesStatus,
+  AdminBuildingListItem,
+  AdminFloorListItem,
+} from '@toonexpo/contracts';
 
 import {
   ADMIN_INVENTORY_FILTER_BUILDING_KEY,
@@ -150,8 +154,7 @@ export const buildAdminInventoryListHref = ({
 }: BuildInventoryListHrefParams): string => {
   const params = new URLSearchParams();
   const nextCompanyIds = next.companyIds === undefined ? companyIds : (next.companyIds ?? []);
-  const nextBuildingIds =
-    next.buildingIds === undefined ? buildingIds : (next.buildingIds ?? []);
+  const nextBuildingIds = next.buildingIds === undefined ? buildingIds : (next.buildingIds ?? []);
   const nextFloorIds = next.floorIds === undefined ? floorIds : (next.floorIds ?? []);
   const nextProjectId = next.projectId === undefined ? projectId : next.projectId || undefined;
   const nextSalesStatus =

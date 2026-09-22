@@ -1,10 +1,7 @@
 import { ApiError } from '@/shared/api/errors';
 
 export type CrmApartmentAttachErrorKey =
-  | 'reservedConflict'
-  | 'alreadySold'
-  | 'alreadyLinked'
-  | 'generic';
+  'reservedConflict' | 'alreadySold' | 'alreadyLinked' | 'generic';
 
 /**
  * Maps attach API errors to CRM apartment-section message keys.

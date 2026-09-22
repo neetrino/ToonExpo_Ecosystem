@@ -114,8 +114,7 @@ const EditProjectFormInner = ({ project }: EditProjectFormProps) => {
   const initialValues = toFormValues(project);
   const [previewUrl, setPreviewUrl] = useState<string | null>(savedCover.url);
   const { showSuccess, successToast } = useSuccessToast();
-  const { showError, onInvalid, errorToast, focusLocale, focusTick } =
-    useProjectFormErrorToast();
+  const { showError, onInvalid, errorToast, focusLocale, focusTick } = useProjectFormErrorToast();
   const { hasUnsavedOfferChanges, isSavingSubForms, saveAllOfferChanges } =
     useProjectEditSubForms();
 
@@ -138,8 +137,7 @@ const EditProjectFormInner = ({ project }: EditProjectFormProps) => {
   const { lockSlugAuto } = useAutoProjectSlug({
     control,
     getSlug: () => getValues('slug'),
-    setSlug: (slug) =>
-      setValue('slug', slug, { shouldDirty: true, shouldValidate: true }),
+    setSlug: (slug) => setValue('slug', slug, { shouldDirty: true, shouldValidate: true }),
   });
   const slugField = register('slug');
 
@@ -152,8 +150,7 @@ const EditProjectFormInner = ({ project }: EditProjectFormProps) => {
       }
 
       if (shouldSaveProject) {
-        const shouldSendCover =
-          values.coverMediaId.length > 0 || Boolean(dirtyFields.coverMediaId);
+        const shouldSendCover = values.coverMediaId.length > 0 || Boolean(dirtyFields.coverMediaId);
         const updated = await updateMutation.mutateAsync(
           toUpdateProjectRequest(values, { includeCoverMediaId: shouldSendCover }),
         );
@@ -180,155 +177,146 @@ const EditProjectFormInner = ({ project }: EditProjectFormProps) => {
 
   return (
     <>
-    <form
-      onSubmit={onSubmit}
-      className={cn('flex flex-col gap-5', FORM_SAVE_BAR_SCROLL_CLEARANCE_CLASS)}
-      noValidate
-    >
-      <TranslationTabs focusLocale={focusLocale} focusTick={focusTick}>
-        {(locale) => (
-          <div className="flex flex-col gap-4">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <FormField
-                id={`edit-name-${locale}`}
-                label={t('form.name')}
-                error={locale === 'hy' && errors.nameHy ? t('validation.name') : undefined}
-              >
-                <Input
+      <form
+        onSubmit={onSubmit}
+        className={cn('flex flex-col gap-5', FORM_SAVE_BAR_SCROLL_CLEARANCE_CLASS)}
+        noValidate
+      >
+        <TranslationTabs focusLocale={focusLocale} focusTick={focusTick}>
+          {(locale) => (
+            <div className="flex flex-col gap-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <FormField
                   id={`edit-name-${locale}`}
-                  placeholder={getProjectFormPlaceholder(locale, 'name')}
-                  {...register(projectLocaleField('name', locale))}
+                  label={t('form.name')}
+                  error={locale === 'hy' && errors.nameHy ? t('validation.name') : undefined}
+                >
+                  <Input
+                    id={`edit-name-${locale}`}
+                    placeholder={getProjectFormPlaceholder(locale, 'name')}
+                    {...register(projectLocaleField('name', locale))}
+                  />
+                </FormField>
+                <FormField id={`edit-type-${locale}`} label={t('form.projectType')}>
+                  <Input
+                    id={`edit-type-${locale}`}
+                    placeholder={getProjectFormPlaceholder(locale, 'projectType')}
+                    {...register(projectLocaleField('projectType', locale))}
+                  />
+                </FormField>
+              </div>
+              <FormField id={`edit-short-${locale}`} label={t('form.shortDescription')}>
+                <textarea
+                  id={`edit-short-${locale}`}
+                  rows={2}
+                  placeholder={getProjectFormPlaceholder(locale, 'shortDescription')}
+                  className="w-full rounded-sm border border-border bg-background px-4 py-3 text-base text-ink lg:text-sm focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20"
+                  {...register(projectLocaleField('shortDescription', locale))}
                 />
               </FormField>
-              <FormField id={`edit-type-${locale}`} label={t('form.projectType')}>
-                <Input
-                  id={`edit-type-${locale}`}
-                  placeholder={getProjectFormPlaceholder(locale, 'projectType')}
-                  {...register(projectLocaleField('projectType', locale))}
+              <FormField id={`edit-full-${locale}`} label={t('form.fullDescription')}>
+                <textarea
+                  id={`edit-full-${locale}`}
+                  rows={4}
+                  placeholder={getProjectFormPlaceholder(locale, 'fullDescription')}
+                  className="w-full rounded-sm border border-border bg-background px-4 py-3 text-base text-ink lg:text-sm focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20"
+                  {...register(projectLocaleField('fullDescription', locale))}
                 />
               </FormField>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <FormField id={`edit-location-${locale}`} label={t('form.locationText')}>
+                  <Input
+                    id={`edit-location-${locale}`}
+                    placeholder={getProjectFormPlaceholder(locale, 'locationText')}
+                    {...register(projectLocaleField('locationText', locale))}
+                  />
+                </FormField>
+                <FormField id={`edit-district-${locale}`} label={t('form.district')}>
+                  <Input
+                    id={`edit-district-${locale}`}
+                    placeholder={getProjectFormPlaceholder(locale, 'district')}
+                    {...register(projectLocaleField('district', locale))}
+                  />
+                </FormField>
+              </div>
             </div>
-            <FormField id={`edit-short-${locale}`} label={t('form.shortDescription')}>
-              <textarea
-                id={`edit-short-${locale}`}
-                rows={2}
-                placeholder={getProjectFormPlaceholder(locale, 'shortDescription')}
-                className="w-full rounded-sm border border-border bg-background px-4 py-3 text-base text-ink lg:text-sm focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20"
-                {...register(projectLocaleField('shortDescription', locale))}
-              />
-            </FormField>
-            <FormField id={`edit-full-${locale}`} label={t('form.fullDescription')}>
-              <textarea
-                id={`edit-full-${locale}`}
-                rows={4}
-                placeholder={getProjectFormPlaceholder(locale, 'fullDescription')}
-                className="w-full rounded-sm border border-border bg-background px-4 py-3 text-base text-ink lg:text-sm focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20"
-                {...register(projectLocaleField('fullDescription', locale))}
-              />
-            </FormField>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <FormField id={`edit-location-${locale}`} label={t('form.locationText')}>
-                <Input
-                  id={`edit-location-${locale}`}
-                  placeholder={getProjectFormPlaceholder(locale, 'locationText')}
-                  {...register(projectLocaleField('locationText', locale))}
+          )}
+        </TranslationTabs>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <FormField id="edit-slug" label={t('form.slug')}>
+            <Input
+              id="edit-slug"
+              placeholder={getProjectFormPlaceholder(siteLocale, 'slug')}
+              name={slugField.name}
+              ref={slugField.ref}
+              onBlur={slugField.onBlur}
+              onChange={(event) => {
+                lockSlugAuto();
+                void slugField.onChange(event);
+              }}
+            />
+          </FormField>
+          <FormField id="edit-construction-status" label={t('form.constructionStatus')}>
+            <Input
+              id="edit-construction-status"
+              placeholder={getProjectFormPlaceholder(siteLocale, 'constructionStatus')}
+              {...register('constructionStatus')}
+            />
+          </FormField>
+          <FormField id="edit-completion" label={t('form.completionDate')}>
+            <Controller
+              name="completionDate"
+              control={control}
+              render={({ field }) => (
+                <DatePicker
+                  id="edit-completion"
+                  name={field.name}
+                  value={field.value ?? ''}
+                  aria-label={t('form.completionDate')}
+                  onBlur={field.onBlur}
+                  onChange={field.onChange}
                 />
-              </FormField>
-              <FormField id={`edit-district-${locale}`} label={t('form.district')}>
-                <Input
-                  id={`edit-district-${locale}`}
-                  placeholder={getProjectFormPlaceholder(locale, 'district')}
-                  {...register(projectLocaleField('district', locale))}
-                />
-              </FormField>
-            </div>
-          </div>
-        )}
-      </TranslationTabs>
+              )}
+            />
+          </FormField>
+        </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <FormField id="edit-slug" label={t('form.slug')}>
-          <Input
-            id="edit-slug"
-            placeholder={getProjectFormPlaceholder(siteLocale, 'slug')}
-            name={slugField.name}
-            ref={slugField.ref}
-            onBlur={slugField.onBlur}
-            onChange={(event) => {
-              lockSlugAuto();
-              void slugField.onChange(event);
-            }}
-          />
-        </FormField>
-        <FormField id="edit-construction-status" label={t('form.constructionStatus')}>
-          <Input
-            id="edit-construction-status"
-            placeholder={getProjectFormPlaceholder(siteLocale, 'constructionStatus')}
-            {...register('constructionStatus')}
-          />
-        </FormField>
-        <FormField id="edit-completion" label={t('form.completionDate')}>
-          <Controller
-            name="completionDate"
-            control={control}
-            render={({ field }) => (
-              <DatePicker
-                id="edit-completion"
-                name={field.name}
-                value={field.value ?? ''}
-                aria-label={t('form.completionDate')}
-                onBlur={field.onBlur}
-                onChange={field.onChange}
-              />
-            )}
-          />
-        </FormField>
-      </div>
+        <Controller
+          control={control}
+          name="coverMediaId"
+          render={({ field, fieldState }) => (
+            <MediaUploadField
+              id="edit-project-cover"
+              label={t('form.coverMedia')}
+              context={mediaContext}
+              value={field.value}
+              onChange={(mediaAssetId) => {
+                field.onChange(mediaAssetId);
+                if (mediaAssetId.trim().length === 0) {
+                  setPreviewUrl(null);
+                }
+              }}
+              onAssetSelected={(asset) => {
+                field.onChange(asset.id);
+                setPreviewUrl(asset.fileUrl);
+              }}
+              previewUrl={previewUrl ?? savedCover.url}
+              error={fieldState.error?.message}
+            />
+          )}
+        />
 
-      <Controller
-        control={control}
-        name="coverMediaId"
-        render={({ field, fieldState }) => (
-          <MediaUploadField
-            id="edit-project-cover"
-            label={t('form.coverMedia')}
-            context={mediaContext}
-            value={field.value}
-            onChange={(mediaAssetId) => {
-              field.onChange(mediaAssetId);
-              if (mediaAssetId.trim().length === 0) {
-                setPreviewUrl(null);
-              }
-            }}
-            onAssetSelected={(asset) => {
-              field.onChange(asset.id);
-              setPreviewUrl(asset.fileUrl);
-            }}
-            previewUrl={previewUrl ?? savedCover.url}
-            error={fieldState.error?.message}
-          />
-        )}
-      />
+        <ProjectCatalogEditor projectId={project.id} register={register} control={control} />
 
-      <ProjectCatalogEditor
-        projectId={project.id}
-        register={register}
-        control={control}
-      />
-
-      <FormSaveBar>
-          <Button
-            type="submit"
-            variant="secondary"
-            className="w-full"
-            disabled={busy || !canSave}
-          >
+        <FormSaveBar>
+          <Button type="submit" variant="secondary" className="w-full" disabled={busy || !canSave}>
             {busy ? t('detail.saving') : t('detail.save')}
           </Button>
-      </FormSaveBar>
-    </form>
-    {successToast}
-    {errorToast}
+        </FormSaveBar>
+      </form>
+      {successToast}
+      {errorToast}
     </>
   );
 };

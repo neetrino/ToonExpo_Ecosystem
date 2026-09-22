@@ -1,27 +1,27 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
-import type { CrmApartmentLinkItem } from "@toonexpo/contracts";
-import type { CrmDealStatus } from "@toonexpo/db";
+import { BadRequestException, Injectable } from '@nestjs/common';
+import type { CrmApartmentLinkItem } from '@toonexpo/contracts';
+import type { CrmDealStatus } from '@toonexpo/db';
 
-import type { CompanyMemberContext } from "../../company/types/company-member-context.js";
-import { PrismaService } from "../../prisma/prisma.service.js";
-import { entityNotFound } from "../../portal/utils/access.js";
+import type { CompanyMemberContext } from '../../company/types/company-member-context.js';
+import { PrismaService } from '../../prisma/prisma.service.js';
+import { entityNotFound } from '../../portal/utils/access.js';
 import {
   CRM_MAX_LINKED_APARTMENTS_PER_DEAL,
   CRM_STATUSES_REQUIRING_APARTMENT,
-} from "../crm.constants.js";
-import { mapApartmentLinkItem } from "../mappers/crm.mapper.js";
+} from '../crm.constants.js';
+import { mapApartmentLinkItem } from '../mappers/crm.mapper.js';
 import {
   CRM_DEAL_ALREADY_HAS_APARTMENT,
   assertApartmentReservableByDeal,
   inventorySalesStatusForDeal,
   isApartmentInventorySynced,
   linkTypeForInventoryStatus,
-} from "../status/crm-inventory-sync.js";
+} from '../status/crm-inventory-sync.js';
 import {
   persistDealApartmentAttach,
   persistDealApartmentDetach,
   type DealApartmentOwnedRow,
-} from "./portal-crm-deal-apartment-writes.js";
+} from './portal-crm-deal-apartment-writes.js';
 
 type DealRow = { id: string; status: CrmDealStatus; projectId: string | null };
 
@@ -77,10 +77,7 @@ export class PortalCrmDealApartmentsService {
     );
   }
 
-  private async assertSingleApartmentSlot(
-    dealId: string,
-    apartmentId: string,
-  ): Promise<void> {
+  private async assertSingleApartmentSlot(dealId: string, apartmentId: string): Promise<void> {
     const otherCount = await this.prisma.db.crmDealApartmentLink.count({
       where: { crmDealId: dealId, apartmentId: { not: apartmentId } },
     });
@@ -109,7 +106,7 @@ export class PortalCrmDealApartmentsService {
       },
     });
     if (!apartment) {
-      throw entityNotFound("Apartment");
+      throw entityNotFound('Apartment');
     }
     return apartment;
   }
@@ -126,7 +123,7 @@ export class PortalCrmDealApartmentsService {
       },
     });
     if (!link) {
-      throw entityNotFound("Apartment link");
+      throw entityNotFound('Apartment link');
     }
     return link;
   }
@@ -135,26 +132,20 @@ export class PortalCrmDealApartmentsService {
     const linkCount = await this.prisma.db.crmDealApartmentLink.count({
       where: { crmDealId: deal.id },
     });
-    if (
-      CRM_STATUSES_REQUIRING_APARTMENT.includes(deal.status) &&
-      linkCount <= 1
-    ) {
+    if (CRM_STATUSES_REQUIRING_APARTMENT.includes(deal.status) && linkCount <= 1) {
       throw new BadRequestException(
         `Cannot unlink the last apartment while status is ${deal.status}`,
       );
     }
   }
 
-  private async requireCompanyDeal(
-    companyId: string,
-    dealId: string,
-  ): Promise<DealRow> {
+  private async requireCompanyDeal(companyId: string, dealId: string): Promise<DealRow> {
     const deal = await this.prisma.db.crmDeal.findFirst({
       where: { id: dealId, companyId },
       select: { id: true, status: true, projectId: true },
     });
     if (!deal) {
-      throw entityNotFound("Deal");
+      throw entityNotFound('Deal');
     }
     return deal;
   }

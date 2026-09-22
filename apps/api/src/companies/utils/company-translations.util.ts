@@ -1,10 +1,7 @@
 import type { CompanyTranslationsInput } from '@toonexpo/contracts';
 
 import { loadTranslations } from '../../catalog/utils/load-translations.js';
-import {
-  TRANSLATION_ENTITY,
-  TRANSLATION_FIELD,
-} from '../../catalog/utils/resolve-translation.js';
+import { TRANSLATION_ENTITY, TRANSLATION_FIELD } from '../../catalog/utils/resolve-translation.js';
 import { groupPortalTranslations } from '../../portal/utils/group-translations.js';
 import {
   upsertTranslations,

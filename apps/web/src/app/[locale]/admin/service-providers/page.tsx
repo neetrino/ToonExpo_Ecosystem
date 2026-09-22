@@ -1,6 +1,6 @@
-import { getLocale, setRequestLocale } from "next-intl/server";
+import { getLocale, setRequestLocale } from 'next-intl/server';
 
-import { ServiceProvidersPage } from "@/features/admin/components/service-providers-page";
+import { ServiceProvidersPage } from '@/features/admin/components/service-providers-page';
 
 type AdminServiceProvidersPageProps = {
   params: Promise<{ locale: string }>;

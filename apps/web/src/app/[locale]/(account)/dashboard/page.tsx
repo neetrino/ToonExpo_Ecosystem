@@ -1,7 +1,7 @@
 import { headers } from 'next/headers';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import { getMeOrNullCached as getMeOrNull } from '@/features/auth/api/get-me-or-null-cached';
+import { getMeSessionCached } from '@/features/auth/api/get-me-or-null-cached';
 import { AccountDashboardView } from '@/features/buyer/components/account/account-dashboard-view';
 import {
   AccountContentReveal,
@@ -14,6 +14,7 @@ import { getPortalPartner } from '@/features/partner/api/portal-partner-api';
 import { isPartnerCompatibleCompany } from '@/features/partners/utils/is-partner-compatible-company';
 import { Link, redirect } from '@/i18n/navigation';
 import { isApiErrorStatus } from '@/shared/api/errors';
+import { ApiUnavailablePanel } from '@/shared/ui/api-unavailable-panel';
 import { Card } from '@/shared/ui/card';
 
 type DashboardPageProps = {
@@ -26,7 +27,11 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
 
   const headerStore = await headers();
   const cookieHeader = headerStore.get('cookie') ?? undefined;
-  const user = await getMeOrNull(cookieHeader);
+  const session = await getMeSessionCached(cookieHeader);
+  if (session.status === 'unavailable') {
+    return <ApiUnavailablePanel />;
+  }
+  const { user } = session;
 
   if (!user) {
     redirect({ href: '/auth/login', locale });

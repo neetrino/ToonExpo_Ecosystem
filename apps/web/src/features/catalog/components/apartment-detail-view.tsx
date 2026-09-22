@@ -95,8 +95,7 @@ export const ApartmentDetailView = async ({
   ];
 
   const floorLabel =
-    apartment.floor.displayLabel?.trim() ||
-    t('project.floor', { number: apartment.floor.number });
+    apartment.floor.displayLabel?.trim() || t('project.floor', { number: apartment.floor.number });
 
   const salesStatusProps = {
     apartmentId: apartment.id,

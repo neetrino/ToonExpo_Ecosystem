@@ -7,7 +7,11 @@ import type {
 } from '@toonexpo/contracts';
 import type { ApartmentSalesStatus } from '@toonexpo/db';
 
-import { decimalToString, summarizeSalesStatuses, toMediaSummary } from '../catalog/mappers/catalog.mapper.js';
+import {
+  decimalToString,
+  summarizeSalesStatuses,
+  toMediaSummary,
+} from '../catalog/mappers/catalog.mapper.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import {
   buildInventoryApartmentsWhere,

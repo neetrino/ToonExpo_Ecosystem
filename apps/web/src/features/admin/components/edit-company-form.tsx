@@ -13,7 +13,10 @@ import {
   updateCompanySchema,
   type UpdateCompanyFormValues,
 } from '@/features/admin/schemas/update-company.schema';
-import { companyCopyDefaultsFrom, toCompanyCopyPatch } from '@/features/admin/utils/company-copy-mappers';
+import {
+  companyCopyDefaultsFrom,
+  toCompanyCopyPatch,
+} from '@/features/admin/utils/company-copy-mappers';
 import type { TranslationLocale } from '@/features/builder/components/translation-tabs';
 import { CompanyContactFields } from '@/features/companies/components/company-contact-fields';
 import {
@@ -135,37 +138,37 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
 
   return (
     <>
-    <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
-      <CompanyCopyFields
-        register={register}
-        errors={errors}
-        idPrefix="edit-company"
-        focusLocale={focusLocale}
-        focusTick={focusTick}
-        nameAside={statusField}
-      />
+      <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
+        <CompanyCopyFields
+          register={register}
+          errors={errors}
+          idPrefix="edit-company"
+          focusLocale={focusLocale}
+          focusTick={focusTick}
+          nameAside={statusField}
+        />
 
-      <CompanyContactFields
-        control={control}
-        register={register}
-        errors={errors}
-        idPrefix="edit-company"
-        labelsNamespace="Admin.companies"
-      />
+        <CompanyContactFields
+          control={control}
+          register={register}
+          errors={errors}
+          idPrefix="edit-company"
+          labelsNamespace="Admin.companies"
+        />
 
-      <CompanyMediaFields
-        control={control as unknown as Control<CompanyMediaFieldValues>}
-        context="admin"
-        logoPreviewUrl={company.logoUrl}
-        coverPreviewUrl={company.coverUrl}
-      />
+        <CompanyMediaFields
+          control={control as unknown as Control<CompanyMediaFieldValues>}
+          context="admin"
+          logoPreviewUrl={company.logoUrl}
+          coverPreviewUrl={company.coverUrl}
+        />
 
-      <Button type="submit" variant="primary" disabled={busy || !isDirty}>
-        {busy ? t('detail.saving') : t('detail.save')}
-      </Button>
-    </form>
-    {successToast}
-    {errorToast}
+        <Button type="submit" variant="primary" disabled={busy || !isDirty}>
+          {busy ? t('detail.saving') : t('detail.save')}
+        </Button>
+      </form>
+      {successToast}
+      {errorToast}
     </>
   );
 };

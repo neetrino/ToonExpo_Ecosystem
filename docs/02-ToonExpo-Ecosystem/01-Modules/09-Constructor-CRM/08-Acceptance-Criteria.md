@@ -56,4 +56,3 @@ v1 does not require:
 - email/phone integration;
 - complex builder sub-roles;
 - general task management system.
-

@@ -172,7 +172,10 @@ export const ReadinessAssessmentsListPage = () => {
     (assessmentsQuery.isLoading && !assessmentsQuery.data) ||
     isEnsuringProjects;
   const isListError =
-    companiesQuery.isError || pickerQuery.isError || projectsQuery.isError || assessmentsQuery.isError;
+    companiesQuery.isError ||
+    pickerQuery.isError ||
+    projectsQuery.isError ||
+    assessmentsQuery.isError;
 
   if (isListLoading) {
     return <p className="text-sm text-ink-secondary">{t('loading')}</p>;

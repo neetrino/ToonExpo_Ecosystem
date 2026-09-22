@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import { GeoMapCanvasLazy } from '@/features/geo-map/components/geo-map-canvas-lazy';
+import { GEO_MAP_CITY_LIFE_PROPS } from '@/features/geo-map/geo-map-city-life-props';
 import { GEO_MAP_LAB_OBJECTS } from '@/features/geo-map/lab/geo-map-lab-objects';
 import type { GeoMapLngLat, GeoMapObject } from '@/features/geo-map/types';
 
@@ -38,6 +39,7 @@ export const GeoMapLabPage = () => {
         <GeoMapCanvasLazy
           objects={objects}
           editable
+          {...GEO_MAP_CITY_LIFE_PROPS}
           onObjectClick={setSelectedId}
           onObjectHover={setHoveredId}
           onObjectDragged={(id, position) => setObjects((prev) => applyDrag(prev, id, position))}

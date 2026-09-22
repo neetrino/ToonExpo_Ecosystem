@@ -1,6 +1,10 @@
 'use client';
 
-import type { ApartmentSalesStatus, MediaAssetSummary, PublicationStatus } from '@toonexpo/contracts';
+import type {
+  ApartmentSalesStatus,
+  MediaAssetSummary,
+  PublicationStatus,
+} from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';

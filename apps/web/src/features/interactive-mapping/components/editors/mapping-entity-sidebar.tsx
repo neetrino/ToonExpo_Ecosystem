@@ -121,10 +121,7 @@ const MappingEntitySelectedPanel = ({
   onClear,
 }: MappingEntitySelectedPanelProps) => (
   <div
-    className={cn(
-      CONTROL_RADIUS_CLASS,
-      'space-y-2 border border-border bg-background p-3 text-sm',
-    )}
+    className={cn(CONTROL_RADIUS_CLASS, 'space-y-2 border border-border bg-background p-3 text-sm')}
   >
     <label className="block text-ink-muted">
       {labelFieldLabel}
