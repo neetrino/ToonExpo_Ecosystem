@@ -2,12 +2,12 @@
 
 import { useCallback, type Dispatch, type MutableRefObject, type SetStateAction } from 'react';
 import {
-  appendSvgPaths,
   bandPolygonFromEdge,
   normalizedPointsToSvgPath,
   offsetNormalizedPath,
   DEFAULT_MARKER_POINT,
   pathCentroid,
+  resolveCommittedSvgPath,
   stackBandsFromQuad,
   type NormPoint,
 } from '../../utils/mapping-math';
@@ -36,6 +36,7 @@ type UseMappingCanvasCommitsParams = {
   entitiesRef: MutableRefObject<MappingEntity[]>;
   modeRef: MutableRefObject<EditorMode>;
   replaceOnCommitRef: MutableRefObject<boolean>;
+  selectedSubpathIndexRef: MutableRefObject<number | null>;
   toolPresetRef: MutableRefObject<'basic' | 'floors'>;
 };
 
@@ -57,6 +58,7 @@ export const useMappingCanvasCommits = ({
   entitiesRef,
   modeRef,
   replaceOnCommitRef,
+  selectedSubpathIndexRef,
   toolPresetRef,
 }: UseMappingCanvasCommitsParams) => {
   const commitDraft = useCallback(
@@ -76,9 +78,13 @@ export const useMappingCanvasCommits = ({
 
       const existing =
         entitiesRef.current.find((entity) => entity.id === entityId)?.svgPath ?? null;
-      const shouldReplace =
-        replaceOnCommitRef.current || editing || toolPresetRef.current === 'floors' || !existing;
-      const svgPath = shouldReplace ? nextSegment : appendSvgPaths(existing, nextSegment);
+      const svgPath = resolveCommittedSvgPath({
+        existing,
+        nextSegment,
+        editing,
+        replaceAll: replaceOnCommitRef.current || toolPresetRef.current === 'floors',
+        subpathIndex: selectedSubpathIndexRef.current,
+      });
       replaceOnCommitRef.current = false;
 
       const centroid = pathCentroid(editing && shaped ? shaped.vertices : points);
@@ -104,6 +110,7 @@ export const useMappingCanvasCommits = ({
       onChangeEntity,
       onPolygonClosed,
       replaceOnCommitRef,
+      selectedSubpathIndexRef,
       setDraftPoints,
       setEditShape,
       setMode,

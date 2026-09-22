@@ -212,14 +212,14 @@ export const useMappingEditorState = ({
     void persistEntity(next, t('saved'));
   };
 
-  const onPolygonDeleted = (id: string) => {
+  const onPolygonDeleted = (id: string, svgPath: string | null) => {
     const current = entitiesRef.current.find((item) => item.id === id);
     if (!current) {
       return;
     }
-    const next = { ...current, svgPath: null };
-    setEntities((prev) => prev.map((item) => (item.id === id ? next : item)));
-    void persistEntity(next, t('polygonCleared'));
+    const next = { ...current, svgPath };
+    setEntities((prev) => prev.map((item) => (item.id === id ? { ...item, svgPath } : item)));
+    void persistEntity(next, svgPath ? t('saved') : t('polygonCleared'));
   };
 
   const onBulkPaths = (updates: MappingBulkPathUpdate[]) => {

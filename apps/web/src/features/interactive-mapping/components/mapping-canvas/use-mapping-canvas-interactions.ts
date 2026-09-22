@@ -9,7 +9,7 @@ import {
 } from 'react';
 import type { MouseEvent as ReactMouseEvent } from 'react';
 import { clampNormalized } from '../../utils/coordinates';
-import type { NormPoint } from '../../utils/mapping-math';
+import { removeSvgSubpath, type NormPoint } from '../../utils/mapping-math';
 import type { EditorMode, MappingEntity } from './mapping-canvas.types';
 
 /** Normalized hit radius for draft vertices and closing the first point. */
@@ -56,7 +56,9 @@ type UseMappingCanvasInteractionsParams = {
     id: string,
     patch: Partial<Pick<MappingEntity, 'markerX' | 'markerY' | 'svgPath'>>,
   ) => void;
-  onPolygonDeleted?: ((id: string) => void) | undefined;
+  onPolygonDeleted?: ((id: string, svgPath: string | null) => void) | undefined;
+  selectedSubpathIndex: number | null;
+  setSelectedSubpathIndex: (index: number | null) => void;
   updateDraftPoints: (updater: (prev: NormPoint[]) => NormPoint[]) => void;
   commitAutoStack: (points: NormPoint[]) => boolean;
   commitBand: (points: NormPoint[], entityId: string) => string | null;
@@ -78,6 +80,8 @@ export const useMappingCanvasInteractions = ({
   onSelect,
   onChangeEntity,
   onPolygonDeleted,
+  selectedSubpathIndex,
+  setSelectedSubpathIndex,
   updateDraftPoints,
   commitAutoStack,
   commitBand,
@@ -163,8 +167,10 @@ export const useMappingCanvasInteractions = ({
     if (!selectedId || !selected?.svgPath) {
       return;
     }
-    onChangeEntity(selectedId, { svgPath: null });
-    onPolygonDeleted?.(selectedId);
+    const svgPath = removeSvgSubpath(selected.svgPath, selectedSubpathIndex);
+    onChangeEntity(selectedId, { svgPath });
+    onPolygonDeleted?.(selectedId, svgPath);
+    setSelectedSubpathIndex(null);
     clearDraft();
     setMode('select');
   }, [
@@ -173,7 +179,9 @@ export const useMappingCanvasInteractions = ({
     onPolygonDeleted,
     selected,
     selectedId,
+    selectedSubpathIndex,
     setMode,
+    setSelectedSubpathIndex,
   ]);
 
   const executeStartFreshPolygon = useCallback(() => {
@@ -182,9 +190,10 @@ export const useMappingCanvasInteractions = ({
     }
     if (selected?.svgPath) {
       onChangeEntity(selectedId, { svgPath: null });
-      onPolygonDeleted?.(selectedId);
+      onPolygonDeleted?.(selectedId, null);
     }
     replaceOnCommitRef.current = false;
+    setSelectedSubpathIndex(null);
     clearDraft();
     setMode('draw-polygon');
   }, [
@@ -195,6 +204,7 @@ export const useMappingCanvasInteractions = ({
     selected,
     selectedId,
     setMode,
+    setSelectedSubpathIndex,
   ]);
 
   const deletePolygon = useCallback(() => {

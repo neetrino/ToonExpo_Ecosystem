@@ -76,9 +76,9 @@ export const MappingLabPage = () => {
         onPolygonClosed={(id, svgPath) => {
           setEntities((prev) => prev.map((item) => (item.id === id ? { ...item, svgPath } : item)));
         }}
-        onPolygonDeleted={(id) => {
+        onPolygonDeleted={(id, svgPath) => {
           setEntities((prev) =>
-            prev.map((item) => (item.id === id ? { ...item, svgPath: null } : item)),
+            prev.map((item) => (item.id === id ? { ...item, svgPath } : item)),
           );
         }}
       />

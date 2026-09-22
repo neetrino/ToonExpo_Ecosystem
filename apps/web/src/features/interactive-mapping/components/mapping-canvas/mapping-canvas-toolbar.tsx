@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 
 import { Button } from '@/shared/ui/button';
 import { svgPathToPolygonShape, type PolygonShape } from '../../utils/curved-polygon';
+import { activeSvgSubpathIndex, splitSvgSubpaths } from '../../utils/mapping-math';
 import {
   AutoStackIcon,
   BandStripIcon,
@@ -33,6 +34,7 @@ type MappingCanvasToolbarProps = {
   setMode: (mode: EditorMode) => void;
   setSelectedDraftIndex: (index: number | null) => void;
   replaceEditShape: (shape: PolygonShape) => void;
+  selectedSubpathIndex: number | null;
   startFreshPolygon: () => void;
   deletePolygon: () => void;
   deleteMarker?: (() => void) | undefined;
@@ -49,6 +51,11 @@ type MappingCanvasToolbarProps = {
 };
 
 type ToolId = 'select' | 'place-marker' | 'draw-polygon' | 'draw-band' | 'auto-stack';
+
+const polygonSegmentAt = (svgPath: string, index: number | null): string => {
+  const subpaths = splitSvgSubpaths(svgPath);
+  return subpaths[activeSvgSubpathIndex(svgPath, index)] ?? svgPath;
+};
 
 const TOOL_BUTTON_CLASS =
   'inline-flex items-center justify-center gap-1.5 rounded-[15px] border px-2.5 py-1.5 text-xs uppercase tracking-[0.14em] disabled:cursor-not-allowed disabled:opacity-40';
@@ -79,6 +86,7 @@ export const MappingCanvasToolbar = ({
   setMode,
   setSelectedDraftIndex,
   replaceEditShape,
+  selectedSubpathIndex,
   startFreshPolygon,
   deletePolygon,
   deleteMarker,
@@ -166,7 +174,11 @@ export const MappingCanvasToolbar = ({
                   setMode('edit-polygon');
                   setSelectedDraftIndex(null);
                   replaceEditShape(
-                    svgPathToPolygonShape(selected.svgPath, viewBoxWidth, viewBoxHeight),
+                    svgPathToPolygonShape(
+                      polygonSegmentAt(selected.svgPath, selectedSubpathIndex),
+                      viewBoxWidth,
+                      viewBoxHeight,
+                    ),
                   );
                 }}
               >

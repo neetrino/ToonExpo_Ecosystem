@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import {
+  appendSvgPaths,
   normalizedPointsToSvgPath,
   pointerToNormalized,
+  removeSvgSubpath,
+  resolveCommittedSvgPath,
+  splitSvgSubpaths,
   svgPathToNormalizedPoints,
 } from './mapping-math';
 
@@ -32,5 +36,55 @@ describe('admin mapping math', () => {
     expect(back).toHaveLength(3);
     expect(back[0]?.x).toBeCloseTo(0.2, 3);
     expect(back[0]?.y).toBeCloseTo(0.2, 3);
+  });
+
+  it('removes one subpath and keeps the other', () => {
+    const first = normalizedPointsToSvgPath(
+      [
+        { x: 0.1, y: 0.1 },
+        { x: 0.2, y: 0.1 },
+        { x: 0.2, y: 0.2 },
+      ],
+      100,
+      100,
+    );
+    const second = normalizedPointsToSvgPath(
+      [
+        { x: 0.6, y: 0.6 },
+        { x: 0.8, y: 0.6 },
+        { x: 0.8, y: 0.8 },
+      ],
+      100,
+      100,
+    );
+    const both = appendSvgPaths(first, second);
+    expect(splitSvgSubpaths(both)).toEqual([first, second]);
+    expect(removeSvgSubpath(both, 0)).toBe(second);
+    expect(removeSvgSubpath(both, 1)).toBe(first);
+    expect(removeSvgSubpath(both, null)).toBe(first);
+    expect(removeSvgSubpath(first, 0)).toBeNull();
+  });
+
+  it('keeps sibling polygons when an edit replaces one subpath', () => {
+    const existing = 'M 1 1 L 2 1 L 2 2 Z M 8 8 L 9 8 L 9 9 Z';
+    const edited = 'M 3 3 L 4 3 L 4 4 Z';
+    expect(
+      resolveCommittedSvgPath({
+        existing,
+        nextSegment: edited,
+        editing: true,
+        replaceAll: true,
+        subpathIndex: 1,
+      }),
+    ).toBe('M 1 1 L 2 1 L 2 2 Z M 3 3 L 4 3 L 4 4 Z');
+    expect(
+      resolveCommittedSvgPath({
+        existing,
+        nextSegment: edited,
+        editing: true,
+        replaceAll: true,
+        subpathIndex: null,
+      }),
+    ).toBe('M 1 1 L 2 1 L 2 2 Z M 3 3 L 4 3 L 4 4 Z');
   });
 });
