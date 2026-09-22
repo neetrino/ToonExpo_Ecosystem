@@ -10,8 +10,12 @@ import { createProjectSchema } from "./project.schema";
 import { inviteMemberSchema } from "./team.schema";
 
 const apartmentFields = {
-  finishingStatus: "",
-  handoverDescription: "",
+  finishingStatusHy: "",
+  finishingStatusRu: "",
+  finishingStatusEn: "",
+  handoverDescriptionHy: "",
+  handoverDescriptionRu: "",
+  handoverDescriptionEn: "",
   matterportUrl: "",
   external3dUrl: "",
 };
