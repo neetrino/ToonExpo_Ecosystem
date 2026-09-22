@@ -1,4 +1,4 @@
-import { setRequestLocale } from 'next-intl/server';
+import { getLocale, setRequestLocale } from 'next-intl/server';
 import { Suspense } from 'react';
 
 import { AdminCompanyCatalogShell } from '@/features/admin/components/admin-company-catalog-shell';
@@ -14,12 +14,13 @@ type PageProps = {
  * Admin apartment detail under the Projects hub (requires companyId).
  */
 export default async function AdminProjectApartmentPage({ params, searchParams }: PageProps) {
-  const { locale, apartmentId } = await params;
+  const { locale: urlLocale, apartmentId } = await params;
   const { companyId } = await searchParams;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   if (!companyId) {
-    redirect({ href: '/admin/projects', locale });
+    redirect({ href: '/admin/projects', locale: urlLocale });
     return null;
   }
 

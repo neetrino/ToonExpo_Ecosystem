@@ -1,4 +1,4 @@
-import type { Prisma } from '@toonexpo/db';
+import type { ApartmentSalesStatus, Prisma } from '@toonexpo/db';
 
 const toIdList = (value: string | readonly string[] | undefined): string[] => {
   if (value == null) {
@@ -107,6 +107,7 @@ export const buildInventoryApartmentsWhere = (
   buildingId: string | readonly string[] | undefined,
   floorId: string | readonly string[] | undefined,
   search: string | undefined,
+  salesStatus?: ApartmentSalesStatus,
 ): Prisma.ApartmentWhereInput => {
   const companyIds = toIdList(companyId);
   const buildingIds = toIdList(buildingId);
@@ -125,6 +126,7 @@ export const buildInventoryApartmentsWhere = (
     ...(floorIds.length > 0
       ? { floorId: floorIds.length === 1 ? floorIds[0]! : { in: floorIds } }
       : {}),
+    ...(salesStatus ? { salesStatus } : {}),
   };
   const needle = search?.trim();
   if (!needle) {

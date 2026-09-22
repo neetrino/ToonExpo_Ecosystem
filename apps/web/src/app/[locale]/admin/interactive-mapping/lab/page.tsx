@@ -1,4 +1,4 @@
-import { setRequestLocale } from 'next-intl/server';
+import { getLocale, setRequestLocale } from 'next-intl/server';
 import { Suspense } from 'react';
 
 import { MappingLabPage } from '@/features/interactive-mapping';
@@ -11,7 +11,8 @@ type PageProps = {
  * Temporary MappingCanvas sandbox for headed QA.
  */
 export default async function AdminMappingLabPage({ params }: PageProps) {
-  const { locale } = await params;
+  await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return (

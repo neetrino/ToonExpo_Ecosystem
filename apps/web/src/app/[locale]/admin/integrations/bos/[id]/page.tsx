@@ -1,4 +1,4 @@
-import { setRequestLocale } from 'next-intl/server';
+import { getLocale, setRequestLocale } from 'next-intl/server';
 
 import { BosProvisioningDetailPage } from '@/features/admin/components/bos-provisioning-detail-page';
 
@@ -9,7 +9,8 @@ type AdminBosProvisioningDetailRouteProps = {
 export default async function AdminBosProvisioningDetailRoute({
   params,
 }: AdminBosProvisioningDetailRouteProps) {
-  const { locale, id } = await params;
+  const { id } = await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return <BosProvisioningDetailPage requestId={id} />;

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import type { PortalApartmentDetail } from '@toonexpo/contracts';
 import { ApartmentSalesStatus, PublicationStatus } from '@toonexpo/db';
 
@@ -305,13 +305,10 @@ export class PortalApartmentsService {
         id: apartmentId,
         project: { builderCompanyId: companyId },
       },
-      select: { id: true, publicationStatus: true },
+      select: { id: true },
     });
     if (!apartment) {
       throw entityNotFound('Apartment');
-    }
-    if (apartment.publicationStatus !== PublicationStatus.draft) {
-      throw new BadRequestException('Only draft apartments can be deleted');
     }
     await this.prisma.db.apartment.delete({ where: { id: apartmentId } });
   }

@@ -1,4 +1,4 @@
-import { setRequestLocale } from "next-intl/server";
+import { getLocale, setRequestLocale } from "next-intl/server";
 
 import { PartnersListPage } from "@/features/admin/components/partners-list-page";
 
@@ -7,7 +7,8 @@ type AdminPartnersPageProps = {
 };
 
 export default async function AdminPartnersPage({ params }: AdminPartnersPageProps) {
-  const { locale } = await params;
+  await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return <PartnersListPage />;

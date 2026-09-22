@@ -1,4 +1,4 @@
-import { setRequestLocale } from 'next-intl/server';
+import { getLocale, setRequestLocale } from 'next-intl/server';
 
 import { redirect } from '@/i18n/navigation';
 
@@ -10,7 +10,8 @@ type PageProps = {
  * Legacy company catalog apartment → admin Projects hub.
  */
 export default async function AdminCompanyCatalogApartmentRedirect({ params }: PageProps) {
-  const { locale, id, apartmentId } = await params;
+  const { id, apartmentId } = await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
   redirect({
     href: `/admin/projects/apartments/${apartmentId}?companyId=${encodeURIComponent(id)}`,

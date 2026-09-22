@@ -1,4 +1,4 @@
-import { setRequestLocale } from "next-intl/server";
+import { getLocale, setRequestLocale } from "next-intl/server";
 
 import { ScannerPage } from "@/features/builder/components/scanner-page";
 
@@ -12,7 +12,8 @@ type BuilderScannerPageProps = {
 export default async function BuilderScannerPage({
   params,
 }: BuilderScannerPageProps) {
-  const { locale } = await params;
+  await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return <ScannerPage />;

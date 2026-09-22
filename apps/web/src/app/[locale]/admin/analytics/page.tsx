@@ -1,4 +1,4 @@
-import { setRequestLocale } from "next-intl/server";
+import { getLocale, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
 
 import { AdminAnalyticsPage } from "@/features/admin/components/admin-analytics-page";
@@ -13,7 +13,8 @@ type AdminAnalyticsRouteProps = {
 export default async function AdminAnalyticsRoute({
   params,
 }: AdminAnalyticsRouteProps) {
-  const { locale } = await params;
+  await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return (

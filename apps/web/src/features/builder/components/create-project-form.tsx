@@ -187,6 +187,13 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
         </FormField>
         <div className="grid gap-4 sm:grid-cols-2">
           <VerifiedStatusField id="project-verified" control={control} name="verified" />
+          <FormField id="constructionStatus" label={t('form.constructionStatus')}>
+            <Input
+              id="constructionStatus"
+              placeholder={getProjectFormPlaceholder(siteLocale, 'constructionStatus')}
+              {...register('constructionStatus')}
+            />
+          </FormField>
           <FormField id="completionDate" label={t('form.completionDate')}>
             <Controller
               name="completionDate"

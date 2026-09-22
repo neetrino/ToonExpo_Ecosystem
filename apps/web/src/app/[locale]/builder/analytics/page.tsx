@@ -1,4 +1,4 @@
-import { setRequestLocale } from "next-intl/server";
+import { getLocale, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
 
 import { BuilderAnalyticsPage } from "@/features/builder/components/builder-analytics-page";
@@ -13,7 +13,8 @@ type BuilderAnalyticsRouteProps = {
 export default async function BuilderAnalyticsRoute({
   params,
 }: BuilderAnalyticsRouteProps) {
-  const { locale } = await params;
+  await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return (

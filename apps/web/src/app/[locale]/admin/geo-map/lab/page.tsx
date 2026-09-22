@@ -1,4 +1,4 @@
-import { setRequestLocale } from 'next-intl/server';
+import { getLocale, setRequestLocale } from 'next-intl/server';
 import { Suspense } from 'react';
 
 import { GeoMapLabPage } from '@/features/geo-map/lab/geo-map-lab-page';
@@ -11,7 +11,8 @@ type PageProps = {
  * Temporary `GeoMapCanvas` sandbox for headed QA (Stage 2a).
  */
 export default async function AdminGeoMapLabPage({ params }: PageProps) {
-  const { locale } = await params;
+  await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return (

@@ -1,4 +1,4 @@
-import { setRequestLocale } from "next-intl/server";
+import { getLocale, setRequestLocale } from "next-intl/server";
 
 import { ApartmentDetailPage } from "@/features/builder/components/apartment-detail-page";
 
@@ -12,7 +12,8 @@ type BuilderApartmentPageProps = {
 export default async function BuilderApartmentPage({
   params,
 }: BuilderApartmentPageProps) {
-  const { locale, id } = await params;
+  const { id } = await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return <ApartmentDetailPage apartmentId={id} />;

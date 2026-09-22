@@ -1,4 +1,4 @@
-import { setRequestLocale } from 'next-intl/server';
+import { getLocale, setRequestLocale } from 'next-intl/server';
 
 import { BankPartnerOfferTemplatesListPage } from '@/features/admin/components/bank-partner-offer-templates-list-page';
 
@@ -7,7 +7,8 @@ type AdminTemplatesPageProps = {
 };
 
 export default async function AdminTemplatesPage({ params }: AdminTemplatesPageProps) {
-  const { locale } = await params;
+  await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return <BankPartnerOfferTemplatesListPage />;

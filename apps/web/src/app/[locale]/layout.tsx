@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
-import { getMessages, setRequestLocale } from 'next-intl/server';
+import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 
 import { routing } from '@/i18n/routing';
@@ -76,17 +76,21 @@ export const generateStaticParams = () => {
 };
 
 export default async function LocaleLayout({ children, params }: LocaleLayoutProps) {
-  const { locale } = await params;
+  const { locale: urlLocale } = await params;
 
-  if (!hasLocale(routing.locales, locale)) {
+  if (!hasLocale(routing.locales, urlLocale)) {
     notFound();
   }
 
-  setRequestLocale(locale);
-  const messages = await getMessages();
+  // Always bind the root provider to the URL (public site) locale.
+  // Portal routes nest their own provider for an independent panel UI language.
+  // Using getLocale() here would leak panel language onto public pages when the
+  // shared [locale] layout is reused across client navigations.
+  setRequestLocale(urlLocale);
+  const messages = (await import(`../../../messages/${urlLocale}.json`)).default;
 
   return (
-    <NextIntlClientProvider messages={messages}>
+    <NextIntlClientProvider locale={urlLocale} messages={messages}>
       <QueryProvider>
         <PublicChrome>{children}</PublicChrome>
       </QueryProvider>

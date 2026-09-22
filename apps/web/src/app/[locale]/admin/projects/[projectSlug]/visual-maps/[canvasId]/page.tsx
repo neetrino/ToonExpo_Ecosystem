@@ -1,4 +1,4 @@
-import { setRequestLocale } from 'next-intl/server';
+import { getLocale, setRequestLocale } from 'next-intl/server';
 
 import { AdminProjectScopeShell } from '@/features/admin/components/admin-project-scope-shell';
 import { AdminProjectVisualMapView } from '@/features/admin/components/admin-project-visual-map-view';
@@ -15,7 +15,8 @@ type PageProps = {
  * Admin visual map editor under the Projects hub (slug in URL).
  */
 export default async function AdminProjectVisualMapPage({ params }: PageProps) {
-  const { locale, projectSlug, canvasId } = await params;
+  const { projectSlug, canvasId } = await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return (

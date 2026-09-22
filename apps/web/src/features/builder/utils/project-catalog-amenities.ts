@@ -2,6 +2,10 @@ import type { ProjectCatalogDetails } from '@/features/catalog/utils/project-cat
 import { PROJECT_CATALOG_DETAIL_KEYS } from '@/features/catalog/utils/project-catalog-details';
 import type { ProjectCatalogLinkId } from '@/features/catalog/utils/project-catalog-links';
 import { PROJECT_CATALOG_LINK_IDS } from '@/features/catalog/utils/project-catalog-links';
+import {
+  TIMELINE_STAGE_KEYS,
+  type TimelineStageKey,
+} from '@/features/catalog/utils/project-detail-presentation';
 
 import type { TRANSLATION_LOCALES } from '@/features/builder/constants';
 import { PROJECT_CATALOG_LIST_MAX_ITEMS } from '@/features/builder/constants/project-catalog-editor';
@@ -12,8 +16,12 @@ export type CatalogLocaleText = {
   en: string;
 };
 
+export type TimelineStageDates = Record<TimelineStageKey, string>;
+
 export type ProjectCatalogFormSlice = {
   catalogDetails: Record<keyof ProjectCatalogDetails, CatalogLocaleText>;
+  /** Month/year (MM/YYYY) per public construction-timeline stage. */
+  timelineStageDates: TimelineStageDates;
   amenityLabelsHy: string;
   amenityLabelsRu: string;
   amenityLabelsEn: string;
@@ -124,11 +132,32 @@ const emptyCatalogLinks = (): Record<ProjectCatalogLinkId, string> => {
   return links;
 };
 
+const emptyTimelineStageDates = (): TimelineStageDates => {
+  const dates = {} as TimelineStageDates;
+  for (const key of TIMELINE_STAGE_KEYS) {
+    dates[key] = '';
+  }
+  return dates;
+};
+
+const readTimelineStageDates = (value: unknown): TimelineStageDates => {
+  const dates = emptyTimelineStageDates();
+  if (value == null || typeof value !== 'object' || Array.isArray(value)) {
+    return dates;
+  }
+  const record = value as Record<string, unknown>;
+  for (const key of TIMELINE_STAGE_KEYS) {
+    dates[key] = asTrimmedString(record[key]);
+  }
+  return dates;
+};
+
 /**
  * Empty catalog slice for create forms / missing JSON.
  */
 export const emptyProjectCatalogFormSlice = (): ProjectCatalogFormSlice => ({
   catalogDetails: emptyCatalogDetails(),
+  timelineStageDates: emptyTimelineStageDates(),
   amenityLabelsHy: '',
   amenityLabelsRu: '',
   amenityLabelsEn: '',
@@ -159,6 +188,8 @@ export const catalogJsonToFormSlice = (
     for (const key of PROJECT_CATALOG_DETAIL_KEYS) {
       slice.catalogDetails[key] = readCatalogLocaleText(detailsSource[key]);
     }
+
+    slice.timelineStageDates = readTimelineStageDates(record['timelineStageDates']);
 
     const labelsSource = record['labels'] ?? record['items'] ?? record['amenities'];
     slice.amenityLabelsHy = listToLines(readLocaleStringList(labelsSource, 'hy'));
@@ -253,6 +284,16 @@ export const catalogFormSliceToJson = (
   const amenities: Record<string, unknown> = {};
   if (Object.keys(details).length > 0) {
     amenities['details'] = details;
+  }
+  const timelineStageDates: Record<string, string> = {};
+  for (const key of TIMELINE_STAGE_KEYS) {
+    const date = slice.timelineStageDates[key].trim();
+    if (date.length > 0) {
+      timelineStageDates[key] = date;
+    }
+  }
+  if (Object.keys(timelineStageDates).length > 0) {
+    amenities['timelineStageDates'] = timelineStageDates;
   }
   if (labels) {
     amenities['labels'] = labels;

@@ -1,4 +1,4 @@
-import { setRequestLocale } from "next-intl/server";
+import { getLocale, setRequestLocale } from "next-intl/server";
 
 import { BuilderDashboardPage } from "@/features/builder/components/builder-dashboard-page";
 
@@ -12,7 +12,8 @@ type BuilderIndexPageProps = {
 export default async function BuilderIndexPage({
   params,
 }: BuilderIndexPageProps) {
-  const { locale } = await params;
+  await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return <BuilderDashboardPage />;

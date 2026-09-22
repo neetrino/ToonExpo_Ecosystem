@@ -1,4 +1,4 @@
-import { setRequestLocale } from 'next-intl/server';
+import { getLocale, setRequestLocale } from 'next-intl/server';
 
 import { BuilderProjectDetailPage } from '@/features/builder/components/builder-project-detail-page';
 
@@ -12,7 +12,8 @@ type BuilderProjectDetailRouteProps = {
 export default async function BuilderProjectDetailRoute({
   params,
 }: BuilderProjectDetailRouteProps) {
-  const { locale, projectSlug } = await params;
+  const { projectSlug } = await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return <BuilderProjectDetailPage projectSlug={projectSlug} />;

@@ -7,6 +7,8 @@ import { useEffect, useState } from 'react';
 
 import { AdminBuildingInventorySheet } from '@/features/admin/components/admin-building-inventory-sheet';
 import { AdminBuildingsTable } from '@/features/admin/components/admin-buildings-table';
+import { useBulkDeleteBuildingsMutation } from '@/features/admin/hooks/use-inventory-bulk-delete';
+import { useInventoryListSelection } from '@/features/admin/hooks/use-inventory-list-selection';
 import { PORTAL_INVENTORY_SHEET_SCOPE } from '@/features/admin/inventory-sheet-scope';
 import {
   BuilderInventoryListShell,
@@ -14,12 +16,15 @@ import {
 } from '@/features/builder/components/builder-inventory-list-shell';
 import { PortalCreateBuildingSheet } from '@/features/builder/components/portal-create-building-sheet';
 import { BUILDINGS_VIEW_MODE_KEY } from '@/features/builder/constants';
+import { useIsCompanyAdmin } from '@/features/builder/hooks/use-company-profile';
 import { usePortalInventoryBuildingsQuery } from '@/features/builder/hooks/use-portal-inventory-hub';
+import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { useDebouncedSearch } from '@/shared/hooks/use-debounced-search';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
+import { ListSelectionToolbar } from '@/shared/ui/list-selection-toolbar';
 
 const FIRST_PAGE = 1;
 
@@ -28,6 +33,7 @@ const FIRST_PAGE = 1;
  */
 export const BuilderBuildingsListPage = () => {
   const t = useTranslations('Admin.buildings');
+  const scope = useCatalogScope();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -44,6 +50,12 @@ export const BuilderBuildingsListPage = () => {
   const [showCreate, setShowCreate] = useState(false);
   const [sheetFloorId, setSheetFloorId] = useState<string | null>(null);
   const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(BUILDINGS_VIEW_MODE_KEY);
+  const isCompanyAdmin = useIsCompanyAdmin();
+  const buildings = response?.data ?? [];
+  const listBulk = useInventoryListSelection(buildings, effectiveViewMode, {
+    enabled: isCompanyAdmin,
+  });
+  const bulkDeleteMutation = useBulkDeleteBuildingsMutation(scope);
 
   const buildingId = searchParams.get('buildingId')?.trim() || null;
 
@@ -118,15 +130,23 @@ export const BuilderBuildingsListPage = () => {
         }
       >
         {response ? (
-          <AdminBuildingsTable
-            buildings={response.data}
-            viewMode={effectiveViewMode}
-            showCompany={false}
-            onSelectBuilding={(id) => {
-              setSheetFloorId(null);
-              replaceHref(buildHref({ buildingId: id }));
-            }}
-          />
+          <div className="flex flex-col gap-3">
+            <ListSelectionToolbar
+              selectedCount={listBulk.selectedCount}
+              onClear={listBulk.selectionClear}
+              onConfirmDelete={() => bulkDeleteMutation.mutateAsync(listBulk.selectedTargets)}
+            />
+            <AdminBuildingsTable
+              buildings={response.data}
+              viewMode={effectiveViewMode}
+              showCompany={false}
+              listSelection={listBulk.listSelection}
+              onSelectBuilding={(id) => {
+                setSheetFloorId(null);
+                replaceHref(buildHref({ buildingId: id }));
+              }}
+            />
+          </div>
         ) : null}
       </BuilderInventoryListShell>
 

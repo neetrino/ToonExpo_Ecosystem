@@ -1,4 +1,4 @@
-import { setRequestLocale } from "next-intl/server";
+import { getLocale, setRequestLocale } from "next-intl/server";
 
 import { AdminEventDetailPage } from "@/features/exhibition/components/admin/admin-event-detail-page";
 
@@ -9,7 +9,8 @@ type AdminEventDetailRouteProps = {
 export default async function AdminEventDetailRoute({
   params,
 }: AdminEventDetailRouteProps) {
-  const { locale, id } = await params;
+  const { id } = await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return <AdminEventDetailPage eventId={id} />;

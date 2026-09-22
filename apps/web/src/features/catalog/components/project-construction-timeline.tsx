@@ -2,6 +2,8 @@ import type { ProjectDetail } from '@toonexpo/contracts';
 import { getTranslations } from 'next-intl/server';
 
 import {
+  formatTimelineStageDate,
+  readAmenitiesTimelineStageDates,
   resolveActiveTimelineIndex,
   TIMELINE_STAGE_KEYS,
   timelineStageStatus,
@@ -21,6 +23,7 @@ export const ProjectConstructionTimeline = async ({
 }: ProjectConstructionTimelineProps) => {
   const t = await getTranslations('Catalog.projectDetail');
   const activeIndex = resolveActiveTimelineIndex(project);
+  const stageDates = readAmenitiesTimelineStageDates(project.amenities);
 
   return (
     <section className="page-container py-12 sm:py-16">
@@ -30,12 +33,13 @@ export const ProjectConstructionTimeline = async ({
       <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-5">
         {TIMELINE_STAGE_KEYS.map((key, index) => {
           const status = timelineStageStatus(index, activeIndex);
+          const dateLabel = formatTimelineStageDate(stageDates[key]);
           return (
             <TimelineCard
               key={key}
               stageLabel={t(`timelineStages.${key}`)}
               stageIndexLabel={t('timelineStageIndex', { number: index + 1 })}
-              statusLabel={t(`timelineStatus.${status}`)}
+              statusLabel={dateLabel ?? t(`timelineStatus.${status}`)}
               status={status}
             />
           );

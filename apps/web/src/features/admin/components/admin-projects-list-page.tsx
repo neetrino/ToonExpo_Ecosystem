@@ -26,6 +26,8 @@ import {
   useAdminBuilderCompaniesQuery,
   useAdminProjectsQuery,
 } from '@/features/admin/hooks/use-admin-companies';
+import { useBulkDeleteProjectsMutation } from '@/features/admin/hooks/use-inventory-bulk-delete';
+import { useInventoryListSelection } from '@/features/admin/hooks/use-inventory-list-selection';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
 import { HOME_FEATURED_PROJECT_LIMIT } from '@/features/catalog/constants/home-featured';
 import { usePathname, useRouter } from '@/i18n/navigation';
@@ -36,6 +38,7 @@ import { Button } from '@/shared/ui/button';
 import { EmptyState } from '@/shared/ui/empty-state';
 import type { IntegratedSearchFilterConfig } from '@/shared/ui/integrated-search-filters.types';
 import { ListPageHeader } from '@/shared/ui/list-page-header';
+import { ListSelectionToolbar } from '@/shared/ui/list-selection-toolbar';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
 const ADMIN_PROJECTS_FILTER_COMPANY_KEY = 'companyId';
@@ -137,6 +140,12 @@ export const AdminProjectsListPage = () => {
     [builderCompanies, t, tCommon],
   );
 
+  const projects = projectsQuery.data?.data ?? [];
+  const listBulk = useInventoryListSelection(projects, effectiveViewMode, {
+    enabled: true,
+  });
+  const bulkDeleteMutation = useBulkDeleteProjectsMutation();
+
   if (
     (projectsQuery.isLoading && !projectsQuery.data) ||
     (companiesQuery.isLoading && !companiesQuery.data)
@@ -220,18 +229,26 @@ export const AdminProjectsListPage = () => {
           />
         </div>
       ) : (
-        <AdminProjectsTable
-          projects={response.data}
-          viewMode={effectiveViewMode}
-          searchKey={activeSearch}
-          onOpenBuildings={(project) => {
-            setBuildingsProject({
-              id: project.id,
-              name: project.name,
-              builderCompanyId: project.builderCompanyId,
-            });
-          }}
-        />
+        <div className="flex flex-col gap-3">
+          <ListSelectionToolbar
+            selectedCount={listBulk.selectedCount}
+            onClear={listBulk.selectionClear}
+            onConfirmDelete={() => bulkDeleteMutation.mutateAsync(listBulk.selectedTargets)}
+          />
+          <AdminProjectsTable
+            projects={response.data}
+            viewMode={effectiveViewMode}
+            searchKey={activeSearch}
+            listSelection={listBulk.listSelection}
+            onOpenBuildings={(project) => {
+              setBuildingsProject({
+                id: project.id,
+                name: project.name,
+                builderCompanyId: project.builderCompanyId,
+              });
+            }}
+          />
+        </div>
       )}
 
       <CatalogPagination

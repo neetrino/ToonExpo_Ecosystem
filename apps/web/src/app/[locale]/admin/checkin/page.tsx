@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getLocale, getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { CheckinPage } from '@/features/exhibition/components/checkin/checkin-page';
 
@@ -7,8 +7,11 @@ type AdminCheckinPageProps = {
   params: Promise<{ locale: string }>;
 };
 
-export const generateMetadata = async ({ params }: AdminCheckinPageProps): Promise<Metadata> => {
-  const { locale } = await params;
+export const generateMetadata = async ({
+  params,
+}: AdminCheckinPageProps): Promise<Metadata> => {
+  await params;
+  const locale = await getLocale();
   const t = await getTranslations({ locale, namespace: 'Checkin' });
 
   return {
@@ -21,7 +24,8 @@ export const generateMetadata = async ({ params }: AdminCheckinPageProps): Promi
  * Platform admin check-in scanner — stays inside the admin shell.
  */
 export default async function AdminCheckinRoutePage({ params }: AdminCheckinPageProps) {
-  const { locale } = await params;
+  await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return <CheckinPage />;

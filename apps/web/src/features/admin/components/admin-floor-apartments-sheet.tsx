@@ -19,7 +19,6 @@ import {
   type InventorySheetScope,
 } from '@/features/admin/inventory-sheet-scope';
 import { catalogApartmentDetailHref } from '@/features/builder/catalog-scope';
-import { toCatalogPublicationStatus } from '@/features/catalog/utils/catalog-publication-status';
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
 import { Link, usePathname } from '@/i18n/navigation';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
@@ -51,7 +50,6 @@ export const AdminFloorApartmentsSheet = ({
   buildingId,
   floorId,
   floorLabel,
-  publicationStatus,
   floorplan,
   onClose,
   stackLevel = 1,
@@ -69,7 +67,6 @@ export const AdminFloorApartmentsSheet = ({
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const deleteMutation = useAdminDeleteFloorMutation();
-  const canDelete = toCatalogPublicationStatus(publicationStatus) === 'draft';
   const deleting = deleteMutation.isPending;
 
   const returnTo = (() => {
@@ -121,24 +118,22 @@ export const AdminFloorApartmentsSheet = ({
             >
               <AddActionLabel>{createT('cta')}</AddActionLabel>
             </Button>
-            {canDelete ? (
-              <AdminInventorySheetDelete
-                confirmTitle={t('deleteFloorTitle')}
-                confirmMessage={t('deleteFloorConfirm')}
-                open={confirmDelete}
-                busy={deleting}
-                onOpen={() => {
-                  setDeleteError(null);
-                  setConfirmDelete(true);
-                }}
-                onCancel={() => {
-                  if (!deleting) {
-                    setConfirmDelete(false);
-                  }
-                }}
-                onConfirm={runDelete}
-              />
-            ) : null}
+            <AdminInventorySheetDelete
+              confirmTitle={t('deleteFloorTitle')}
+              confirmMessage={t('deleteFloorConfirm')}
+              open={confirmDelete}
+              busy={deleting}
+              onOpen={() => {
+                setDeleteError(null);
+                setConfirmDelete(true);
+              }}
+              onCancel={() => {
+                if (!deleting) {
+                  setConfirmDelete(false);
+                }
+              }}
+              onConfirm={runDelete}
+            />
           </div>
         }
       >

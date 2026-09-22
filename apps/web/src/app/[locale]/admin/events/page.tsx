@@ -1,4 +1,4 @@
-import { setRequestLocale } from "next-intl/server";
+import { getLocale, setRequestLocale } from "next-intl/server";
 
 import { AdminEventsListPage } from "@/features/exhibition/components/admin/admin-events-list-page";
 
@@ -7,7 +7,8 @@ type AdminEventsPageProps = {
 };
 
 export default async function AdminEventsPage({ params }: AdminEventsPageProps) {
-  const { locale } = await params;
+  await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return <AdminEventsListPage />;

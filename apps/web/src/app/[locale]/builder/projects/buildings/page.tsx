@@ -1,4 +1,4 @@
-import { setRequestLocale } from 'next-intl/server';
+import { getLocale, setRequestLocale } from 'next-intl/server';
 import { Suspense } from 'react';
 
 import { BuilderBuildingsListPage } from '@/features/builder/components/builder-buildings-list-page';
@@ -11,7 +11,8 @@ type PageProps = {
  * Builder buildings hub under Projects.
  */
 export default async function BuilderBuildingsPage({ params }: PageProps) {
-  const { locale } = await params;
+  await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return (

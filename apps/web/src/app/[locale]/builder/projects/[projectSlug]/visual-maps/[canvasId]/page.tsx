@@ -1,4 +1,4 @@
-import { setRequestLocale } from 'next-intl/server';
+import { getLocale, setRequestLocale } from 'next-intl/server';
 
 import { PortalCanvasEditorShell } from '@/features/visual-map/components/portal-canvas-editor-shell';
 
@@ -12,7 +12,8 @@ type BuilderVisualMapEditorPageProps = {
 export default async function BuilderVisualMapEditorPage({
   params,
 }: BuilderVisualMapEditorPageProps) {
-  const { locale, projectSlug, canvasId } = await params;
+  const { projectSlug, canvasId } = await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return <PortalCanvasEditorShell projectId={projectSlug} canvasId={canvasId} />;

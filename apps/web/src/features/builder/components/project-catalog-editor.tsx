@@ -20,6 +20,7 @@ import {
   ProjectCatalogKvEditor,
   ProjectCatalogOverviewEditor,
 } from '@/features/builder/components/project-catalog-layout-fields';
+import { ProjectConstructionTimelineEditor } from '@/features/builder/components/project-construction-timeline-editor';
 import { ProjectBankPartnerOffersSection } from '@/features/builder/components/project-bank-partner-offers-section';
 import { TranslationTabs } from '@/features/builder/components/translation-tabs';
 import type { UpdateProjectFormValues } from '@/features/builder/schemas/project.schema';
@@ -116,6 +117,7 @@ export const ProjectCatalogEditor = ({
 }: ProjectCatalogEditorProps) => {
   const t = useTranslations('Builder.projects.catalog');
   const tCatalog = useTranslations('Catalog.projectDetail.catalog');
+  const tTimeline = useTranslations('Catalog.projectDetail');
 
   return (
     <fieldset className="flex flex-col gap-4 border-t border-border pt-8">
@@ -123,6 +125,11 @@ export const ProjectCatalogEditor = ({
         {tCatalog('title')}
       </legend>
       <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
+
+      <ProjectCatalogSectionCard title={tTimeline('timelineTitle')}>
+        <p className="mb-4 text-sm text-ink-secondary">{t('timelineSubtitle')}</p>
+        <ProjectConstructionTimelineEditor control={control} />
+      </ProjectCatalogSectionCard>
 
       <TranslationTabs>
         {(locale) => (

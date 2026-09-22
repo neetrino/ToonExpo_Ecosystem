@@ -6,6 +6,16 @@
     "deleteConfirmTitle": "Delete",
     "deleteConfirmMessage": "Are you sure you want to delete this? This cannot be undone.",
     "deleteConfirmNamedMessage": "Are you sure you want to delete \"{name}\"? This cannot be undone.",
+    "listSelection": {
+      "selectAll": "Select all on this page",
+      "selectRow": "Select row",
+      "selectedCount": "{count} selected",
+      "clear": "Clear",
+      "delete": "Delete",
+      "deleteConfirmTitle": "Delete selected",
+      "deleteConfirm": "Delete {count} selected items? This cannot be undone.",
+      "deleteError": "Could not delete the selected items. Try again."
+    },
     "integratedSearch": {
       "apply": "Apply",
       "reset": "Reset",
@@ -1772,6 +1782,10 @@
         "label": "Settings sections",
         "profile": "Profile",
         "password": "Password"
+      },
+      "panelLocale": {
+        "title": "Admin panel language",
+        "subtitle": "Language for the admin UI only. Does not change the public site language."
       }
     },
     "analytics": {
@@ -2020,6 +2034,8 @@
         "floor": "Floor",
         "allFloors": "All floors",
         "selectBuildingFirst": "Select a building first",
+        "salesStatus": "Sales status",
+        "allSalesStatuses": "All statuses",
         "searchPlaceholder": "Search by project, company, or city"
       },
       "openBuildings": "View buildings for {name}",
@@ -2118,9 +2134,9 @@
         "noApartments": "No apartments on this floor yet.",
         "apartmentUnit": "Apt {number}",
         "deleteBuildingTitle": "Delete building",
-        "deleteBuildingConfirm": "Delete this draft building? Floors and apartments in it will be removed. This cannot be undone.",
+        "deleteBuildingConfirm": "Delete this building? Floors and apartments in it will be removed. This cannot be undone.",
         "deleteFloorTitle": "Delete floor",
-        "deleteFloorConfirm": "Delete this draft floor? Apartments on it will be removed. This cannot be undone.",
+        "deleteFloorConfirm": "Delete this floor? Apartments on it will be removed. This cannot be undone.",
         "deleteError": "Could not delete. Try again.",
         "sales": {
           "available": "Available",
@@ -3585,6 +3601,10 @@
       "catalog": {
         "title": "Project details (public catalog)",
         "subtitle": "Same layout as the public project page — edit Overview, Details, Finance, Bank partner, Features, and Nearby for each language.",
+        "timelineSubtitle": "Set a date for each construction stage shown on the public project page.",
+        "timelineStage": "Current stage",
+        "timelineStageAuto": "Auto (from sold share)",
+        "timelineStageHint": "Leave on Auto to derive the stage from apartment sales. Pick a stage to set it manually.",
         "listHint": "One item per line.",
         "amenityLabels": "Features list",
         "nearbyPlaces": "Nearby places",
@@ -3971,7 +3991,7 @@
         "publish": "Publish",
         "unpublish": "Unpublish",
         "delete": "Delete",
-        "deleteConfirm": "Delete this draft apartment? This cannot be undone.",
+        "deleteConfirm": "Delete this apartment? This cannot be undone.",
         "deleteConfirmTitle": "Delete apartment",
         "publicationSuccess": "Publication updated"
       },

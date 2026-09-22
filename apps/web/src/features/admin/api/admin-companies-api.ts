@@ -122,6 +122,7 @@ export type ListAdminInventoryParams = {
   floorId?: string | readonly string[];
   projectId?: string;
   search?: string;
+  salesStatus?: string;
 };
 
 /**
