@@ -9,6 +9,22 @@ type BuildApartmentGalleryImagesOptions = {
   apartment: Pick<ApartmentDetail, 'number' | 'plan' | 'cover' | 'gallery'>;
 };
 
+const isLoadableImageUrl = (src: string): boolean => {
+  const trimmed = src.trim();
+  if (trimmed.length === 0 || trimmed === 'pending') {
+    return false;
+  }
+  if (trimmed.startsWith('/')) {
+    return true;
+  }
+  try {
+    const url = new URL(trimmed);
+    return url.protocol === 'https:' || url.protocol === 'http:';
+  } catch {
+    return false;
+  }
+};
+
 /**
  * Public apartment photos from admin-uploaded media only.
  * Uses gallery as the single source when present (already includes Main);
@@ -25,7 +41,7 @@ export const buildApartmentGalleryImages = ({
       return;
     }
     const src = media.fileUrl.trim();
-    if (src.length === 0) {
+    if (!isLoadableImageUrl(src)) {
       return;
     }
     const key = media.id.trim().length > 0 ? `id:${media.id}` : `url:${src}`;
