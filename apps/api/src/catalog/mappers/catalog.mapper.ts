@@ -1,6 +1,8 @@
 import type { ApartmentAvailabilitySummary, MediaAssetSummary } from '@toonexpo/contracts';
 import type { ApartmentSalesStatus, Prisma } from '@toonexpo/db';
 
+import { MEDIA_PENDING_FILE_URL } from '../../media/media.constants.js';
+import { toPublicFileUrl } from '../../media/public-file-url.js';
 import { PUBLIC_PUBLICATION_STATUS } from '../catalog.constants.js';
 
 type MediaRow = {
@@ -15,10 +17,21 @@ export const toMediaSummary = (media: MediaRow): MediaAssetSummary | null => {
     return null;
   }
 
+  const fileUrl = media.fileUrl.trim();
+  if (fileUrl.length === 0 || fileUrl === MEDIA_PENDING_FILE_URL) {
+    return null;
+  }
+
+  const thumbnailRaw = media.thumbnailUrl?.trim() ?? '';
+  const thumbnailUrl =
+    thumbnailRaw.length > 0 && thumbnailRaw !== MEDIA_PENDING_FILE_URL
+      ? toPublicFileUrl(thumbnailRaw)
+      : null;
+
   return {
     id: media.id,
-    fileUrl: media.fileUrl,
-    thumbnailUrl: media.thumbnailUrl,
+    fileUrl: toPublicFileUrl(fileUrl),
+    thumbnailUrl,
     altText: media.altText,
   };
 };

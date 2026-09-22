@@ -12,6 +12,9 @@ import {
 import { TranslationTabs } from '@/features/builder/components/translation-tabs';
 import { APARTMENT_SALES_STATUSES, PRICE_VISIBILITY_OPTIONS } from '@/features/builder/constants';
 import { getUrlPlaceholder } from '@/features/builder/constants/project-content-placeholders';
+import {
+  useApartmentEditSubForms,
+} from '@/features/builder/context/apartment-edit-subforms-context';
 import { useUpdateApartmentMutation } from '@/features/builder/hooks/use-portal-inventory';
 import {
   updateApartmentSchema,
@@ -34,12 +37,38 @@ type EditApartmentFormProps = {
   apartment: PortalApartmentDetail;
 };
 
+type LocaleFieldKey =
+  | 'descriptionHy'
+  | 'descriptionRu'
+  | 'descriptionEn'
+  | 'finishingStatusHy'
+  | 'finishingStatusRu'
+  | 'finishingStatusEn'
+  | 'handoverDescriptionHy'
+  | 'handoverDescriptionRu'
+  | 'handoverDescriptionEn';
+
+const localeField = (
+  base: 'description' | 'finishingStatus' | 'handoverDescription',
+  locale: 'hy' | 'ru' | 'en',
+): LocaleFieldKey => {
+  if (locale === 'hy') {
+    return `${base}Hy`;
+  }
+  if (locale === 'ru') {
+    return `${base}Ru`;
+  }
+  return `${base}En`;
+};
+
 /**
  * Edit form for apartment parameters, price, sales status, and description.
+ * Shares one bottom save bar with gallery / plan media sub-forms.
  */
 export const EditApartmentForm = ({ apartment }: EditApartmentFormProps) => {
   const t = useTranslations('Builder.apartments');
   const mutation = useUpdateApartmentMutation(apartment.id);
+  const { hasUnsavedChanges, isSavingSubForms, saveAllChanges } = useApartmentEditSubForms();
   const { showSuccess, successToast } = useSuccessToast();
   const { showError, onInvalid, errorToast } = useFormErrorToast({
     fieldLabels: {
@@ -62,14 +91,28 @@ export const EditApartmentForm = ({ apartment }: EditApartmentFormProps) => {
 
   const onSubmit = handleSubmit(async (values) => {
     try {
-      await mutation.mutateAsync(toApartmentUpdateRequest(values, apartment));
+      const shouldSaveDetails = isDirty;
+      const shouldSaveMedia = hasUnsavedChanges;
+      if (!shouldSaveDetails && !shouldSaveMedia) {
+        return;
+      }
+
+      if (shouldSaveMedia) {
+        await saveAllChanges();
+      }
+
+      if (shouldSaveDetails) {
+        await mutation.mutateAsync(toApartmentUpdateRequest(values, apartment));
+      }
+
       showSuccess(t('saveSuccess'));
     } catch {
       showError(t('errors.generic'));
     }
   }, onInvalid);
 
-  const busy = isSubmitting || mutation.isPending;
+  const busy = isSubmitting || mutation.isPending || isSavingSubForms;
+  const canSave = isDirty || hasUnsavedChanges;
 
   return (
     <>
@@ -78,109 +121,121 @@ export const EditApartmentForm = ({ apartment }: EditApartmentFormProps) => {
       className={cn('flex flex-col gap-5', FORM_SAVE_BAR_SCROLL_CLEARANCE_CLASS)}
       noValidate
     >
-      <div className="grid gap-4 sm:grid-cols-2">
-        <FormField
-          id="apt-number"
-          label={t('form.number')}
-          error={errors.number ? t('validation.number') : undefined}
-        >
-          <Input id="apt-number" {...register('number')} />
-        </FormField>
-        <FormField id="apt-rooms" label={t('form.rooms')}>
-          <Input id="apt-rooms" {...register('rooms')} />
-        </FormField>
-        <FormField id="apt-bedrooms" label={t('form.bedrooms')}>
-          <Input id="apt-bedrooms" {...register('bedrooms')} />
-        </FormField>
-        <FormField id="apt-bathrooms" label={t('form.bathrooms')}>
-          <Input id="apt-bathrooms" {...register('bathrooms')} />
-        </FormField>
-        <FormField id="apt-area-total" label={t('form.areaTotal')}>
-          <Input id="apt-area-total" {...register('areaTotal')} />
-        </FormField>
-        <FormField id="apt-area-living" label={t('form.areaLiving')}>
-          <Input id="apt-area-living" {...register('areaLiving')} />
-        </FormField>
-        <FormField id="apt-balcony" label={t('form.balconyArea')}>
-          <Input id="apt-balcony" {...register('balconyArea')} />
-        </FormField>
-        <FormField id="apt-price" label={t('form.price')}>
-          <Input id="apt-price" {...register('price')} />
-        </FormField>
-        <FormField id="apt-price-vis" label={t('form.priceVisibility')}>
-          <Controller
-            name="priceVisibility"
-            control={control}
-            render={({ field }) => (
-              <Select
-                id="apt-price-vis"
-                name={field.name}
-                value={field.value}
-                aria-label={t('form.priceVisibility')}
-                onBlur={field.onBlur}
-                onChange={(event) => {
-                  field.onChange(event.target.value);
-                }}
-              >
-                {PRICE_VISIBILITY_OPTIONS.map((option) => (
-                  <option key={option} value={option}>
-                    {t(`priceVisibility.${option}`)}
-                  </option>
-                ))}
-              </Select>
-            )}
-          />
-        </FormField>
-        <FormField id="apt-sales" label={t('form.salesStatus')}>
-          <Controller
-            name="salesStatus"
-            control={control}
-            render={({ field }) => (
-              <Select
-                id="apt-sales"
-                name={field.name}
-                value={field.value}
-                aria-label={t('form.salesStatus')}
-                onBlur={field.onBlur}
-                onChange={(event) => {
-                  field.onChange(event.target.value);
-                }}
-              >
-                {APARTMENT_SALES_STATUSES.map((status) => (
-                  <option key={status} value={status}>
-                    {t(`salesStatus.${status}`)}
-                  </option>
-                ))}
-              </Select>
-            )}
-          />
-        </FormField>
-        <FormField id="apt-finishing" label={t('form.finishingStatus')}>
-          <Input id="apt-finishing" {...register('finishingStatus')} />
-        </FormField>
-      </div>
-
       <TranslationTabs>
-        {(locale) => (
-          <FormField id={`apt-desc-${locale}`} label={t('form.description')}>
-            <Textarea
-              id={`apt-desc-${locale}`}
-              rows={3}
-              {...register(
-                locale === 'hy'
-                  ? 'descriptionHy'
-                  : locale === 'ru'
-                    ? 'descriptionRu'
-                    : 'descriptionEn',
-              )}
-            />
-          </FormField>
+        {(locale, { isActive }) => (
+          <div className="flex flex-col gap-4">
+            {isActive ? (
+              <div className="grid gap-4 sm:grid-cols-2">
+                <FormField
+                  id="apt-number"
+                  label={t('form.number')}
+                  error={errors.number ? t('validation.number') : undefined}
+                >
+                  <Input id="apt-number" {...register('number')} />
+                </FormField>
+                <FormField id="apt-rooms" label={t('form.rooms')}>
+                  <Input id="apt-rooms" {...register('rooms')} />
+                </FormField>
+                <FormField id="apt-bedrooms" label={t('form.bedrooms')}>
+                  <Input id="apt-bedrooms" {...register('bedrooms')} />
+                </FormField>
+                <FormField id="apt-bathrooms" label={t('form.bathrooms')}>
+                  <Input id="apt-bathrooms" {...register('bathrooms')} />
+                </FormField>
+                <FormField id="apt-area-total" label={t('form.areaTotal')}>
+                  <Input id="apt-area-total" {...register('areaTotal')} />
+                </FormField>
+                <FormField id="apt-area-living" label={t('form.areaLiving')}>
+                  <Input id="apt-area-living" {...register('areaLiving')} />
+                </FormField>
+                <FormField id="apt-balcony" label={t('form.balconyArea')}>
+                  <Input id="apt-balcony" {...register('balconyArea')} />
+                </FormField>
+                <FormField id="apt-price" label={t('form.price')}>
+                  <Input id="apt-price" {...register('price')} />
+                </FormField>
+                <FormField id="apt-price-vis" label={t('form.priceVisibility')}>
+                  <Controller
+                    name="priceVisibility"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        id="apt-price-vis"
+                        name={field.name}
+                        value={field.value}
+                        aria-label={t('form.priceVisibility')}
+                        onBlur={field.onBlur}
+                        onChange={(event) => {
+                          field.onChange(event.target.value);
+                        }}
+                      >
+                        {PRICE_VISIBILITY_OPTIONS.map((option) => (
+                          <option key={option} value={option}>
+                            {t(`priceVisibility.${option}`)}
+                          </option>
+                        ))}
+                      </Select>
+                    )}
+                  />
+                </FormField>
+                <FormField id="apt-sales" label={t('form.salesStatus')}>
+                  <Controller
+                    name="salesStatus"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        id="apt-sales"
+                        name={field.name}
+                        value={field.value}
+                        aria-label={t('form.salesStatus')}
+                        onBlur={field.onBlur}
+                        onChange={(event) => {
+                          field.onChange(event.target.value);
+                        }}
+                      >
+                        {APARTMENT_SALES_STATUSES.map((status) => (
+                          <option key={status} value={status}>
+                            {t(`salesStatus.${status}`)}
+                          </option>
+                        ))}
+                      </Select>
+                    )}
+                  />
+                </FormField>
+              </div>
+            ) : null}
+
+            <FormField
+              id={`apt-finishing-${locale}`}
+              label={t('form.finishingStatus')}
+            >
+              <Input
+                id={`apt-finishing-${locale}`}
+                {...register(localeField('finishingStatus', locale))}
+              />
+            </FormField>
+
+            <FormField id={`apt-desc-${locale}`} label={t('form.description')}>
+              <Textarea
+                id={`apt-desc-${locale}`}
+                rows={3}
+                {...register(localeField('description', locale))}
+              />
+            </FormField>
+
+            <FormField
+              id={`apt-handover-${locale}`}
+              label={t('form.handoverDescription')}
+            >
+              <Textarea
+                id={`apt-handover-${locale}`}
+                rows={4}
+                {...register(localeField('handoverDescription', locale))}
+              />
+            </FormField>
+          </div>
         )}
       </TranslationTabs>
-
-      <FormField id="apt-handover" label={t('form.handoverDescription')}>
-        <Textarea id="apt-handover" rows={4} {...register('handoverDescription')} />
-      </FormField>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <FormField
@@ -210,7 +265,7 @@ export const EditApartmentForm = ({ apartment }: EditApartmentFormProps) => {
       </div>
 
       <FormSaveBar>
-        <Button type="submit" variant="secondary" className="w-full" disabled={busy || !isDirty}>
+        <Button type="submit" variant="secondary" className="w-full" disabled={busy || !canSave}>
           {busy ? t('saving') : t('save')}
         </Button>
       </FormSaveBar>

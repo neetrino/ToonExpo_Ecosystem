@@ -9,6 +9,7 @@ import type {
 } from '@toonexpo/contracts';
 import type { Prisma } from '@toonexpo/db';
 
+import { MEDIA_PENDING_FILE_URL } from '../../media/media.constants.js';
 import { toPublicFileUrl } from '../../media/public-file-url.js';
 
 const decimalToString = (value: Prisma.Decimal | null | undefined): string | null =>
@@ -119,10 +120,19 @@ const toPortalMediaSummary = (
   if (!media) {
     return null;
   }
+  const fileUrl = media.fileUrl.trim();
+  if (fileUrl.length === 0 || fileUrl === MEDIA_PENDING_FILE_URL) {
+    return null;
+  }
+  const thumbnailRaw = media.thumbnailUrl?.trim() ?? '';
+  const thumbnailUrl =
+    thumbnailRaw.length > 0 && thumbnailRaw !== MEDIA_PENDING_FILE_URL
+      ? toPublicFileUrl(thumbnailRaw)
+      : null;
   return {
     id: media.id,
-    fileUrl: toPublicFileUrl(media.fileUrl),
-    thumbnailUrl: media.thumbnailUrl ? toPublicFileUrl(media.thumbnailUrl) : null,
+    fileUrl: toPublicFileUrl(fileUrl),
+    thumbnailUrl,
     altText: media.altText,
   };
 };
@@ -322,48 +332,17 @@ export const mapPortalApartment = (
   viewType: apartment.viewType,
   features: apartment.features,
   floorplanMediaId: apartment.floor.floorplanMediaId,
-  floorplan: apartment.floor.floorplanMedia
-    ? {
-        id: apartment.floor.floorplanMedia.id,
-        fileUrl: apartment.floor.floorplanMedia.fileUrl,
-        thumbnailUrl: apartment.floor.floorplanMedia.thumbnailUrl,
-        altText: apartment.floor.floorplanMedia.altText,
-      }
-    : null,
+  floorplan: toPortalMediaSummary(apartment.floor.floorplanMedia),
   planMediaId: apartment.planMediaId,
-  plan: apartment.planMedia
-    ? {
-        id: apartment.planMedia.id,
-        fileUrl: apartment.planMedia.fileUrl,
-        thumbnailUrl: apartment.planMedia.thumbnailUrl,
-        altText: apartment.planMedia.altText,
-      }
-    : null,
+  plan: toPortalMediaSummary(apartment.planMedia),
   coverMediaId: apartment.coverMediaId,
-  cover: apartment.coverMedia
-    ? {
-        id: apartment.coverMedia.id,
-        fileUrl: apartment.coverMedia.fileUrl,
-        thumbnailUrl: apartment.coverMedia.thumbnailUrl,
-        altText: apartment.coverMedia.altText,
-      }
-    : null,
+  cover: toPortalMediaSummary(apartment.coverMedia),
   verified: apartment.verified,
   tinderMediaId: apartment.tinderMediaId,
-  tinder: apartment.tinderMedia
-    ? {
-        id: apartment.tinderMedia.id,
-        fileUrl: apartment.tinderMedia.fileUrl,
-        thumbnailUrl: apartment.tinderMedia.thumbnailUrl,
-        altText: apartment.tinderMedia.altText,
-      }
-    : null,
-  gallery: (apartment.galleryImages ?? []).map((row) => ({
-    id: row.mediaAsset.id,
-    fileUrl: row.mediaAsset.fileUrl,
-    thumbnailUrl: row.mediaAsset.thumbnailUrl,
-    altText: row.mediaAsset.altText,
-  })),
+  tinder: toPortalMediaSummary(apartment.tinderMedia),
+  gallery: (apartment.galleryImages ?? [])
+    .map((row) => toPortalMediaSummary(row.mediaAsset))
+    .filter((item): item is MediaAssetSummary => item != null),
   createdAt: apartment.createdAt.toISOString(),
   updatedAt: apartment.updatedAt.toISOString(),
   ...(translations && Object.keys(translations).length > 0 ? { translations } : {}),

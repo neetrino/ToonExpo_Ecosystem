@@ -2,6 +2,7 @@ import type { ApartmentDetail, ApartmentSalesStatus } from '@toonexpo/contracts'
 
 import {
   parseApartmentFeatureExtras,
+  resolveLocalizedFeatureText,
   type ApartmentFeatureExtras,
 } from '@/features/catalog/utils/apartment-features';
 
@@ -34,6 +35,7 @@ type BuildApartmentDetailRowsOptions = {
   apartment: ApartmentDetail;
   district: string | null;
   labels: DetailLabels;
+  locale: string;
   formatCeilingHeight: (height: number) => string;
   formatStatus: (status: ApartmentDetail['salesStatus']) => string;
   /** Project-level handover text used when the apartment has none. */
@@ -48,12 +50,14 @@ const EMPTY_VALUE = '—';
 export const buildApartmentDetailRows = (
   options: BuildApartmentDetailRowsOptions,
 ): ApartmentDetailRow[] => {
-  const { apartment, district, labels } = options;
+  const { apartment, district, labels, locale } = options;
   const extras = parseApartmentFeatureExtras(apartment.features);
   const floorLabel = apartment.floor.number != null ? String(apartment.floor.number) : EMPTY_VALUE;
   const neighborhoodLabel = district?.trim() || apartment.project.name.trim() || EMPTY_VALUE;
+  const finishingStatus =
+    resolveLocalizedFeatureText(extras.finishingStatus, locale) ?? EMPTY_VALUE;
   const handoverDescription =
-    extras.handoverDescription?.trim() ||
+    resolveLocalizedFeatureText(extras.handoverDescription, locale)?.trim() ||
     options.projectHandoverDescription?.trim() ||
     null;
 
@@ -86,7 +90,7 @@ export const buildApartmentDetailRows = (
     {
       id: 'finishingStatus',
       label: labels.finishingStatus,
-      value: extras.finishingStatus ?? EMPTY_VALUE,
+      value: finishingStatus,
     },
     {
       id: 'generalDescription',

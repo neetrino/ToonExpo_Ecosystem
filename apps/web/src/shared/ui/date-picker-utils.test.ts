@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   buildMonthCells,
+  parseFlexibleDateToIso,
   parseIsoDate,
   toIsoDate,
   weekdayLabels,
@@ -17,6 +18,14 @@ describe('date-picker-utils', () => {
   it('rejects invalid ISO dates', () => {
     expect(parseIsoDate('2026-13-01')).toBeNull();
     expect(parseIsoDate('not-a-date')).toBeNull();
+  });
+
+  it('parses flexible catalog date formats to ISO', () => {
+    expect(parseFlexibleDateToIso('2026-09-15')).toBe('2026-09-15');
+    expect(parseFlexibleDateToIso('09/2026')).toBe('2026-09-01');
+    expect(parseFlexibleDateToIso('01.09.2026')).toBe('2026-09-01');
+    expect(parseFlexibleDateToIso('15/11/2026')).toBe('2026-11-15');
+    expect(parseFlexibleDateToIso('')).toBe('');
   });
 
   it('builds a Monday-first month grid', () => {

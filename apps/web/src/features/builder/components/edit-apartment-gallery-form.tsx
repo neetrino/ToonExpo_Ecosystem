@@ -2,17 +2,17 @@
 
 import type { MediaAssetItem, MediaAssetSummary, PortalApartmentDetail } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
-import { useEffect, useId, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
 
 import { ApartmentGalleryThumbGrid } from '@/features/builder/components/apartment-gallery-thumb-grid';
 import { catalogMediaContext } from '@/features/builder/catalog-scope';
 import { useCatalogScope } from '@/features/builder/catalog-scope-context';
+import { useRegisterApartmentEditSubForm } from '@/features/builder/context/apartment-edit-subforms-context';
 import { useUpdateApartmentMutation } from '@/features/builder/hooks/use-portal-inventory';
 import { listMediaAssets, uploadMediaAsset } from '@/features/media/api/media-api';
 import { isAllowedMediaMimeType, MEDIA_UPLOAD_MAX_BYTES } from '@/features/media/constants';
 import { Button } from '@/shared/ui/button';
 import { ConfirmDeleteModal } from '@/shared/ui/confirm-delete-modal';
-import { useSuccessToast } from '@/shared/ui/use-success-toast';
 
 const GALLERY_MAX = 12;
 
@@ -44,7 +44,6 @@ export const EditApartmentGalleryForm = ({ apartment }: EditApartmentGalleryForm
   const mutation = useUpdateApartmentMutation(apartment.id);
   const inputId = useId();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { showSuccess, successToast } = useSuccessToast();
 
   const [items, setItems] = useState<GalleryItem[]>(() => toGalleryItems(apartment));
   const [mainId, setMainId] = useState<string | null>(apartment.coverMediaId);
@@ -136,7 +135,7 @@ export const EditApartmentGalleryForm = ({ apartment }: EditApartmentGalleryForm
     }
   };
 
-  const onSave = async (): Promise<void> => {
+  const onSave = useCallback(async (): Promise<void> => {
     setBusy(true);
     setError(null);
     try {
@@ -146,13 +145,19 @@ export const EditApartmentGalleryForm = ({ apartment }: EditApartmentGalleryForm
       });
       setItems(toGalleryItems(updated));
       setMainId(updated.coverMediaId);
-      showSuccess(t('coverSaved'));
-    } catch {
+    } catch (error) {
       setError(t('errors.generic'));
+      throw error;
     } finally {
       setBusy(false);
     }
-  };
+  }, [items, mainId, mutation, t]);
+
+  useRegisterApartmentEditSubForm({
+    id: `apartment-gallery-${apartment.id}`,
+    isDirty,
+    save: onSave,
+  });
 
   return (
     <>
@@ -260,20 +265,7 @@ export const EditApartmentGalleryForm = ({ apartment }: EditApartmentGalleryForm
             {error}
           </p>
         ) : null}
-
-        <Button
-          type="button"
-          size="sm"
-          variant="secondary"
-          disabled={busy || mutation.isPending || !isDirty}
-          onClick={() => {
-            void onSave();
-          }}
-        >
-          {busy || mutation.isPending ? t('saving') : t('saveCover')}
-        </Button>
       </div>
-      {successToast}
       <ConfirmDeleteModal
         open={pendingRemoveId != null}
         title={tMedia('removeConfirmTitle')}

@@ -6,10 +6,14 @@ import { createProjectSchema } from './project.schema';
 import { inviteMemberSchema } from './team.schema';
 
 const apartmentFields = {
-  finishingStatus: '',
-  handoverDescription: '',
-  matterportUrl: '',
-  external3dUrl: '',
+  finishingStatusHy: "",
+  finishingStatusRu: "",
+  finishingStatusEn: "",
+  handoverDescriptionHy: "",
+  handoverDescriptionRu: "",
+  handoverDescriptionEn: "",
+  matterportUrl: "",
+  external3dUrl: "",
 };
 
 describe('createProjectSchema', () => {

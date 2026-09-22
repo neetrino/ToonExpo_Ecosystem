@@ -59,6 +59,7 @@ export const ApartmentDetailView = async ({
   const detailRows = buildApartmentDetailRows({
     apartment,
     district,
+    locale,
     projectHandoverDescription,
     formatCeilingHeight: (height) => t('apartment.criteria.ceilingHeightValue', { height }),
     formatStatus: (status) => t(`status.${status}`),

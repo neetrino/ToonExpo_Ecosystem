@@ -38,8 +38,12 @@ export const toApartmentFormValues = (
     descriptionHy: apartment.translations?.description?.hy ?? apartment.description ?? '',
     descriptionRu: apartment.translations?.description?.ru ?? '',
     descriptionEn: apartment.translations?.description?.en ?? '',
-    finishingStatus: extras.finishingStatus ?? '',
-    handoverDescription: extras.handoverDescription ?? '',
+    finishingStatusHy: extras.finishingStatus.hy,
+    finishingStatusRu: extras.finishingStatus.ru,
+    finishingStatusEn: extras.finishingStatus.en,
+    handoverDescriptionHy: extras.handoverDescription.hy,
+    handoverDescriptionRu: extras.handoverDescription.ru,
+    handoverDescriptionEn: extras.handoverDescription.en,
     matterportUrl: apartment.matterportUrl ?? '',
     external3dUrl: apartment.external3dUrl ?? '',
   };
@@ -71,8 +75,16 @@ export const toApartmentUpdateRequest = (
     description: values.descriptionHy.length > 0 ? values.descriptionHy : null,
     ...(Object.keys(description).length > 0 ? { translations: { description } } : {}),
     features: mergeApartmentFeatureExtras(apartment.features, {
-      finishingStatus: values.finishingStatus,
-      handoverDescription: values.handoverDescription,
+      finishingStatus: {
+        hy: values.finishingStatusHy,
+        ru: values.finishingStatusRu,
+        en: values.finishingStatusEn,
+      },
+      handoverDescription: {
+        hy: values.handoverDescriptionHy,
+        ru: values.handoverDescriptionRu,
+        en: values.handoverDescriptionEn,
+      },
     }),
     matterportUrl: toNullableHttpsUrl(values.matterportUrl),
     external3dUrl: toNullableHttpsUrl(values.external3dUrl),

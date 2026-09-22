@@ -21,6 +21,13 @@ export const publicCachedGet = (revalidateSeconds: number, tags: string[]): Publ
 export const catalogListFetch = (): PublicFetchInit =>
   publicCachedGet(PUBLIC_CACHE_TTL_CATALOG_SECONDS, [PUBLIC_CACHE_TAG.CATALOG]);
 
+/**
+ * Public apartment detail (`/apartments/[id]`).
+ * Sales-status edits from the detail chip must appear immediately after save.
+ */
+export const catalogApartmentDetailFetch = (): PublicFetchInit =>
+  publicCachedGet(0, [PUBLIC_CACHE_TAG.CATALOG]);
+
 export const catalogBuildersFetch = (): PublicFetchInit =>
   /**
    * Admin company name/logo edits must appear on `/builders` immediately.

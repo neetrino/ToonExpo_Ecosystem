@@ -102,7 +102,15 @@ export default async function FloorPage({ params }: FloorPageProps) {
           </p>
         </div>
 
-        {floor.floorplan ? (
+        {visualCanvas ? (
+          <div className="mb-8">
+            <PublicVisualMap
+              canvas={visualCanvas}
+              projectId={floor.project.id}
+              projectSlug={floor.project.slug}
+            />
+          </div>
+        ) : floor.floorplan ? (
           <section className="mb-8 overflow-hidden rounded-md border border-border bg-surface-elevated">
             <div className="border-b border-border px-4 py-3">
               <h2 className="text-sm font-semibold text-ink">{t('floor.floorplanTitle')}</h2>
@@ -117,16 +125,6 @@ export default async function FloorPage({ params }: FloorPageProps) {
               />
             </div>
           </section>
-        ) : null}
-
-        {visualCanvas ? (
-          <div className="mb-8">
-            <PublicVisualMap
-              canvas={visualCanvas}
-              projectId={floor.project.id}
-              projectSlug={floor.project.slug}
-            />
-          </div>
         ) : null}
 
         <div className="mb-4">

@@ -5,7 +5,53 @@ import {
   isPriceOnRequestEnabled,
   shouldRevealCatalogPrice,
   shouldRevealPrice,
+  toMediaSummary,
 } from './catalog.mapper.js';
+
+describe('toMediaSummary', () => {
+  const originalR2 = process.env['R2_PUBLIC_URL'];
+
+  it('prefixes root-relative file URLs with R2_PUBLIC_URL', () => {
+    process.env['R2_PUBLIC_URL'] = 'https://cdn.example.com';
+    expect(
+      toMediaSummary({
+        id: 'm1',
+        fileUrl: '/demo/unit.webp',
+        thumbnailUrl: '/demo/unit-thumb.webp',
+        altText: 'Unit',
+      }),
+    ).toEqual({
+      id: 'm1',
+      fileUrl: 'https://cdn.example.com/demo/unit.webp',
+      thumbnailUrl: 'https://cdn.example.com/demo/unit-thumb.webp',
+      altText: 'Unit',
+    });
+    if (originalR2 === undefined) {
+      delete process.env['R2_PUBLIC_URL'];
+    } else {
+      process.env['R2_PUBLIC_URL'] = originalR2;
+    }
+  });
+
+  it('returns null for pending or empty uploads', () => {
+    expect(
+      toMediaSummary({
+        id: 'm2',
+        fileUrl: 'pending',
+        thumbnailUrl: null,
+        altText: null,
+      }),
+    ).toBeNull();
+    expect(
+      toMediaSummary({
+        id: 'm3',
+        fileUrl: '  ',
+        thumbnailUrl: null,
+        altText: null,
+      }),
+    ).toBeNull();
+  });
+});
 
 describe('shouldRevealCatalogPrice', () => {
   it('never reveals when the building has price-on-request enabled', () => {

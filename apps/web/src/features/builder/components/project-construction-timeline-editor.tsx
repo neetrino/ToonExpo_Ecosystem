@@ -10,38 +10,11 @@ import {
   type TimelineStageKey,
 } from '@/features/catalog/utils/project-detail-presentation';
 import { DatePicker } from '@/shared/ui/date-picker';
-import { parseIsoDate, toIsoDate } from '@/shared/ui/date-picker-utils';
+import { parseFlexibleDateToIso } from '@/shared/ui/date-picker-utils';
 
 const CATALOG_VALUE_COL_CLASS = 'min-w-0 w-full';
 const CATALOG_KV_ROW_CLASS =
   'grid min-w-0 grid-cols-[minmax(0,1fr)_minmax(0,12.5rem)] items-start gap-3 border-b border-header-border py-3';
-
-const MONTH_YEAR_PATTERN = /^(\d{1,2})\/(\d{4})$/;
-
-const catalogDateToIso = (value: string): string => {
-  const trimmed = value.trim();
-  if (parseIsoDate(trimmed)) {
-    return trimmed;
-  }
-  const match = MONTH_YEAR_PATTERN.exec(trimmed);
-  if (!match) {
-    return '';
-  }
-  const month = Number(match[1]);
-  const year = Number(match[2]);
-  if (month < 1 || month > 12) {
-    return '';
-  }
-  return toIsoDate(new Date(year, month - 1, 1));
-};
-
-const isoToCatalogMonthYear = (iso: string): string => {
-  const date = parseIsoDate(iso);
-  if (!date) {
-    return '';
-  }
-  return `${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
-};
 
 type ProjectConstructionTimelineEditorProps = {
   control: Control<UpdateProjectFormValues>;
@@ -77,10 +50,10 @@ const StageDateRow = ({ stage, control, label }: StageDateRowProps) => {
             <DatePicker
               id={fieldId}
               name={field.name}
-              value={catalogDateToIso(field.value ?? '')}
+              value={parseFlexibleDateToIso(field.value ?? '')}
               aria-label={label}
               onBlur={field.onBlur}
-              onChange={(iso) => field.onChange(isoToCatalogMonthYear(iso))}
+              onChange={(iso) => field.onChange(iso)}
               className="h-10 w-full min-w-0 justify-start text-left text-sm font-semibold text-ink-navy"
             />
           </div>
