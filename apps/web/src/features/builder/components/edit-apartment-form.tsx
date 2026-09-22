@@ -12,6 +12,9 @@ import {
 import { TranslationTabs } from '@/features/builder/components/translation-tabs';
 import { APARTMENT_SALES_STATUSES, PRICE_VISIBILITY_OPTIONS } from '@/features/builder/constants';
 import { getUrlPlaceholder } from '@/features/builder/constants/project-content-placeholders';
+import {
+  useApartmentEditSubForms,
+} from '@/features/builder/context/apartment-edit-subforms-context';
 import { useUpdateApartmentMutation } from '@/features/builder/hooks/use-portal-inventory';
 import {
   updateApartmentSchema,
@@ -36,10 +39,12 @@ type EditApartmentFormProps = {
 
 /**
  * Edit form for apartment parameters, price, sales status, and description.
+ * Shares one bottom save bar with gallery / plan media sub-forms.
  */
 export const EditApartmentForm = ({ apartment }: EditApartmentFormProps) => {
   const t = useTranslations('Builder.apartments');
   const mutation = useUpdateApartmentMutation(apartment.id);
+  const { hasUnsavedChanges, isSavingSubForms, saveAllChanges } = useApartmentEditSubForms();
   const { showSuccess, successToast } = useSuccessToast();
   const { showError, onInvalid, errorToast } = useFormErrorToast({
     fieldLabels: {
@@ -62,14 +67,28 @@ export const EditApartmentForm = ({ apartment }: EditApartmentFormProps) => {
 
   const onSubmit = handleSubmit(async (values) => {
     try {
-      await mutation.mutateAsync(toApartmentUpdateRequest(values, apartment));
+      const shouldSaveDetails = isDirty;
+      const shouldSaveMedia = hasUnsavedChanges;
+      if (!shouldSaveDetails && !shouldSaveMedia) {
+        return;
+      }
+
+      if (shouldSaveMedia) {
+        await saveAllChanges();
+      }
+
+      if (shouldSaveDetails) {
+        await mutation.mutateAsync(toApartmentUpdateRequest(values, apartment));
+      }
+
       showSuccess(t('saveSuccess'));
     } catch {
       showError(t('errors.generic'));
     }
   }, onInvalid);
 
-  const busy = isSubmitting || mutation.isPending;
+  const busy = isSubmitting || mutation.isPending || isSavingSubForms;
+  const canSave = isDirty || hasUnsavedChanges;
 
   return (
     <>
@@ -210,7 +229,7 @@ export const EditApartmentForm = ({ apartment }: EditApartmentFormProps) => {
       </div>
 
       <FormSaveBar>
-        <Button type="submit" variant="secondary" className="w-full" disabled={busy || !isDirty}>
+        <Button type="submit" variant="secondary" className="w-full" disabled={busy || !canSave}>
           {busy ? t('saving') : t('save')}
         </Button>
       </FormSaveBar>
