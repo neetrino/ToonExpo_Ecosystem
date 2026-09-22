@@ -1,4 +1,4 @@
-import { setRequestLocale } from 'next-intl/server';
+import { getLocale, setRequestLocale } from 'next-intl/server';
 import { Suspense } from 'react';
 
 import { GeoMapAdminPage } from '@/features/geo-map/admin';
@@ -11,7 +11,8 @@ type PageProps = {
  * Platform admin 3D map editor — place / transform / publish project GLB models.
  */
 export default async function AdminGeoMapPage({ params }: PageProps) {
-  const { locale } = await params;
+  await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return (

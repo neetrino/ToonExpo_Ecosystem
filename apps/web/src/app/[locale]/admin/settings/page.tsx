@@ -1,5 +1,5 @@
 import { headers } from 'next/headers';
-import { setRequestLocale } from 'next-intl/server';
+import { getLocale, setRequestLocale } from 'next-intl/server';
 
 import { AdminSettingsPage } from '@/features/admin/components/admin-settings-page';
 import { getMeOrNullCached as getMeOrNull } from '@/features/auth/api/get-me-or-null-cached';
@@ -13,7 +13,8 @@ type AdminSettingsRouteProps = {
  * Platform admin account settings route.
  */
 export default async function AdminSettingsRoute({ params }: AdminSettingsRouteProps) {
-  const { locale } = await params;
+  const { locale: urlLocale } = await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   const headerStore = await headers();
@@ -21,7 +22,7 @@ export default async function AdminSettingsRoute({ params }: AdminSettingsRouteP
   const user = await getMeOrNull(cookieHeader);
 
   if (!user) {
-    redirect({ href: '/auth/login', locale });
+    redirect({ href: '/auth/login', locale: urlLocale });
     return null;
   }
 

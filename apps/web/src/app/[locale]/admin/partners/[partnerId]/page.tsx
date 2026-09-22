@@ -1,4 +1,4 @@
-import { setRequestLocale } from "next-intl/server";
+import { getLocale, setRequestLocale } from "next-intl/server";
 
 import { AdminPartnerDetailPage } from "@/features/admin/components/admin-partner-detail-page";
 
@@ -9,7 +9,8 @@ type AdminPartnerDetailRouteProps = {
 export default async function AdminPartnerDetailRoute({
   params,
 }: AdminPartnerDetailRouteProps) {
-  const { locale, partnerId } = await params;
+  const { partnerId } = await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return <AdminPartnerDetailPage partnerId={partnerId} />;

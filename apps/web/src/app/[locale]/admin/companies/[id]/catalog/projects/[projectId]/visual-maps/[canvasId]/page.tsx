@@ -1,4 +1,4 @@
-import { setRequestLocale } from 'next-intl/server';
+import { getLocale, setRequestLocale } from 'next-intl/server';
 
 import { redirect } from '@/i18n/navigation';
 
@@ -15,7 +15,8 @@ type PageProps = {
  * Legacy company catalog visual map → admin Projects hub.
  */
 export default async function AdminCompanyCatalogVisualMapRedirect({ params }: PageProps) {
-  const { locale, projectId, canvasId } = await params;
+  const { projectId, canvasId } = await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
   redirect({
     href: `/admin/projects/${projectId}/visual-maps/${canvasId}`,

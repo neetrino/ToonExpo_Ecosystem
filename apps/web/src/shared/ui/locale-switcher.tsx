@@ -7,8 +7,13 @@ import { Suspense, useEffect, useId, useOptimistic, useRef, useState, useTransit
 
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
+import { usePanelLocale } from '@/shared/i18n/panel-intl-client-provider';
+import {
+  buildPanelLocaleCookie,
+} from '@/shared/i18n/panel-locale';
 import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
 import { cn } from '@/shared/ui/cn';
+import type { SupportedLocale } from '@toonexpo/shared';
 
 /** Figma header trigger — uppercase 2-letter codes (`EN`). */
 const LOCALE_CODE: Record<string, string> = {
@@ -26,6 +31,11 @@ const LOCALE_FULL: Record<string, string> = {
 type LocaleSwitcherProps = {
   /** Visual tone for light surfaces vs dark chrome (footer / hero). */
   tone?: 'light' | 'dark' | undefined;
+  /**
+   * `site` — changes the URL locale (public site language).
+   * `panel` — sets the portal UI language cookie without changing the site URL locale.
+   */
+  mode?: 'site' | 'panel' | undefined;
 };
 
 /**
@@ -35,14 +45,22 @@ type LocaleSwitcherProps = {
  * Wrapped in Suspense for `useSearchParams` during static prerender.
  */
 export const LocaleSwitcher = (props: LocaleSwitcherProps) => (
-  <Suspense fallback={<LocaleSwitcherFallback tone={props.tone} />}>
+  <Suspense fallback={<LocaleSwitcherFallback tone={props.tone} mode={props.mode} />}>
     <LocaleSwitcherInner {...props} />
   </Suspense>
 );
 
-const LocaleSwitcherFallback = ({ tone = 'light' }: LocaleSwitcherProps) => {
-  const locale = useLocale();
+const LocaleSwitcherFallback = ({ tone = 'light', mode = 'site' }: LocaleSwitcherProps) => {
+  const uiLocale = useLocale();
+  const panelLocale = usePanelLocale();
+  const params = useParams();
   const isDark = tone === 'dark';
+  const activeLocale =
+    mode === 'panel'
+      ? (panelLocale ?? uiLocale)
+      : typeof params['locale'] === 'string'
+        ? params['locale']
+        : uiLocale;
 
   return (
     <span
@@ -52,22 +70,26 @@ const LocaleSwitcherFallback = ({ tone = 'light' }: LocaleSwitcherProps) => {
       )}
       aria-hidden
     >
-      <span>{LOCALE_CODE[locale] ?? locale.toUpperCase()}</span>
+      <span>{LOCALE_CODE[activeLocale] ?? activeLocale.toUpperCase()}</span>
       <ChevronDown className="size-3.5 shrink-0 opacity-70" />
     </span>
   );
 };
 
-const LocaleSwitcherInner = ({ tone = 'light' }: LocaleSwitcherProps) => {
+const LocaleSwitcherInner = ({ tone = 'light', mode = 'site' }: LocaleSwitcherProps) => {
   const t = useTranslations('HomePage');
-  const locale = useLocale();
+  const uiLocale = useLocale();
+  const panelLocale = usePanelLocale();
   const pathname = usePathname();
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const [optimisticLocale, setOptimisticLocale] = useOptimistic(locale);
+  const urlLocale = typeof params['locale'] === 'string' ? params['locale'] : uiLocale;
+  /** Site mode tracks URL locale; panel mode tracks panel cookie locale. */
+  const currentLocale = mode === 'panel' ? (panelLocale ?? uiLocale) : urlLocale;
+  const [optimisticLocale, setOptimisticLocale] = useOptimistic(currentLocale);
   const rootRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLUListElement>(null);
   const listId = useId();
@@ -76,7 +98,7 @@ const LocaleSwitcherInner = ({ tone = 'light' }: LocaleSwitcherProps) => {
 
   useEffect(() => {
     setOpen(false);
-  }, [pathname, locale]);
+  }, [pathname, currentLocale]);
 
   useEffect(() => {
     if (!open) {
@@ -107,12 +129,22 @@ const LocaleSwitcherInner = ({ tone = 'light' }: LocaleSwitcherProps) => {
   }, [open]);
 
   const switchLocale = (nextLocale: string): void => {
-    if (nextLocale === locale || isPending) {
+    if (nextLocale === currentLocale || isPending) {
       setOpen(false);
       return;
     }
 
     setOpen(false);
+
+    if (mode === 'panel') {
+      document.cookie = buildPanelLocaleCookie(nextLocale as SupportedLocale);
+      startTransition(() => {
+        setOptimisticLocale(nextLocale);
+        router.refresh();
+      });
+      return;
+    }
+
     const query = Object.fromEntries(searchParams.entries());
 
     startTransition(() => {

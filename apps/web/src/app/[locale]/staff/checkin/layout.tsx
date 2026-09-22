@@ -1,5 +1,5 @@
 import { headers } from 'next/headers';
-import { setRequestLocale } from 'next-intl/server';
+import { getLocale, setRequestLocale } from 'next-intl/server';
 import type { ReactNode } from 'react';
 
 import { getMeOrNullCached as getMeOrNull } from '@/features/auth/api/get-me-or-null-cached';
@@ -15,7 +15,8 @@ type StaffCheckinLayoutProps = {
  * Entrance-staff scanner chrome (public site header — not the buyer account rail).
  */
 export default async function StaffCheckinLayout({ children, params }: StaffCheckinLayoutProps) {
-  const { locale } = await params;
+  const { locale: urlLocale } = await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   const headerStore = await headers();
@@ -23,17 +24,17 @@ export default async function StaffCheckinLayout({ children, params }: StaffChec
   const user = await getMeOrNull(cookieHeader);
 
   if (!user) {
-    redirect({ href: '/auth/login?returnUrl=%2Fstaff%2Fcheckin', locale });
+    redirect({ href: '/auth/login?returnUrl=%2Fstaff%2Fcheckin', locale: urlLocale });
     return null;
   }
 
   if (user.accountType === 'platform_admin') {
-    redirect({ href: '/admin/checkin', locale });
+    redirect({ href: '/admin/checkin', locale: urlLocale });
     return null;
   }
 
   if (user.accountType !== 'entrance_staff') {
-    redirect({ href: '/checkin', locale });
+    redirect({ href: '/checkin', locale: urlLocale });
     return null;
   }
 

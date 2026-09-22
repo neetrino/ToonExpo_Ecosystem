@@ -1,4 +1,4 @@
-import { setRequestLocale } from "next-intl/server";
+import { getLocale, setRequestLocale } from "next-intl/server";
 
 import { CrmDealDetailPage } from "@/features/builder/components/crm-deal-detail-page";
 
@@ -12,7 +12,8 @@ type BuilderCrmDealPageProps = {
 export default async function BuilderCrmDealPage({
   params,
 }: BuilderCrmDealPageProps) {
-  const { locale, id } = await params;
+  const { id } = await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return <CrmDealDetailPage dealId={id} />;

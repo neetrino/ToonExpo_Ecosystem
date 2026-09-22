@@ -1,4 +1,4 @@
-import { setRequestLocale } from 'next-intl/server';
+import { getLocale, setRequestLocale } from 'next-intl/server';
 
 import { redirect } from '@/i18n/navigation';
 
@@ -12,8 +12,9 @@ type AdminSettingsPasswordRedirectPageProps = {
 export default async function AdminSettingsPasswordRedirectPage({
   params,
 }: AdminSettingsPasswordRedirectPageProps) {
-  const { locale } = await params;
+  const { locale: urlLocale } = await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
-  redirect({ href: '/admin/settings', locale });
+  redirect({ href: '/admin/settings', locale: urlLocale });
   return null;
 }

@@ -1,4 +1,4 @@
-import { setRequestLocale } from 'next-intl/server';
+import { getLocale, setRequestLocale } from 'next-intl/server';
 import { Suspense } from 'react';
 
 import { BuildingsPhasePage } from '@/features/interactive-mapping';
@@ -12,7 +12,8 @@ type PageProps = {
  * Phase 2 — choose a district before mapping buildings.
  */
 export default async function AdminBuildingsMappingPage({ params }: PageProps) {
-  const { locale, projectId } = await params;
+  const { projectId } = await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return (

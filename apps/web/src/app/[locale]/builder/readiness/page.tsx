@@ -1,4 +1,4 @@
-import { setRequestLocale } from "next-intl/server";
+import { getLocale, setRequestLocale } from "next-intl/server";
 
 import { BuilderReadinessPage } from "@/features/builder/components/readiness-page";
 
@@ -12,7 +12,8 @@ type BuilderReadinessRouteProps = {
 export default async function BuilderReadinessRoute({
   params,
 }: BuilderReadinessRouteProps) {
-  const { locale } = await params;
+  await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return <BuilderReadinessPage />;

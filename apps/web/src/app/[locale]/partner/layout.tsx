@@ -1,6 +1,6 @@
 import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getTranslations } from 'next-intl/server';
 import type { ReactNode } from 'react';
 
 import { getCompanyProfileCached as getCompanyProfile } from '@/features/builder/api/get-company-profile-cached';
@@ -10,6 +10,7 @@ import { getMeOrNullCached as getMeOrNull } from '@/features/auth/api/get-me-or-
 import { isPartnerCompatibleCompany } from '@/features/partners/utils/is-partner-compatible-company';
 import { redirect } from '@/i18n/navigation';
 import { isApiErrorStatus } from '@/shared/api/errors';
+import { PanelIntlProvider, resolvePanelLocale } from '@/shared/i18n/panel-intl-provider';
 import { PortalShell } from '@/shared/ui/portal-shell';
 
 type PartnerLayoutProps = {
@@ -21,15 +22,15 @@ type PartnerLayoutProps = {
  * Server-gated partner portal shell for partner/bank/service company members.
  */
 export default async function PartnerLayout({ children, params }: PartnerLayoutProps) {
-  const { locale } = await params;
-  setRequestLocale(locale);
+  const { locale: urlLocale } = await params;
+  const panelLocale = await resolvePanelLocale(urlLocale);
 
   const headerStore = await headers();
   const cookieHeader = headerStore.get('cookie') ?? undefined;
   const user = await getMeOrNull(cookieHeader);
 
   if (!user) {
-    redirect({ href: '/auth/login?returnUrl=%2Fpartner', locale });
+    redirect({ href: '/auth/login?returnUrl=%2Fpartner', locale: urlLocale });
     return null;
   }
 
@@ -47,26 +48,28 @@ export default async function PartnerLayout({ children, params }: PartnerLayoutP
     notFound();
   }
 
-  const t = await getTranslations('Partner');
+  const t = await getTranslations({ locale: panelLocale, namespace: 'Partner' });
 
   return (
-    <PortalShell
-      brandHref="/partner"
-      badge={t('badge')}
-      userEmail={user.email}
-      profileLabel={t('profileLink')}
-      profileHref="/partner/settings"
-      navLabel={t('nav.label')}
-      sidebar={
-        <PartnerNav
-          companyName={company.name}
-          partnerName={partner.name}
-          partnerType={partner.type}
-        />
-      }
-    >
-      {children}
-    </PortalShell>
+    <PanelIntlProvider urlLocale={urlLocale}>
+      <PortalShell
+        brandHref="/partner"
+        badge={t('badge')}
+        userEmail={user.email}
+        profileLabel={t('profileLink')}
+        profileHref="/partner/settings"
+        navLabel={t('nav.label')}
+        sidebar={
+          <PartnerNav
+            companyName={company.name}
+            partnerName={partner.name}
+            partnerType={partner.type}
+          />
+        }
+      >
+        {children}
+      </PortalShell>
+    </PanelIntlProvider>
   );
 }
 

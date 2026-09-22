@@ -2,6 +2,7 @@
 
 import type { UserResponse } from '@toonexpo/contracts';
 import { KeyRound } from 'lucide-react';
+import type { ReactNode } from 'react';
 
 import { ChangePasswordForm } from '@/features/auth/components/change-password-form';
 import { AccountContentPanel } from '@/features/buyer/components/account/account-content-panel';
@@ -21,6 +22,8 @@ type AccountSettingsChromeProps = {
   passwordHeadingId: string;
   user: UserResponse;
   mobilePush?: boolean | undefined;
+  /** Optional blocks between profile and password (e.g. admin panel language). */
+  extraSections?: ReactNode | undefined;
 };
 
 /**
@@ -34,6 +37,7 @@ export const AccountSettingsChrome = ({
   passwordHeadingId,
   user,
   mobilePush = false,
+  extraSections,
 }: AccountSettingsChromeProps) => {
   return (
     <AccountPageEnter mobilePush={mobilePush}>
@@ -42,6 +46,8 @@ export const AccountSettingsChrome = ({
       <AccountContentReveal>
         <AccountContentPanel className="max-w-4xl gap-8">
           <AccountProfileBanner user={user} />
+
+          {extraSections}
 
           <div className="border-t border-border/70 pt-8">
             <AccountSectionHeading

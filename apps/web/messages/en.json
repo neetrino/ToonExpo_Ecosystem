@@ -1782,6 +1782,10 @@
         "label": "Settings sections",
         "profile": "Profile",
         "password": "Password"
+      },
+      "panelLocale": {
+        "title": "Admin panel language",
+        "subtitle": "Language for the admin UI only. Does not change the public site language."
       }
     },
     "analytics": {

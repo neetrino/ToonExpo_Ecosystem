@@ -1,4 +1,4 @@
-import { setRequestLocale } from 'next-intl/server';
+import { getLocale, setRequestLocale } from 'next-intl/server';
 
 import { AdminProjectDetailPage as AdminProjectDetailView } from '@/features/admin/components/admin-project-detail-page';
 import { AdminProjectScopeShell } from '@/features/admin/components/admin-project-scope-shell';
@@ -11,7 +11,8 @@ type PageProps = {
  * Admin project detail under the Projects hub (slug in URL).
  */
 export default async function AdminProjectDetailPage({ params }: PageProps) {
-  const { locale, projectSlug } = await params;
+  const { projectSlug } = await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return (

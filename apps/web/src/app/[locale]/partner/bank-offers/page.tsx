@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
-import { setRequestLocale } from "next-intl/server";
+import { getLocale, setRequestLocale } from "next-intl/server";
 
 import { PartnerBankOffersPage } from "@/features/partner/components/partner-bank-offers-page";
 import { getPortalPartner } from "@/features/partner/api/portal-partner-api";
@@ -13,7 +13,8 @@ type PartnerBankOffersRouteProps = {
 export default async function PartnerBankOffersRoute({
   params,
 }: PartnerBankOffersRouteProps) {
-  const { locale } = await params;
+  await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   const headerStore = await headers();

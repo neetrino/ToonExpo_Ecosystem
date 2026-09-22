@@ -137,6 +137,10 @@ export const PortalShell = ({
     SIDE_SHEET_PANEL_TRANSITION_MS,
   );
   const isRail = variant === 'rail';
+  const localeMode =
+    brandHref === '/admin' || brandHref === '/builder' || brandHref === '/partner'
+      ? 'panel'
+      : 'site';
   const railCollapseEnabled = isRail && railCollapsible;
   const { effectiveCollapsed: railCollapsed, toggleCollapsed: toggleRailCollapsed } =
     usePersistedRailCollapsed(railCollapsedStorageKey, railCollapseEnabled);
@@ -351,7 +355,7 @@ export const PortalShell = ({
               <span className="hidden max-w-48 truncate text-sm text-ink-secondary lg:inline">
                 {userEmail}
               </span>
-              <LocaleSwitcher />
+              <LocaleSwitcher mode={localeMode} />
               <Link
                 href={profileHref}
                 className="text-sm font-medium text-ink-secondary transition-colors hover:text-ink"

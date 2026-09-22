@@ -1,4 +1,4 @@
-import { setRequestLocale } from "next-intl/server";
+import { getLocale, setRequestLocale } from "next-intl/server";
 
 import { PartnerOffersPage } from "@/features/partner/components/partner-offers-page";
 
@@ -9,7 +9,8 @@ type PartnerOffersRouteProps = {
 export default async function PartnerOffersRoute({
   params,
 }: PartnerOffersRouteProps) {
-  const { locale } = await params;
+  await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return <PartnerOffersPage />;
