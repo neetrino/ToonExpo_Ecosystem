@@ -4,19 +4,16 @@ import {
   PriceVisibility,
   PublicationStatus,
   type Prisma,
-} from "@toonexpo/db";
+} from '@toonexpo/db';
 
-import {
-  TRANSLATION_ENTITY,
-  TRANSLATION_FIELD,
-} from "../../catalog/utils/resolve-translation.js";
+import { TRANSLATION_ENTITY, TRANSLATION_FIELD } from '../../catalog/utils/resolve-translation.js';
 import type {
   CreatePortalApartmentDto,
   UpdatePortalApartmentDto,
-} from "../dto/portal-apartment.dto.js";
-import { DEFAULT_PRICE_CURRENCY } from "../portal.constants.js";
-import { upsertTranslations } from "../utils/upsert-translations.js";
-import { buildApartmentSlug } from "../utils/slug.js";
+} from '../dto/portal-apartment.dto.js';
+import { DEFAULT_PRICE_CURRENCY } from '../portal.constants.js';
+import { upsertTranslations } from '../utils/upsert-translations.js';
+import { buildApartmentSlug } from '../utils/slug.js';
 
 type ApartmentRow = {
   id: string;
@@ -50,9 +47,7 @@ type ApartmentRow = {
 
 type DbClient = {
   apartment: {
-    create: (args: {
-      data: Prisma.ApartmentUncheckedCreateInput;
-    }) => Promise<ApartmentRow>;
+    create: (args: { data: Prisma.ApartmentUncheckedCreateInput }) => Promise<ApartmentRow>;
   };
   translation: {
     upsert: (args: {
@@ -79,8 +74,7 @@ export const createPortalApartmentRow = async (
   },
 ): Promise<ApartmentRow> => {
   const salesStatus =
-    (params.dto.salesStatus as ApartmentSalesStatus | undefined) ??
-    ApartmentSalesStatus.available;
+    (params.dto.salesStatus as ApartmentSalesStatus | undefined) ?? ApartmentSalesStatus.available;
   const dto = params.dto;
   const publicationStatus = params.publicationStatus ?? PublicationStatus.draft;
 
@@ -95,8 +89,7 @@ export const createPortalApartmentRow = async (
       publicationStatus,
       priceCurrency: DEFAULT_PRICE_CURRENCY,
       priceVisibility:
-        (dto.priceVisibility as PriceVisibility | undefined) ??
-        PriceVisibility.public,
+        (dto.priceVisibility as PriceVisibility | undefined) ?? PriceVisibility.public,
       crmStatusSource: CrmStatusSource.manual,
       createdByUserId: params.userId,
       updatedByUserId: params.userId,
@@ -107,7 +100,7 @@ export const createPortalApartmentRow = async (
           previousStatus: null,
           newStatus: salesStatus,
           changedByUserId: params.userId,
-          reason: "initial",
+          reason: 'initial',
         },
       },
       ...(dto.rooms !== undefined ? { rooms: dto.rooms } : {}),
@@ -115,35 +108,17 @@ export const createPortalApartmentRow = async (
       ...(dto.bathrooms !== undefined ? { bathrooms: dto.bathrooms } : {}),
       ...(dto.areaTotal !== undefined ? { areaTotal: dto.areaTotal } : {}),
       ...(dto.areaLiving !== undefined ? { areaLiving: dto.areaLiving } : {}),
-      ...(dto.balconyArea !== undefined
-        ? { balconyArea: dto.balconyArea }
-        : {}),
+      ...(dto.balconyArea !== undefined ? { balconyArea: dto.balconyArea } : {}),
       ...(dto.price !== undefined ? { price: dto.price } : {}),
-      ...(dto.description !== undefined
-        ? { description: dto.description }
-        : {}),
-      ...(dto.matterportUrl !== undefined
-        ? { matterportUrl: dto.matterportUrl }
-        : {}),
-      ...(dto.external3dUrl !== undefined
-        ? { external3dUrl: dto.external3dUrl }
-        : {}),
-      ...(dto.orientation !== undefined
-        ? { orientation: dto.orientation }
-        : {}),
+      ...(dto.description !== undefined ? { description: dto.description } : {}),
+      ...(dto.matterportUrl !== undefined ? { matterportUrl: dto.matterportUrl } : {}),
+      ...(dto.external3dUrl !== undefined ? { external3dUrl: dto.external3dUrl } : {}),
+      ...(dto.orientation !== undefined ? { orientation: dto.orientation } : {}),
       ...(dto.viewType !== undefined ? { viewType: dto.viewType } : {}),
-      ...(dto.features !== undefined
-        ? { features: dto.features as Prisma.InputJsonValue }
-        : {}),
-      ...(dto.planMediaId !== undefined
-        ? { planMediaId: dto.planMediaId }
-        : {}),
-      ...(dto.coverMediaId !== undefined
-        ? { coverMediaId: dto.coverMediaId }
-        : {}),
-      ...(dto.tinderMediaId !== undefined
-        ? { tinderMediaId: dto.tinderMediaId }
-        : {}),
+      ...(dto.features !== undefined ? { features: dto.features as Prisma.InputJsonValue } : {}),
+      ...(dto.planMediaId !== undefined ? { planMediaId: dto.planMediaId } : {}),
+      ...(dto.coverMediaId !== undefined ? { coverMediaId: dto.coverMediaId } : {}),
+      ...(dto.tinderMediaId !== undefined ? { tinderMediaId: dto.tinderMediaId } : {}),
       ...(dto.verified !== undefined ? { verified: dto.verified } : {}),
     },
   });
@@ -182,17 +157,11 @@ export const buildApartmentUpdateData = (
     ? { priceVisibility: dto.priceVisibility as PriceVisibility }
     : {}),
   ...(dto.description !== undefined ? { description: dto.description } : {}),
-  ...(dto.matterportUrl !== undefined
-    ? { matterportUrl: dto.matterportUrl }
-    : {}),
-  ...(dto.external3dUrl !== undefined
-    ? { external3dUrl: dto.external3dUrl }
-    : {}),
+  ...(dto.matterportUrl !== undefined ? { matterportUrl: dto.matterportUrl } : {}),
+  ...(dto.external3dUrl !== undefined ? { external3dUrl: dto.external3dUrl } : {}),
   ...(dto.orientation !== undefined ? { orientation: dto.orientation } : {}),
   ...(dto.viewType !== undefined ? { viewType: dto.viewType } : {}),
-  ...(dto.features !== undefined
-    ? { features: dto.features as Prisma.InputJsonValue }
-    : {}),
+  ...(dto.features !== undefined ? { features: dto.features as Prisma.InputJsonValue } : {}),
   ...(dto.planMediaId !== undefined ? { planMediaId: dto.planMediaId } : {}),
   ...(dto.coverMediaId !== undefined ? { coverMediaId: dto.coverMediaId } : {}),
   ...(dto.tinderMediaId !== undefined ? { tinderMediaId: dto.tinderMediaId } : {}),
@@ -205,6 +174,7 @@ export const buildApartmentUpdateData = (
         lastStatusChangedAt: new Date(),
         lastStatusChangedByUserId: userId,
         crmStatusSource: CrmStatusSource.manual,
+        ...(dto.salesStatus === ApartmentSalesStatus.available ? { activeCrmDealId: null } : {}),
       }
     : {}),
   updatedByUserId: userId,

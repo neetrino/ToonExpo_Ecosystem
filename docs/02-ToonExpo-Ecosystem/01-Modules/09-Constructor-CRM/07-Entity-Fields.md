@@ -82,6 +82,18 @@ Fields:
 - created_at;
 - updated_at.
 
+## CrmDealPayment
+
+Fields:
+
+- id;
+- crm_deal_id;
+- amount (Decimal 14,2);
+- currency (default AMD);
+- note optional;
+- created_by_user_id;
+- created_at.
+
 ## ApartmentStatusHistory
 
 Fields used by CRM:
@@ -139,7 +151,7 @@ CrmDeal 0..n CrmDealApartmentLinks
 CrmDealApartmentLink n..1 Apartment
 CrmDeal 0..n CrmFollowUpActivities
 CrmDeal 0..n CrmNotes
+CrmDeal 0..n CrmDealPayments
 Apartment 0..n ApartmentStatusHistory
 CrmDeal 0..n ApartmentStatusHistory
 ```
-

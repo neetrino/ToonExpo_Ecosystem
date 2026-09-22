@@ -27,6 +27,9 @@ import { IconButton } from '@/shared/ui/icon-button';
 const MEDIA_PREVIEW_FRAME_CLASS =
   'relative mt-3 block h-40 w-full cursor-pointer overflow-hidden rounded-sm border border-border bg-surface [contain:strict]';
 const MEDIA_PREVIEW_IMAGE_CLASS = 'absolute inset-0 size-full object-contain';
+const MEDIA_ACTION_ROW_CLASS = 'flex min-w-0 flex-wrap items-stretch gap-2';
+const MEDIA_ACTION_CONTROL_CLASS =
+  'min-h-9 min-w-0 flex-1 basis-40 justify-center whitespace-normal text-center';
 
 export type MediaUploadFieldProps = {
   id: string;
@@ -144,9 +147,9 @@ export const MediaUploadField = ({
   const displayError = error ?? localError ?? undefined;
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex items-center justify-between gap-2">
-        <span className="form-field-label text-sm font-medium text-ink">{label}</span>
+    <div className="flex min-w-0 flex-col gap-3">
+      <div className="flex min-w-0 items-center justify-between gap-2">
+        <span className="form-field-label min-w-0 text-sm font-medium text-ink">{label}</span>
         {allowClear && hasSelection ? (
           <IconButton
             type="button"
@@ -165,13 +168,16 @@ export const MediaUploadField = ({
       </div>
       <div
         className={cn(
-          'rounded-sm border border-dashed border-border px-4 py-4',
+          'min-w-0 overflow-hidden rounded-sm border border-dashed border-border px-4 py-4',
           busy && 'opacity-70',
         )}
       >
-        <div className="flex flex-nowrap items-center gap-2">
+        <div className={MEDIA_ACTION_ROW_CLASS}>
           <label
-            className="relative inline-flex shrink-0 cursor-pointer items-center overflow-hidden rounded-sm border border-border px-3 py-2 text-sm font-medium whitespace-nowrap text-ink hover:bg-surface-muted"
+            className={cn(
+              'relative inline-flex cursor-pointer items-center overflow-hidden rounded-sm border border-border px-3 py-2 text-sm font-medium text-ink hover:bg-surface-muted',
+              MEDIA_ACTION_CONTROL_CLASS,
+            )}
           >
             {busy ? t('uploading') : thumbnailUrl ? t('replace') : t('browse')}
             <input
@@ -193,7 +199,7 @@ export const MediaUploadField = ({
             type="button"
             size="sm"
             variant="ghost"
-            className="shrink-0 whitespace-nowrap"
+            className={cn('h-auto', MEDIA_ACTION_CONTROL_CLASS)}
             disabled={busy}
             onClick={() => {
               void openLibrary();

@@ -1,6 +1,15 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, IsString, Max, MaxLength, Min, MinLength } from 'class-validator';
+import {
+  IsEnum,
+  IsInt,
+  IsOptional,
+  IsString,
+  Max,
+  MaxLength,
+  Min,
+  MinLength,
+} from 'class-validator';
 
 import {
   PORTAL_DEFAULT_PAGE_SIZE,
@@ -9,6 +18,12 @@ import {
 } from '../portal.constants.js';
 
 const INVENTORY_SEARCH_MAX_LENGTH = 120;
+
+enum ApartmentSalesStatusQuery {
+  available = 'available',
+  reserved = 'reserved',
+  sold = 'sold',
+}
 
 /**
  * Query for company-scoped portal buildings / floors / apartments hubs.
@@ -44,6 +59,14 @@ export class ListPortalInventoryQueryDto {
   @IsString()
   @MinLength(1)
   projectId?: string;
+
+  @ApiPropertyOptional({
+    enum: ApartmentSalesStatusQuery,
+    description: 'Filter apartments by sales status',
+  })
+  @IsOptional()
+  @IsEnum(ApartmentSalesStatusQuery)
+  salesStatus?: ApartmentSalesStatusQuery;
 
   @ApiPropertyOptional({
     description:

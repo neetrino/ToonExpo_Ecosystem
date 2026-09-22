@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
-import { getMessages, setRequestLocale } from 'next-intl/server';
+import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 
 import { routing } from '@/i18n/routing';
@@ -17,6 +17,10 @@ type LocaleLayoutProps = {
 const SITE_NAME = 'TOONEXPO';
 const SITE_DESCRIPTION =
   'The marketplace for verified homes, new developments, and partner bank offers.';
+/** Public share card — new path so messenger OG caches do not keep the old house mark. */
+const SHARE_IMAGE_PATH = '/brand/og-share.png';
+const SHARE_IMAGE_WIDTH = 1200;
+const SHARE_IMAGE_HEIGHT = 630;
 
 export const generateMetadata = async ({
   params,
@@ -51,9 +55,9 @@ export const generateMetadata = async ({
       url: siteUrl,
       images: [
         {
-          url: '/opengraph-image.png',
-          width: 1200,
-          height: 630,
+          url: SHARE_IMAGE_PATH,
+          width: SHARE_IMAGE_WIDTH,
+          height: SHARE_IMAGE_HEIGHT,
           alt: SITE_NAME,
         },
       ],
@@ -62,7 +66,7 @@ export const generateMetadata = async ({
       card: 'summary_large_image',
       title: SITE_NAME,
       description: SITE_DESCRIPTION,
-      images: ['/twitter-image.png'],
+      images: [SHARE_IMAGE_PATH],
     },
   };
 };
@@ -72,17 +76,21 @@ export const generateStaticParams = () => {
 };
 
 export default async function LocaleLayout({ children, params }: LocaleLayoutProps) {
-  const { locale } = await params;
+  const { locale: urlLocale } = await params;
 
-  if (!hasLocale(routing.locales, locale)) {
+  if (!hasLocale(routing.locales, urlLocale)) {
     notFound();
   }
 
-  setRequestLocale(locale);
-  const messages = await getMessages();
+  // Always bind the root provider to the URL (public site) locale.
+  // Portal routes nest their own provider for an independent panel UI language.
+  // Using getLocale() here would leak panel language onto public pages when the
+  // shared [locale] layout is reused across client navigations.
+  setRequestLocale(urlLocale);
+  const messages = (await import(`../../../messages/${urlLocale}.json`)).default;
 
   return (
-    <NextIntlClientProvider messages={messages}>
+    <NextIntlClientProvider locale={urlLocale} messages={messages}>
       <QueryProvider>
         <PublicChrome>{children}</PublicChrome>
       </QueryProvider>

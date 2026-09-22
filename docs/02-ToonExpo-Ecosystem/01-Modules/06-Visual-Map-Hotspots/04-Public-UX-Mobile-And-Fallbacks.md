@@ -116,15 +116,17 @@ This prevents invisible apartments/floors.
 
 ## Status Display
 
-Apartment visual markers should reflect sales status if possible:
+Apartment polygons on the public floor plan are filled by sales status:
 
 ```text
-available
-reserved
-sold
+available — green
+reserved — yellow
+sold — red
 ```
 
-Use simple colors/labels, but never rely only on color.
+A text legend sits under the floor plan. Color is never the only signal.
+
+Public apartment detail shows the same sales status as a chip: on the gallery (top-right) on mobile, and opposite the catalog path breadcrumb on desktop. Platform admins can change it there; the write is manual inventory SoT and syncs the linked CRM deal when one exists.
 
 ## Performance
 
@@ -145,4 +147,3 @@ Visual navigation should include non-visual alternatives:
 - text labels;
 - keyboard accessible target list;
 - alt text for images.
-

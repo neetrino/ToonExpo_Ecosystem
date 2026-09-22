@@ -23,15 +23,21 @@ describe('shouldRevealCatalogPrice', () => {
 });
 
 describe('isPriceOnRequestEnabled', () => {
-  it('reads the flag from the row or nested building', () => {
+  it('reads the flag from the row, nested building, or project', () => {
     expect(isPriceOnRequestEnabled({ priceOnRequestEnabled: true })).toBe(true);
     expect(isPriceOnRequestEnabled({ building: { priceOnRequestEnabled: true } })).toBe(true);
     expect(isPriceOnRequestEnabled({ building: { priceOnRequestEnabled: false } })).toBe(false);
+    expect(isPriceOnRequestEnabled({ project: { priceOnRequestEnabled: true } })).toBe(true);
+    expect(
+      isPriceOnRequestEnabled({
+        building: { priceOnRequestEnabled: false, project: { priceOnRequestEnabled: true } },
+      }),
+    ).toBe(true);
   });
 });
 
 describe('hasPublishedPriceOnRequest', () => {
-  it('is true when any building opted in', () => {
+  it('is true when the project or any building opted in', () => {
     expect(
       hasPublishedPriceOnRequest([
         { priceOnRequestEnabled: false },
@@ -40,5 +46,6 @@ describe('hasPublishedPriceOnRequest', () => {
     ).toBe(true);
     expect(hasPublishedPriceOnRequest([{ priceOnRequestEnabled: false }])).toBe(false);
     expect(hasPublishedPriceOnRequest([])).toBe(false);
+    expect(hasPublishedPriceOnRequest([{ priceOnRequestEnabled: false }], true)).toBe(true);
   });
 });

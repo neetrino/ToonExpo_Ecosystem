@@ -1,31 +1,19 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-} from "@nestjs/common";
-import {
-  CrmDealStatus,
-  RequestSource,
-  RequestStatus,
-  type Prisma,
-} from "@toonexpo/db";
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { CrmDealStatus, RequestSource, RequestStatus, type Prisma } from '@toonexpo/db';
 
-import { AnalyticsService } from "../../analytics/analytics.service.js";
-import { PrismaService } from "../../prisma/prisma.service.js";
-import { isUniqueOpenDealViolation } from "./intake-unique.util.js";
+import { AnalyticsService } from '../../analytics/analytics.service.js';
+import { PrismaService } from '../../prisma/prisma.service.js';
+import { isUniqueOpenDealViolation } from './intake-unique.util.js';
 import {
   findOpenDealForBuyer,
   toApartmentLinkCreateData,
   toDedupActivityData,
-} from "./intake.helpers.js";
+} from './intake.helpers.js';
 import {
   assertIntakeSourceRequirements,
   validateIntakeProjectAndApartment,
-} from "./intake-validate.js";
-import type {
-  IntakeCreateContext,
-  IntakeCreateOutcome,
-} from "./request-intake.types.js";
+} from './intake-validate.js';
+import type { IntakeCreateContext, IntakeCreateOutcome } from './request-intake.types.js';
 
 type Tx = Prisma.TransactionClient;
 
@@ -51,21 +39,15 @@ export class RequestIntakeService {
     return this.findOrCreateForBuyer(context);
   }
 
-  private async findOrCreateForBuyer(
-    context: IntakeCreateContext,
-  ): Promise<IntakeCreateOutcome> {
+  private async findOrCreateForBuyer(context: IntakeCreateContext): Promise<IntakeCreateOutcome> {
     const buyerProfileId = context.buyerProfileId;
     if (!buyerProfileId) {
-      throw new BadRequestException("buyerProfileId is required");
+      throw new BadRequestException('buyerProfileId is required');
     }
 
     try {
       const outcome = await this.prisma.db.$transaction(async (tx) => {
-        const existing = await findOpenDealForBuyer(
-          tx,
-          context.builderCompanyId,
-          buyerProfileId,
-        );
+        const existing = await findOpenDealForBuyer(tx, context.builderCompanyId, buyerProfileId);
         if (existing) {
           return this.attachInTransaction(tx, existing.id, context);
         }
@@ -91,16 +73,12 @@ export class RequestIntakeService {
       buyerProfileId,
     );
     if (!existing) {
-      throw new InternalServerErrorException(
-        "Open deal conflict could not be resolved",
-      );
+      throw new InternalServerErrorException('Open deal conflict could not be resolved');
     }
     return this.attachToExistingDeal(existing.id, context);
   }
 
-  private async resolveActivityActorId(
-    context: IntakeCreateContext,
-  ): Promise<string | null> {
+  private async resolveActivityActorId(context: IntakeCreateContext): Promise<string | null> {
     if (context.createdByUserId) {
       return context.createdByUserId;
     }
@@ -133,9 +111,7 @@ export class RequestIntakeService {
     actorId?: string | null,
   ): Promise<IntakeCreateOutcome> {
     const resolvedActorId =
-      actorId === undefined
-        ? await this.resolveActivityActorId(context)
-        : actorId;
+      actorId === undefined ? await this.resolveActivityActorId(context) : actorId;
     const request = await tx.request.create({
       data: this.toRequestData(context, dealId),
     });
@@ -195,9 +171,7 @@ export class RequestIntakeService {
         contactPhone: context.contactPhone ?? null,
         contactEmail: context.contactEmail ?? null,
         createdByUserId: context.createdByUserId ?? null,
-        assignedUserId: assignCreator
-          ? (context.createdByUserId ?? null)
-          : null,
+        assignedUserId: assignCreator ? (context.createdByUserId ?? null) : null,
         projectId: context.projectId ?? null,
         lastActivityAt: new Date(),
       },
@@ -253,6 +227,15 @@ export class RequestIntakeService {
     if (!apartment) {
       return;
     }
+    const otherCount = await tx.crmDealApartmentLink.count({
+      where: {
+        crmDealId: dealId,
+        apartmentId: { not: context.apartmentId },
+      },
+    });
+    if (otherCount > 0) {
+      return;
+    }
     const linkData = toApartmentLinkCreateData({
       apartmentId: context.apartmentId,
       createdByUserId: context.createdByUserId ?? null,
@@ -278,7 +261,7 @@ export class RequestIntakeService {
     context: IntakeCreateContext,
   ): void {
     this.analytics.track({
-      eventType: "request_created",
+      eventType: 'request_created',
       source: context.source,
       requestId,
       crmDealId,

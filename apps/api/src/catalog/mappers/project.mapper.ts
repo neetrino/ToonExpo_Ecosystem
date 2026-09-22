@@ -37,7 +37,11 @@ type ApartmentPriceRow = {
   priceCurrency: string;
   priceVisibility: string;
   priceOnRequestEnabled?: boolean;
-  building?: { priceOnRequestEnabled?: boolean } | null;
+  building?: {
+    priceOnRequestEnabled?: boolean;
+    project?: { priceOnRequestEnabled?: boolean } | null;
+  } | null;
+  project?: { priceOnRequestEnabled?: boolean } | null;
 };
 
 type ProjectListSource = {
@@ -53,6 +57,7 @@ type ProjectListSource = {
   longitude: Prisma.Decimal | null;
   coverMedia: MediaRow;
   verified: boolean;
+  priceOnRequestEnabled: boolean;
   builderCompany: {
     id: string;
     name: string;
@@ -176,6 +181,7 @@ const localizeProjectFields = (
   name: string;
   shortDescription: string | null;
   locationText: string | null;
+  district: string | null;
   builderName: string;
 } => {
   const { locale, translations } = ctx;
@@ -204,6 +210,14 @@ const localizeProjectFields = (
       locale,
       project.locationText,
     ),
+    district: resolveTranslatedValue(
+      translations,
+      TRANSLATION_ENTITY.project,
+      project.id,
+      TRANSLATION_FIELD.district,
+      locale,
+      project.district,
+    ),
     builderName: resolveCompanyDisplayName(
       translations,
       project.builderCompany.id,
@@ -217,7 +231,11 @@ export const mapProjectListItem = (
   project: ProjectListSource,
   ctx: MapContext,
 ): ProjectListItem => {
-  const prices = aggregateVisiblePrices(project.apartments, ctx.isAuthenticated);
+  const apartmentsForPrices = project.apartments.map((apartment) => ({
+    ...apartment,
+    project: { priceOnRequestEnabled: project.priceOnRequestEnabled },
+  }));
+  const prices = aggregateVisiblePrices(apartmentsForPrices, ctx.isAuthenticated);
   const localized = localizeProjectFields(project, ctx);
 
   return {
@@ -228,7 +246,7 @@ export const mapProjectListItem = (
     locationText: localized.locationText,
     address: project.address,
     city: project.city,
-    district: project.district,
+    district: localized.district,
     latitude: decimalToString(project.latitude),
     longitude: decimalToString(project.longitude),
     cover: toMediaSummary(project.coverMedia),
@@ -246,7 +264,10 @@ export const mapProjectListItem = (
     minPrice: prices.minPrice,
     maxPrice: prices.maxPrice,
     priceCurrency: prices.priceCurrency,
-    priceOnRequest: hasPublishedPriceOnRequest(project.buildings ?? []),
+    priceOnRequest: hasPublishedPriceOnRequest(
+      project.buildings ?? [],
+      project.priceOnRequestEnabled,
+    ),
   };
 };
 
@@ -265,7 +286,6 @@ const mapBankPartnerOfferSummary = (
 
 export const mapProjectDetail = (project: ProjectDetailSource, ctx: MapContext): ProjectDetail => {
   const listBase = mapProjectListItem(project, ctx);
-  const prices = aggregateVisiblePrices(project.apartments, ctx.isAuthenticated);
   const fullDescription = resolveTranslatedValue(
     ctx.translations,
     TRANSLATION_ENTITY.project,
@@ -278,7 +298,14 @@ export const mapProjectDetail = (project: ProjectDetailSource, ctx: MapContext):
   return {
     ...listBase,
     fullDescription,
-    projectType: project.projectType,
+    projectType: resolveTranslatedValue(
+      ctx.translations,
+      TRANSLATION_ENTITY.project,
+      project.id,
+      TRANSLATION_FIELD.projectType,
+      ctx.locale,
+      project.projectType,
+    ),
     constructionStatus: project.constructionStatus,
     completionDate: project.completionDate
       ? project.completionDate.toISOString().slice(0, 10)
@@ -286,30 +313,30 @@ export const mapProjectDetail = (project: ProjectDetailSource, ctx: MapContext):
     amenities: project.amenities,
     nearbyPlaces: project.nearbyPlaces,
     bankPartnerOffers: project.bankPartnerOffers.map(mapBankPartnerOfferSummary),
-    buildings: project.buildings.map((building) => ({
-      id: building.id,
-      name: building.name,
-      description: building.description,
-      displayOrder: building.displayOrder,
-      floorsCount: building.floorsCount,
-      cover: toMediaSummary(building.coverMedia),
-      verified: building.verified,
-      availability: statusesToSummary(building.apartments),
-      priceOnRequestEnabled: building.priceOnRequestEnabled,
-      floors: building.floors.map((floor) => ({
-        id: floor.id,
-        number: floor.number,
-        name: floor.name,
-        displayLabel: floor.displayLabel,
-        displayOrder: floor.displayOrder,
-        availability: statusesToSummary(floor.apartments),
-        apartments: floor.apartments.map((apartment) =>
-          mapFloorApartment(apartment, ctx.isAuthenticated, building.priceOnRequestEnabled),
-        ),
-      })),
-    })),
-    minPrice: prices.minPrice,
-    maxPrice: prices.maxPrice,
-    priceCurrency: prices.priceCurrency,
+    buildings: project.buildings.map((building) => {
+      const priceOnRequestEnabled = project.priceOnRequestEnabled || building.priceOnRequestEnabled;
+      return {
+        id: building.id,
+        name: building.name,
+        description: building.description,
+        displayOrder: building.displayOrder,
+        floorsCount: building.floorsCount,
+        cover: toMediaSummary(building.coverMedia),
+        verified: building.verified,
+        availability: statusesToSummary(building.apartments),
+        priceOnRequestEnabled,
+        floors: building.floors.map((floor) => ({
+          id: floor.id,
+          number: floor.number,
+          name: floor.name,
+          displayLabel: floor.displayLabel,
+          displayOrder: floor.displayOrder,
+          availability: statusesToSummary(floor.apartments),
+          apartments: floor.apartments.map((apartment) =>
+            mapFloorApartment(apartment, ctx.isAuthenticated, priceOnRequestEnabled),
+          ),
+        })),
+      };
+    }),
   };
 };

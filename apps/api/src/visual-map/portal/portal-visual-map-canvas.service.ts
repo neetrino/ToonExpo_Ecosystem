@@ -14,6 +14,10 @@ import {
   toDbContextType,
   validateCanvasContext,
 } from '../utils/context-validation.js';
+import {
+  refreshFloorPlanAfterCanvasChange,
+  syncFloorCanvasMediaToFloorPlan,
+} from '../utils/sync-floor-plan-media.js';
 import { loadTargetEntities } from '../utils/target-validation.js';
 import type {
   CreatePortalVisualCanvasDto,
@@ -83,6 +87,13 @@ export class PortalVisualMapCanvasService {
       include: canvasInclude,
     });
 
+    if (dto.contextType === 'floor') {
+      await syncFloorCanvasMediaToFloorPlan(this.prisma, {
+        floorId: dto.contextId,
+        mediaAssetId: dto.mediaAssetId,
+      });
+    }
+
     if (
       ((dto.publicationStatus as PublicationStatus | undefined) ?? PublicationStatus.draft) ===
       PublicationStatus.published
@@ -141,6 +152,13 @@ export class PortalVisualMapCanvasService {
       include: canvasInclude,
     });
 
+    if (existing.contextType === 'floor' && dto.mediaAssetId !== undefined) {
+      await syncFloorCanvasMediaToFloorPlan(this.prisma, {
+        floorId: existing.contextId,
+        mediaAssetId: dto.mediaAssetId,
+      });
+    }
+
     const entities = await loadTargetEntities(this.prisma, canvas.hotspots);
     if (dto.publicationStatus !== undefined) {
       this.webRevalidation.revalidateVisualMap();
@@ -151,12 +169,21 @@ export class PortalVisualMapCanvasService {
   async remove(companyId: string, canvasId: string): Promise<void> {
     const canvas = await this.prisma.db.visualMapCanvas.findFirst({
       where: { id: canvasId, ownerCompanyId: companyId },
-      select: { id: true, publicationStatus: true },
+      select: {
+        id: true,
+        publicationStatus: true,
+        contextType: true,
+        contextId: true,
+        projectId: true,
+      },
     });
     if (!canvas) {
       throw entityNotFound('Visual canvas');
     }
     assertDraftCanvasDeletable(canvas.publicationStatus);
     await this.prisma.db.visualMapCanvas.delete({ where: { id: canvasId } });
+    if (canvas.contextType === 'floor') {
+      await refreshFloorPlanAfterCanvasChange(this.prisma, canvas.projectId, canvas.contextId);
+    }
   }
 }

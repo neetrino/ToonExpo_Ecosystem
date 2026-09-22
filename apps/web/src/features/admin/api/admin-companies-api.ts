@@ -12,6 +12,7 @@ import type {
 } from '@toonexpo/contracts';
 
 import { apiFetch, type ApiFetchOptions } from '@/shared/api/client';
+import { decodeRouteParam } from '@/shared/lib/decode-route-param';
 
 const jsonCredentials = {
   credentials: 'include' as const,
@@ -109,7 +110,7 @@ export const listAdminCompanyProjects = (
 export type ListAdminProjectsParams = {
   page: number;
   pageSize: number;
-  companyId?: string;
+  companyId?: string | readonly string[];
   search?: string;
 };
 
@@ -121,6 +122,7 @@ export type ListAdminInventoryParams = {
   floorId?: string | readonly string[];
   projectId?: string;
   search?: string;
+  salesStatus?: string;
 };
 
 /**
@@ -135,7 +137,12 @@ export const listAdminProjects = (
     pageSize: String(params.pageSize),
   });
   if (params.companyId) {
-    query.set('companyId', params.companyId);
+    const ids = (Array.isArray(params.companyId) ? params.companyId : [params.companyId])
+      .map((id) => id.trim())
+      .filter((id) => id.length > 0);
+    if (ids.length > 0) {
+      query.set('companyId', ids.join(','));
+    }
   }
   const search = params.search?.trim();
   if (search) {
@@ -165,7 +172,7 @@ export const getAdminProjectScope = (
   apiFetch<AdminProjectScope>(
     withCookie(
       {
-        path: `/admin/projects/${encodeURIComponent(projectId)}/scope`,
+        path: `/admin/projects/${encodeURIComponent(decodeRouteParam(projectId))}/scope`,
         method: 'GET',
         credentials: 'include',
         cache: 'no-store',

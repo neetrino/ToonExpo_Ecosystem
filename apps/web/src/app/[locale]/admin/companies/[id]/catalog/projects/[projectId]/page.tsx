@@ -1,4 +1,4 @@
-import { setRequestLocale } from 'next-intl/server';
+import { getLocale, setRequestLocale } from 'next-intl/server';
 
 import { redirect } from '@/i18n/navigation';
 
@@ -10,7 +10,8 @@ type PageProps = {
  * Legacy company catalog project detail → Projects hub.
  */
 export default async function AdminCompanyCatalogProjectDetailRedirect({ params }: PageProps) {
-  const { locale, projectId } = await params;
+  const { projectId } = await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
   redirect({ href: `/admin/projects/${projectId}`, locale });
   return null;

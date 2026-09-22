@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import type { PortalProjectDetail, PortalProjectListResponse } from '@toonexpo/contracts';
 import { PublicationStatus, type Prisma } from '@toonexpo/db';
 
@@ -13,17 +13,31 @@ import { cascadePublishProjectInventory } from '../utils/ensure-published-invent
 import { groupPortalTranslations } from '../utils/group-translations.js';
 import { requireOwnedProject } from '../utils/ownership.js';
 import { buildProjectSlug } from '../utils/slug.js';
-import { upsertTranslations } from '../utils/upsert-translations.js';
+import { upsertTranslations, type TranslationFieldPayload } from '../utils/upsert-translations.js';
 import type { CreatePortalProjectDto } from '../dto/create-portal-project.dto.js';
 import type { UpdatePortalProjectDto } from '../dto/update-portal-project.dto.js';
 import type { UpdatePortalPublicationDto } from '../dto/update-portal-publication.dto.js';
+import { deleteOwnedProject } from './delete-owned-project.js';
 
 const PROJECT_TRANSLATION_FIELDS = [
   TRANSLATION_FIELD.name,
   TRANSLATION_FIELD.shortDescription,
   TRANSLATION_FIELD.fullDescription,
   TRANSLATION_FIELD.locationText,
+  TRANSLATION_FIELD.district,
+  TRANSLATION_FIELD.projectType,
 ] as const;
+
+const toProjectTranslationFields = (
+  translations: NonNullable<CreatePortalProjectDto['translations']>,
+): TranslationFieldPayload => ({
+  [TRANSLATION_FIELD.name]: translations.name,
+  [TRANSLATION_FIELD.shortDescription]: translations.shortDescription,
+  [TRANSLATION_FIELD.fullDescription]: translations.fullDescription,
+  [TRANSLATION_FIELD.locationText]: translations.locationText,
+  [TRANSLATION_FIELD.district]: translations.district,
+  [TRANSLATION_FIELD.projectType]: translations.projectType,
+});
 
 const PROJECT_MEDIA_SELECT = {
   id: true,
@@ -149,12 +163,7 @@ export class PortalProjectsService {
       await upsertTranslations(this.prisma.db, {
         entityType: TRANSLATION_ENTITY.project,
         entityId: project.id,
-        fields: {
-          [TRANSLATION_FIELD.name]: dto.translations.name,
-          [TRANSLATION_FIELD.shortDescription]: dto.translations.shortDescription,
-          [TRANSLATION_FIELD.fullDescription]: dto.translations.fullDescription,
-          [TRANSLATION_FIELD.locationText]: dto.translations.locationText,
-        },
+        fields: toProjectTranslationFields(dto.translations),
         updatedByUserId: userId,
       });
     }
@@ -209,12 +218,7 @@ export class PortalProjectsService {
       await upsertTranslations(this.prisma.db, {
         entityType: TRANSLATION_ENTITY.project,
         entityId: project.id,
-        fields: {
-          [TRANSLATION_FIELD.name]: dto.translations.name,
-          [TRANSLATION_FIELD.shortDescription]: dto.translations.shortDescription,
-          [TRANSLATION_FIELD.fullDescription]: dto.translations.fullDescription,
-          [TRANSLATION_FIELD.locationText]: dto.translations.locationText,
-        },
+        fields: toProjectTranslationFields(dto.translations),
         updatedByUserId: userId,
       });
     }
@@ -253,19 +257,48 @@ export class PortalProjectsService {
     return this.toProjectDetail(project);
   }
 
+  /**
+   * Enables or disables price-on-request for the project and cascades to all buildings
+   * so new and existing inventory stay aligned.
+   */
+  async updatePriceOnRequest(
+    companyId: string,
+    userId: string,
+    projectRef: string,
+    enabled: boolean,
+  ): Promise<PortalProjectDetail> {
+    const owned = await requireOwnedProject(this.prisma, projectRef, companyId);
+
+    await this.prisma.db.$transaction([
+      this.prisma.db.project.update({
+        where: { id: owned.id },
+        data: {
+          priceOnRequestEnabled: enabled,
+          updatedByUserId: userId,
+        },
+      }),
+      this.prisma.db.building.updateMany({
+        where: { projectId: owned.id },
+        data: {
+          priceOnRequestEnabled: enabled,
+          updatedByUserId: userId,
+        },
+      }),
+    ]);
+
+    const project = await this.prisma.db.project.findUniqueOrThrow({
+      where: { id: owned.id },
+      include: projectDetailInclude,
+    });
+
+    this.webRevalidation.revalidateCatalog(owned.id);
+    return this.toProjectDetail(project);
+  }
+
   async remove(companyId: string, projectRef: string): Promise<void> {
     const owned = await requireOwnedProject(this.prisma, projectRef, companyId);
-    const project = await this.prisma.db.project.findFirst({
-      where: { id: owned.id, builderCompanyId: companyId },
-      select: { id: true, publicationStatus: true },
-    });
-    if (!project) {
-      throw entityNotFound('Project');
-    }
-    if (project.publicationStatus !== PublicationStatus.draft) {
-      throw new BadRequestException('Only draft projects can be deleted');
-    }
-    await this.prisma.db.project.delete({ where: { id: owned.id } });
+    await deleteOwnedProject(this.prisma.db, owned.id);
+    this.webRevalidation.revalidateCatalog(owned.id);
   }
 
   private async toProjectDetail(

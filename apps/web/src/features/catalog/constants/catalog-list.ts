@@ -5,7 +5,7 @@ export const CATALOG_RESULTS_SCROLL_ID = 'catalog-results';
  * Clears fixed header / pill chrome so the results block sits under the navbar.
  */
 export const CATALOG_RESULTS_SCROLL_MARGIN_CLASS =
-  'scroll-mt-[calc(5.5rem+env(safe-area-inset-top,0px))]';
+  'scroll-mt-[calc(4.5rem+env(safe-area-inset-top,0px))]';
 
 /** Stretch grid cells so cards in the same row share height. */
 export const CATALOG_CARD_CELL_FILL_CLASS = '[&>*]:h-full [&>*]:min-w-0';

@@ -1,8 +1,4 @@
-import { ProjectCatalogMediaPoster } from '@/features/catalog/components/project-catalog-media-poster';
-import { staticAssetUrl } from '@/shared/lib/static-asset-url';
-
-const MATTERPORT_TOUR_POSTER_SRC = staticAssetUrl('/images/project-floor-axonometric.webp');
-const EXTERNAL_3D_TOUR_POSTER_SRC = staticAssetUrl('/images/hero-variant-a.webp');
+import { ProjectCatalogVideoSection } from '@/features/catalog/components/project-catalog-video-section';
 
 type ApartmentTourSectionsProps = {
   matterportUrl: string | null;
@@ -12,9 +8,10 @@ type ApartmentTourSectionsProps = {
 };
 
 /**
- * Public apartment Matterport / external 3D tour posters (admin URL fields).
+ * Public apartment Matterport / external 3D tour previews (admin URL fields).
+ * Uses real thumbnails from the URL when available — no stock placeholders.
  */
-export const ApartmentTourSections = ({
+export const ApartmentTourSections = async ({
   matterportUrl,
   external3dUrl,
   matterportTitle,
@@ -34,10 +31,10 @@ export const ApartmentTourSections = ({
           <h2 className="mb-4 font-brand text-2xl font-bold tracking-tight text-ink-navy">
             {matterportTitle}
           </h2>
-          <ProjectCatalogMediaPoster
+          <ProjectCatalogVideoSection
+            url={matterport}
             title={matterportTitle}
-            imageSrc={MATTERPORT_TOUR_POSTER_SRC}
-            href={matterport}
+            openLabel={matterportTitle}
           />
         </div>
       ) : null}
@@ -47,10 +44,10 @@ export const ApartmentTourSections = ({
           <h2 className="mb-4 font-brand text-2xl font-bold tracking-tight text-ink-navy">
             {external3dTitle}
           </h2>
-          <ProjectCatalogMediaPoster
+          <ProjectCatalogVideoSection
+            url={external3d}
             title={external3dTitle}
-            imageSrc={EXTERNAL_3D_TOUR_POSTER_SRC}
-            href={external3d}
+            openLabel={external3dTitle}
           />
         </div>
       ) : null}

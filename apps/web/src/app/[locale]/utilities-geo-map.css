@@ -18,8 +18,8 @@
     contain: paint;
     margin-top: -1.5rem;
     margin-bottom: -1.5rem;
-    height: calc(100svh / var(--desktop-layout-scale) - 5.5rem);
-    max-height: calc(100svh / var(--desktop-layout-scale) - 5.5rem);
+    height: calc(100svh / var(--desktop-layout-scale) - 4.5rem);
+    max-height: calc(100svh / var(--desktop-layout-scale) - 4.5rem);
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
   }
@@ -118,7 +118,7 @@
     height: 100%;
     overflow: visible;
     color: var(--color-brand);
-    filter: drop-shadow(0 1px 1px rgb(9 43 68 / 0.22)) drop-shadow(0 3px 6px rgb(9 43 68 / 0.16));
+    filter: drop-shadow(0 1px 1px rgb(25 38 67 / 0.22)) drop-shadow(0 3px 6px rgb(25 38 67 / 0.16));
     transition:
       color var(--duration-base) var(--ease-out-premium),
       filter var(--duration-base) var(--ease-out-premium);
@@ -126,12 +126,12 @@
 
   .geo-map-pin:hover .geo-map-pin__shape {
     color: var(--color-brand-hover);
-    filter: drop-shadow(0 1px 2px rgb(9 43 68 / 0.26)) drop-shadow(0 4px 10px rgb(9 43 68 / 0.2));
+    filter: drop-shadow(0 1px 2px rgb(25 38 67 / 0.26)) drop-shadow(0 4px 10px rgb(25 38 67 / 0.2));
   }
 
   .geo-map-pin--selected .geo-map-pin__shape {
     color: var(--color-brand-deep);
-    filter: drop-shadow(0 1px 2px rgb(9 43 68 / 0.28)) drop-shadow(0 5px 12px rgb(9 43 68 / 0.24));
+    filter: drop-shadow(0 1px 2px rgb(25 38 67 / 0.28)) drop-shadow(0 5px 12px rgb(25 38 67 / 0.24));
   }
 
   .geo-map-pin__body {
@@ -169,7 +169,7 @@
     box-shadow:
       0 1px 0 rgb(255 255 255 / 0.7) inset,
       0 14px 36px rgb(69 85 108 / 0.12),
-      0 4px 12px rgb(26 143 152 / 0.08);
+      0 4px 12px rgb(2 118 145 / 0.08);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     transition:
@@ -186,7 +186,7 @@
     box-shadow:
       0 1px 0 rgb(255 255 255 / 0.8) inset,
       0 18px 40px rgb(69 85 108 / 0.14),
-      0 6px 16px rgb(26 143 152 / 0.14);
+      0 6px 16px rgb(2 118 145 / 0.14);
   }
 
   .geo-map-info-card__surface--interactive:focus-visible {
@@ -235,7 +235,7 @@
     border-radius: 9999px;
     background: var(--color-brand-deep);
     color: var(--color-on-brand);
-    box-shadow: 0 4px 10px rgb(9 43 68 / 0.22);
+    box-shadow: 0 4px 10px rgb(25 38 67 / 0.22);
     transition:
       background-color var(--duration-fast) var(--ease-out-premium),
       transform var(--duration-fast) var(--ease-out-premium);

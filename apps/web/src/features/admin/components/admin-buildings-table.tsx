@@ -8,6 +8,8 @@ import { PublicationStatusBadge } from '@/features/partners/components/partner-b
 import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
 import { Button } from '@/shared/ui/button';
 import { LIST_STATUS_BADGE_COMPACT_CLASS } from '@/shared/ui/list-status-badge';
+import type { ListTableSelectionProps } from '@/shared/ui/list-selection.types';
+import { ListTableRowCheckbox, ListTableSelectAllCheckbox } from '@/shared/ui/list-table-checkbox';
 import { ListTableReveal } from '@/shared/ui/motion';
 import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 
@@ -17,6 +19,7 @@ type AdminBuildingsTableProps = {
   onOpenReadiness?: ((building: AdminBuildingListItem) => void) | undefined;
   viewMode?: ViewMode | undefined;
   showCompany?: boolean | undefined;
+  listSelection?: ListTableSelectionProps | undefined;
 };
 
 /**
@@ -28,6 +31,7 @@ export const AdminBuildingsTable = ({
   onOpenReadiness,
   viewMode = VIEW_MODE_CARDS,
   showCompany = true,
+  listSelection,
 }: AdminBuildingsTableProps) => {
   const t = useTranslations('Admin.buildings');
 
@@ -47,12 +51,23 @@ export const AdminBuildingsTable = ({
     );
   }
 
+  const selection = listSelection?.selection;
+  const selectableIdSet = listSelection?.selectableIdSet;
+
   return (
     <ListTableReveal>
       <div className="overflow-x-auto rounded-sm border border-border">
         <table className="w-full min-w-[52rem] border-collapse text-sm">
           <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
             <tr>
+              {selection && selectableIdSet ? (
+                <ListTableSelectAllCheckbox
+                  checked={selection.allSelected}
+                  indeterminate={selection.someSelected && !selection.allSelected}
+                  disabled={selection.selectableIds.length === 0}
+                  onChange={selection.toggleAll}
+                />
+              ) : null}
               <th className="px-3 py-2.5 text-left font-medium">{t('columns.name')}</th>
               {showCompany ? (
                 <th className="px-3 py-2.5 text-left font-medium">{t('columns.company')}</th>
@@ -67,55 +82,68 @@ export const AdminBuildingsTable = ({
             </tr>
           </thead>
           <tbody>
-            {buildings.map((building) => (
-              <tr key={building.id} className="border-t border-border hover:bg-surface/60">
-                <td className="px-3 py-2.5 align-middle">
-                  <button
-                    type="button"
-                    className="font-medium text-brand hover:underline"
-                    onClick={() => {
-                      onSelectBuilding(building.id);
-                    }}
-                  >
-                    {building.name}
-                  </button>
-                </td>
-                {showCompany ? (
-                  <td className="px-3 py-2.5 align-middle text-ink-secondary">
-                    {building.companyName}
-                  </td>
-                ) : null}
-                <td className="px-3 py-2.5 align-middle text-ink-secondary">
-                  {building.projectName}
-                </td>
-                <td className="px-3 py-2.5 text-center align-middle">
-                  <PublicationStatusBadge
-                    status={building.publicationStatus}
-                    className={LIST_STATUS_BADGE_COMPACT_CLASS}
-                  />
-                </td>
-                <td className="px-3 py-2.5 text-center align-middle text-ink-secondary">
-                  {building.floorsCount}
-                </td>
-                <td className="px-3 py-2.5 text-center align-middle text-ink-secondary">
-                  {building.apartmentsCount}
-                </td>
-                {onOpenReadiness ? (
-                  <td className="px-3 py-2.5 text-right align-middle">
-                    <Button
+            {buildings.map((building) => {
+              const canSelect = selectableIdSet?.has(building.id) ?? false;
+
+              return (
+                <tr key={building.id} className="border-t border-border hover:bg-surface/60">
+                  {selection && selectableIdSet ? (
+                    <ListTableRowCheckbox
+                      checked={selection.isSelected(building.id)}
+                      disabled={!canSelect}
+                      onChange={() => {
+                        selection.toggle(building.id);
+                      }}
+                    />
+                  ) : null}
+                  <td className="px-3 py-2.5 align-middle">
+                    <button
                       type="button"
-                      size="sm"
-                      variant="secondary"
+                      className="font-medium text-brand hover:underline"
                       onClick={() => {
-                        onOpenReadiness(building);
+                        onSelectBuilding(building.id);
                       }}
                     >
-                      {t('readiness')}
-                    </Button>
+                      {building.name}
+                    </button>
                   </td>
-                ) : null}
-              </tr>
-            ))}
+                  {showCompany ? (
+                    <td className="px-3 py-2.5 align-middle text-ink-secondary">
+                      {building.companyName}
+                    </td>
+                  ) : null}
+                  <td className="px-3 py-2.5 align-middle text-ink-secondary">
+                    {building.projectName}
+                  </td>
+                  <td className="px-3 py-2.5 text-center align-middle">
+                    <PublicationStatusBadge
+                      status={building.publicationStatus}
+                      className={LIST_STATUS_BADGE_COMPACT_CLASS}
+                    />
+                  </td>
+                  <td className="px-3 py-2.5 text-center align-middle text-ink-secondary">
+                    {building.floorsCount}
+                  </td>
+                  <td className="px-3 py-2.5 text-center align-middle text-ink-secondary">
+                    {building.apartmentsCount}
+                  </td>
+                  {onOpenReadiness ? (
+                    <td className="px-3 py-2.5 text-right align-middle">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => {
+                          onOpenReadiness(building);
+                        }}
+                      >
+                        {t('readiness')}
+                      </Button>
+                    </td>
+                  ) : null}
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

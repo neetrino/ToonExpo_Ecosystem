@@ -5,6 +5,7 @@ import type {
   AdminBuildingListResponse,
   AdminFloorListResponse,
 } from '@toonexpo/contracts';
+import type { ApartmentSalesStatus } from '@toonexpo/db';
 
 import { InventoryHubService } from '../../inventory/inventory-hub.service.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
@@ -69,6 +70,7 @@ export class AdminInventoryService {
     buildingId?: string | readonly string[],
     floorId?: string | readonly string[],
     search?: string,
+    salesStatus?: ApartmentSalesStatus,
   ): Promise<AdminApartmentListResponse> {
     const companyIds = toIdList(companyId);
     const buildingIds = toIdList(buildingId);
@@ -89,6 +91,7 @@ export class AdminInventoryService {
       buildingIds,
       floorIds,
       search,
+      salesStatus,
     );
   }
 

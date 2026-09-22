@@ -122,6 +122,9 @@ const mapPublicHotspot = (
     return null;
   }
 
+  const salesStatus =
+    targetType === 'apartment' ? entities.apartments.get(hotspot.targetId)?.salesStatus : undefined;
+
   return {
     id: hotspot.id,
     label: hotspot.label,
@@ -132,6 +135,7 @@ const mapPublicHotspot = (
     svgPath: hotspot.svgPath,
     markerStyle: hotspot.markerStyle,
     sortOrder: hotspot.sortOrder,
+    ...(salesStatus ? { salesStatus } : {}),
     target: {
       type: targetType,
       id: hotspot.targetId,

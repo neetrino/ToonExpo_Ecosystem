@@ -27,6 +27,27 @@ const PLACEHOLD_REMOTE_PATTERN = {
   hostname: 'placehold.co',
 };
 
+/** YouTube video poster frames (`i.ytimg.com/vi/{id}/hqdefault.jpg`). */
+const YOUTUBE_POSTER_REMOTE_PATTERN = {
+  protocol: 'https' as const,
+  hostname: 'i.ytimg.com',
+  pathname: '/**',
+};
+
+/** Vimeo oEmbed thumbnails. */
+const VIMEO_POSTER_REMOTE_PATTERN = {
+  protocol: 'https' as const,
+  hostname: 'i.vimeocdn.com',
+  pathname: '/**',
+};
+
+/** Matterport showcase tour thumbnails. */
+const MATTERPORT_POSTER_REMOTE_PATTERN = {
+  protocol: 'https' as const,
+  hostname: 'my.matterport.com',
+  pathname: '/api/v1/player/models/**',
+};
+
 /** Allow any Cloudflare R2 public-dev host (`pub-*.r2.dev`) without relying on build env. */
 const R2_DEV_REMOTE_PATTERN = {
   protocol: 'https' as const,
@@ -73,7 +94,13 @@ const resolveImageRemotePatterns = (): ImageRemotePattern[] => {
     resolveConfiguredRemotePattern(process.env['R2_PUBLIC_URL']) ??
     resolveConfiguredRemotePattern(process.env['NEXT_PUBLIC_R2_PUBLIC_URL']);
 
-  const patterns: ImageRemotePattern[] = [PLACEHOLD_REMOTE_PATTERN, R2_DEV_REMOTE_PATTERN];
+  const patterns: ImageRemotePattern[] = [
+    PLACEHOLD_REMOTE_PATTERN,
+    R2_DEV_REMOTE_PATTERN,
+    YOUTUBE_POSTER_REMOTE_PATTERN,
+    VIMEO_POSTER_REMOTE_PATTERN,
+    MATTERPORT_POSTER_REMOTE_PATTERN,
+  ];
   if (
     fromEnv &&
     fromEnv.hostname !== R2_DEV_REMOTE_PATTERN.hostname &&

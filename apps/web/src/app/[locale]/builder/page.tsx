@@ -1,6 +1,6 @@
-import { setRequestLocale } from "next-intl/server";
+import { getLocale, setRequestLocale } from 'next-intl/server';
 
-import { BuilderDashboardPage } from "@/features/builder/components/builder-dashboard-page";
+import { BuilderDashboardPage } from '@/features/builder/components/builder-dashboard-page';
 
 type BuilderIndexPageProps = {
   params: Promise<{ locale: string }>;
@@ -9,10 +9,9 @@ type BuilderIndexPageProps = {
 /**
  * Builder portal dashboard.
  */
-export default async function BuilderIndexPage({
-  params,
-}: BuilderIndexPageProps) {
-  const { locale } = await params;
+export default async function BuilderIndexPage({ params }: BuilderIndexPageProps) {
+  await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return <BuilderDashboardPage />;

@@ -7,6 +7,8 @@ import { AdminFloorCard } from '@/features/admin/components/admin-floor-card';
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
 import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
 import { LIST_STATUS_BADGE_COMPACT_CLASS } from '@/shared/ui/list-status-badge';
+import type { ListTableSelectionProps } from '@/shared/ui/list-selection.types';
+import { ListTableRowCheckbox, ListTableSelectAllCheckbox } from '@/shared/ui/list-table-checkbox';
 import { ListTableReveal } from '@/shared/ui/motion';
 import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 
@@ -15,6 +17,7 @@ type AdminFloorsTableProps = {
   onSelectFloor: (floor: AdminFloorListItem) => void;
   viewMode?: ViewMode | undefined;
   showCompany?: boolean | undefined;
+  listSelection?: ListTableSelectionProps | undefined;
 };
 
 /**
@@ -25,6 +28,7 @@ export const AdminFloorsTable = ({
   onSelectFloor,
   viewMode = VIEW_MODE_CARDS,
   showCompany = true,
+  listSelection,
 }: AdminFloorsTableProps) => {
   const t = useTranslations('Admin.floors');
 
@@ -43,12 +47,23 @@ export const AdminFloorsTable = ({
     );
   }
 
+  const selection = listSelection?.selection;
+  const selectableIdSet = listSelection?.selectableIdSet;
+
   return (
     <ListTableReveal>
       <div className="overflow-x-auto rounded-sm border border-border">
         <table className="w-full min-w-[48rem] border-collapse text-sm">
           <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
             <tr>
+              {selection && selectableIdSet ? (
+                <ListTableSelectAllCheckbox
+                  checked={selection.allSelected}
+                  indeterminate={selection.someSelected && !selection.allSelected}
+                  disabled={selection.selectableIds.length === 0}
+                  onChange={selection.toggleAll}
+                />
+              ) : null}
               <th className="px-3 py-2.5 text-left font-medium">{t('columns.name')}</th>
               <th className="px-3 py-2.5 text-left font-medium">{t('columns.building')}</th>
               {showCompany ? (
@@ -65,9 +80,19 @@ export const AdminFloorsTable = ({
                 floor.displayLabel?.trim() ||
                 floor.name?.trim() ||
                 t('floorNumber', { number: floor.number });
+              const canSelect = selectableIdSet?.has(floor.id) ?? false;
 
               return (
                 <tr key={floor.id} className="border-t border-border hover:bg-surface/60">
+                  {selection && selectableIdSet ? (
+                    <ListTableRowCheckbox
+                      checked={selection.isSelected(floor.id)}
+                      disabled={!canSelect}
+                      onChange={() => {
+                        selection.toggle(floor.id);
+                      }}
+                    />
+                  ) : null}
                   <td className="px-3 py-2.5 align-middle">
                     <button
                       type="button"
@@ -83,9 +108,13 @@ export const AdminFloorsTable = ({
                     {floor.buildingName}
                   </td>
                   {showCompany ? (
-                    <td className="px-3 py-2.5 align-middle text-ink-secondary">{floor.companyName}</td>
+                    <td className="px-3 py-2.5 align-middle text-ink-secondary">
+                      {floor.companyName}
+                    </td>
                   ) : null}
-                  <td className="px-3 py-2.5 align-middle text-ink-secondary">{floor.projectName}</td>
+                  <td className="px-3 py-2.5 align-middle text-ink-secondary">
+                    {floor.projectName}
+                  </td>
                   <td className="px-3 py-2.5 text-center align-middle">
                     <PublicationStatusBadge
                       status={floor.publicationStatus}

@@ -26,7 +26,6 @@ import {
 import {
   ADMIN_COMPANIES_MAX_PAGE_SIZE,
   ADMIN_INVENTORY_DEFAULT_PAGE_SIZE,
-  ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS,
   ADMIN_VIEW_MODE_KEYS,
 } from '@/features/admin/constants';
 import {
@@ -37,7 +36,7 @@ import { useAdminReadinessAssessmentsQuery } from '@/features/admin/hooks/use-ad
 import { useEnsureProjectReadinessAssessments } from '@/features/admin/hooks/use-ensure-project-readiness';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
 import { usePathname, useRouter } from '@/i18n/navigation';
-import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
+import { useDebouncedSearch } from '@/shared/hooks/use-debounced-search';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { EmptyState } from '@/shared/ui/empty-state';
 import { ListPageHeader } from '@/shared/ui/list-page-header';
@@ -58,9 +57,7 @@ export const ReadinessAssessmentsListPage = () => {
   const projectId = searchParams.get('projectId')?.trim() || undefined;
   const pageSize = ADMIN_INVENTORY_DEFAULT_PAGE_SIZE;
   const [search, setSearch] = useState('');
-  const trimmedSearch = search.trim();
-  const debouncedSearch = useDebouncedValue(trimmedSearch, ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS);
-  const activeSearch = trimmedSearch.length === 0 ? '' : debouncedSearch;
+  const activeSearch = useDebouncedSearch(search);
   const [modalTarget, setModalTarget] = useState<ReadinessManagementTarget | null>(null);
   const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(
     ADMIN_VIEW_MODE_KEYS.readinessAssessments,
@@ -169,13 +166,16 @@ export const ReadinessAssessmentsListPage = () => {
   };
 
   const isListLoading =
-    companiesQuery.isLoading ||
-    pickerQuery.isLoading ||
-    projectsQuery.isLoading ||
-    assessmentsQuery.isLoading ||
+    (companiesQuery.isLoading && !companiesQuery.data) ||
+    (pickerQuery.isLoading && !pickerQuery.data) ||
+    (projectsQuery.isLoading && !projectsQuery.data) ||
+    (assessmentsQuery.isLoading && !assessmentsQuery.data) ||
     isEnsuringProjects;
   const isListError =
-    companiesQuery.isError || pickerQuery.isError || projectsQuery.isError || assessmentsQuery.isError;
+    companiesQuery.isError ||
+    pickerQuery.isError ||
+    projectsQuery.isError ||
+    assessmentsQuery.isError;
 
   if (isListLoading) {
     return <p className="text-sm text-ink-secondary">{t('loading')}</p>;

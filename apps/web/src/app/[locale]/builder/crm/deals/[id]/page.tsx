@@ -1,6 +1,6 @@
-import { setRequestLocale } from "next-intl/server";
+import { getLocale, setRequestLocale } from 'next-intl/server';
 
-import { CrmDealDetailPage } from "@/features/builder/components/crm-deal-detail-page";
+import { CrmDealDetailPage } from '@/features/builder/components/crm-deal-detail-page';
 
 type BuilderCrmDealPageProps = {
   params: Promise<{ locale: string; id: string }>;
@@ -9,10 +9,9 @@ type BuilderCrmDealPageProps = {
 /**
  * Constructor CRM deal detail sheet.
  */
-export default async function BuilderCrmDealPage({
-  params,
-}: BuilderCrmDealPageProps) {
-  const { locale, id } = await params;
+export default async function BuilderCrmDealPage({ params }: BuilderCrmDealPageProps) {
+  const { id } = await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return <CrmDealDetailPage dealId={id} />;

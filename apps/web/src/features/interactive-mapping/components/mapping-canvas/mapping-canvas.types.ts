@@ -39,6 +39,8 @@ export type MappingCanvasProps = {
   ) => void;
   onPolygonClosed?: (id: string, svgPath: string) => void;
   onPolygonDeleted?: (id: string) => void;
+  /** Request removing marker/mapping for the selected entity (confirm in parent). */
+  onDeleteMarker?: () => void;
   /** Floors preset adds Band + Auto stack tools. */
   toolPreset?: 'basic' | 'floors';
   /** Auto-stack assigns paths to all entities (index 0 = bottom floor). */

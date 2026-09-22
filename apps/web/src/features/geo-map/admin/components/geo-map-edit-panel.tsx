@@ -212,10 +212,6 @@ export const GeoMapEditPanel = ({
           </div>
         ) : null}
 
-        {isUnassigned ? (
-          <p className="text-xs text-ink-muted">{t('edit.publishRequiresProject')}</p>
-        ) : null}
-
         <div className="space-y-2">
           <p className="text-xs text-ink-muted">{t('edit.replaceHint')}</p>
           <GeoMapGlbUploader
@@ -245,7 +241,6 @@ export const GeoMapEditPanel = ({
 
       <GeoMapEditActions
         busy={busy}
-        canPublish={!isUnassigned}
         isPublished={model.isPublished}
         isSaving={isSaving}
         isDeleting={isDeleting}

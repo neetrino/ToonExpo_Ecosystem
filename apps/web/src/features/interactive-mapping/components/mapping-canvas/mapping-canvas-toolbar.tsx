@@ -35,6 +35,7 @@ type MappingCanvasToolbarProps = {
   replaceEditShape: (shape: PolygonShape) => void;
   startFreshPolygon: () => void;
   deletePolygon: () => void;
+  deleteMarker?: (() => void) | undefined;
   closePolygon: () => void;
   deleteSelectedDraftPoint: () => void;
   undoLastDraftPoint: () => void;
@@ -80,6 +81,7 @@ export const MappingCanvasToolbar = ({
   replaceEditShape,
   startFreshPolygon,
   deletePolygon,
+  deleteMarker,
   closePolygon,
   deleteSelectedDraftPoint,
   undoLastDraftPoint,
@@ -97,118 +99,144 @@ export const MappingCanvasToolbar = ({
   return (
     <>
       <div className="flex flex-wrap items-center justify-end gap-2">
-        <div className="flex flex-wrap justify-end gap-2" role="toolbar" aria-label={t('toolsAria')}>
-        {[...BASIC_TOOLS, ...floorTools].map(([value, labelKey, Icon]) => {
-          const needsSelection = value === 'draw-polygon' || value === 'place-marker';
-          const disabled = needsSelection && !selectedId;
-          const label = t(labelKey);
-          return (
-            <button
-              key={value}
-              type="button"
-              title={disabled ? t('selectEntityFirst') : label}
-              aria-label={label}
-              disabled={disabled}
-              className={`${TOOL_BUTTON_CLASS} ${
-                mode === value ? 'border-ink' : 'border-border'
-              }`}
-              onClick={() => changeMode(value)}
-            >
-              <Icon />
-              <span className="hidden sm:inline">{label}</span>
-            </button>
-          );
-        })}
-        {selected?.svgPath ? (
-          <>
-            <button
-              type="button"
-              className={`${TOOL_BUTTON_CLASS} border-border px-3`}
-              onClick={() => {
-                if (!selected.svgPath) return;
-                if (!resolveOpenDraft()) return;
-                replaceOnCommitRef.current = true;
-                setMode('edit-polygon');
-                setSelectedDraftIndex(null);
-                replaceEditShape(
-                  svgPathToPolygonShape(selected.svgPath, viewBoxWidth, viewBoxHeight),
-                );
-              }}
-            >
-              {t('editDrag')}
-            </button>
-            <button
-              type="button"
-              className={`${TOOL_BUTTON_CLASS} border-border px-3`}
-              onClick={() => {
-                if (!resolveOpenDraft()) return;
-                startFreshPolygon();
-              }}
-            >
-              {t('newPolygon')}
-            </button>
-            <button
-              type="button"
-              className={`${TOOL_BUTTON_CLASS} border-red-700/40 px-3 text-red-800`}
-              onClick={deletePolygon}
-            >
-              {t('deletePolygon')}
-            </button>
-          </>
-        ) : null}
-        {modeIsDrawPolygon ||
-        modeIsEditPolygon ||
-        ((modeIsDrawBand || modeIsAutoStack) && draftPoints.length > 0) ? (
-          <>
-            {modeIsDrawPolygon || modeIsEditPolygon ? (
+        <div
+          className="flex flex-wrap justify-end gap-2"
+          role="toolbar"
+          aria-label={t('toolsAria')}
+        >
+          {[...BASIC_TOOLS, ...floorTools].map(([value, labelKey, Icon]) => {
+            const needsSelection = value === 'draw-polygon' || value === 'place-marker';
+            const disabled = needsSelection && !selectedId;
+            const label = t(labelKey);
+            const canDeleteMarker =
+              value === 'place-marker' &&
+              selected?.markerX != null &&
+              selected.markerY != null &&
+              Boolean(deleteMarker);
+            const canDeletePolygon = value === 'draw-polygon' && Boolean(selected?.svgPath);
+            return (
+              <span key={value} className="inline-flex items-center gap-2">
+                <button
+                  type="button"
+                  title={disabled ? t('selectEntityFirst') : label}
+                  aria-label={label}
+                  disabled={disabled}
+                  className={`${TOOL_BUTTON_CLASS} ${
+                    mode === value ? 'border-ink' : 'border-border'
+                  }`}
+                  onClick={() => changeMode(value)}
+                >
+                  <Icon />
+                  <span className="hidden sm:inline">{label}</span>
+                </button>
+                {canDeleteMarker ? (
+                  <button
+                    type="button"
+                    className={`${TOOL_BUTTON_CLASS} border-red-700/40 px-3 text-red-800`}
+                    onClick={deleteMarker}
+                    title={t('deleteMarker')}
+                    aria-label={t('deleteMarker')}
+                  >
+                    {t('deleteMarker')}
+                  </button>
+                ) : null}
+                {canDeletePolygon ? (
+                  <button
+                    type="button"
+                    className={`${TOOL_BUTTON_CLASS} border-red-700/40 px-3 text-red-800`}
+                    onClick={deletePolygon}
+                    title={t('deletePolygon')}
+                    aria-label={t('deletePolygon')}
+                  >
+                    {t('deletePolygon')}
+                  </button>
+                ) : null}
+              </span>
+            );
+          })}
+          {selected?.svgPath ? (
+            <>
               <button
                 type="button"
-                className={`${TOOL_BUTTON_CLASS} border-ink bg-ink text-on-dark`}
+                className={`${TOOL_BUTTON_CLASS} border-border px-3`}
                 onClick={() => {
-                  if (modeIsEditPolygon) {
-                    replaceOnCommitRef.current = true;
-                  }
-                  closePolygon();
+                  if (!selected.svgPath) return;
+                  if (!resolveOpenDraft()) return;
+                  replaceOnCommitRef.current = true;
+                  setMode('edit-polygon');
+                  setSelectedDraftIndex(null);
+                  replaceEditShape(
+                    svgPathToPolygonShape(selected.svgPath, viewBoxWidth, viewBoxHeight),
+                  );
                 }}
-                disabled={draftPointsLength < 1}
-                title={t('saveDrawing', { count: draftPointsLength })}
-                aria-label={t('saveDrawingAria', { count: draftPointsLength })}
               >
-                <SaveCheckIcon />
-                <span>{draftPointsLength}</span>
+                {t('editDrag')}
               </button>
-            ) : null}
-            <button
-              type="button"
-              className={`${TOOL_BUTTON_CLASS} border-red-700/40 text-red-800`}
-              onClick={deleteSelectedDraftPoint}
-              disabled={selectedDraftIndex == null}
-              title={t('deleteSelectedPoint')}
-              aria-label={t('deleteSelectedPointAria')}
-            >
-              <TrashPointIcon />
-            </button>
-            <button
-              type="button"
-              className={`${TOOL_BUTTON_CLASS} border-border`}
-              onClick={undoLastDraftPoint}
-              disabled={draftPointsLength === 0}
-              title={t('undoLastPoint')}
-              aria-label={t('undoLastPointAria')}
-            >
-              <UndoPointIcon />
-            </button>
-            <button
-              type="button"
-              className={`${TOOL_BUTTON_CLASS} border-border`}
-              onClick={clearDraft}
-              title={t('clearAllPoints')}
-              aria-label={t('clearAllPointsAria')}
-            >
-              <ClearPointsIcon />
-            </button>
-          </>
-        ) : null}
+              <button
+                type="button"
+                className={`${TOOL_BUTTON_CLASS} border-border px-3`}
+                onClick={() => {
+                  if (!resolveOpenDraft()) return;
+                  startFreshPolygon();
+                }}
+              >
+                {t('newPolygon')}
+              </button>
+            </>
+          ) : null}
+          {modeIsDrawPolygon ||
+          modeIsEditPolygon ||
+          ((modeIsDrawBand || modeIsAutoStack) && draftPoints.length > 0) ? (
+            <>
+              {modeIsDrawPolygon || modeIsEditPolygon ? (
+                <button
+                  type="button"
+                  className={`${TOOL_BUTTON_CLASS} border-ink bg-ink text-on-dark`}
+                  onClick={() => {
+                    if (modeIsEditPolygon) {
+                      replaceOnCommitRef.current = true;
+                    }
+                    closePolygon();
+                  }}
+                  disabled={draftPointsLength < 1}
+                  title={t('saveDrawing', { count: draftPointsLength })}
+                  aria-label={t('saveDrawingAria', { count: draftPointsLength })}
+                >
+                  <SaveCheckIcon />
+                  <span>{draftPointsLength}</span>
+                </button>
+              ) : null}
+              <button
+                type="button"
+                className={`${TOOL_BUTTON_CLASS} border-red-700/40 text-red-800`}
+                onClick={deleteSelectedDraftPoint}
+                disabled={selectedDraftIndex == null}
+                title={t('deleteSelectedPoint')}
+                aria-label={t('deleteSelectedPointAria')}
+              >
+                <TrashPointIcon />
+              </button>
+              <button
+                type="button"
+                className={`${TOOL_BUTTON_CLASS} border-border`}
+                onClick={undoLastDraftPoint}
+                disabled={draftPointsLength === 0}
+                title={t('undoLastPoint')}
+                aria-label={t('undoLastPointAria')}
+              >
+                <UndoPointIcon />
+              </button>
+              <button
+                type="button"
+                className={`${TOOL_BUTTON_CLASS} border-border`}
+                onClick={clearDraft}
+                title={t('clearAllPoints')}
+                aria-label={t('clearAllPointsAria')}
+              >
+                <ClearPointsIcon />
+              </button>
+            </>
+          ) : null}
         </div>
         {onExitFullscreen ? (
           <Button type="button" size="sm" variant="secondary" onClick={onExitFullscreen}>

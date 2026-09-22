@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
-import { Manrope, Noto_Sans, Noto_Sans_Armenian, Outfit } from 'next/font/google';
+import { Montserrat } from 'next/font/google';
+import localFont from 'next/font/local';
 import { getLocale } from 'next-intl/server';
 
 import { resolveSiteUrl } from '@/shared/config/site-url';
@@ -11,36 +12,50 @@ import './[locale]/globals.css';
 export { viewport };
 
 /**
- * Refined UI face for Latin + Cyrillic. Armenian glyphs come from Noto Sans Armenian.
+ * Primary brand face (Toon Expo guideline) — Latin + Cyrillic.
+ * Armenian glyphs come from Montserrat Arm in the CSS stack.
  */
-const manrope = Manrope({
-  subsets: ['latin', 'latin-ext', 'cyrillic'],
-  variable: '--font-manrope',
+const montserrat = Montserrat({
+  subsets: ['latin', 'latin-ext', 'cyrillic', 'cyrillic-ext'],
+  variable: '--font-montserrat',
   display: 'swap',
   weight: ['400', '500', '600', '700', '800'],
 });
 
-/** Fallback UI face — full Cyrillic / extended coverage. */
-const notoSans = Noto_Sans({
-  subsets: ['latin', 'latin-ext', 'cyrillic'],
-  variable: '--font-noto-sans',
+/**
+ * Secondary brand face — Montserrat Armenian (Vahan Hovhannisyan extension).
+ * Upstream ships Regular + Bold only; 500→Regular, 600/800→Bold aliases.
+ */
+const montserratArm = localFont({
+  src: [
+    {
+      path: '../fonts/montserrat-arm/Montserrat_am3-Regular.woff',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: '../fonts/montserrat-arm/Montserrat_am3-Regular.woff',
+      weight: '500',
+      style: 'normal',
+    },
+    {
+      path: '../fonts/montserrat-arm/Montserrat_am3-Bold.woff',
+      weight: '600',
+      style: 'normal',
+    },
+    {
+      path: '../fonts/montserrat-arm/Montserrat_am3-Bold.woff',
+      weight: '700',
+      style: 'normal',
+    },
+    {
+      path: '../fonts/montserrat-arm/Montserrat_am3-Bold.woff',
+      weight: '800',
+      style: 'normal',
+    },
+  ],
+  variable: '--font-montserrat-arm',
   display: 'swap',
-  weight: ['400', '500', '600', '700'],
-});
-
-const notoSansArmenian = Noto_Sans_Armenian({
-  subsets: ['armenian'],
-  variable: '--font-noto-sans-armenian',
-  display: 'swap',
-  weight: ['400', '500', '600', '700'],
-});
-
-/** Brand / display — expressive headlines; falls back to Noto for hy glyphs. */
-const outfit = Outfit({
-  subsets: ['latin', 'latin-ext'],
-  variable: '--font-outfit',
-  display: 'swap',
-  weight: ['400', '500', '600', '700', '800'],
 });
 
 type RootLayoutProps = {
@@ -63,7 +78,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
   return (
     <html
       lang={locale}
-      className={`${manrope.variable} ${notoSans.variable} ${notoSansArmenian.variable} ${outfit.variable}`}
+      className={`${montserrat.variable} ${montserratArm.variable}`}
       // Chrome iOS injects autofill attrs (`__gcr*`) before hydrate — false mismatch in `next dev`.
       suppressHydrationWarning
     >

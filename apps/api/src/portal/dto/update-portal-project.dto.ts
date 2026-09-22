@@ -1,5 +1,5 @@
-import { ApiPropertyOptional } from "@nestjs/swagger";
-import { Type } from "class-transformer";
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsDateString,
@@ -11,7 +11,7 @@ import {
   MinLength,
   ValidateIf,
   ValidateNested,
-} from "class-validator";
+} from 'class-validator';
 
 import {
   PORTAL_ADDRESS_MAX_LENGTH,
@@ -19,9 +19,10 @@ import {
   PORTAL_DESCRIPTION_MAX_LENGTH,
   PORTAL_LOCATION_MAX_LENGTH,
   PORTAL_PROJECT_NAME_MAX_LENGTH,
+  PORTAL_PROJECT_TYPE_MAX_LENGTH,
   PORTAL_SLUG_MAX_LENGTH,
-} from "../portal.constants.js";
-import { PortalTranslationsDto } from "./portal-translations.dto.js";
+} from '../portal.constants.js';
+import { PortalTranslationsDto } from './portal-translations.dto.js';
 
 export class UpdatePortalProjectDto {
   @ApiPropertyOptional()
@@ -96,7 +97,7 @@ export class UpdatePortalProjectDto {
   @IsOptional()
   @ValidateIf((_, value) => value !== null)
   @IsString()
-  @MaxLength(120)
+  @MaxLength(PORTAL_PROJECT_TYPE_MAX_LENGTH)
   projectType?: string | null;
 
   @ApiPropertyOptional({ nullable: true })

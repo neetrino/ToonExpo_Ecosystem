@@ -6,17 +6,17 @@ import { listProjects } from '@/features/catalog/api/catalog-api';
 import { BuyApartmentsBrowse } from '@/features/catalog/components/buy-apartments-browse';
 import { BuyApartmentsFilters } from '@/features/catalog/components/buy-apartments-filters';
 import { SiteFooter } from '@/features/catalog/components/site-footer';
+import { HOME_HERO_CATALOG_PAGE_SIZE } from '@/features/catalog/constants/hero-search';
 import {
   BUY_APARTMENT_PAGE_SIZE,
   emptyBuyApartmentListingsPage,
   loadBuyApartmentListings,
 } from '@/features/catalog/utils/load-buy-apartments';
+import { collectProjectCities } from '@/features/catalog/utils/location-options';
 import {
   buildProjectSearchParams,
   parseProjectFilters,
 } from '@/features/catalog/utils/project-filters';
-
-const CITY_PROJECTS_PAGE_SIZE = 50;
 
 type ApartmentsIndexPageProps = {
   params: Promise<{ locale: string }>;
@@ -60,18 +60,12 @@ export default async function ApartmentsIndexPage({
     loadBuyApartmentListings({ locale, filters }).catch(() =>
       emptyBuyApartmentListingsPage(filters.pageSize),
     ),
-    listProjects({ page: 1, pageSize: CITY_PROJECTS_PAGE_SIZE, locale }, { locale }).catch(() =>
-      emptyProjectPage(CITY_PROJECTS_PAGE_SIZE),
+    listProjects({ page: 1, pageSize: HOME_HERO_CATALOG_PAGE_SIZE }, { locale }).catch(() =>
+      emptyProjectPage(HOME_HERO_CATALOG_PAGE_SIZE),
     ),
   ]);
 
-  const cities = [
-    ...new Set(
-      projectsForCities.data
-        .map((project) => project.city?.trim())
-        .filter((city): city is string => Boolean(city)),
-    ),
-  ].sort((a, b) => a.localeCompare(b));
+  const cities = collectProjectCities(projectsForCities.data);
 
   const buildHref = (page: number): string => {
     const query = new URLSearchParams(buildProjectSearchParams(filters, page)).toString();

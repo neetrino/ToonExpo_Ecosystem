@@ -1,6 +1,6 @@
-import { setRequestLocale } from "next-intl/server";
+import { getLocale, setRequestLocale } from 'next-intl/server';
 
-import { NewProjectPage } from "@/features/builder/components/new-project-page";
+import { NewProjectPage } from '@/features/builder/components/new-project-page';
 
 type BuilderNewProjectPageProps = {
   params: Promise<{ locale: string }>;
@@ -9,10 +9,9 @@ type BuilderNewProjectPageProps = {
 /**
  * Create project route.
  */
-export default async function BuilderNewProjectPage({
-  params,
-}: BuilderNewProjectPageProps) {
-  const { locale } = await params;
+export default async function BuilderNewProjectPage({ params }: BuilderNewProjectPageProps) {
+  await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return <NewProjectPage />;

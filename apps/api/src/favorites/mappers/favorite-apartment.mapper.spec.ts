@@ -25,6 +25,7 @@ describe('mapFavoriteApartmentCard price visibility', () => {
       city: 'Yerevan',
       district: null,
       locationText: null,
+      priceOnRequestEnabled: false,
       builderCompany: {
         id: 'co_1',
         name: 'Builder',

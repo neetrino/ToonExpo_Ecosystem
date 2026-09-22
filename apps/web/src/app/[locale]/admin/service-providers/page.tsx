@@ -1,6 +1,6 @@
-import { setRequestLocale } from "next-intl/server";
+import { getLocale, setRequestLocale } from 'next-intl/server';
 
-import { ServiceProvidersPage } from "@/features/admin/components/service-providers-page";
+import { ServiceProvidersPage } from '@/features/admin/components/service-providers-page';
 
 type AdminServiceProvidersPageProps = {
   params: Promise<{ locale: string }>;
@@ -9,7 +9,8 @@ type AdminServiceProvidersPageProps = {
 export default async function AdminServiceProvidersPage({
   params,
 }: AdminServiceProvidersPageProps) {
-  const { locale } = await params;
+  await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return <ServiceProvidersPage />;

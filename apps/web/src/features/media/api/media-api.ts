@@ -1,4 +1,8 @@
-import type { MediaAssetItem, MediaListResponse } from '@toonexpo/contracts';
+import type {
+  MediaAssetItem,
+  MediaDirectUploadPresignResponse,
+  MediaListResponse,
+} from '@toonexpo/contracts';
 
 import { apiFetch, buildApiUrl } from '@/shared/api/client';
 import { ApiError } from '@/shared/api/errors';
@@ -87,16 +91,16 @@ export const resolveMediaAsset = async (
   }
 };
 
-export const uploadMediaAsset = async (
+const uploadMediaAssetMultipart = async (
   context: MediaUploadContext,
   file: File,
-  options: UploadMediaAssetOptions = {},
+  kind: MediaUploadKind | undefined,
 ): Promise<MediaAssetItem> => {
   const formData = new FormData();
   formData.append('file', file);
 
   const headers = await withCsrfHeaders(undefined);
-  const response = await fetch(buildApiUrl(uploadPath(context, options.kind)), {
+  const response = await fetch(buildApiUrl(uploadPath(context, kind)), {
     method: 'POST',
     body: formData,
     credentials: 'include',
@@ -108,4 +112,57 @@ export const uploadMediaAsset = async (
   }
 
   return (await response.json()) as MediaAssetItem;
+};
+
+/**
+ * Direct-to-R2 flow for large GLB files (avoids Cloud Run ~32 MB body limit).
+ * Admin-only today (`POST /admin/media/uploads/*`).
+ */
+const uploadAdminModel3dDirect = async (file: File): Promise<MediaAssetItem> => {
+  const presign = await apiFetch<MediaDirectUploadPresignResponse>({
+    path: '/admin/media/uploads/presign',
+    method: 'POST',
+    credentials: 'include',
+    cache: 'no-store',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      filename: file.name,
+      byteSize: file.size,
+      kind: 'model3d',
+      contentType: file.type || undefined,
+    }),
+  });
+
+  const putResponse = await fetch(presign.uploadUrl, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': presign.requiredHeaders['Content-Type'],
+    },
+    body: file,
+  });
+
+  if (!putResponse.ok) {
+    throw new ApiError(putResponse.status, putResponse.statusText, 'Direct R2 upload failed');
+  }
+
+  return apiFetch<MediaAssetItem>({
+    path: '/admin/media/uploads/complete',
+    method: 'POST',
+    credentials: 'include',
+    cache: 'no-store',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ mediaAssetId: presign.mediaAssetId }),
+  });
+};
+
+export const uploadMediaAsset = async (
+  context: MediaUploadContext,
+  file: File,
+  options: UploadMediaAssetOptions = {},
+): Promise<MediaAssetItem> => {
+  if (context === 'admin' && options.kind === 'model3d') {
+    return uploadAdminModel3dDirect(file);
+  }
+
+  return uploadMediaAssetMultipart(context, file, options.kind);
 };

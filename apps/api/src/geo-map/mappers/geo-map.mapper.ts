@@ -53,28 +53,23 @@ export const toAdminGeoMapModelItem = (row: AdminGeoMapModelRow): AdminGeoMapMod
   updatedAt: toIso(row.updatedAt),
 });
 
-export const toPublicGeoMapModelItem = (row: PublicGeoMapModelRow): PublicGeoMapModelItem => {
-  if (!row.project) {
-    throw new Error('Public geo-map model is missing required project relation');
-  }
-
-  return {
-    projectId: row.project.id,
-    projectSlug: row.project.slug,
-    projectName: row.project.name,
-    logoUrl: row.project.builderCompany.logoMedia?.fileUrl ?? null,
-    address: row.project.address,
-    city: row.project.city,
-    district: row.project.district,
-    longitude: decimalToString(row.longitude),
-    latitude: decimalToString(row.latitude),
-    modelUrl: row.mediaAsset.fileUrl,
-    sourceOsmId: row.sourceOsmId,
-    altitudeM: decimalToString(row.altitudeM),
-    headingDeg: decimalToString(row.headingDeg),
-    pitchDeg: decimalToString(row.pitchDeg),
-    rollDeg: decimalToString(row.rollDeg),
-    scale: decimalToString(row.scale),
-    minZoom: decimalToString(row.minZoom),
-  };
-};
+export const toPublicGeoMapModelItem = (row: PublicGeoMapModelRow): PublicGeoMapModelItem => ({
+  id: row.id,
+  projectId: row.project?.id ?? null,
+  projectSlug: row.project?.slug ?? null,
+  projectName: row.project?.name ?? null,
+  logoUrl: row.project?.builderCompany.logoMedia?.fileUrl ?? null,
+  address: row.project?.address ?? null,
+  city: row.project?.city ?? null,
+  district: row.project?.district ?? null,
+  longitude: decimalToString(row.longitude),
+  latitude: decimalToString(row.latitude),
+  modelUrl: row.mediaAsset.fileUrl,
+  sourceOsmId: row.sourceOsmId,
+  altitudeM: decimalToString(row.altitudeM),
+  headingDeg: decimalToString(row.headingDeg),
+  pitchDeg: decimalToString(row.pitchDeg),
+  rollDeg: decimalToString(row.rollDeg),
+  scale: decimalToString(row.scale),
+  minZoom: decimalToString(row.minZoom),
+});

@@ -10,18 +10,25 @@ import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
 import { useRouter } from '@/i18n/navigation';
 import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
+import type { ListTableSelectionProps } from '@/shared/ui/list-selection.types';
+import { ListTableRowCheckbox, ListTableSelectAllCheckbox } from '@/shared/ui/list-table-checkbox';
 import { ListTableReveal } from '@/shared/ui/motion';
 import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 
 type ProjectsTableProps = {
   projects: PortalProjectListItem[];
   viewMode?: ViewMode | undefined;
+  listSelection?: ListTableSelectionProps | undefined;
 };
 
 /**
  * Projects collection as cards (admin-matching) or table for portal lists.
  */
-export const ProjectsTable = ({ projects, viewMode = VIEW_MODE_CARDS }: ProjectsTableProps) => {
+export const ProjectsTable = ({
+  projects,
+  viewMode = VIEW_MODE_CARDS,
+  listSelection,
+}: ProjectsTableProps) => {
   const t = useTranslations('Builder.projects');
   const scope = useCatalogScope();
   const router = useRouter();
@@ -40,10 +47,7 @@ export const ProjectsTable = ({ projects, viewMode = VIEW_MODE_CARDS }: Projects
     router.push(catalogProjectDetailHref(scope, projectId));
   };
 
-  const onRowKeyDown = (
-    event: KeyboardEvent<HTMLTableRowElement>,
-    projectId: string,
-  ): void => {
+  const onRowKeyDown = (event: KeyboardEvent<HTMLTableRowElement>, projectId: string): void => {
     if (event.key !== 'Enter' && event.key !== ' ') {
       return;
     }
@@ -51,12 +55,23 @@ export const ProjectsTable = ({ projects, viewMode = VIEW_MODE_CARDS }: Projects
     openProject(projectId);
   };
 
+  const selection = listSelection?.selection;
+  const selectableIdSet = listSelection?.selectableIdSet;
+
   return (
     <ListTableReveal>
       <div className="overflow-x-auto rounded-sm border border-border">
         <table className="w-full min-w-[40rem] border-collapse text-sm">
           <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
             <tr>
+              {selection && selectableIdSet ? (
+                <ListTableSelectAllCheckbox
+                  checked={selection.allSelected}
+                  indeterminate={selection.someSelected && !selection.allSelected}
+                  disabled={selection.selectableIds.length === 0}
+                  onChange={selection.toggleAll}
+                />
+              ) : null}
               <th className="px-3 py-2.5 text-left font-medium">{t('columns.name')}</th>
               <th className="px-3 py-2.5 text-center font-medium">{t('columns.status')}</th>
               <th className="px-3 py-2.5 text-center font-medium">{t('columns.city')}</th>
@@ -65,35 +80,50 @@ export const ProjectsTable = ({ projects, viewMode = VIEW_MODE_CARDS }: Projects
             </tr>
           </thead>
           <tbody>
-            {projects.map((project) => (
-              <tr
-                key={project.id}
-                tabIndex={0}
-                className="cursor-pointer border-t border-border hover:bg-surface/60 focus-visible:bg-surface/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand/30"
-                onClick={() => {
-                  openProject(project.slug);
-                }}
-                onKeyDown={(event) => {
-                  onRowKeyDown(event, project.slug);
-                }}
-              >
-                <td className="px-3 py-2.5 align-middle font-medium text-brand">{project.name}</td>
-                <td className="px-3 py-2.5 align-middle">
-                  <div className="flex justify-center">
-                    <PublicationStatusBadge status={project.publicationStatus} />
-                  </div>
-                </td>
-                <td className="px-3 py-2.5 align-middle text-center text-ink-secondary">
-                  {project.city ?? '—'}
-                </td>
-                <td className="px-3 py-2.5 align-middle text-center text-ink-secondary">
-                  {project.buildingsCount}
-                </td>
-                <td className="px-3 py-2.5 align-middle text-center text-ink-secondary">
-                  {project.apartmentsCount}
-                </td>
-              </tr>
-            ))}
+            {projects.map((project) => {
+              const canSelect = selectableIdSet?.has(project.id) ?? false;
+
+              return (
+                <tr
+                  key={project.id}
+                  tabIndex={0}
+                  className="cursor-pointer border-t border-border hover:bg-surface/60 focus-visible:bg-surface/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand/30"
+                  onClick={() => {
+                    openProject(project.id);
+                  }}
+                  onKeyDown={(event) => {
+                    onRowKeyDown(event, project.id);
+                  }}
+                >
+                  {selection && selectableIdSet ? (
+                    <ListTableRowCheckbox
+                      checked={selection.isSelected(project.id)}
+                      disabled={!canSelect}
+                      onChange={() => {
+                        selection.toggle(project.id);
+                      }}
+                    />
+                  ) : null}
+                  <td className="px-3 py-2.5 align-middle font-medium text-brand">
+                    {project.name}
+                  </td>
+                  <td className="px-3 py-2.5 align-middle">
+                    <div className="flex justify-center">
+                      <PublicationStatusBadge status={project.publicationStatus} />
+                    </div>
+                  </td>
+                  <td className="px-3 py-2.5 align-middle text-center text-ink-secondary">
+                    {project.city ?? '—'}
+                  </td>
+                  <td className="px-3 py-2.5 align-middle text-center text-ink-secondary">
+                    {project.buildingsCount}
+                  </td>
+                  <td className="px-3 py-2.5 align-middle text-center text-ink-secondary">
+                    {project.apartmentsCount}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

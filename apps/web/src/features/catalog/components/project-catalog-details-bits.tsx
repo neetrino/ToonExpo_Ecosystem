@@ -137,17 +137,17 @@ const ProjectCatalogDetailRow = ({ row }: { row: ProjectCatalogRow }) => {
   return (
     <div
       className={cn(
-        'flex items-baseline justify-between gap-4 border-b border-header-border py-3',
-        row.wide && 'sm:col-span-2 sm:flex-col sm:items-stretch sm:gap-1',
+        'grid grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] items-start gap-3 border-b border-header-border py-3 sm:gap-4',
+        row.wide && 'sm:col-span-2 sm:grid-cols-1 sm:gap-1',
       )}
     >
-      <dt className="flex shrink-0 items-start gap-2 text-sm text-ink-muted">
+      <dt className="flex min-w-0 items-start gap-2 text-sm leading-5 text-ink-muted">
         <Icon className="mt-0.5 size-4 shrink-0 text-brand" strokeWidth={1.75} aria-hidden />
-        {row.label}
+        <span className="min-w-0 break-words">{row.label}</span>
       </dt>
       <dd
         className={cn(
-          'min-w-0 text-sm font-semibold whitespace-pre-line text-ink-navy',
+          'min-w-0 text-sm font-semibold leading-5 break-words whitespace-pre-line text-ink-navy',
           row.wide ? 'text-left' : 'text-right',
         )}
       >
@@ -201,10 +201,7 @@ type ProjectCatalogCheckListProps = {
   columns?: CatalogChecklistColumns | undefined;
 };
 
-export const ProjectCatalogCheckList = ({
-  items,
-  columns = 3,
-}: ProjectCatalogCheckListProps) => (
+export const ProjectCatalogCheckList = ({ items, columns = 3 }: ProjectCatalogCheckListProps) => (
   <ul className={cn('grid grid-cols-1 gap-3', CATALOG_CHECKLIST_GRID_CLASS[columns])}>
     {items.map((item) => (
       <li key={item} className="flex items-start gap-2.5 text-sm text-ink-navy">

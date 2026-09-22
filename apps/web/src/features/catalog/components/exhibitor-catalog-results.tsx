@@ -17,15 +17,15 @@ type ExhibitorCatalogResultsProps = {
 };
 
 /**
- * Exhibitors grid — builders or partner cards for the active tab.
+ * Exhibitors grid — builder and/or partner cards for the active tab.
  */
 export const ExhibitorCatalogResults = ({
   emptyLabel,
   builders,
   partners,
 }: ExhibitorCatalogResultsProps) => {
-  const items = builders ?? partners ?? [];
-  if (items.length === 0) {
+  const total = (builders?.length ?? 0) + (partners?.length ?? 0);
+  if (total === 0) {
     return (
       <p
         id={CATALOG_RESULTS_SCROLL_ID}
@@ -51,9 +51,12 @@ export const ExhibitorCatalogResults = ({
       staggerMs={0}
       durationMs={LIST_CARD_DURATION_MS}
     >
-      {builders
-        ? builders.map((builder) => <BuilderCard key={builder.id} builder={builder} />)
-        : (partners ?? []).map((partner) => <PartnerCard key={partner.id} partner={partner} />)}
+      {(builders ?? []).map((builder) => (
+        <BuilderCard key={`builder-${builder.id}`} builder={builder} />
+      ))}
+      {(partners ?? []).map((partner) => (
+        <PartnerCard key={`partner-${partner.id}`} partner={partner} />
+      ))}
     </StaggerGroup>
   );
 };

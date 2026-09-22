@@ -1,5 +1,5 @@
 import { headers } from 'next/headers';
-import { setRequestLocale } from 'next-intl/server';
+import { getLocale, setRequestLocale } from 'next-intl/server';
 
 import { getMeSessionCached } from '@/features/auth/api/get-me-or-null-cached';
 import { AccountSettingsView } from '@/features/buyer/components/account/account-settings-view';
@@ -14,7 +14,8 @@ type PartnerSettingsPageProps = {
  * Partner portal account settings (profile + password).
  */
 export default async function PartnerSettingsPage({ params }: PartnerSettingsPageProps) {
-  const { locale } = await params;
+  const { locale: urlLocale } = await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   const headerStore = await headers();
@@ -26,7 +27,7 @@ export default async function PartnerSettingsPage({ params }: PartnerSettingsPag
   const { user } = session;
 
   if (!user) {
-    redirect({ href: '/auth/login?returnUrl=%2Fpartner%2Fsettings', locale });
+    redirect({ href: '/auth/login?returnUrl=%2Fpartner%2Fsettings', locale: urlLocale });
     return null;
   }
 

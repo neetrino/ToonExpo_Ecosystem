@@ -1,4 +1,4 @@
-import { setRequestLocale } from 'next-intl/server';
+import { getLocale, setRequestLocale } from 'next-intl/server';
 import { Suspense } from 'react';
 
 import { PhaseWizardPage } from '@/features/interactive-mapping';
@@ -12,7 +12,8 @@ type PageProps = {
  * 4-phase interactive mapping wizard for a project.
  */
 export default async function AdminInteractiveMappingProjectPage({ params }: PageProps) {
-  const { locale, projectId } = await params;
+  const { projectId } = await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return (

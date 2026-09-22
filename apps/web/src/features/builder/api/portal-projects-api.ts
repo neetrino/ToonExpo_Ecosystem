@@ -3,6 +3,7 @@ import type {
   PortalProjectDetail,
   PortalProjectListResponse,
   ProjectQrResponse,
+  UpdatePortalPriceOnRequestRequest,
   UpdatePortalProjectRequest,
   UpdatePortalPublicationRequest,
 } from '@toonexpo/contracts';
@@ -106,7 +107,23 @@ export const updatePortalProjectPublication = (
   });
 
 /**
- * Deletes a draft project (company_admin).
+ * Enables or disables public price-on-request for a project (builder company_admin).
+ * Cascades to all buildings so new inventory inherits the same mode.
+ */
+export const updatePortalProjectPriceOnRequest = (
+  id: string,
+  body: UpdatePortalPriceOnRequestRequest,
+  options: PortalRequestOptions = {},
+): Promise<PortalProjectDetail> =>
+  apiFetch<PortalProjectDetail>({
+    path: catalogPath(`/portal/projects/${encodeURIComponent(id)}/price-on-request`, options),
+    method: 'PATCH',
+    ...jsonCredentials,
+    body: JSON.stringify(body),
+  });
+
+/**
+ * Deletes a project and nested inventory (company_admin).
  */
 export const deletePortalProject = (
   id: string,

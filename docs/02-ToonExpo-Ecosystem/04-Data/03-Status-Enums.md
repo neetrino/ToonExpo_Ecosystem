@@ -142,6 +142,8 @@ Rules:
 
 Building-level **price on request** (separate from apartment `price_visibility`): builder `company_admin` can enable `price_on_request_enabled` on a building. While enabled, public catalog never exposes that building's numeric prices (including after login). The public UI shows a request button that creates a CRM deal for that builder.
 
+Project-level **price on request**: builder `company_admin` can enable `price_on_request_enabled` on a project (portal switcher next to project QR). While enabled, public catalog never exposes any apartment prices in that project. Toggling cascades to existing buildings; new buildings inherit the project flag.
+
 Multi-currency is out of v1. Prices are stored in AMD major units (`Decimal(14,2)`); see [DECISIONS.md](../../DECISIONS.md) Catalog section.
 
 ## Request / Lead Status

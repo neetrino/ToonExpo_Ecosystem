@@ -8,7 +8,12 @@ import { HeroKeywordSearch } from '@/features/catalog/components/hero-keyword-se
 import { HomeHeroSearchGapNav } from '@/features/catalog/components/home-hero-nav-buttons';
 import { LocationSearchSelect } from '@/features/catalog/components/location-search-select';
 import { PriceRangeSelect } from '@/features/catalog/components/price-range-select';
-import { mergeLocationOptions } from '@/features/catalog/utils/location-options';
+import {
+  expandCityFilterValues,
+  HERO_POPULAR_CITY_CHIP_KEYS,
+  mergeLocationOptions,
+  POPULAR_CITY_KEYS,
+} from '@/features/catalog/utils/location-options';
 import { Link, useRouter } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 import { MultiListboxSelect } from '@/shared/ui/multi-listbox-select';
@@ -22,8 +27,6 @@ type HeroSearchProps = {
 };
 
 const BED_OPTIONS = [1, 2, 3, 4] as const;
-
-const POPULAR_CITY_KEYS = ['yerevan', 'gyumri', 'vanadzor', 'dilijan', 'tsaghkadzor'] as const;
 
 type HeroSearchHrefInput = {
   q: string;
@@ -89,7 +92,7 @@ export const HeroSearch = ({ className, locations = [], projects = [] }: HeroSea
         suppressHydrationWarning
         className={cn(
           'w-full rounded-[20px] bg-surface-elevated p-2 lg:w-fit',
-          'shadow-[0_20px_25px_-5px_rgb(9_43_68/0.05),0_8px_10px_-6px_rgb(9_43_68/0.05)]',
+          'shadow-[0_20px_25px_-5px_rgb(25_38_67/0.05),0_8px_10px_-6px_rgb(25_38_67/0.05)]',
           'ring-1 ring-header-border',
         )}
       >
@@ -165,12 +168,13 @@ export const HeroSearch = ({ className, locations = [], projects = [] }: HeroSea
       <div className="mt-8 flex flex-col gap-2">
         <span className="text-sm font-medium leading-5 text-on-dark">{t('popular')}</span>
         <div className="flex flex-wrap gap-2">
-          {POPULAR_CITY_KEYS.map((key) => {
+          {HERO_POPULAR_CITY_CHIP_KEYS.map((key) => {
             const city = t(`popularCities.${key}`);
+            const cityParam = expandCityFilterValues([city]).join(',');
             return (
               <Link
                 key={key}
-                href={`/projects?city=${encodeURIComponent(city)}`}
+                href={`/projects?city=${encodeURIComponent(cityParam)}`}
                 className={cn(
                   'inline-flex h-7 cursor-pointer items-center rounded-pill px-3',
                   'bg-white/80 text-xs font-medium leading-4 text-ink-navy',
@@ -198,7 +202,7 @@ const buildProjectsHref = (input: HeroSearchHrefInput): string => {
   }
 
   if (input.cities.length > 0) {
-    params.set('city', input.cities.join(','));
+    params.set('city', expandCityFilterValues(input.cities).join(','));
   }
 
   if (input.minPrice != null) {

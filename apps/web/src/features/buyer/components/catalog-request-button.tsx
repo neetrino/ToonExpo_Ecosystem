@@ -7,9 +7,8 @@ import { RequestFormPanel } from '@/features/buyer/components/request-form-panel
 import { useMeQuery } from '@/features/auth/hooks/use-auth';
 import { Link, usePathname } from '@/i18n/navigation';
 import { Button } from '@/shared/ui/button';
-import { Card } from '@/shared/ui/card';
 import { cn } from '@/shared/ui/cn';
-import { MODAL_BACKDROP_CLASS_NAME } from '@/shared/ui/modal-backdrop';
+import { Dialog } from '@/shared/ui/dialog';
 
 export type CatalogRequestAppearance = 'button' | 'priceLabel';
 
@@ -121,9 +120,14 @@ const BuyerRequestControls = ({
           {label}
         </Button>
       )}
-      {open ? (
-        <RequestModal
-          title={title}
+      <Dialog
+        open={open}
+        onClose={() => {
+          setOpen(false);
+        }}
+        title={title}
+      >
+        <RequestFormPanel
           projectId={projectId}
           apartmentId={apartmentId}
           defaultNote={defaultNote}
@@ -131,54 +135,7 @@ const BuyerRequestControls = ({
             setOpen(false);
           }}
         />
-      ) : null}
+      </Dialog>
     </div>
   );
 };
-
-const RequestModal = ({
-  title,
-  projectId,
-  apartmentId,
-  defaultNote,
-  onClose,
-}: {
-  title: string;
-  projectId: string;
-  apartmentId?: string | undefined;
-  defaultNote: string;
-  onClose: () => void;
-}) => (
-  <div
-    className={cn(
-      'fixed inset-0 z-[var(--z-modal)] flex items-end justify-center p-4 sm:items-center',
-      MODAL_BACKDROP_CLASS_NAME,
-    )}
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="request-panel-title"
-    onClick={onClose}
-    onKeyDown={(event) => {
-      if (event.key === 'Escape') {
-        onClose();
-      }
-    }}
-  >
-    <Card
-      className="w-full max-w-md shadow-sm"
-      onClick={(event) => {
-        event.stopPropagation();
-      }}
-    >
-      <h2 id="request-panel-title" className="mb-4 text-lg font-semibold text-ink">
-        {title}
-      </h2>
-      <RequestFormPanel
-        projectId={projectId}
-        apartmentId={apartmentId}
-        defaultNote={defaultNote}
-        onClose={onClose}
-      />
-    </Card>
-  </div>
-);

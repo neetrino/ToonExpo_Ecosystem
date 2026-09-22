@@ -18,6 +18,7 @@ describe('project-catalog-amenities', () => {
         hy: ['Կայանատեղի'],
         en: ['Parking'],
       },
+      gallery: ['https://cdn.example.com/render-1.webp', 'https://cdn.example.com/render-2.webp'],
       links: {
         website: 'https://example.com',
         floorplans2d: 'https://example.com/plans-2d',
@@ -36,6 +37,9 @@ describe('project-catalog-amenities', () => {
     expect(slice.catalogDetails.apartmentsCount.hy).toBe('12');
     expect(slice.catalogDetails.slogan.hy).toBe('Ապրիր լավ');
     expect(slice.catalogLinks.floorplans2d).toBe('https://example.com/plans-2d');
+    expect(slice.catalogGallery).toBe(
+      'https://cdn.example.com/render-1.webp\nhttps://cdn.example.com/render-2.webp',
+    );
     expect(slice.amenityLabelsHy).toBe('Կայանատեղի');
     expect(slice.amenityLabelsEn).toBe('Parking');
     expect(slice.nearbyPlacesHy).toBe('Արագած');
@@ -52,6 +56,7 @@ describe('project-catalog-amenities', () => {
         hy: ['Կայանատեղի'],
         en: ['Parking'],
       },
+      gallery: ['https://cdn.example.com/render-1.webp', 'https://cdn.example.com/render-2.webp'],
       links: {
         website: 'https://example.com',
         floorplans2d: 'https://example.com/plans-2d',
@@ -61,6 +66,30 @@ describe('project-catalog-amenities', () => {
       places: {
         hy: ['Արագած'],
         en: ['Aragats'],
+      },
+    });
+  });
+
+  it('round-trips construction timeline stage dates', () => {
+    const slice = catalogJsonToFormSlice(
+      {
+        timelineStageDates: {
+          preSale: '01/2024',
+          foundation: '06/2024',
+          structure: '01/2025',
+        },
+      },
+      null,
+    );
+    expect(slice.timelineStageDates.preSale).toBe('01/2024');
+    expect(slice.timelineStageDates.foundation).toBe('06/2024');
+    expect(slice.timelineStageDates.structure).toBe('01/2025');
+    expect(slice.timelineStageDates.facade).toBe('');
+    expect(catalogFormSliceToJson(slice).amenities).toEqual({
+      timelineStageDates: {
+        preSale: '01/2024',
+        foundation: '06/2024',
+        structure: '01/2025',
       },
     });
   });

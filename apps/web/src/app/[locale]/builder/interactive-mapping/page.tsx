@@ -1,4 +1,4 @@
-import { setRequestLocale } from 'next-intl/server';
+import { getLocale, setRequestLocale } from 'next-intl/server';
 import { Suspense } from 'react';
 
 import { InteractiveMappingProjectsPage } from '@/features/interactive-mapping';
@@ -12,7 +12,8 @@ type PageProps = {
  * Builder interactive mapping — own company projects only.
  */
 export default async function BuilderInteractiveMappingPage({ params }: PageProps) {
-  const { locale } = await params;
+  await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return (

@@ -148,7 +148,7 @@ describe('AdminCompaniesService.listProjects', () => {
     expect(companyFindUnique).not.toHaveBeenCalled();
     expect(projectFindMany).toHaveBeenCalledWith({
       where: {},
-      orderBy: [{ createdAt: 'desc' }],
+      orderBy: [{ featuredOnHome: 'desc' }, { createdAt: 'desc' }],
       skip: 0,
       take: 20,
       select: {
@@ -272,6 +272,18 @@ describe('AdminCompaniesService.listProjects', () => {
           { builderCompany: { name: { contains: 'tower', mode: 'insensitive' } } },
         ],
       },
+    });
+  });
+
+  it('filters by multiple company ids without requiring each company to exist', async () => {
+    projectCount.mockResolvedValue(0);
+    projectFindMany.mockResolvedValue([]);
+
+    await service.listAllProjects(1, 18, ['co_1', 'co_2']);
+
+    expect(companyFindUnique).not.toHaveBeenCalled();
+    expect(projectCount).toHaveBeenNthCalledWith(1, {
+      where: { builderCompanyId: { in: ['co_1', 'co_2'] } },
     });
   });
 

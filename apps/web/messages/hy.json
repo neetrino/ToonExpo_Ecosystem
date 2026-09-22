@@ -11,6 +11,16 @@
     "deleteConfirmTitle": "Ջնջել",
     "deleteConfirmMessage": "Համոզվա՞ծ եք, որ ուզում եք ջնջել սա։ Սա հնարավոր չէ հետարկել։",
     "deleteConfirmNamedMessage": "Համոզվա՞ծ եք, որ ուզում եք ջնջել «{name}»-ը։ Սա հնարավոր չէ հետարկել։",
+    "listSelection": {
+      "selectAll": "Ընտրել բոլորը այս էջում",
+      "selectRow": "Ընտրել տողը",
+      "selectedCount": "{count} ընտրված",
+      "clear": "Մաքրել",
+      "delete": "Ջնջել",
+      "deleteConfirmTitle": "Ջնջել ընտրվածը",
+      "deleteConfirm": "Ջնջե՞լ {count} ընտրված տարրերը։ Սա հնարավոր չէ հետարկել։",
+      "deleteError": "Չհաջողվեց ջնջել ընտրված տարրերը։ Փորձեք կրկին։"
+    },
     "integratedSearch": {
       "apply": "Կիրառել",
       "reset": "Մաքրել",
@@ -147,7 +157,7 @@
       "follow_up_needed": "Հետևում",
       "apartment_selected": "Բնակարան",
       "reserved": "Ամրագրված",
-      "converted": "Հաղթանակ",
+      "converted": "Գնված",
       "closed": "Փակված",
       "lost": "Կորած"
     },
@@ -156,6 +166,27 @@
       "builder_buyer_qr_scan": "Builder QR",
       "manual_builder_entry": "Ձեռքով",
       "event_interaction": "Միջոցառում"
+    },
+    "tabs": {
+      "ariaLabel": "Գործարքի բաժիններ",
+      "deal": "Գործարք",
+      "payment": "Վճարում",
+      "notes": "Նշումներ"
+    },
+    "payments": {
+      "noApartment": "Կցեք բնակարան՝ վճարումներ գրանցելու համար։",
+      "apartmentPrice": "Բնակարանի գին",
+      "paidTotal": "Վճարված",
+      "remaining": "Մնացորդ",
+      "priceEmpty": "Գինը ըստ հարցման",
+      "historyTitle": "Վճարումների պատմություն",
+      "historyEmpty": "Վճարումներ դեռ չկան։",
+      "columns": {
+        "date": "Ամսաթիվ",
+        "amount": "Գումար",
+        "by": "Գրանցող",
+        "note": "Նշում"
+      }
     }
   },
   "HomePage": {
@@ -209,8 +240,21 @@
         "yerevan": "Երևան",
         "gyumri": "Գյումրի",
         "vanadzor": "Վանաձոր",
-        "dilijan": "Դիլիջան",
-        "tsaghkadzor": "Ծաղկաձոր"
+        "abovyan": "Աբովյան",
+        "kapan": "Կապան",
+        "hrazdan": "Հրազդան",
+        "armavir": "Արմավիր",
+        "etchmiadzin": "Էջմիածին",
+        "ijevan": "Իջևան",
+        "artashat": "Արտաշատ",
+        "goris": "Գորիս",
+        "sisian": "Սիսիան",
+        "meghri": "Մեղրի",
+        "qajaran": "Քաջարան",
+        "agarak": "Ագարակ",
+        "yeghegnadzor": "Եղեգնաձոր",
+        "vayk": "Վայք",
+        "jermuk": "Ջերմուկ"
       }
     },
     "stats": {
@@ -219,11 +263,11 @@
       "projectCountHint": "+18 այս ամիս",
       "apartmentCount": "Բնակարանների քանակ",
       "apartmentCountHint": "+240 այս շաբաթ",
-      "marketValue": "Շուկայի ընդհանուր արժեք (մլն)",
+      "marketValue": "Շուկայի արժեք (մլն)",
       "marketValueHint": "+4.2% տարեկան",
       "participantCount": "Մասնակիցների քանակ",
       "participantCountHint": "Աճող",
-      "avgMortgagePayment": "Միջին ամսական հիփոթեքային վճար",
+      "avgMortgagePayment": "Միջին հիփոթեքային վճար",
       "avgMortgagePaymentHint": "Կայուն"
     },
     "featured": {
@@ -344,7 +388,7 @@
     "marketInsights": "Շուկայի վերլուծություն",
     "projects": "Նախագծեր",
     "builders": "Կառուցապատողներ",
-    "partners": "Ցուցադրողներ",
+    "partners": "Մասնակիցներ",
     "mortgage": "Հիփոթեք",
     "venueMap": "Venue Map",
     "geoMap": "3D քարտեզ",
@@ -444,8 +488,8 @@
       "cookiePolicy": "Cookie քաղաքականություն"
     },
     "copyrightPrefix": "Copyright © 2026 Toon Expo.",
-    "copyrightSuffix": "Բոլոր իրավունքները պաշտպանված են։",
-    "copyrightCreatedBy": "Ստեղծված է",
+    "copyrightSuffix": "All Rights Reserved.",
+    "copyrightCreatedBy": "Created by",
     "copyrightCompany": "Neetrino IT Company",
     "socialLabel": "Սոցիալական ցանցեր",
     "social": {
@@ -461,13 +505,13 @@
       "signInToSee": "Մուտք գործեք՝ գինը տեսնելու համար"
     },
     "status": {
-      "available": "Ազատ",
+      "available": "Հասանելի",
       "reserved": "Ամրագրված",
       "sold": "Վաճառված"
     },
     "availability": {
       "total": "Ընդամենը",
-      "available": "Ազատ",
+      "available": "Հասանելի",
       "reserved": "Ամրագրված",
       "sold": "Վաճառված",
       "summary": "Հասանելիություն",
@@ -615,6 +659,7 @@
         "amenities": "Հարմարություններ",
         "nearby": "Մոտակայքում",
         "links": "Հղումներ",
+        "gallery": "Պատկերասրահ",
         "socials": "Սոցցանցեր",
         "video": "Տեսանյութ",
         "videoOpen": "Բացել տեսանյութը",
@@ -725,6 +770,7 @@
       "finalStage": "Այս տարածքի ինտերակտիվ քարտեզն ավարտված է։",
       "stageUnavailable": "Այս տարածքի համար դեռ հրապարակված ինտերակտիվ քարտեզ չկա։",
       "stageLoadError": "Հաջորդ քարտեզի փուլը չհաջողվեց բեռնել։ Փորձեք կրկին։",
+      "legend": "Բնակարանի կարգավիճակ",
       "hotspot": {
         "close": "Փակել",
         "openTarget": "Բացել մանրամասները",
@@ -743,6 +789,9 @@
       "bathrooms": "{count} սանհանգույց",
       "area": "{area} մ²",
       "statusLabel": "Կարգավիճակ",
+      "salesStatusAria": "Բնակարանի կարգավիճակ",
+      "salesStatusSaved": "Կարգավիճակը թարմացվեց",
+      "salesStatusSaveError": "Չհաջողվեց թարմացնել կարգավիճակը։ Փորձեք կրկին։",
       "roomsLabel": "Սենյակներ",
       "areaLabel": "Մակերես",
       "bedroomsLabel": "Ննջասենյակներ",
@@ -916,18 +965,19 @@
       "openProfile": "Դիտել պրոֆիլը"
     },
     "partnersPage": {
-      "title": "Ցուցադրողներ",
-      "subtitle": "{count, plural, =0 {Ցուցադրողներ չկան} one {# ցուցադրող} other {# ցուցադրող}}",
-      "empty": "Այս կատեգորիայում դեռ հրապարակված ցուցադրողներ չկան։",
-      "searchEmpty": "«{query}» որոնմանը համապատասխանող ցուցադրողներ չկան։",
+      "title": "Մասնակիցներ",
+      "subtitle": "{count, plural, =0 {Մասնակիցներ չկան} one {# մասնակից} other {# մասնակից}}",
+      "empty": "Այս կատեգորիայում դեռ հրապարակված մասնակիցներ չկան։",
+      "searchEmpty": "«{query}» որոնմանը համապատասխանող մասնակիցներ չկան։",
       "notFoundTitle": "Գործընկերը չի գտնվել",
       "metaFallback": "Պրոֆիլ՝ {name}",
       "meta": {
-        "title": "Ցուցադրողներ — ToonExpo",
-        "description": "Կառուցապատողներ, բանկեր, IT ընկերություններ և այլ ցուցադրողներ ToonExpo-ում։"
+        "title": "Մասնակիցներ — ToonExpo",
+        "description": "Կառուցապատողներ, բանկեր, IT ընկերություններ և այլ մասնակիցներ ToonExpo-ում։"
       },
       "tabs": {
-        "ariaLabel": "Ցուցադրողի տեսակ",
+        "ariaLabel": "Մասնակցի տեսակ",
+        "all": "Բոլորը",
         "builder": "Կառուցապատողներ",
         "bank": "Բանկեր",
         "it_company": "IT ընկերություններ",
@@ -944,7 +994,7 @@
         "allTypes": "Բոլոր տեսակները",
         "typesSelectedCount": "{count} ընտրված",
         "search": "Որոնում",
-        "searchPlaceholder": "Որոնել ցուցադրողներ…",
+        "searchPlaceholder": "Որոնել մասնակիցներ…",
         "apply": "Կիրառել",
         "reset": "Մաքրել"
       },
@@ -1015,7 +1065,7 @@
       "noAccount": "Դեռ հաշիվ չունե՞ք",
       "registerLink": "Գրանցվել",
       "placeholders": {
-        "email": "john.doe@example.com",
+        "email": "john.smith@example.com",
         "password": "********"
       }
     },
@@ -1036,9 +1086,9 @@
       "loginLink": "Մուտք",
       "placeholders": {
         "firstName": "John",
-        "surname": "Doe",
+        "surname": "Smith",
         "phone": "37491111222",
-        "email": "john.doe@example.com",
+        "email": "john.smith@example.com",
         "password": "********",
         "confirmPassword": "********"
       }
@@ -1306,7 +1356,7 @@
       "follow_up_needed": "Հետևում",
       "apartment_selected": "Բնակարան ընտրված",
       "reserved": "Ամրագրված",
-      "converted": "Փոխարկված",
+      "converted": "Գնված",
       "closed": "Փակված",
       "lost": "Կորցրած"
     },
@@ -1366,26 +1416,28 @@
     },
     "homeBanner": {
       "title": "Գլխավոր էջի banner",
-      "subtitle": "Ավելացրու մեկ կամ մի քանի full-bleed hero նկար գլխավոր էջի համար։ Երկու և ավելի նկարները մոտ 8 վայրկյանը մեկ անվերջ հերթափոխվում են։",
+      "subtitle": "Ավելացրու մեկ կամ մի քանի full-bleed hero նկար գլխավոր էջի համար և փոխիր վերնագիրն ու ենթավերնագիրը։ Երկու և ավելի նկարները մոտ 8 վայրկյանը մեկ անվերջ հերթափոխվում են։",
       "loading": "Բեռնվում է banner-ը…",
       "uploadLabel": "Ավելացնել banner նկար",
       "hint": "Օգտագործիր լայն լանդշաֆտային լուսանկարներ (խորհուրդ է տրվում 1920×1080 կամ ավելի մեծ)։ Տեքստը բաց է — նախընտրիր միջին/մուգ հատված headline-ի հետևում։",
-      "previewAlt": "Գլխավոր hero-ի նախադիտում",
-      "previewDefault": "Լռելյայն հարթակի նկար",
-      "previewCount": "{count, plural, one {# banner պտույտում} other {# banner պտույտում}}",
       "slidesTitle": "Banner-ների հերթականություն",
       "slidesMeta": "{count}/{max}",
       "slidesEmpty": "Դեռ անհատական banner չկա — ավելացրու նկար ներքևում, կամ պահիր լռելյայնը։",
       "slideLabel": "Banner {index}",
-      "moveUp": "Վերև",
-      "moveDown": "Ներքև",
+      "dragHandle": "Տեղափոխել",
       "remove": "Հեռացնել",
       "removeConfirmTitle": "Հեռացնել banner-ը",
       "removeConfirmMessage": "Հեռացնե՞լ այս banner-ը գլխավոր էջի պտույտից։",
-      "save": "Պահպանել banner-ները",
+      "save": "Պահպանել",
       "saving": "Պահպանվում է…",
-      "resetDefault": "Վերականգնել լռելյայնը",
-      "saveSuccess": "Գլխավոր էջի banner-ները թարմացված են",
+      "resetDefault": "Վերականգնել լռելյայն նկարը",
+      "saveSuccess": "Գլխավոր էջի banner-ներն ու տեքստը թարմացված են",
+      "copy": {
+        "titleSection": "Վերնագիր և ենթավերնագիր",
+        "title": "Վերնագիր",
+        "subtitle": "Ենթավերնագիր",
+        "hint": "Այս տեքստը երևում է banner-ի վրա։ Դատարկ դաշտը թողնում է կայքի լռելյայն տեքստը։ Լրացրու hy / ru / en ներդիրներում։"
+      },
       "errors": {
         "load": "Չհաջողվեց բեռնել ընթացիկ banner-ները։",
         "save": "Չհաջողվեց պահպանել banner-ները։ Փորձիր նորից։",
@@ -1439,11 +1491,10 @@
         "replacing": "Մոդելը փոխարինվում է…",
         "replaceError": "Չհաջողվեց փոխարինել մոդելը։ Փորձիր նորից։",
         "attachTitle": "Կապել նախագծին",
-        "attachHint": "Մոդելը դեռ կապված չէ։ Ընտրիր ազատ նախագիծ՝ հրապարակելու համար։",
+        "attachHint": "Պարտադիր չէ — կապիր ազատ նախագիծ, որպեսզի այցելուները քարտեզից բացեն դրա էջը։",
         "attach": "Կապել նախագիծ",
         "attaching": "Կապվում է…",
-        "attachError": "Չհաջողվեց կապել նախագիծը։ Փորձիր նորից։",
-        "publishRequiresProject": "Հրապարակումը հասանելի է նախագիծ կապելուց հետո։"
+        "attachError": "Չհաջողվեց կապել նախագիծը։ Փորձիր նորից։"
       },
       "upload": {
         "label": "GLB մոդել",
@@ -1453,7 +1504,7 @@
         "selected": "Վերբեռնված՝ {name}",
         "errors": {
           "type": "Թույլատրվում է միայն .glb ֆայլ։",
-          "size": "Ֆայլը պետք է լինի մինչև 15 ՄԲ։",
+          "size": "Ֆայլը պետք է լինի մինչև {maxMb} ՄԲ։",
           "uploadFailed": "Վերբեռնումը ձախողվեց։ Փորձիր նորից։",
           "notConfigured": "Մեդիա վերբեռնումը սերվերում կարգավորված չէ։"
         }
@@ -1655,6 +1706,12 @@
         "editDrag": "Խմբագրել · քաշել",
         "newPolygon": "Նոր polygon",
         "deletePolygon": "Ջնջել polygon",
+        "deleteMarker": "Ջնջել marker",
+        "confirmDeleteMarker": "Ջնջե՞լ միայն marker-ը։ Polygon-ը կմնա։",
+        "markerCleared": "Marker-ը ջնջված է",
+        "clearMapping": "Մաքրել գծագրումը",
+        "save": "Պահել",
+        "labelField": "Պիտակ",
         "deleteAllPolygons": "Ջնջել բոլոր polygon-ները",
         "deleteAllPolygonsConfirm": "Հեռացնե՞լ բոլոր polygon-ները այս քարտեզից։ Օբյեկտները կմնան — կարող եք նորից գծել։",
         "allPolygonsCleared": "Հեռացվել է {count} polygon",
@@ -1730,6 +1787,10 @@
         "label": "Կարգավորումների բաժիններ",
         "profile": "Պրոֆիլ",
         "password": "Գաղտնաբառ"
+      },
+      "panelLocale": {
+        "title": "Ադմին վահանակի լեզու",
+        "subtitle": "Միայն ադմին ինտերֆեյսի համար։ Հանրային կայքի լեզուն չի փոխվում։"
       }
     },
     "analytics": {
@@ -1967,6 +2028,7 @@
       "clearSearch": "Մաքրել որոնումը",
       "loading": "Բեռնվում է…",
       "error": "Չհաջողվեց բեռնել նախագծերը։ Կրկին փորձեք։",
+      "notFound": "Նախագիծը չի գտնվել։ Հնարավոր է՝ այն արդեն ջնջված է։",
       "filters": {
         "company": "Ընկերություն",
         "allCompanies": "Բոլոր ընկերությունները",
@@ -1977,6 +2039,8 @@
         "floor": "Հարկ",
         "allFloors": "Բոլոր հարկերը",
         "selectBuildingFirst": "Նախ ընտրեք շենքը",
+        "salesStatus": "Վաճառքի կարգավիճակ",
+        "allSalesStatuses": "Բոլոր կարգավիճակները",
         "searchPlaceholder": "Փնտրել ըստ նախագծի, ընկերության կամ քաղաքի"
       },
       "openBuildings": "Դիտել շենքերը՝ {name}",
@@ -2075,9 +2139,9 @@
         "noApartments": "Այս հարկում դեռ բնակարաններ չկան։",
         "apartmentUnit": "Բն. {number}",
         "deleteBuildingTitle": "Ջնջել շենքը",
-        "deleteBuildingConfirm": "Ջնջե՞լ այս սևագիր շենքը։ Հարկերն ու բնակարանները նույնպես կջնջվեն։ Սա հետադարձելի չէ։",
+        "deleteBuildingConfirm": "Ջնջե՞լ այս շենքը։ Հարկերն ու բնակարանները նույնպես կջնջվեն։ Սա հետադարձելի չէ։",
         "deleteFloorTitle": "Ջնջել հարկը",
-        "deleteFloorConfirm": "Ջնջե՞լ այս սևագիր հարկը։ Բնակարանները նույնպես կջնջվեն։ Սա հետադարձելի չէ։",
+        "deleteFloorConfirm": "Ջնջե՞լ այս հարկը։ Բնակարանները նույնպես կջնջվեն։ Սա հետադարձելի չէ։",
         "deleteError": "Չհաջողվեց ջնջել։ Կրկին փորձեք։",
         "sales": {
           "available": "Առկա",
@@ -2153,8 +2217,11 @@
         "company": "Ընկերություն",
         "project": "Նախագիծ",
         "status": "Կարգավիճակ",
-        "sales": "Վաճառք"
+        "sales": "Վաճառք",
+        "price": "Գին"
       },
+      "price": "Գին",
+      "priceEmpty": "—",
       "sales": {
         "available": "Հասանելի",
         "reserved": "Ամրագրված",
@@ -2241,8 +2308,8 @@
         "placeholders": {
           "name": "Acme Partners",
           "adminFirstName": "John",
-          "adminSurname": "Doe",
-          "adminEmail": "john.doe@example.com",
+          "adminSurname": "Smith",
+          "adminEmail": "john.smith@example.com",
           "adminPhone": "+37491111222"
         },
         "submit": "Ստեղծել և ուղարկել հրավեր",
@@ -3233,6 +3300,11 @@
         "copyLink": "Պատճենել հղումը",
         "copied": "Պատճենվեց"
       },
+      "priceOnRequest": {
+        "label": "Գինը ըստ հարցման",
+        "hint": "Միացնելիս հանրային էջերում այս նախագծի բոլոր բնակարանների գները չեն երևա։ Նոր շենքերը ժառանգում են այս կարգավորումը։",
+        "saved": "Գինը ըստ հարցման կարգավիճակը թարմացված է"
+      },
       "publication": {
         "draft": "Սևագիր",
         "published": "Հրապարակված",
@@ -3274,6 +3346,10 @@
       "catalog": {
         "title": "Նախագծի մանրամասներ (հանրային կատալոգ)",
         "subtitle": "Նույն layout-ը, ինչ հանրային նախագծի էջում — խմբագրիր Overview, Details, Ֆինանսներ, Բանկային գործընկեր, Features և Nearby յուրաքանչյուր լեզվով։",
+        "timelineSubtitle": "Նշիր ամսաթիվ յուրաքանչյուր շինարարական փուլի համար՝ հանրային նախագծի էջում ցուցադրելու համար։",
+        "timelineStage": "Ընթացիկ փուլ",
+        "timelineStageAuto": "Ավտոմատ (վաճառված բաժնից)",
+        "timelineStageHint": "Ավտոմատը փուլը հաշվարկում է վաճառված բնակարաններից։ Փուլ ընտրելիս այն կարգավորվում է ձեռքով։",
         "listHint": "Յուրաքանչյուր տարր՝ նոր տողից։",
         "amenityLabels": "Հարմարություններ",
         "nearbyPlaces": "Մոտակա վայրեր",
@@ -3281,7 +3357,13 @@
         "removeItem": "Հեռացնել",
         "amenityItemPlaceholder": "օր. Ստորգետնյա ավտոկայանատեղի",
         "nearbyItemPlaceholder": "օր. Դպրոց — 300 մ",
-        "linksHint": "Կամընտիր մարքեթինգային և մեդիա հղումներ (նույնը բոլոր լեզուների համար)։",
+        "galleryHint": "Վերբեռնեք նախագծի ռենդերների նկարներ կամ տեղադրեք նկարի հղումներ՝ յուրաքանչյուրը նոր տողից։",
+        "galleryUploadLabel": "Պատկերասրահի վերբեռնում",
+        "galleryUploadHint": "Ընտրված յուրաքանչյուր նկար ավտոմատ ավելանում է պատկերասրահի URL-ների ցանկում։",
+        "galleryUrlsLabel": "Պատկերասրահի նկարի հղումներ",
+        "galleryUrlsPlaceholder": "https://cdn.example.com/render-1.jpg",
+        "galleryImageAlt": "Պատկերասրահի նկար {index}",
+        "galleryRemove": "Հեռացնել նկարը",
         "socialsHint": "Կայքի և սոցիալական պրոֆիլների հղումներ (նույնը բոլոր լեզուների համար)։",
         "financeImport": {
           "button": "Ներմուծել",
@@ -3433,7 +3515,7 @@
         "publishConfirm": "Հրապարակե՞լ «{name}»-ը։ Այն կերևա հանրային կայքում։",
         "archiveConfirmTitle": "Արխիվացնել նախագիծը",
         "archiveConfirm": "Արխիվացնե՞լ «{name}»-ը։ Այլևս չի երևա հանրային կատալոգում։",
-        "deleteConfirm": "Ջնջե՞լ այս սևագիր նախագիծը։ Գործողությունն անդառնալի է։",
+        "deleteConfirm": "Ջնջե՞լ այս նախագիծը և նրա բոլոր շենքերը։ Գործողությունն անդառնալի է։",
         "deleteConfirmTitle": "Ջնջել նախագիծը",
         "publicationSuccess": "Հրապարակման կարգավիճակը թարմացված է"
       }
@@ -3654,7 +3736,7 @@
         "publish": "Հրապարակել",
         "unpublish": "Հանել հրապարակումից",
         "delete": "Ջնջել",
-        "deleteConfirm": "Ջնջե՞լ այս սևագիր բնակարանը։ Գործողությունն անդառնալի է։",
+        "deleteConfirm": "Ջնջե՞լ այս բնակարանը։ Գործողությունն անդառնալի է։",
         "deleteConfirmTitle": "Ջնջել բնակարանը",
         "publicationSuccess": "Հրապարակման կարգավիճակը թարմացված է"
       },
@@ -3806,7 +3888,7 @@
         "follow_up_needed": "Հետևում",
         "apartment_selected": "Բնակարան ընտրված",
         "reserved": "Ամրագրված",
-        "converted": "Կնքված",
+        "converted": "Գնված",
         "closed": "Փակված",
         "lost": "Կորած"
       },
@@ -3820,11 +3902,11 @@
         "cta": "+ Նոր գործարք",
         "title": "Նոր գործարք",
         "contactName": "Ամբողջական անուն",
-        "contactNamePlaceholder": "John Doe",
+        "contactNamePlaceholder": "John Smith",
         "contactPhone": "Հեռախոս",
         "contactPhonePlaceholder": "37491111222",
         "contactEmail": "Էլ․ փոստ",
-        "contactEmailPlaceholder": "john.doe@example.com",
+        "contactEmailPlaceholder": "john.smith@example.com",
         "project": "Նախագիծ",
         "projectOptional": "Առանց նախագծի",
         "note": "Նշում",
@@ -3860,6 +3942,10 @@
         "unassigned": "Չնշանակված",
         "saveAssignee": "Պահպանել",
         "saving": "Պահպանվում է…",
+        "paymentAmount": "Վճարված գումար",
+        "paymentAmountPlaceholder": "0",
+        "paymentNotePlaceholder": "Նշում (ոչ պարտադիր)",
+        "addPayment": "Գրանցել վճարում",
         "notesTitle": "Նշումներ",
         "notesEmpty": "Նշումներ դեռ չկան",
         "notePlaceholder": "Ներքին նշում…",
@@ -3888,6 +3974,7 @@
         "loadingApartments": "Բնակարանները բեռնվում են…",
         "linkApartmentAction": "Կցել բնակարան",
         "linkSuccess": "Բնակարանը կցված է",
+        "oneApartmentHint": "Այս գործարքին արդեն կցված է բնակարան։ Ապակցեք այն՝ այլ բնակարան ընտրելու համար։",
         "primary": "Հիմնական",
         "linkTypes": {
           "interest": "Հետաքրքրություն",
@@ -3899,7 +3986,11 @@
         "requestsEmpty": "Հայտեր դեռ չկան",
         "errors": {
           "generic": "Ինչ-որ սխալ տեղի ունեցավ։ Կրկին փորձեք։",
-          "unlinkBlocked": "Հնարավոր չէ ապակցել․ կարգավիճակը պահանջում է կցված բնակարան։"
+          "invalidPaymentAmount": "Մուտքագրեք ճիշտ գումար (նվազագույնը 0.01)։",
+          "unlinkBlocked": "Հնարավոր չէ ապակցել․ կարգավիճակը պահանջում է կցված բնակարան։",
+          "reservedConflict": "Այս բնակարանը արդեն ամրագրված է այլ գործարքով։",
+          "alreadySold": "Այս բնակարանը արդեն վաճառված է։",
+          "alreadyLinked": "Այս գործարքին արդեն կցված է բնակարան։"
         },
         "unlinkApartment": "Ապակցել",
         "unlinkConfirm": "Ապակցե՞լ բնակարան {apartment}-ը այս գործարքից",

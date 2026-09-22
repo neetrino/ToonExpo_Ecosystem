@@ -5,6 +5,7 @@ import { CheckCircle2, CircleDashed, FolderKanban } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 
 import { useAdminCompanyProjectsQuery } from '@/features/admin/hooks/use-admin-companies';
+import { catalogProjectDetailHref } from '@/features/builder/catalog-scope';
 import { toCatalogPublicationStatus } from '@/features/catalog/utils/catalog-publication-status';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
@@ -20,10 +21,11 @@ const STATUS_BADGE_CLASS: Record<'published' | 'draft', string> = {
 };
 
 type ProjectRowProps = {
+  companyId: string;
   project: AdminCompanyProjectListItem;
 };
 
-const ProjectRow = ({ project }: ProjectRowProps) => {
+const ProjectRow = ({ companyId, project }: ProjectRowProps) => {
   const t = useTranslations('Admin.projects');
   const locale = useLocale();
   const catalogStatus = toCatalogPublicationStatus(project.publicationStatus);
@@ -37,7 +39,7 @@ const ProjectRow = ({ project }: ProjectRowProps) => {
   return (
     <li>
       <Link
-        href={`/admin/projects/${encodeURIComponent(project.slug)}`}
+        href={catalogProjectDetailHref({ mode: 'admin', companyId }, project.id)}
         className={cn(
           'flex h-full items-start gap-2 rounded-md border border-border bg-surface px-3 py-3',
           'transition-colors hover:border-border-strong hover:bg-surface-elevated',
@@ -104,7 +106,7 @@ export const CompanyProjectsSection = ({ companyId }: CompanyProjectsSectionProp
       {query.data && query.data.data.length > 0 ? (
         <ul className="grid grid-cols-2 gap-2">
           {query.data.data.map((project) => (
-            <ProjectRow key={project.id} project={project} />
+            <ProjectRow key={project.id} companyId={companyId} project={project} />
           ))}
         </ul>
       ) : null}

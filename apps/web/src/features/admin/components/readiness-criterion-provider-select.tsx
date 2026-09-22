@@ -17,6 +17,7 @@ type ReadinessCriterionProviderSelectProps = {
 
 /**
  * Compact catalog select — links a KPI criterion to a service provider category.
+ * Menu is portaled so it overlays the side-sheet rows instead of being clipped.
  */
 export const ReadinessCriterionProviderSelect = ({
   criterionId,
@@ -68,7 +69,8 @@ export const ReadinessCriterionProviderSelect = ({
         value={selected}
         options={options}
         disabled={disabled || mutation.isPending || categoriesQuery.isLoading}
-        contained
+        menuAlign="end"
+        menuExactWidth={false}
         placeholder={t('providerCategory')}
         aria-label={t('providerCategory')}
         onChange={onChange}

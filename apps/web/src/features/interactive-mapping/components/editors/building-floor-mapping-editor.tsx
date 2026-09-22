@@ -4,6 +4,7 @@ import type { PortalVisualHotspotItem } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import type { ReactNode } from 'react';
 
+import { hotspotToMappingCoords } from '../../utils/hotspot-geometry';
 import { MappingEditorShell, type MappingEditorEntity } from './mapping-editor-shell';
 
 export type BuildingFloorMappingEditorProps = {
@@ -34,10 +35,10 @@ const buildEntities = (
       return {
         id: floor.id,
         title: floor.name || `Floor ${floor.number}`,
-        label: hotspot?.label ?? floor.label ?? String(floor.number),
-        markerX: hotspot ? Number(hotspot.xPercent) / 100 : null,
-        markerY: hotspot ? Number(hotspot.yPercent) / 100 : null,
-        svgPath: hotspot?.svgPath ?? null,
+        label: hotspot ? (hotspot.label ?? '') : (floor.label ?? String(floor.number)),
+        ...(hotspot
+          ? hotspotToMappingCoords(hotspot)
+          : { markerX: null, markerY: null, svgPath: null }),
         hotspotId: hotspot?.id ?? null,
       };
     });

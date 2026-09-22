@@ -8,6 +8,8 @@ type SectionHeaderProps = {
   eyebrow?: string | undefined;
   action?: ReactNode | undefined;
   className?: string | undefined;
+  /** Overrides the text column width (e.g. `max-w-none` to keep a long title on one line). */
+  contentClassName?: string | undefined;
   as?: 'h2' | 'h3' | undefined;
 };
 
@@ -21,11 +23,12 @@ export const SectionHeader = ({
   eyebrow,
   action,
   className,
+  contentClassName,
   as: Tag = 'h2',
 }: SectionHeaderProps) => {
   return (
     <div className={cn('mb-10 flex flex-wrap items-end justify-between gap-4', className)}>
-      <div className="min-w-0 max-w-3xl">
+      <div className={cn('min-w-0 max-w-3xl', contentClassName)}>
         {eyebrow ? <p className="text-eyebrow mb-2">{eyebrow}</p> : null}
         <Tag className="text-section-title">{title}</Tag>
         {description ? (

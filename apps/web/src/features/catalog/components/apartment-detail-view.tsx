@@ -11,6 +11,7 @@ import { ApartmentInquireCard } from '@/features/catalog/components/apartment-in
 import { ApartmentMortgageEstimate } from '@/features/catalog/components/apartment-mortgage-estimate';
 import { ApartmentNeighborhood } from '@/features/catalog/components/apartment-neighborhood';
 import { ApartmentPhotoGallery } from '@/features/catalog/components/apartment-photo-gallery';
+import { ApartmentPublicSalesStatus } from '@/features/catalog/components/apartment-public-sales-status';
 import { ApartmentPriceHistory } from '@/features/catalog/components/apartment-price-history';
 import { ApartmentPricePerArea } from '@/features/catalog/components/apartment-price-per-area';
 import { ApartmentTourSections } from '@/features/catalog/components/apartment-tour-sections';
@@ -93,22 +94,38 @@ export const ApartmentDetailView = async ({
   ];
 
   const floorLabel =
-    apartment.floor.displayLabel?.trim() ||
-    t('project.floor', { number: apartment.floor.number });
+    apartment.floor.displayLabel?.trim() || t('project.floor', { number: apartment.floor.number });
+
+  const salesStatusProps = {
+    apartmentId: apartment.id,
+    companyId: apartment.builder.id,
+    salesStatus: apartment.salesStatus,
+  };
 
   return (
     <div className="page-container pb-16 pt-8">
-      <CatalogPathBreadcrumb
-        ariaLabel={t('apartment.breadcrumb')}
-        district={district}
-        project={apartment.project}
-        building={apartment.building}
-        floor={{ id: apartment.floor.id, label: floorLabel }}
-        apartment={{ id: apartment.id, slug: apartment.slug, label: title }}
-        current="apartment"
-      />
+      <div className="mb-6 flex items-center justify-between gap-3">
+        <CatalogPathBreadcrumb
+          className="mb-0 w-auto min-w-0 flex-1"
+          ariaLabel={t('apartment.breadcrumb')}
+          district={district}
+          project={apartment.project}
+          building={apartment.building}
+          floor={{ id: apartment.floor.id, label: floorLabel }}
+          apartment={{ id: apartment.id, slug: apartment.slug, label: title }}
+          current="apartment"
+        />
+        <div className="hidden shrink-0 md:block">
+          <ApartmentPublicSalesStatus placement="inline" {...salesStatusProps} />
+        </div>
+      </div>
 
-      <ApartmentPhotoGallery images={galleryImages} />
+      <div className="relative">
+        <ApartmentPhotoGallery images={galleryImages} />
+        <div className="md:hidden">
+          <ApartmentPublicSalesStatus placement="overlay" {...salesStatusProps} />
+        </div>
+      </div>
 
       <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start xl:gap-14">
         <div className="min-w-0">

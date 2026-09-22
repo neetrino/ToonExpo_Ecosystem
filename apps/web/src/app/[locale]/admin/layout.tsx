@@ -1,6 +1,6 @@
 import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getTranslations } from 'next-intl/server';
 import type { ReactNode } from 'react';
 
 import { AdminMobileStack } from '@/features/admin/components/admin-mobile-stack';
@@ -8,6 +8,7 @@ import { AdminNav } from '@/features/admin/components/admin-nav';
 import { ADMIN_RAIL_COLLAPSED_STORAGE_KEY } from '@/features/admin/constants';
 import { getMeSessionCached } from '@/features/auth/api/get-me-or-null-cached';
 import { redirect } from '@/i18n/navigation';
+import { PanelIntlProvider, resolvePanelLocale } from '@/shared/i18n/panel-intl-provider';
 import { ApiUnavailablePanel } from '@/shared/ui/api-unavailable-panel';
 import { PortalShell } from '@/shared/ui/portal-shell';
 
@@ -20,8 +21,8 @@ type AdminLayoutProps = {
  * Server-gated platform admin shell. Non-admins get a generic 404.
  */
 export default async function AdminLayout({ children, params }: AdminLayoutProps) {
-  const { locale } = await params;
-  setRequestLocale(locale);
+  const { locale: urlLocale } = await params;
+  const panelLocale = await resolvePanelLocale(urlLocale);
 
   const headerStore = await headers();
   const cookieHeader = headerStore.get('cookie') ?? undefined;
@@ -32,7 +33,7 @@ export default async function AdminLayout({ children, params }: AdminLayoutProps
   const { user } = session;
 
   if (!user) {
-    redirect({ href: '/auth/login', locale });
+    redirect({ href: '/auth/login', locale: urlLocale });
     return null;
   }
 
@@ -40,34 +41,36 @@ export default async function AdminLayout({ children, params }: AdminLayoutProps
     notFound();
   }
 
-  const t = await getTranslations('Admin');
+  const t = await getTranslations({ locale: panelLocale, namespace: 'Admin' });
 
   return (
-    <PortalShell
-      brandHref="/admin"
-      badge={t('badge')}
-      userEmail={user.email}
-      profileLabel={t('profileLink')}
-      profileHref="/admin/settings"
-      navLabel={t('nav.label')}
-      variant="rail"
-      mobileDrawerControlledByNavbar
-      className="bg-canvas"
-      railCollapsedStorageKey={ADMIN_RAIL_COLLAPSED_STORAGE_KEY}
-      railCollapseLabels={{
-        expand: t('nav.railExpand'),
-        collapse: t('nav.railCollapse'),
-      }}
-      railHeader={
-        <p className="truncate text-xs font-semibold uppercase tracking-[0.16em] text-on-dark/65">
-          {t('nav.portalLabel')}
-        </p>
-      }
-      sidebar={<AdminNav />}
-    >
-      <AdminMobileStack name={user.name} email={user.email}>
-        {children}
-      </AdminMobileStack>
-    </PortalShell>
+    <PanelIntlProvider urlLocale={urlLocale}>
+      <PortalShell
+        brandHref="/admin"
+        badge={t('badge')}
+        userEmail={user.email}
+        profileLabel={t('profileLink')}
+        profileHref="/admin/settings"
+        navLabel={t('nav.label')}
+        variant="rail"
+        mobileDrawerControlledByNavbar
+        className="bg-canvas"
+        railCollapsedStorageKey={ADMIN_RAIL_COLLAPSED_STORAGE_KEY}
+        railCollapseLabels={{
+          expand: t('nav.railExpand'),
+          collapse: t('nav.railCollapse'),
+        }}
+        railHeader={
+          <p className="truncate text-xs font-semibold uppercase tracking-[0.16em] text-on-dark/65">
+            {t('nav.portalLabel')}
+          </p>
+        }
+        sidebar={<AdminNav />}
+      >
+        <AdminMobileStack name={user.name} email={user.email}>
+          {children}
+        </AdminMobileStack>
+      </PortalShell>
+    </PanelIntlProvider>
   );
 }

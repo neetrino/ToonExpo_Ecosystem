@@ -11,6 +11,16 @@
     "deleteConfirmTitle": "Удалить",
     "deleteConfirmMessage": "Вы уверены, что хотите удалить это? Действие нельзя отменить.",
     "deleteConfirmNamedMessage": "Вы уверены, что хотите удалить «{name}»? Действие нельзя отменить.",
+    "listSelection": {
+      "selectAll": "Выбрать все на этой странице",
+      "selectRow": "Выбрать строку",
+      "selectedCount": "{count} выбрано",
+      "clear": "Сбросить",
+      "delete": "Удалить",
+      "deleteConfirmTitle": "Удалить выбранное",
+      "deleteConfirm": "Удалить {count} выбранных элементов? Действие нельзя отменить.",
+      "deleteError": "Не удалось удалить выбранные элементы. Попробуйте снова."
+    },
     "integratedSearch": {
       "apply": "Применить",
       "reset": "Сбросить",
@@ -147,7 +157,7 @@
       "follow_up_needed": "Повторный контакт",
       "apartment_selected": "Квартира",
       "reserved": "Бронь",
-      "converted": "Выигран",
+      "converted": "Куплено",
       "closed": "Закрыт",
       "lost": "Потерян"
     },
@@ -156,6 +166,27 @@
       "builder_buyer_qr_scan": "QR строителя",
       "manual_builder_entry": "Вручную",
       "event_interaction": "Событие"
+    },
+    "tabs": {
+      "ariaLabel": "Разделы сделки",
+      "deal": "Сделка",
+      "payment": "Оплата",
+      "notes": "Заметки"
+    },
+    "payments": {
+      "noApartment": "Прикрепите квартиру, чтобы фиксировать платежи.",
+      "apartmentPrice": "Цена квартиры",
+      "paidTotal": "Оплачено",
+      "remaining": "Остаток",
+      "priceEmpty": "Цена по запросу",
+      "historyTitle": "История платежей",
+      "historyEmpty": "Платежей пока нет.",
+      "columns": {
+        "date": "Дата",
+        "amount": "Сумма",
+        "by": "Кто записал",
+        "note": "Заметка"
+      }
     }
   },
   "HomePage": {
@@ -209,8 +240,21 @@
         "yerevan": "Ереван",
         "gyumri": "Гюмри",
         "vanadzor": "Ванадзор",
-        "dilijan": "Дилижан",
-        "tsaghkadzor": "Цахкадзор"
+        "abovyan": "Абовян",
+        "kapan": "Капан",
+        "hrazdan": "Раздан",
+        "armavir": "Армавир",
+        "etchmiadzin": "Эчмиадзин",
+        "ijevan": "Иджеван",
+        "artashat": "Арташат",
+        "goris": "Горис",
+        "sisian": "Сисиан",
+        "meghri": "Мегри",
+        "qajaran": "Каджаран",
+        "agarak": "Агарак",
+        "yeghegnadzor": "Ехегнадзор",
+        "vayk": "Вайк",
+        "jermuk": "Джермук"
       }
     },
     "stats": {
@@ -219,11 +263,11 @@
       "projectCountHint": "+18 за месяц",
       "apartmentCount": "Количество квартир",
       "apartmentCountHint": "+240 за неделю",
-      "marketValue": "Общая рыночная стоимость (млн)",
+      "marketValue": "Рыночная стоимость (млн)",
       "marketValueHint": "+4.2% г/г",
       "participantCount": "Количество участников",
       "participantCountHint": "Растёт",
-      "avgMortgagePayment": "Средний ежемесячный ипотечный платёж",
+      "avgMortgagePayment": "Средний ипотечный платёж",
       "avgMortgagePaymentHint": "Стабильно"
     },
     "featured": {
@@ -353,7 +397,7 @@
     "scanner": "Сканер",
     "product": "Продукт",
     "loading": "…",
-    "partners": "Экспоненты",
+    "partners": "Участники",
     "mortgage": "Ипотека",
     "venueMap": "Venue Map",
     "geoMap": "3D карта",
@@ -444,8 +488,8 @@
       "cookiePolicy": "Политика cookie"
     },
     "copyrightPrefix": "Copyright © 2026 Toon Expo.",
-    "copyrightSuffix": "Все права защищены.",
-    "copyrightCreatedBy": "Создано компанией",
+    "copyrightSuffix": "All Rights Reserved.",
+    "copyrightCreatedBy": "Created by",
     "copyrightCompany": "Neetrino IT Company",
     "socialLabel": "Социальные сети",
     "social": {
@@ -615,6 +659,7 @@
         "amenities": "Удобства",
         "nearby": "Рядом",
         "links": "Ссылки",
+        "gallery": "Галерея",
         "socials": "Соцсети",
         "video": "Видео",
         "videoOpen": "Открыть видео",
@@ -725,6 +770,7 @@
       "finalStage": "Интерактивная карта для этой зоны закончилась.",
       "stageUnavailable": "Для этой зоны ещё нет опубликованной интерактивной карты.",
       "stageLoadError": "Не удалось загрузить следующий этап карты. Попробуйте снова.",
+      "legend": "Статус квартир",
       "hotspot": {
         "close": "Закрыть",
         "openTarget": "Открыть",
@@ -743,6 +789,9 @@
       "bathrooms": "{count, plural, one {# ванная} few {# ванные} many {# ванных} other {# ванных}}",
       "area": "{area} м²",
       "statusLabel": "Статус",
+      "salesStatusAria": "Статус квартиры",
+      "salesStatusSaved": "Статус обновлён",
+      "salesStatusSaveError": "Не удалось обновить статус. Попробуйте ещё раз.",
       "roomsLabel": "Комнаты",
       "areaLabel": "Площадь",
       "bedroomsLabel": "Спальни",
@@ -916,18 +965,19 @@
       "openProfile": "Смотреть профиль"
     },
     "partnersPage": {
-      "title": "Экспоненты",
-      "subtitle": "{count, plural, =0 {Нет экспонентов} one {# экспонент} few {# экспонента} many {# экспонентов} other {# экспонента}}",
-      "empty": "В этой категории пока нет опубликованных экспонентов.",
-      "searchEmpty": "По запросу «{query}» экспоненты не найдены.",
+      "title": "Участники",
+      "subtitle": "{count, plural, =0 {Нет участников} one {# участник} few {# участника} many {# участников} other {# участника}}",
+      "empty": "В этой категории пока нет опубликованных участников.",
+      "searchEmpty": "По запросу «{query}» участники не найдены.",
       "notFoundTitle": "Партнёр не найден",
       "metaFallback": "Профиль {name}",
       "meta": {
-        "title": "Экспоненты — ToonExpo",
-        "description": "Застройщики, банки, IT-компании и другие экспоненты на ToonExpo."
+        "title": "Участники — ToonExpo",
+        "description": "Застройщики, банки, IT-компании и другие участники на ToonExpo."
       },
       "tabs": {
-        "ariaLabel": "Тип экспонента",
+        "ariaLabel": "Тип участника",
+        "all": "Все",
         "builder": "Застройщики",
         "bank": "Банки",
         "it_company": "IT-компании",
@@ -944,7 +994,7 @@
         "allTypes": "Все типы",
         "typesSelectedCount": "{count} выбрано",
         "search": "Поиск",
-        "searchPlaceholder": "Искать экспонентов…",
+        "searchPlaceholder": "Искать участников…",
         "apply": "Применить",
         "reset": "Сбросить"
       },
@@ -1015,7 +1065,7 @@
       "noAccount": "Ещё нет аккаунта?",
       "registerLink": "Зарегистрироваться",
       "placeholders": {
-        "email": "john.doe@example.com",
+        "email": "john.smith@example.com",
         "password": "********"
       }
     },
@@ -1036,9 +1086,9 @@
       "loginLink": "Войти",
       "placeholders": {
         "firstName": "John",
-        "surname": "Doe",
+        "surname": "Smith",
         "phone": "37491111222",
-        "email": "john.doe@example.com",
+        "email": "john.smith@example.com",
         "password": "********",
         "confirmPassword": "********"
       }
@@ -1306,7 +1356,7 @@
       "follow_up_needed": "Нужен follow-up",
       "apartment_selected": "Квартира выбрана",
       "reserved": "Бронь",
-      "converted": "Конверсия",
+      "converted": "Куплено",
       "closed": "Закрыта",
       "lost": "Потеряна"
     },
@@ -1366,26 +1416,28 @@
     },
     "homeBanner": {
       "title": "Баннер главной страницы",
-      "subtitle": "Добавьте одно или несколько полноэкранных hero-изображений для главной. Два и больше сменяются примерно каждые 8 секунд по кругу.",
+      "subtitle": "Добавьте одно или несколько полноэкранных hero-изображений для главной и измените заголовок с подзаголовком. Два и больше сменяются примерно каждые 8 секунд по кругу.",
       "loading": "Загрузка баннера…",
       "uploadLabel": "Добавить изображение баннера",
       "hint": "Используйте широкие пейзажные снимки (рекомендуется 1920×1080 или больше). Текст светлый — лучше средние/тёмные зоны за заголовком.",
-      "previewAlt": "Превью hero главной",
-      "previewDefault": "Изображение платформы по умолчанию",
-      "previewCount": "{count, plural, one {# баннер в ротации} few {# баннера в ротации} other {# баннеров в ротации}}",
       "slidesTitle": "Порядок баннеров",
       "slidesMeta": "{count}/{max}",
       "slidesEmpty": "Пока нет своих баннеров — добавьте изображение ниже или оставьте значение по умолчанию.",
       "slideLabel": "Баннер {index}",
-      "moveUp": "Вверх",
-      "moveDown": "Вниз",
+      "dragHandle": "Переместить",
       "remove": "Удалить",
       "removeConfirmTitle": "Удалить баннер",
       "removeConfirmMessage": "Удалить этот баннер из ротации на главной?",
-      "save": "Сохранить баннеры",
+      "save": "Сохранить",
       "saving": "Сохранение…",
-      "resetDefault": "Вернуть по умолчанию",
-      "saveSuccess": "Баннеры главной обновлены",
+      "resetDefault": "Вернуть изображение по умолчанию",
+      "saveSuccess": "Баннеры и текст главной обновлены",
+      "copy": {
+        "titleSection": "Заголовок и подзаголовок",
+        "title": "Заголовок",
+        "subtitle": "Подзаголовок",
+        "hint": "Этот текст показывается на баннере. Пустое поле оставляет текст сайта по умолчанию. Заполните вкладки hy / ru / en."
+      },
       "errors": {
         "load": "Не удалось загрузить текущие баннеры.",
         "save": "Не удалось сохранить баннеры. Попробуйте ещё раз.",
@@ -1439,11 +1491,10 @@
         "replacing": "Замена модели…",
         "replaceError": "Не удалось заменить модель. Попробуйте снова.",
         "attachTitle": "Привязать к проекту",
-        "attachHint": "Модель ещё не привязана. Выберите свободный проект, чтобы опубликовать.",
+        "attachHint": "Необязательно — привяжите свободный проект, чтобы посетители открывали его страницу с карты.",
         "attach": "Привязать проект",
         "attaching": "Привязка…",
-        "attachError": "Не удалось привязать проект. Попробуйте снова.",
-        "publishRequiresProject": "Публикация доступна после привязки проекта."
+        "attachError": "Не удалось привязать проект. Попробуйте снова."
       },
       "upload": {
         "label": "GLB-модель",
@@ -1453,7 +1504,7 @@
         "selected": "Загружено: {name}",
         "errors": {
           "type": "Разрешены только файлы .glb.",
-          "size": "Файл должен быть не больше 15 МБ.",
+          "size": "Файл должен быть не больше {maxMb} МБ.",
           "uploadFailed": "Не удалось загрузить. Попробуйте снова.",
           "notConfigured": "Загрузка медиа не настроена на сервере."
         }
@@ -1655,6 +1706,12 @@
         "editDrag": "Править · перетащить",
         "newPolygon": "Новый полигон",
         "deletePolygon": "Удалить полигон",
+        "deleteMarker": "Удалить маркер",
+        "confirmDeleteMarker": "Удалить только маркер (кружок)? Полигон останется.",
+        "markerCleared": "Маркер удалён",
+        "clearMapping": "Очистить разметку",
+        "save": "Сохранить",
+        "labelField": "Метка",
         "deleteAllPolygons": "Удалить все полигоны",
         "deleteAllPolygonsConfirm": "Удалить все полигоны с этой карты? Объекты останутся — можно нарисовать заново.",
         "allPolygonsCleared": "Удалено полигонов: {count}",
@@ -1730,6 +1787,10 @@
         "label": "Разделы настроек",
         "profile": "Профиль",
         "password": "Пароль"
+      },
+      "panelLocale": {
+        "title": "Язык админ-панели",
+        "subtitle": "Только для интерфейса админки. Язык публичного сайта не меняется."
       }
     },
     "analytics": {
@@ -1967,6 +2028,7 @@
       "clearSearch": "Очистить поиск",
       "loading": "Загрузка проектов…",
       "error": "Не удалось загрузить проекты. Попробуйте ещё раз.",
+      "notFound": "Проект не найден. Возможно, он уже удалён.",
       "filters": {
         "company": "Компания",
         "allCompanies": "Все компании",
@@ -1977,6 +2039,8 @@
         "floor": "Этаж",
         "allFloors": "Все этажи",
         "selectBuildingFirst": "Сначала выберите здание",
+        "salesStatus": "Статус продаж",
+        "allSalesStatuses": "Все статусы",
         "searchPlaceholder": "Поиск по проекту, компании или городу"
       },
       "openBuildings": "Показать здания проекта {name}",
@@ -2075,9 +2139,9 @@
         "noApartments": "На этом этаже пока нет квартир.",
         "apartmentUnit": "Кв. {number}",
         "deleteBuildingTitle": "Удалить здание",
-        "deleteBuildingConfirm": "Удалить этот черновик здания? Этажи и квартиры в нём будут удалены. Это нельзя отменить.",
+        "deleteBuildingConfirm": "Удалить это здание? Этажи и квартиры в нём будут удалены. Это нельзя отменить.",
         "deleteFloorTitle": "Удалить этаж",
-        "deleteFloorConfirm": "Удалить этот черновик этажа? Квартиры на нём будут удалены. Это нельзя отменить.",
+        "deleteFloorConfirm": "Удалить этот этаж? Квартиры на нём будут удалены. Это нельзя отменить.",
         "deleteError": "Не удалось удалить. Попробуйте ещё раз.",
         "sales": {
           "available": "Доступна",
@@ -2158,8 +2222,11 @@
         "company": "Компания",
         "project": "Проект",
         "status": "Статус",
-        "sales": "Продажи"
+        "sales": "Продажи",
+        "price": "Цена"
       },
+      "price": "Цена",
+      "priceEmpty": "—",
       "create": {
         "cta": "+ Добавить квартиры",
         "title": "Добавить квартиры",
@@ -2508,8 +2575,8 @@
         "placeholders": {
           "name": "Acme Partners",
           "adminFirstName": "John",
-          "adminSurname": "Doe",
-          "adminEmail": "john.doe@example.com",
+          "adminSurname": "Smith",
+          "adminEmail": "john.smith@example.com",
           "adminPhone": "+37491111222"
         },
         "submit": "Создать и отправить приглашение",
@@ -3233,6 +3300,11 @@
         "copyLink": "Копировать ссылку",
         "copied": "Скопировано"
       },
+      "priceOnRequest": {
+        "label": "Цена по запросу",
+        "hint": "Когда включено, публичные объявления скрывают цены всех квартир проекта и показывают кнопку запроса. Новые здания наследуют эту настройку.",
+        "saved": "Режим «цена по запросу» обновлён"
+      },
       "publication": {
         "draft": "Черновик",
         "published": "Опубликован",
@@ -3274,6 +3346,10 @@
       "catalog": {
         "title": "Детали проекта (публичный каталог)",
         "subtitle": "Тот же layout, что на публичной странице проекта — редактируйте Overview, Details, Финансы, Банк-партнёр, Features и Nearby для каждого языка.",
+        "timelineSubtitle": "Укажите дату для каждого этапа строительства — они показываются на публичной странице проекта.",
+        "timelineStage": "Текущий этап",
+        "timelineStageAuto": "Авто (по доле продаж)",
+        "timelineStageHint": "Авто вычисляет этап из проданных квартир. Выбор этапа задаёт его вручную.",
         "listHint": "По одному пункту на строку.",
         "amenityLabels": "Удобства",
         "nearbyPlaces": "Рядом",
@@ -3281,7 +3357,13 @@
         "removeItem": "Удалить",
         "amenityItemPlaceholder": "напр. Подземная парковка",
         "nearbyItemPlaceholder": "напр. Школа — 300 м",
-        "linksHint": "Необязательные маркетинговые и медиа-ссылки (общие для всех языков).",
+        "galleryHint": "Загрузите фото рендеров проекта или вставьте по одной ссылке на изображение в строке.",
+        "galleryUploadLabel": "Загрузка в галерею",
+        "galleryUploadHint": "Каждое выбранное фото автоматически добавляется в список URL галереи.",
+        "galleryUrlsLabel": "Ссылки на изображения галереи",
+        "galleryUrlsPlaceholder": "https://cdn.example.com/render-1.jpg",
+        "galleryImageAlt": "Изображение галереи {index}",
+        "galleryRemove": "Удалить изображение",
         "socialsHint": "Ссылки на сайт и социальные профили (общие для всех языков).",
         "financeImport": {
           "button": "Импорт",
@@ -3433,7 +3515,7 @@
         "publishConfirm": "Опубликовать «{name}»? Проект появится на публичном сайте.",
         "archiveConfirmTitle": "Архивировать проект",
         "archiveConfirm": "Архивировать «{name}»? Он больше не будет виден в публичном каталоге.",
-        "deleteConfirm": "Удалить этот черновик проекта? Действие необратимо.",
+        "deleteConfirm": "Удалить этот проект и все его здания? Действие необратимо.",
         "deleteConfirmTitle": "Удалить проект",
         "publicationSuccess": "Статус публикации обновлён"
       }
@@ -3654,7 +3736,7 @@
         "publish": "Опубликовать",
         "unpublish": "Снять с публикации",
         "delete": "Удалить",
-        "deleteConfirm": "Удалить этот черновик квартиры? Действие необратимо.",
+        "deleteConfirm": "Удалить эту квартиру? Действие необратимо.",
         "deleteConfirmTitle": "Удалить квартиру",
         "publicationSuccess": "Статус публикации обновлён"
       },
@@ -3806,7 +3888,7 @@
         "follow_up_needed": "Нужен follow-up",
         "apartment_selected": "Квартира выбрана",
         "reserved": "Бронь",
-        "converted": "Сделка",
+        "converted": "Куплено",
         "closed": "Закрыта",
         "lost": "Потеряна"
       },
@@ -3820,11 +3902,11 @@
         "cta": "+ Новая сделка",
         "title": "Новая сделка",
         "contactName": "Полное имя",
-        "contactNamePlaceholder": "John Doe",
+        "contactNamePlaceholder": "John Smith",
         "contactPhone": "Телефон",
         "contactPhonePlaceholder": "37491111222",
         "contactEmail": "Email",
-        "contactEmailPlaceholder": "john.doe@example.com",
+        "contactEmailPlaceholder": "john.smith@example.com",
         "project": "Проект",
         "projectOptional": "Без проекта",
         "note": "Заметка",
@@ -3853,13 +3935,17 @@
         "lostReason": "Причина потери",
         "lostReasonRequired": "Укажите причину потери",
         "apartmentRequired": "Сначала прикрепите квартиру",
-        "apartmentHint": "Для статусов «квартира выбрана», «бронь» и «сделка» нужна прикреплённая квартира.",
+        "apartmentHint": "Для статусов «квартира выбрана», «бронь» и «куплено» нужна прикреплённая квартира.",
         "saveStatus": "Обновить статус",
         "assigneeTitle": "Ответственный",
         "assignee": "Ответственный",
         "unassigned": "Не назначен",
         "saveAssignee": "Сохранить",
         "saving": "Сохранение…",
+        "paymentAmount": "Сумма оплаты",
+        "paymentAmountPlaceholder": "0",
+        "paymentNotePlaceholder": "Необязательная заметка",
+        "addPayment": "Записать платёж",
         "notesTitle": "Заметки",
         "notesEmpty": "Заметок пока нет",
         "notePlaceholder": "Внутренняя заметка…",
@@ -3888,6 +3974,7 @@
         "loadingApartments": "Загрузка квартир…",
         "linkApartmentAction": "Прикрепить квартиру",
         "linkSuccess": "Квартира прикреплена",
+        "oneApartmentHint": "У сделки уже есть квартира. Открепите её, чтобы выбрать другую.",
         "primary": "Основная",
         "linkTypes": {
           "interest": "Интерес",
@@ -3899,7 +3986,11 @@
         "requestsEmpty": "Заявок пока нет",
         "errors": {
           "generic": "Что-то пошло не так. Попробуйте ещё раз.",
-          "unlinkBlocked": "Нельзя открепить: статус сделки требует прикреплённую квартиру."
+          "invalidPaymentAmount": "Введите корректную сумму (минимум 0.01).",
+          "unlinkBlocked": "Нельзя открепить: статус сделки требует прикреплённую квартиру.",
+          "reservedConflict": "Эта квартира уже забронирована другой сделкой.",
+          "alreadySold": "Эта квартира уже продана.",
+          "alreadyLinked": "У этой сделки уже есть прикреплённая квартира."
         },
         "unlinkApartment": "Открепить",
         "unlinkConfirm": "Открепить квартиру {apartment} от этой сделки?",

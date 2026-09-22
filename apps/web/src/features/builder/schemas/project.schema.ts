@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 import {
   PORTAL_ADDRESS_MAX_LENGTH,
@@ -6,10 +6,11 @@ import {
   PORTAL_DESCRIPTION_MAX_LENGTH,
   PORTAL_LOCATION_MAX_LENGTH,
   PORTAL_PROJECT_NAME_MAX_LENGTH,
+  PORTAL_PROJECT_TYPE_MAX_LENGTH,
   PORTAL_SLUG_MAX_LENGTH,
-} from "@/features/builder/constants";
-import { projectCatalogFormSchema } from "@/features/builder/schemas/project-catalog.schema";
-import { optionalMediaIdField } from "@/features/media/schemas/media-fields.schema";
+} from '@/features/builder/constants';
+import { projectCatalogFormSchema } from '@/features/builder/schemas/project-catalog.schema';
+import { optionalMediaIdField } from '@/features/media/schemas/media-fields.schema';
 
 const localeTextSchema = z.object({
   hy: z.string().trim().max(PORTAL_PROJECT_NAME_MAX_LENGTH),
@@ -48,8 +49,12 @@ export const createProjectSchema = z.object({
   locationTextEn: z.string().trim().max(PORTAL_LOCATION_MAX_LENGTH),
   address: z.string().trim().max(PORTAL_ADDRESS_MAX_LENGTH),
   city: z.string().trim().max(PORTAL_CITY_MAX_LENGTH),
-  district: z.string().trim().max(PORTAL_CITY_MAX_LENGTH),
-  projectType: z.string().trim().max(120),
+  districtHy: z.string().trim().max(PORTAL_CITY_MAX_LENGTH),
+  districtRu: z.string().trim().max(PORTAL_CITY_MAX_LENGTH),
+  districtEn: z.string().trim().max(PORTAL_CITY_MAX_LENGTH),
+  projectTypeHy: z.string().trim().max(PORTAL_PROJECT_TYPE_MAX_LENGTH),
+  projectTypeRu: z.string().trim().max(PORTAL_PROJECT_TYPE_MAX_LENGTH),
+  projectTypeEn: z.string().trim().max(PORTAL_PROJECT_TYPE_MAX_LENGTH),
   constructionStatus: z.string().trim().max(120),
   completionDate: z.string().trim().max(32),
   coverMediaId: optionalMediaIdField,

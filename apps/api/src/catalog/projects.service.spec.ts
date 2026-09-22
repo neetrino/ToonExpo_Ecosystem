@@ -58,6 +58,7 @@ describe('ProjectsService filters and pagination', () => {
 
     expect(where.city).toEqual({ equals: 'Yerevan', mode: 'insensitive' });
     expect(where.builderCompanyId).toBe('builder_1');
+    expect(where.priceOnRequestEnabled).toBe(false);
     expect(where.apartments).toEqual({
       some: {
         publicationStatus: 'published',

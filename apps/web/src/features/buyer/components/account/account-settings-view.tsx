@@ -1,5 +1,6 @@
 import type { UserResponse } from '@toonexpo/contracts';
 import { getTranslations } from 'next-intl/server';
+import type { ReactNode } from 'react';
 
 import { AccountSettingsChrome } from '@/features/buyer/components/account/account-settings-chrome';
 
@@ -10,6 +11,8 @@ type AccountSettingsViewProps = {
   passwordHeadingId?: string | undefined;
   /** Buyer mobile hub → settings push transition + back control. */
   mobilePush?: boolean | undefined;
+  /** Optional blocks between profile and password. */
+  extraSections?: ReactNode | undefined;
 };
 
 /**
@@ -20,6 +23,7 @@ export const AccountSettingsView = async ({
   titleNamespace,
   passwordHeadingId = 'account-password-heading',
   mobilePush = false,
+  extraSections,
 }: AccountSettingsViewProps) => {
   const t = await getTranslations(titleNamespace);
   const tPassword = await getTranslations('Profile.changePassword');
@@ -33,6 +37,7 @@ export const AccountSettingsView = async ({
       passwordHeadingId={passwordHeadingId}
       user={user}
       mobilePush={mobilePush}
+      extraSections={extraSections}
     />
   );
 };

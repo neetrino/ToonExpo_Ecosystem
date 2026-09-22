@@ -6,9 +6,9 @@ import {
   ProjectCatalogOverviewStat,
 } from '@/features/catalog/components/project-catalog-details-bits';
 import { ProjectBankPartnerOffersPanel } from '@/features/catalog/components/project-bank-partner-offers-panel';
+import { ProjectCatalogImageCarousel } from '@/features/catalog/components/project-catalog-image-carousel';
 import { ProjectCatalogSectionCard } from '@/features/catalog/components/project-catalog-section-card';
 import { ProjectCatalogLinksSection } from '@/features/catalog/components/project-catalog-links-section';
-import { ProjectCatalogMediaPoster } from '@/features/catalog/components/project-catalog-media-poster';
 import { ProjectCatalogGeoMap } from '@/features/catalog/components/project-catalog-geo-map';
 import { ProjectCatalogVideoSection } from '@/features/catalog/components/project-catalog-video-section';
 import {
@@ -18,7 +18,6 @@ import {
 import type { ProjectCatalogLink } from '@/features/catalog/utils/project-catalog-details';
 import { splitProjectCatalogLinks } from '@/features/catalog/utils/project-catalog-links';
 import type { buildProjectBankPartnerOfferRows } from '@/features/catalog/utils/build-project-bank-partner-offer-rows';
-import { staticAssetUrl } from '@/shared/lib/static-asset-url';
 import { cn } from '@/shared/ui/cn';
 
 type ProjectCatalogDetailsPanelProps = {
@@ -32,7 +31,7 @@ type ProjectCatalogDetailsPanelProps = {
   bankPartnerTitle: string;
   amenitiesTitle: string;
   nearbyTitle: string;
-  linksTitle: string;
+  galleryTitle: string;
   socialsTitle: string;
   videoTitle: string;
   videoOpenLabel: string;
@@ -44,14 +43,11 @@ type ProjectCatalogDetailsPanelProps = {
   amenityLabels: string[];
   nearbyPlaces: string[];
   links: ProjectCatalogLink[];
+  galleryImages: string[];
 };
 
 /** Prefer compact icon stats in Overview; long text stays in Details. */
 const OVERVIEW_MAX_ITEMS = 6;
-const TYPICAL_TOUR_POSTER_SRC = staticAssetUrl('/images/project-floor-axonometric.webp');
-const EXTERIOR_TOUR_POSTER_SRC = staticAssetUrl('/images/hero-variant-a.webp');
-const MATTERPORT_TOUR_POSTER_SRC = staticAssetUrl('/images/project-floor-axonometric.webp');
-const EXTERNAL_3D_TOUR_POSTER_SRC = staticAssetUrl('/images/hero-variant-a.webp');
 
 /**
  * Project catalog — Houzez-style stacked white cards (Description / Overview /
@@ -68,7 +64,7 @@ export const ProjectCatalogDetailsPanel = ({
   bankPartnerTitle,
   amenitiesTitle,
   nearbyTitle,
-  linksTitle,
+  galleryTitle,
   socialsTitle,
   videoTitle,
   videoOpenLabel,
@@ -80,6 +76,7 @@ export const ProjectCatalogDetailsPanel = ({
   amenityLabels,
   nearbyPlaces,
   links,
+  galleryImages,
 }: ProjectCatalogDetailsPanelProps) => {
   const {
     general: generalRows,
@@ -93,7 +90,6 @@ export const ProjectCatalogDetailsPanel = ({
       ? generalRows.filter((row) => row.wide || !overviewIds.has(row.id))
       : generalRows;
   const {
-    media: mediaLinks,
     social: socialLinks,
     video: videoLink,
     typicalTour: typicalTourLink,
@@ -101,6 +97,10 @@ export const ProjectCatalogDetailsPanel = ({
     matterport: matterportLink,
     external3d: external3dLink,
   } = splitProjectCatalogLinks(links);
+  const exteriorRenderGalleryImages = galleryImages.map((src, index) => ({
+    src,
+    alt: `${linkLabels.exteriorRenders} ${index + 1}`,
+  }));
   const hasAbout = aboutText != null && aboutText.trim().length > 0;
   const hasOverview = overviewRows.length > 0;
   const hasDetails = detailRows.length > 0;
@@ -114,7 +114,7 @@ export const ProjectCatalogDetailsPanel = ({
   const hasExteriorTour = exteriorTourLink != null;
   const hasMatterport = matterportLink != null;
   const hasExternal3d = external3dLink != null;
-  const hasMediaLinks = mediaLinks.length > 0;
+  const hasExteriorRenderGallery = exteriorRenderGalleryImages.length > 0;
   const hasSocialLinks = socialLinks.length > 0;
 
   return (
@@ -200,40 +200,40 @@ export const ProjectCatalogDetailsPanel = ({
 
         {hasTypicalTour && typicalTourLink ? (
           <ProjectCatalogSectionCard title={linkLabels.typicalInteractiveTour}>
-            <ProjectCatalogMediaPoster
+            <ProjectCatalogVideoSection
+              url={typicalTourLink.url}
               title={linkLabels.typicalInteractiveTour}
-              imageSrc={TYPICAL_TOUR_POSTER_SRC}
-              href={typicalTourLink.url}
+              openLabel={linkLabels.typicalInteractiveTour}
             />
           </ProjectCatalogSectionCard>
         ) : null}
 
         {hasExteriorTour && exteriorTourLink ? (
           <ProjectCatalogSectionCard title={linkLabels.exteriorInteractiveTour}>
-            <ProjectCatalogMediaPoster
+            <ProjectCatalogVideoSection
+              url={exteriorTourLink.url}
               title={linkLabels.exteriorInteractiveTour}
-              imageSrc={EXTERIOR_TOUR_POSTER_SRC}
-              href={exteriorTourLink.url}
+              openLabel={linkLabels.exteriorInteractiveTour}
             />
           </ProjectCatalogSectionCard>
         ) : null}
 
         {hasMatterport && matterportLink ? (
           <ProjectCatalogSectionCard title={linkLabels.matterport}>
-            <ProjectCatalogMediaPoster
+            <ProjectCatalogVideoSection
+              url={matterportLink.url}
               title={linkLabels.matterport}
-              imageSrc={MATTERPORT_TOUR_POSTER_SRC}
-              href={matterportLink.url}
+              openLabel={linkLabels.matterport}
             />
           </ProjectCatalogSectionCard>
         ) : null}
 
         {hasExternal3d && external3dLink ? (
           <ProjectCatalogSectionCard title={linkLabels.external3d}>
-            <ProjectCatalogMediaPoster
+            <ProjectCatalogVideoSection
+              url={external3dLink.url}
               title={linkLabels.external3d}
-              imageSrc={EXTERNAL_3D_TOUR_POSTER_SRC}
-              href={external3dLink.url}
+              openLabel={linkLabels.external3d}
             />
           </ProjectCatalogSectionCard>
         ) : null}
@@ -242,9 +242,9 @@ export const ProjectCatalogDetailsPanel = ({
           <ProjectCatalogGeoMap projectId={projectId} />
         </ProjectCatalogSectionCard>
 
-        {hasMediaLinks ? (
-          <ProjectCatalogSectionCard title={linksTitle}>
-            <ProjectCatalogLinksSection links={mediaLinks} labels={linkLabels} />
+        {hasExteriorRenderGallery ? (
+          <ProjectCatalogSectionCard title={galleryTitle}>
+            <ProjectCatalogImageCarousel images={exteriorRenderGalleryImages} />
           </ProjectCatalogSectionCard>
         ) : null}
 

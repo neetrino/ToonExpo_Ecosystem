@@ -1,17 +1,18 @@
 'use client';
 
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
-import { type ExhibitorTab } from '@/features/catalog/constants/exhibitor-tabs';
+import {
+  EXHIBITOR_FIRST_PAGE,
+  type ExhibitorTab,
+} from '@/features/catalog/constants/exhibitor-tabs';
 import {
   loadExhibitorCatalog,
   type ExhibitorCatalog,
 } from '@/features/catalog/utils/load-exhibitor-catalog';
 import { exhibitorCatalogQueryKey } from '@/features/catalog/utils/exhibitor-catalog-query';
 import type { PartnerListFilters } from '@/features/catalog/utils/partner-filters';
-
-const FIRST_PAGE = 1;
 
 type UseExhibitorCatalogQueryOptions = {
   locale: string;
@@ -36,9 +37,7 @@ export const useExhibitorCatalogQuery = ({
 }: UseExhibitorCatalogQueryOptions) => {
   const queryClient = useQueryClient();
   const seedInitial =
-    initialCatalog != null &&
-    initialFilters != null &&
-    isSameFilters(filters, initialFilters);
+    initialCatalog != null && initialFilters != null && isSameFilters(filters, initialFilters);
 
   useEffect(() => {
     if (initialCatalog == null || initialFilters == null) {
@@ -58,8 +57,8 @@ export const useExhibitorCatalogQuery = ({
   useEffect(() => {
     visibleTabs.forEach((tab) => {
       void queryClient.prefetchQuery({
-        queryKey: exhibitorCatalogQueryKey(locale, tab, FIRST_PAGE),
-        queryFn: () => loadExhibitorCatalog({ tab, page: FIRST_PAGE }, locale),
+        queryKey: exhibitorCatalogQueryKey(locale, tab, EXHIBITOR_FIRST_PAGE),
+        queryFn: () => loadExhibitorCatalog({ tab, page: EXHIBITOR_FIRST_PAGE }, locale),
       });
     });
   }, [locale, queryClient, visibleTabs]);
@@ -67,6 +66,7 @@ export const useExhibitorCatalogQuery = ({
   return useQuery({
     queryKey: exhibitorCatalogQueryKey(locale, filters.tab, filters.page, filters.q ?? ''),
     queryFn: () => loadExhibitorCatalog(filters, locale),
+    placeholderData: keepPreviousData,
     ...(seedInitial ? { initialData: initialCatalog } : {}),
   });
 };
@@ -77,7 +77,7 @@ export const prefetchExhibitorTab = (
   tab: ExhibitorTab,
 ): void => {
   void queryClient.prefetchQuery({
-    queryKey: exhibitorCatalogQueryKey(locale, tab, FIRST_PAGE),
-    queryFn: () => loadExhibitorCatalog({ tab, page: FIRST_PAGE }, locale),
+    queryKey: exhibitorCatalogQueryKey(locale, tab, EXHIBITOR_FIRST_PAGE),
+    queryFn: () => loadExhibitorCatalog({ tab, page: EXHIBITOR_FIRST_PAGE }, locale),
   });
 };

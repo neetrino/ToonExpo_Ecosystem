@@ -12,7 +12,7 @@ export class PublicSiteController {
 
   @Public()
   @Get('home-hero')
-  @ApiOperation({ summary: 'Public home hero banner image (null = use default asset)' })
+  @ApiOperation({ summary: 'Public home hero banners and optional headline copy' })
   @ApiOkResponse({ description: 'Home hero media reference' })
   getHomeHero(): Promise<PublicHomeHero> {
     return this.platformSettings.getPublicHomeHero();

@@ -11,6 +11,16 @@
     "deleteConfirmTitle": "Delete",
     "deleteConfirmMessage": "Are you sure you want to delete this? This cannot be undone.",
     "deleteConfirmNamedMessage": "Are you sure you want to delete \"{name}\"? This cannot be undone.",
+    "listSelection": {
+      "selectAll": "Select all on this page",
+      "selectRow": "Select row",
+      "selectedCount": "{count} selected",
+      "clear": "Clear",
+      "delete": "Delete",
+      "deleteConfirmTitle": "Delete selected",
+      "deleteConfirm": "Delete {count} selected items? This cannot be undone.",
+      "deleteError": "Could not delete the selected items. Try again."
+    },
     "integratedSearch": {
       "apply": "Apply",
       "reset": "Reset",
@@ -147,7 +157,7 @@
       "follow_up_needed": "Follow-up",
       "apartment_selected": "Apartment",
       "reserved": "Reserved",
-      "converted": "Won",
+      "converted": "Buy",
       "closed": "Closed",
       "lost": "Lost"
     },
@@ -156,6 +166,27 @@
       "builder_buyer_qr_scan": "Builder QR",
       "manual_builder_entry": "Manual",
       "event_interaction": "Event"
+    },
+    "tabs": {
+      "ariaLabel": "Deal sections",
+      "deal": "Deal",
+      "payment": "Payment",
+      "notes": "Notes"
+    },
+    "payments": {
+      "noApartment": "Link an apartment to record payments.",
+      "apartmentPrice": "Apartment price",
+      "paidTotal": "Paid",
+      "remaining": "Remaining",
+      "priceEmpty": "Price on request",
+      "historyTitle": "Payment history",
+      "historyEmpty": "No payments recorded yet.",
+      "columns": {
+        "date": "Date",
+        "amount": "Amount",
+        "by": "Recorded by",
+        "note": "Note"
+      }
     }
   },
   "HomePage": {
@@ -209,8 +240,21 @@
         "yerevan": "Yerevan",
         "gyumri": "Gyumri",
         "vanadzor": "Vanadzor",
-        "dilijan": "Dilijan",
-        "tsaghkadzor": "Tsaghkadzor"
+        "abovyan": "Abovyan",
+        "kapan": "Kapan",
+        "hrazdan": "Hrazdan",
+        "armavir": "Armavir",
+        "etchmiadzin": "Etchmiadzin",
+        "ijevan": "Ijevan",
+        "artashat": "Artashat",
+        "goris": "Goris",
+        "sisian": "Sisian",
+        "meghri": "Meghri",
+        "qajaran": "Qajaran",
+        "agarak": "Agarak",
+        "yeghegnadzor": "Yeghegnadzor",
+        "vayk": "Vayk",
+        "jermuk": "Jermuk"
       }
     },
     "stats": {
@@ -615,6 +659,7 @@
         "amenities": "Features",
         "nearby": "Nearby",
         "links": "Links",
+        "gallery": "Gallery",
         "socials": "Socials",
         "video": "Video",
         "videoOpen": "Open video",
@@ -725,6 +770,7 @@
       "finalStage": "End of interactive map for this area.",
       "stageUnavailable": "This area has no published interactive map yet.",
       "stageLoadError": "Could not load the next map stage. Try again.",
+      "legend": "Apartment status",
       "hotspot": {
         "close": "Close",
         "openTarget": "Open details",
@@ -743,6 +789,9 @@
       "bathrooms": "{count, plural, one {# bath} other {# baths}}",
       "area": "{area} m²",
       "statusLabel": "Status",
+      "salesStatusAria": "Apartment sales status",
+      "salesStatusSaved": "Sales status updated",
+      "salesStatusSaveError": "Could not update sales status. Try again.",
       "roomsLabel": "Rooms",
       "areaLabel": "Area",
       "bedroomsLabel": "Bedrooms",
@@ -928,6 +977,7 @@
       },
       "tabs": {
         "ariaLabel": "Exhibitor type",
+        "all": "All",
         "builder": "Builders",
         "bank": "Banks",
         "it_company": "IT companies",
@@ -1015,7 +1065,7 @@
       "noAccount": "No account yet?",
       "registerLink": "Create one",
       "placeholders": {
-        "email": "john.doe@example.com",
+        "email": "john.smith@example.com",
         "password": "********"
       }
     },
@@ -1036,9 +1086,9 @@
       "loginLink": "Sign in",
       "placeholders": {
         "firstName": "John",
-        "surname": "Doe",
+        "surname": "Smith",
         "phone": "37491111222",
-        "email": "john.doe@example.com",
+        "email": "john.smith@example.com",
         "password": "********",
         "confirmPassword": "********"
       }
@@ -1306,7 +1356,7 @@
       "follow_up_needed": "Follow-up",
       "apartment_selected": "Apartment selected",
       "reserved": "Reserved",
-      "converted": "Converted",
+      "converted": "Buy",
       "closed": "Closed",
       "lost": "Lost"
     },
@@ -1366,26 +1416,28 @@
     },
     "homeBanner": {
       "title": "Homepage banner",
-      "subtitle": "Add one or more full-bleed hero images for the public home page. Two or more rotate every 8 seconds in an endless loop.",
+      "subtitle": "Add one or more full-bleed hero images for the public home page and edit the headline and subheadline. Two or more rotate every 8 seconds in an endless loop.",
       "loading": "Loading banner…",
       "uploadLabel": "Add banner image",
       "hint": "Use wide landscape photos (recommended 1920×1080 or larger). Text stays light — prefer mid/dark areas behind the headline.",
-      "previewAlt": "Homepage hero preview",
-      "previewDefault": "Default platform image",
-      "previewCount": "{count, plural, one {# banner in rotation} other {# banners in rotation}}",
       "slidesTitle": "Banner order",
       "slidesMeta": "{count}/{max}",
       "slidesEmpty": "No custom banners yet — add an image below, or keep the default.",
       "slideLabel": "Banner {index}",
-      "moveUp": "Up",
-      "moveDown": "Down",
+      "dragHandle": "Reorder",
       "remove": "Remove",
       "removeConfirmTitle": "Remove banner",
       "removeConfirmMessage": "Remove this banner from the homepage rotation?",
-      "save": "Save banners",
+      "save": "Save",
       "saving": "Saving…",
-      "resetDefault": "Restore default",
-      "saveSuccess": "Homepage banners updated",
+      "resetDefault": "Restore default image",
+      "saveSuccess": "Homepage banners and copy updated",
+      "copy": {
+        "titleSection": "Title and subtitle",
+        "title": "Title",
+        "subtitle": "Subtitle",
+        "hint": "This copy appears on the banner. Leave a field empty to keep the site default. Fill hy / ru / en tabs."
+      },
       "errors": {
         "load": "Could not load the current banners.",
         "save": "Could not save the banners. Try again.",
@@ -1439,11 +1491,10 @@
         "replacing": "Replacing model…",
         "replaceError": "Could not replace the model. Try again.",
         "attachTitle": "Attach to a project",
-        "attachHint": "This model is not linked yet. Choose a free project to publish it.",
+        "attachHint": "Optional — link a free project so visitors can open its page from the map.",
         "attach": "Attach project",
         "attaching": "Attaching…",
-        "attachError": "Could not attach the project. Try again.",
-        "publishRequiresProject": "Publish is available after a project is attached."
+        "attachError": "Could not attach the project. Try again."
       },
       "upload": {
         "label": "GLB model",
@@ -1453,7 +1504,7 @@
         "selected": "Uploaded: {name}",
         "errors": {
           "type": "Only .glb files are allowed.",
-          "size": "File must be 15 MB or smaller.",
+          "size": "File must be {maxMb} MB or smaller.",
           "uploadFailed": "Upload failed. Try again.",
           "notConfigured": "Media upload is not configured on the server."
         }
@@ -1655,6 +1706,12 @@
         "editDrag": "Edit · drag",
         "newPolygon": "New polygon",
         "deletePolygon": "Delete polygon",
+        "deleteMarker": "Delete marker",
+        "confirmDeleteMarker": "Remove only the marker pin? The polygon stays.",
+        "markerCleared": "Marker removed",
+        "clearMapping": "Clear mapping",
+        "save": "Save",
+        "labelField": "Label",
         "deleteAllPolygons": "Delete all polygons",
         "deleteAllPolygonsConfirm": "Remove all polygons from this map? Entities stay — you can draw again.",
         "allPolygonsCleared": "Removed {count} polygons",
@@ -1730,6 +1787,10 @@
         "label": "Settings sections",
         "profile": "Profile",
         "password": "Password"
+      },
+      "panelLocale": {
+        "title": "Admin panel language",
+        "subtitle": "Language for the admin UI only. Does not change the public site language."
       }
     },
     "analytics": {
@@ -1967,6 +2028,7 @@
       "clearSearch": "Clear search",
       "loading": "Loading projects…",
       "error": "Could not load projects. Try again.",
+      "notFound": "Project not found. It may have been deleted.",
       "filters": {
         "company": "Company",
         "allCompanies": "All companies",
@@ -1977,6 +2039,8 @@
         "floor": "Floor",
         "allFloors": "All floors",
         "selectBuildingFirst": "Select a building first",
+        "salesStatus": "Sales status",
+        "allSalesStatuses": "All statuses",
         "searchPlaceholder": "Search by project, company, or city"
       },
       "openBuildings": "View buildings for {name}",
@@ -2075,9 +2139,9 @@
         "noApartments": "No apartments on this floor yet.",
         "apartmentUnit": "Apt {number}",
         "deleteBuildingTitle": "Delete building",
-        "deleteBuildingConfirm": "Delete this draft building? Floors and apartments in it will be removed. This cannot be undone.",
+        "deleteBuildingConfirm": "Delete this building? Floors and apartments in it will be removed. This cannot be undone.",
         "deleteFloorTitle": "Delete floor",
-        "deleteFloorConfirm": "Delete this draft floor? Apartments on it will be removed. This cannot be undone.",
+        "deleteFloorConfirm": "Delete this floor? Apartments on it will be removed. This cannot be undone.",
         "deleteError": "Could not delete. Try again.",
         "sales": {
           "available": "Available",
@@ -2153,8 +2217,11 @@
         "company": "Company",
         "project": "Project",
         "status": "Status",
-        "sales": "Sales"
+        "sales": "Sales",
+        "price": "Price"
       },
+      "price": "Price",
+      "priceEmpty": "—",
       "sales": {
         "available": "Available",
         "reserved": "Reserved",
@@ -2241,8 +2308,8 @@
         "placeholders": {
           "name": "Acme Partners",
           "adminFirstName": "John",
-          "adminSurname": "Doe",
-          "adminEmail": "john.doe@example.com",
+          "adminSurname": "Smith",
+          "adminEmail": "john.smith@example.com",
           "adminPhone": "+37491111222"
         },
         "submit": "Create & send invite",
@@ -3493,6 +3560,11 @@
         "copyLink": "Copy link",
         "copied": "Copied"
       },
+      "priceOnRequest": {
+        "label": "Price on request",
+        "hint": "When on, public listings hide all apartment prices in this project and show a request button. New buildings inherit this setting.",
+        "saved": "Price on request updated"
+      },
       "publication": {
         "draft": "Draft",
         "published": "Published",
@@ -3534,6 +3606,10 @@
       "catalog": {
         "title": "Project details (public catalog)",
         "subtitle": "Same layout as the public project page — edit Overview, Details, Finance, Bank partner, Features, and Nearby for each language.",
+        "timelineSubtitle": "Set a date for each construction stage shown on the public project page.",
+        "timelineStage": "Current stage",
+        "timelineStageAuto": "Auto (from sold share)",
+        "timelineStageHint": "Leave on Auto to derive the stage from apartment sales. Pick a stage to set it manually.",
         "listHint": "One item per line.",
         "amenityLabels": "Features list",
         "nearbyPlaces": "Nearby places",
@@ -3541,7 +3617,13 @@
         "removeItem": "Remove item",
         "amenityItemPlaceholder": "e.g. Underground parking",
         "nearbyItemPlaceholder": "e.g. School — 300 m",
-        "linksHint": "Optional marketing and media URLs (same for all languages).",
+        "galleryHint": "Upload project render photos or paste one image URL per line.",
+        "galleryUploadLabel": "Gallery upload",
+        "galleryUploadHint": "Each selected image is added to gallery URLs automatically.",
+        "galleryUrlsLabel": "Gallery image URLs",
+        "galleryUrlsPlaceholder": "https://cdn.example.com/render-1.jpg",
+        "galleryImageAlt": "Gallery image {index}",
+        "galleryRemove": "Remove image",
         "socialsHint": "Website and social profile URLs (same for all languages).",
         "financeImport": {
           "button": "Import",
@@ -3693,7 +3775,7 @@
         "publishConfirm": "Publish \"{name}\"? It will become visible on the public site.",
         "archiveConfirmTitle": "Archive project",
         "archiveConfirm": "Archive \"{name}\"? It will no longer appear in the public catalog.",
-        "deleteConfirm": "Delete this draft project? This cannot be undone.",
+        "deleteConfirm": "Delete this project and all of its buildings? This cannot be undone.",
         "deleteConfirmTitle": "Delete project",
         "publicationSuccess": "Publication status updated"
       }
@@ -3914,7 +3996,7 @@
         "publish": "Publish",
         "unpublish": "Unpublish",
         "delete": "Delete",
-        "deleteConfirm": "Delete this draft apartment? This cannot be undone.",
+        "deleteConfirm": "Delete this apartment? This cannot be undone.",
         "deleteConfirmTitle": "Delete apartment",
         "publicationSuccess": "Publication updated"
       },
@@ -4066,7 +4148,7 @@
         "follow_up_needed": "Follow-up",
         "apartment_selected": "Apartment selected",
         "reserved": "Reserved",
-        "converted": "Converted",
+        "converted": "Buy",
         "closed": "Closed",
         "lost": "Lost"
       },
@@ -4080,11 +4162,11 @@
         "cta": "+ New Deal",
         "title": "New deal",
         "contactName": "Full name",
-        "contactNamePlaceholder": "John Doe",
+        "contactNamePlaceholder": "John Smith",
         "contactPhone": "Phone",
         "contactPhonePlaceholder": "37491111222",
         "contactEmail": "Email",
-        "contactEmailPlaceholder": "john.doe@example.com",
+        "contactEmailPlaceholder": "john.smith@example.com",
         "project": "Project",
         "projectOptional": "No project",
         "note": "Note",
@@ -4113,13 +4195,17 @@
         "lostReason": "Lost reason",
         "lostReasonRequired": "Lost reason is required",
         "apartmentRequired": "Link an apartment before this status",
-        "apartmentHint": "Reserved / converted / apartment selected require a linked apartment.",
+        "apartmentHint": "Reserved / Buy / apartment selected require a linked apartment.",
         "saveStatus": "Update status",
         "assigneeTitle": "Assignee",
         "assignee": "Responsible",
         "unassigned": "Unassigned",
         "saveAssignee": "Update assignee",
         "saving": "Saving…",
+        "paymentAmount": "Amount paid",
+        "paymentAmountPlaceholder": "0",
+        "paymentNotePlaceholder": "Optional note",
+        "addPayment": "Record payment",
         "notesTitle": "Notes",
         "notesEmpty": "No notes yet",
         "notePlaceholder": "Add an internal note…",
@@ -4148,6 +4234,7 @@
         "loadingApartments": "Loading apartments…",
         "linkApartmentAction": "Link apartment",
         "linkSuccess": "Apartment linked",
+        "oneApartmentHint": "This deal already has an apartment. Unlink it to choose another.",
         "primary": "Primary",
         "linkTypes": {
           "interest": "Interest",
@@ -4159,7 +4246,11 @@
         "requestsEmpty": "No requests yet",
         "errors": {
           "generic": "Something went wrong. Please try again.",
-          "unlinkBlocked": "Cannot unlink: deal status requires a linked apartment."
+          "invalidPaymentAmount": "Enter a valid amount (minimum 0.01).",
+          "unlinkBlocked": "Cannot unlink: deal status requires a linked apartment.",
+          "reservedConflict": "This apartment is already reserved by another deal.",
+          "alreadySold": "This apartment is already sold.",
+          "alreadyLinked": "This deal already has a linked apartment."
         },
         "unlinkApartment": "Unlink",
         "unlinkConfirm": "Unlink apartment {apartment} from this deal?",

@@ -2,6 +2,7 @@ import type { BuilderDetail } from '@toonexpo/contracts';
 import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 
+import { CATALOG_HERO_CARD_DESCRIPTION_DESKTOP_CLASS } from '@/features/catalog/constants/catalog-hero-card';
 import { resolveBuilderHeroAddress } from '@/features/catalog/utils/resolve-builder-hero-address';
 import { resolvePublicAssetUrl } from '@/shared/lib/static-asset-url';
 import { cn } from '@/shared/ui/cn';
@@ -29,7 +30,13 @@ const BuilderMark = ({ name, logoUrl, initials }: BuilderMarkProps) =>
         BUILDER_LOGO_SIZE_CLASS,
       )}
     >
-      <Image src={logoUrl} alt={name} fill className="object-cover" sizes={BUILDER_LOGO_IMAGE_SIZES} />
+      <Image
+        src={logoUrl}
+        alt={name}
+        fill
+        className="object-cover"
+        sizes={BUILDER_LOGO_IMAGE_SIZES}
+      />
     </span>
   ) : (
     <span
@@ -61,12 +68,14 @@ const BuilderHeroSummary = ({
   <div className="flex items-start gap-5">
     <BuilderMark name={name} logoUrl={logoUrl} initials={initials} />
     <div className="min-w-0 flex-1">
-      <p className="text-[11px] font-bold tracking-[0.2em] text-brand-secondary uppercase">{eyebrow}</p>
+      <p className="text-[11px] font-bold tracking-[0.2em] text-brand-secondary uppercase">
+        {eyebrow}
+      </p>
       <h1 className="mt-2 font-brand text-[clamp(2rem,5vw,3.75rem)] font-bold leading-[1.15] tracking-[-0.03em] text-ink-navy">
         {name}
       </h1>
       {description ? (
-        <p className="mt-3 max-w-2xl text-lg leading-6 text-header-muted">{description}</p>
+        <p className={CATALOG_HERO_CARD_DESCRIPTION_DESKTOP_CLASS}>{description}</p>
       ) : null}
     </div>
   </div>
@@ -136,8 +145,12 @@ export const BuilderDetailHero = async ({ builder }: BuilderDetailHeroProps) => 
               label={t('buildersPage.detail.projectCount')}
               value={String(builder.publishedProjectCount)}
             />
-            {region ? <HeroStat label={t('buildersPage.detail.statRegion')} value={region} /> : null}
-            {address ? <HeroStat label={t('buildersPage.detail.statAddress')} value={address} /> : null}
+            {region ? (
+              <HeroStat label={t('buildersPage.detail.statRegion')} value={region} />
+            ) : null}
+            {address ? (
+              <HeroStat label={t('buildersPage.detail.statAddress')} value={address} />
+            ) : null}
           </dl>
         </div>
       </div>

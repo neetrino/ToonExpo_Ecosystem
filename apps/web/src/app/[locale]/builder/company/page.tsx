@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { headers } from 'next/headers';
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getLocale, getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { CompanyProfileForm } from '@/features/builder/components/company-profile-form';
 import { getCompanyProfileCached as getCompanyProfile } from '@/features/builder/api/get-company-profile-cached';
@@ -11,7 +11,8 @@ type CompanyPageProps = {
 };
 
 export default async function BuilderCompanyPage({ params }: CompanyPageProps) {
-  const { locale } = await params;
+  await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
   const t = await getTranslations('Builder.company');
   const headerStore = await headers();

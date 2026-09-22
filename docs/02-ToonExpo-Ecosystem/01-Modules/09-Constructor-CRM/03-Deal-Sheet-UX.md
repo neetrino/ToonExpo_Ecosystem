@@ -15,11 +15,29 @@ Recommended v1 sections:
 - header/status;
 - buyer/client info;
 - source/context;
-- apartment links;
-- activities/follow-ups;
-- notes/comments;
+- tabs: Deal / Payment / Notes;
+- apartment links (Deal tab);
+- payment summary and history (Payment tab);
+- activities/follow-ups (Notes tab);
+- notes/comments (Notes tab);
 - history/audit;
 - actions.
+
+## Payment Tab
+
+Show:
+
+- linked apartment list price;
+- total paid;
+- remaining (`max(0, price - paid)`);
+- payment history (date, amount, who recorded, optional note);
+- amount field to record a new payment (builder only).
+
+Rules:
+
+- a deal must have a linked apartment before a payment can be recorded;
+- overpayment is allowed (remaining shows 0);
+- payments are CRM-internal records, not a payment gateway.
 
 ## Header
 
@@ -109,6 +127,7 @@ Recommended:
 - change status;
 - add activity;
 - add note;
+- record payment;
 - select apartment;
 - reserve apartment;
 - mark converted/sold;
@@ -126,4 +145,3 @@ If deal has no activities:
 
 - show "No follow-up activity yet";
 - provide add activity action.
-

@@ -1,8 +1,18 @@
 export const MEDIA_UPLOAD_MAX_BYTES = 10 * 1024 * 1024;
 
-export const MEDIA_MODEL3D_UPLOAD_MAX_BYTES = 15 * 1024 * 1024;
+export const MEDIA_MODEL3D_UPLOAD_MAX_BYTES = 100 * 1024 * 1024;
 
 export const MEDIA_UPLOAD_FIELD_NAME = 'file';
+
+/** Placeholder `fileUrl` until direct-to-R2 (or multipart) upload completes. */
+export const MEDIA_PENDING_FILE_URL = 'pending';
+
+/** Presigned PUT lifetime for direct model3d uploads. */
+export const MEDIA_DIRECT_UPLOAD_PRESIGN_TTL_SECONDS = 15 * 60;
+
+export const MEDIA_DIRECT_UPLOAD_KINDS = ['model3d'] as const;
+
+export type MediaDirectUploadKind = (typeof MEDIA_DIRECT_UPLOAD_KINDS)[number];
 
 export const MEDIA_DEFAULT_PAGE_SIZE = 24;
 

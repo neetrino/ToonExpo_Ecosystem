@@ -18,6 +18,7 @@ import {
   type CrmDealFiltersState,
 } from '@/features/builder/components/crm-deal-filters';
 import { CrmDealNotesSection } from '@/features/builder/components/crm-deal-notes-section';
+import { CrmDealPaymentsSection } from '@/features/builder/components/crm-deal-payments-section';
 import { CrmDealRequestsSection } from '@/features/builder/components/crm-deal-requests-section';
 import { CrmDealStatusControl } from '@/features/builder/components/crm-deal-status-control';
 import { CrmNewDealPanel } from '@/features/builder/components/crm-new-deal-panel';
@@ -27,6 +28,7 @@ import {
   PORTAL_MAX_PAGE_SIZE,
 } from '@/features/builder/constants';
 import {
+  invalidateCrmInventoryQueries,
   useCrmDealQuery,
   useCrmDealsQuery,
   useDeleteCrmDealMutation,
@@ -38,12 +40,11 @@ import {
   isCrmStatusTransitionAllowed,
 } from '@/features/builder/utils/crm-status-transitions';
 import { CrmDealSheet, CrmKanbanBoard } from '@/features/crm-board';
-import { CRM_BOARD_SEARCH_DEBOUNCE_MS } from '@/features/crm-board/constants';
 import { CrmNewColumnCreateButton } from '@/features/crm-board/crm-new-column-create-button';
 import { filterCrmDealsBySearch } from '@/features/crm-board/filter-crm-deals-by-search';
 import { useCrmDealSheetUrl } from '@/features/crm-board/use-crm-deal-sheet-url';
 import { useCrmNewLeadUrl } from '@/features/crm-board/use-crm-new-lead-url';
-import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
+import { useDebouncedSearch } from '@/shared/hooks/use-debounced-search';
 import { ListPageHeader } from '@/shared/ui/list-page-header';
 
 /**
@@ -54,7 +55,7 @@ export const CrmDealsListPage = () => {
   const tBoard = useTranslations('CrmBoard');
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
-  const debouncedSearch = useDebouncedValue(search.trim(), CRM_BOARD_SEARCH_DEBOUNCE_MS);
+  const activeSearch = useDebouncedSearch(search);
   const [boardError, setBoardError] = useState<string | null>(null);
   const { isNewLeadOpen, openNewLead, closeNewLead } = useCrmNewLeadUrl();
   const [filters, setFilters] = useState<CrmDealFiltersState>(EMPTY_CRM_DEAL_FILTERS);
@@ -68,7 +69,7 @@ export const CrmDealsListPage = () => {
     ...(filters.source ? { source: filters.source } : {}),
     ...(filters.projectId ? { projectId: filters.projectId } : {}),
     ...(filters.assignedUserId ? { assignedUserId: filters.assignedUserId } : {}),
-    ...(debouncedSearch ? { q: debouncedSearch } : {}),
+    ...(activeSearch ? { q: activeSearch } : {}),
   });
 
   const deals = useMemo(
@@ -138,6 +139,7 @@ export const CrmDealsListPage = () => {
     try {
       await updateCrmDeal(dealId, { status });
       await queryClient.invalidateQueries({ queryKey: PORTAL_CRM_DEALS_QUERY_KEY });
+      invalidateCrmInventoryQueries(queryClient);
       return true;
     } catch {
       setBoardError(t('errors.generic'));
@@ -172,7 +174,7 @@ export const CrmDealsListPage = () => {
     <div className="crm-board-page">
       <div className="crm-board-page__chrome">
         <ListPageHeader
-        icon={Briefcase}
+          icon={Briefcase}
           eyebrow={t('eyebrow')}
           title={t('title')}
           subtitle={t('subtitle', { count: totalCount })}
@@ -186,6 +188,7 @@ export const CrmDealsListPage = () => {
             setFilters((prev) => applyCrmDealFilterKey(prev, key, value));
           }}
           onClearAll={() => {
+            setSearch('');
             setFilters(EMPTY_CRM_DEAL_FILTERS);
           }}
         />
@@ -252,11 +255,18 @@ export const CrmDealsListPage = () => {
         editSections={
           dealQuery.data ? (
             <div className="flex flex-col gap-4">
-              <div className="grid gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <CrmDealStatusControl deal={dealQuery.data} />
                 <CrmDealAssigneeControl deal={dealQuery.data} />
               </div>
               <CrmDealApartmentsSection deal={dealQuery.data} />
+            </div>
+          ) : null
+        }
+        paymentSection={dealQuery.data ? <CrmDealPaymentsSection deal={dealQuery.data} /> : null}
+        notesSection={
+          dealQuery.data ? (
+            <div className="flex flex-col gap-4">
               <CrmDealNotesSection deal={dealQuery.data} />
               <CrmDealActivitiesSection deal={dealQuery.data} />
               <CrmDealRequestsSection deal={dealQuery.data} />

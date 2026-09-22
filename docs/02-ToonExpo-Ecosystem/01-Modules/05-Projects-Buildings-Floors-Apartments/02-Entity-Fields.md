@@ -55,6 +55,7 @@ Fields on `Company` used for public catalog presentation:
 - completion_date optional;
 - amenities optional;
 - nearby_places optional;
+- price_on_request_enabled (builder-only; default off; cascades to buildings / inherited by new buildings);
 
 ### Operational Fields
 

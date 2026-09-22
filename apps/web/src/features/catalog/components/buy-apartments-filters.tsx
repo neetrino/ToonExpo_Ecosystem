@@ -3,10 +3,17 @@
 import { type ChangeEvent, type FormEvent, type ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 
+import { LocationSearchSelect } from '@/features/catalog/components/location-search-select';
 import {
   useLiveCatalogFilters,
   useLivePriceInputs,
 } from '@/features/catalog/hooks/use-live-catalog-filters';
+import {
+  expandCityFilterValues,
+  matchSelectedLocationOptions,
+  mergeLocationOptions,
+  POPULAR_CITY_KEYS,
+} from '@/features/catalog/utils/location-options';
 import {
   CATALOG_APARTMENTS_PATH,
   parseRoomsFilterValue,
@@ -62,26 +69,12 @@ export const BuyApartmentsFilters = ({ filters, cities }: BuyApartmentsFiltersPr
       )}
     >
       <div className="page-container flex flex-wrap items-end gap-x-4 gap-y-3 py-4">
-        <FilterField label={t('filters.location')}>
-          <Select
-            name="city"
-            size="fit"
-            value={filters.city ?? ''}
-            className={cn(filterControlClassName, 'min-w-[9.5rem] bg-band-mist/60')}
-            aria-label={t('filters.location')}
-            onChange={(event) => {
-              const city = event.target.value.trim();
-              replaceFilters({ city: city.length > 0 ? city : undefined });
-            }}
-          >
-            <option value="">{t('filters.allCities')}</option>
-            {cities.map((city) => (
-              <option key={city} value={city}>
-                {city}
-              </option>
-            ))}
-          </Select>
-        </FilterField>
+        <BuyLocationFilter
+          cities={cities}
+          selectedCityParam={filters.city}
+          label={t('filters.location')}
+          onCityChange={(city) => replaceFilters({ city })}
+        />
 
         <FilterField label={t('filters.price')} shrink={false}>
           <div className={cn(filterControlClassName, 'flex w-fit shrink-0 items-center gap-2')}>
@@ -149,6 +142,47 @@ export const BuyApartmentsFilters = ({ filters, cities }: BuyApartmentsFiltersPr
         </FilterField>
       </div>
     </Form>
+  );
+};
+
+type BuyLocationFilterProps = {
+  cities: string[];
+  selectedCityParam: string | undefined;
+  label: string;
+  onCityChange: (city: string | undefined) => void;
+};
+
+const BuyLocationFilter = ({
+  cities,
+  selectedCityParam,
+  label,
+  onCityChange,
+}: BuyLocationFilterProps) => {
+  const heroT = useTranslations('HomePage.hero');
+  const popularCities = POPULAR_CITY_KEYS.map((key) => heroT(`popularCities.${key}`));
+  const locationOptions = mergeLocationOptions(cities, popularCities);
+  const selectedCities = matchSelectedLocationOptions(locationOptions, selectedCityParam);
+
+  return (
+    <LocationSearchSelect
+      variant="compact"
+      values={selectedCities}
+      options={locationOptions}
+      fieldLabel={label}
+      aria-label={label}
+      labels={{
+        any: heroT('locationAny'),
+        placeholder: heroT('locationPlaceholder'),
+        search: heroT('locationSearch'),
+        empty: heroT('locationEmpty'),
+        selectedCount: (count) => heroT('locationSelectedCount', { count }),
+      }}
+      onChange={(nextCities) => {
+        onCityChange(
+          nextCities.length > 0 ? expandCityFilterValues(nextCities).join(',') : undefined,
+        );
+      }}
+    />
   );
 };
 

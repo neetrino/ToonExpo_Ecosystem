@@ -43,7 +43,7 @@ export const SiteHeaderMobileNav = ({
       id="mobile-nav"
       className={cn(
         'origin-top rounded-[1.25rem] border border-header-border',
-        'bg-surface-elevated px-1 py-3 text-ink shadow-[0_12px_40px_rgb(9_43_68/0.14)]',
+        'bg-surface-elevated px-1 py-3 text-ink shadow-[0_12px_40px_rgb(25_38_67/0.14)]',
         'will-change-transform motion-reduce:will-change-auto',
         !visible && 'pointer-events-none',
         className,

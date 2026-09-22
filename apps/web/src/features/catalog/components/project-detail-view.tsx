@@ -16,9 +16,9 @@ type ProjectDetailViewProps = {
 export const ProjectDetailView = ({ project }: ProjectDetailViewProps) => (
   <>
     <ProjectDetailHero project={project} />
-    <ProjectInteractiveMapSection projectId={project.id} projectSlug={project.slug} />
     <ProjectCatalogSection project={project} />
     <ProjectConstructionTimeline project={project} />
+    <ProjectInteractiveMapSection projectId={project.id} projectSlug={project.slug} />
     <ProjectReserveCta projectId={project.id} projectName={project.name} />
   </>
 );

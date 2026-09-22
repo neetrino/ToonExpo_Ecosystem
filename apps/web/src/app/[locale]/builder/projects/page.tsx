@@ -1,7 +1,7 @@
-import { setRequestLocale } from "next-intl/server";
-import { Suspense } from "react";
+import { getLocale, setRequestLocale } from 'next-intl/server';
+import { Suspense } from 'react';
 
-import { ProjectsListPage } from "@/features/builder/components/projects-list-page";
+import { ProjectsListPage } from '@/features/builder/components/projects-list-page';
 
 type BuilderProjectsPageProps = {
   params: Promise<{ locale: string }>;
@@ -10,10 +10,9 @@ type BuilderProjectsPageProps = {
 /**
  * Builder projects list route.
  */
-export default async function BuilderProjectsPage({
-  params,
-}: BuilderProjectsPageProps) {
-  const { locale } = await params;
+export default async function BuilderProjectsPage({ params }: BuilderProjectsPageProps) {
+  await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return (

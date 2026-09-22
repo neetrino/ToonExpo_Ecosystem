@@ -124,6 +124,7 @@ model CrmDeal {
   apartmentLinks CrmDealApartmentLink[]
   notes          CrmNote[]
   activities     CrmFollowUpActivity[]
+  payments       CrmDealPayment[]
 
   @@index([companyId])
   @@index([buyerProfileId])
@@ -202,4 +203,21 @@ model CrmFollowUpActivity {
   @@index([dueAt])
   @@index([assignedUserId])
   @@map("crm_follow_up_activities")
+}
+
+model CrmDealPayment {
+  id              String   @id @default(cuid())
+  crmDealId       String   @map("crm_deal_id")
+  amount          Decimal  @map("amount") @db.Decimal(14, 2)
+  currency        String   @default("AMD")
+  note            String?
+  createdByUserId String   @map("created_by_user_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  crmDeal   CrmDeal @relation(fields: [crmDealId], references: [id], onDelete: Cascade)
+  createdBy User    @relation("CrmPaymentCreatedBy", fields: [createdByUserId], references: [id], onDelete: Restrict)
+
+  @@index([crmDealId])
+  @@index([createdAt])
+  @@map("crm_deal_payments")
 }

@@ -7,7 +7,6 @@ import type { TRANSLATION_LOCALES } from '@/features/builder/constants';
 import {
   PROJECT_CATALOG_DETAILS_KEYS,
   PROJECT_CATALOG_FINANCE_KEYS,
-  PROJECT_CATALOG_MEDIA_LINK_EDITOR_IDS,
   PROJECT_CATALOG_OVERVIEW_KEYS,
   PROJECT_CATALOG_SOCIAL_LINK_EDITOR_IDS,
 } from '@/features/builder/constants/project-catalog-editor';
@@ -16,10 +15,12 @@ import {
   getUrlPlaceholder,
 } from '@/features/builder/constants/project-content-placeholders';
 import { ProjectCatalogChecklistEditor } from '@/features/builder/components/project-catalog-checklist-editor';
+import { ProjectCatalogGalleryEditor } from '@/features/builder/components/project-catalog-gallery-editor';
 import {
   ProjectCatalogKvEditor,
   ProjectCatalogOverviewEditor,
 } from '@/features/builder/components/project-catalog-layout-fields';
+import { ProjectConstructionTimelineEditor } from '@/features/builder/components/project-construction-timeline-editor';
 import { ProjectBankPartnerOffersSection } from '@/features/builder/components/project-bank-partner-offers-section';
 import { TranslationTabs } from '@/features/builder/components/translation-tabs';
 import type { UpdateProjectFormValues } from '@/features/builder/schemas/project.schema';
@@ -72,11 +73,7 @@ const listFieldName = (
         ? 'amenityLabelsRu'
         : 'amenityLabelsEn';
   }
-  return locale === 'hy'
-    ? 'nearbyPlacesHy'
-    : locale === 'ru'
-      ? 'nearbyPlacesRu'
-      : 'nearbyPlacesEn';
+  return locale === 'hy' ? 'nearbyPlacesHy' : locale === 'ru' ? 'nearbyPlacesRu' : 'nearbyPlacesEn';
 };
 
 type CatalogLinkFieldsProps = {
@@ -116,6 +113,7 @@ export const ProjectCatalogEditor = ({
 }: ProjectCatalogEditorProps) => {
   const t = useTranslations('Builder.projects.catalog');
   const tCatalog = useTranslations('Catalog.projectDetail.catalog');
+  const tTimeline = useTranslations('Catalog.projectDetail');
 
   return (
     <fieldset className="flex flex-col gap-4 border-t border-border pt-8">
@@ -123,6 +121,11 @@ export const ProjectCatalogEditor = ({
         {tCatalog('title')}
       </legend>
       <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
+
+      <ProjectCatalogSectionCard title={tTimeline('timelineTitle')}>
+        <p className="mb-4 text-sm text-ink-secondary">{t('timelineSubtitle')}</p>
+        <ProjectConstructionTimelineEditor control={control} />
+      </ProjectCatalogSectionCard>
 
       <TranslationTabs>
         {(locale) => (
@@ -200,12 +203,14 @@ export const ProjectCatalogEditor = ({
       <ProjectBankPartnerOffersSection projectId={projectId} />
 
       <div className="mt-2 space-y-5 sm:space-y-6">
-        <ProjectCatalogSectionCard title={tCatalog('links')}>
-          <p className="mb-4 text-sm text-ink-secondary">{t('linksHint')}</p>
-          <CatalogLinkFields
-            ids={PROJECT_CATALOG_MEDIA_LINK_EDITOR_IDS}
-            register={register}
-            labelFor={(key) => tCatalog(key)}
+        <ProjectCatalogSectionCard title={tCatalog('gallery')}>
+          <p className="mb-4 text-sm text-ink-secondary">{t('galleryHint')}</p>
+          <Controller
+            control={control}
+            name="catalogGallery"
+            render={({ field }) => (
+              <ProjectCatalogGalleryEditor value={field.value} onChange={field.onChange} />
+            )}
           />
         </ProjectCatalogSectionCard>
 

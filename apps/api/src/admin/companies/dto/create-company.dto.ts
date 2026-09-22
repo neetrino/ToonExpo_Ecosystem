@@ -1,12 +1,15 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsEmail,
   IsEnum,
+  IsObject,
   IsOptional,
   IsString,
   MaxLength,
   MinLength,
-} from "class-validator";
+  ValidateNested,
+} from 'class-validator';
 
 import {
   COMPANY_DESCRIPTION_MAX_LENGTH,
@@ -15,17 +18,18 @@ import {
   EMAIL_MAX_LENGTH,
   NAME_MAX_LENGTH,
   PHONE_MAX_LENGTH,
-} from "../../../common/constants/app.constants.js";
+} from '../../../common/constants/app.constants.js';
+import { CompanyTranslationsDto } from './company-translations.dto.js';
 
 enum CompanyTypeDto {
-  builder = "builder",
-  partner = "partner",
-  bank = "bank",
-  service = "service",
+  builder = 'builder',
+  partner = 'partner',
+  bank = 'bank',
+  service = 'service',
 }
 
 export class CreateCompanyDto {
-  @ApiProperty({ example: "Glendale Hills" })
+  @ApiProperty({ example: 'Glendale Hills' })
   @IsString()
   @MinLength(1)
   @MaxLength(COMPANY_NAME_MAX_LENGTH)
@@ -47,28 +51,35 @@ export class CreateCompanyDto {
   @MaxLength(COMPANY_SHORT_DESCRIPTION_MAX_LENGTH)
   shortDescription?: string;
 
-  @ApiProperty({ example: "Anna Admin" })
+  @ApiProperty({ example: 'Anna Admin' })
   @IsString()
   @MinLength(1)
   @MaxLength(NAME_MAX_LENGTH)
   adminName!: string;
 
-  @ApiProperty({ example: "admin@builder.example" })
+  @ApiProperty({ example: 'admin@builder.example' })
   @IsEmail()
   @MaxLength(EMAIL_MAX_LENGTH)
   adminEmail!: string;
 
-  @ApiPropertyOptional({ example: "+37491111222" })
+  @ApiPropertyOptional({ example: '+37491111222' })
   @IsOptional()
   @IsString()
   @MinLength(5)
   @MaxLength(PHONE_MAX_LENGTH)
   adminPhone?: string;
 
-  @ApiPropertyOptional({ example: "en" })
+  @ApiPropertyOptional({ example: 'en' })
   @IsOptional()
   @IsString()
   @MinLength(2)
   @MaxLength(8)
   locale?: string;
+
+  @ApiPropertyOptional({ type: CompanyTranslationsDto })
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => CompanyTranslationsDto)
+  translations?: CompanyTranslationsDto;
 }

@@ -1,5 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import {
+  HOME_FEATURED_APARTMENT_LIMIT,
+  HOME_FEATURED_PROJECT_LIMIT,
+} from '../../catalog/catalog.constants.js';
 import type { PrismaService } from '../../prisma/prisma.service.js';
 import { AdminHomeFeaturedService } from './admin-home-featured.service.js';
 
@@ -47,27 +51,27 @@ describe('AdminHomeFeaturedService', () => {
     expect(revalidateCatalog).toHaveBeenCalledWith('pr_1');
   });
 
-  it('rejects pinning when the homepage already has 3 featured projects', async () => {
+  it('rejects pinning when the homepage project limit is reached', async () => {
     projectFindUnique.mockResolvedValue({ id: 'pr_1', featuredOnHome: false });
-    projectCount.mockResolvedValue(3);
+    projectCount.mockResolvedValue(HOME_FEATURED_PROJECT_LIMIT);
 
     await expect(service.setProjectFeaturedOnHome('pr_1', true)).rejects.toMatchObject({
-      message: 'Homepage already has 3 featured projects',
+      message: `Homepage already has ${HOME_FEATURED_PROJECT_LIMIT} featured projects`,
     });
     expect(projectUpdate).not.toHaveBeenCalled();
     expect(revalidateCatalog).not.toHaveBeenCalled();
   });
 
-  it('rejects pinning when the homepage already has 6 featured apartments', async () => {
+  it('rejects pinning when the homepage apartment limit is reached', async () => {
     apartmentFindUnique.mockResolvedValue({
       id: 'apt_1',
       featuredOnHome: false,
       projectId: 'pr_1',
     });
-    apartmentCount.mockResolvedValue(6);
+    apartmentCount.mockResolvedValue(HOME_FEATURED_APARTMENT_LIMIT);
 
     await expect(service.setApartmentFeaturedOnHome('apt_1', true)).rejects.toMatchObject({
-      message: 'Homepage already has 6 featured apartments',
+      message: `Homepage already has ${HOME_FEATURED_APARTMENT_LIMIT} featured apartments`,
     });
     expect(apartmentUpdate).not.toHaveBeenCalled();
     expect(revalidateCatalog).not.toHaveBeenCalled();

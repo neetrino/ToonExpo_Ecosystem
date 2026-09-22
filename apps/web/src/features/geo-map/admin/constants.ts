@@ -8,7 +8,7 @@ export const ADMIN_GEO_MAP_MODELS_QUERY_KEY = ['admin', 'geo-map', 'models'] as 
 export const GEO_MAP_ADMIN_PROJECTS_PAGE_SIZE = ADMIN_COMPANIES_MAX_PAGE_SIZE;
 
 /** Matches NestJS `MEDIA_MODEL3D_UPLOAD_MAX_BYTES`. */
-export const GEO_MAP_GLB_MAX_BYTES = 15 * 1024 * 1024;
+export const GEO_MAP_GLB_MAX_BYTES = 100 * 1024 * 1024;
 
 export const GEO_MAP_GLB_EXTENSION = '.glb';
 

@@ -1,23 +1,29 @@
-import {
-  BadRequestException,
-  Injectable,
-} from "@nestjs/common";
-import type { CrmApartmentLinkItem } from "@toonexpo/contracts";
-import {
-  CrmActivityStatus,
-  CrmActivityType,
-  type CrmDealStatus,
-} from "@toonexpo/db";
+import { BadRequestException, Injectable } from '@nestjs/common';
+import type { CrmApartmentLinkItem } from '@toonexpo/contracts';
+import type { CrmDealStatus } from '@toonexpo/db';
 
-import type { CompanyMemberContext } from "../../company/types/company-member-context.js";
-import { PrismaService } from "../../prisma/prisma.service.js";
-import { entityNotFound } from "../../portal/utils/access.js";
-import { CRM_STATUSES_REQUIRING_APARTMENT } from "../crm.constants.js";
-import { toApartmentLinkCreateData } from "../intake/intake.helpers.js";
-import { mapApartmentLinkItem } from "../mappers/crm.mapper.js";
+import type { CompanyMemberContext } from '../../company/types/company-member-context.js';
+import { PrismaService } from '../../prisma/prisma.service.js';
+import { entityNotFound } from '../../portal/utils/access.js';
+import {
+  CRM_MAX_LINKED_APARTMENTS_PER_DEAL,
+  CRM_STATUSES_REQUIRING_APARTMENT,
+} from '../crm.constants.js';
+import { mapApartmentLinkItem } from '../mappers/crm.mapper.js';
+import {
+  CRM_DEAL_ALREADY_HAS_APARTMENT,
+  assertApartmentReservableByDeal,
+  inventorySalesStatusForDeal,
+  isApartmentInventorySynced,
+  linkTypeForInventoryStatus,
+} from '../status/crm-inventory-sync.js';
+import {
+  persistDealApartmentAttach,
+  persistDealApartmentDetach,
+  type DealApartmentOwnedRow,
+} from './portal-crm-deal-apartment-writes.js';
 
-const ATTACH_ACTIVITY_TITLE = "Apartment linked to deal";
-const DETACH_ACTIVITY_TITLE = "Apartment unlinked from deal";
+type DealRow = { id: string; status: CrmDealStatus; projectId: string | null };
 
 /**
  * Attach / detach apartments on an existing company CRM deal.
@@ -33,78 +39,28 @@ export class PortalCrmDealApartmentsService {
     apartmentId: string,
   ): Promise<CrmApartmentLinkItem> {
     const deal = await this.requireCompanyDeal(member.companyId, dealId);
-    const apartment = await this.prisma.db.apartment.findFirst({
-      where: {
-        id: apartmentId,
-        project: { builderCompanyId: member.companyId },
-      },
-      select: {
-        id: true,
-        number: true,
-        projectId: true,
-        salesStatus: true,
-        price: true,
-        priceVisibility: true,
-      },
-    });
-    if (!apartment) {
-      throw entityNotFound("Apartment");
+    const apartment = await this.loadOwnedApartment(member.companyId, apartmentId);
+    await this.assertSingleApartmentSlot(deal.id, apartment.id);
+    const nextStatus = inventorySalesStatusForDeal(deal.status);
+    if (!isApartmentInventorySynced(apartment, deal.id, nextStatus)) {
+      assertApartmentReservableByDeal(apartment, deal.id);
     }
-
     const existingCount = await this.prisma.db.crmDealApartmentLink.count({
       where: { crmDealId: deal.id },
     });
-    const linkData = toApartmentLinkCreateData({
-      apartmentId: apartment.id,
-      createdByUserId: actorUserId,
-      salesStatus: apartment.salesStatus,
-      price: apartment.price,
-      priceVisibility: apartment.priceVisibility,
+    const link = await this.prisma.db.$transaction((tx) =>
+      persistDealApartmentAttach(tx, {
+        deal,
+        apartment,
+        actorUserId,
+        existingCount,
+        nextStatus,
+      }),
+    );
+    return mapApartmentLinkItem({
+      ...link,
+      linkType: linkTypeForInventoryStatus(nextStatus),
     });
-
-    const link = await this.prisma.db.$transaction(async (tx) => {
-      const upserted = await tx.crmDealApartmentLink.upsert({
-        where: {
-          crmDealId_apartmentId: {
-            crmDealId: deal.id,
-            apartmentId: apartment.id,
-          },
-        },
-        create: {
-          crmDealId: deal.id,
-          ...linkData,
-          isPrimary: existingCount === 0,
-        },
-        update: {},
-        include: { apartment: { select: { number: true } } },
-      });
-
-      await tx.crmFollowUpActivity.create({
-        data: {
-          crmDealId: deal.id,
-          type: CrmActivityType.status_update,
-          title: ATTACH_ACTIVITY_TITLE,
-          description: `Apartment: ${apartment.number}`,
-          status: CrmActivityStatus.done,
-          createdByUserId: actorUserId,
-          completedAt: new Date(),
-        },
-      });
-
-      await tx.crmDeal.update({
-        where: { id: deal.id },
-        data: {
-          lastActivityAt: new Date(),
-          ...(deal.projectId == null
-            ? { projectId: apartment.projectId }
-            : {}),
-        },
-      });
-
-      return upserted;
-    });
-
-    return mapApartmentLinkItem(link);
   }
 
   async detach(
@@ -114,61 +70,82 @@ export class PortalCrmDealApartmentsService {
     apartmentId: string,
   ): Promise<void> {
     const deal = await this.requireCompanyDeal(member.companyId, dealId);
+    const link = await this.loadDealApartmentLink(deal.id, apartmentId);
+    await this.assertCanDetach(deal);
+    await this.prisma.db.$transaction((tx) =>
+      persistDealApartmentDetach(tx, { dealId: deal.id, actorUserId, link }),
+    );
+  }
+
+  private async assertSingleApartmentSlot(dealId: string, apartmentId: string): Promise<void> {
+    const otherCount = await this.prisma.db.crmDealApartmentLink.count({
+      where: { crmDealId: dealId, apartmentId: { not: apartmentId } },
+    });
+    if (otherCount >= CRM_MAX_LINKED_APARTMENTS_PER_DEAL) {
+      throw new BadRequestException(CRM_DEAL_ALREADY_HAS_APARTMENT);
+    }
+  }
+
+  private async loadOwnedApartment(
+    companyId: string,
+    apartmentId: string,
+  ): Promise<DealApartmentOwnedRow> {
+    const apartment = await this.prisma.db.apartment.findFirst({
+      where: {
+        id: apartmentId,
+        project: { builderCompanyId: companyId },
+      },
+      select: {
+        id: true,
+        number: true,
+        projectId: true,
+        salesStatus: true,
+        activeCrmDealId: true,
+        price: true,
+        priceVisibility: true,
+      },
+    });
+    if (!apartment) {
+      throw entityNotFound('Apartment');
+    }
+    return apartment;
+  }
+
+  private async loadDealApartmentLink(dealId: string, apartmentId: string) {
     const link = await this.prisma.db.crmDealApartmentLink.findUnique({
       where: {
-        crmDealId_apartmentId: {
-          crmDealId: deal.id,
-          apartmentId,
+        crmDealId_apartmentId: { crmDealId: dealId, apartmentId },
+      },
+      include: {
+        apartment: {
+          select: { number: true, salesStatus: true, activeCrmDealId: true },
         },
       },
-      include: { apartment: { select: { number: true } } },
     });
     if (!link) {
-      throw entityNotFound("Apartment link");
+      throw entityNotFound('Apartment link');
     }
+    return link;
+  }
 
+  private async assertCanDetach(deal: DealRow): Promise<void> {
     const linkCount = await this.prisma.db.crmDealApartmentLink.count({
       where: { crmDealId: deal.id },
     });
-    if (
-      CRM_STATUSES_REQUIRING_APARTMENT.includes(deal.status) &&
-      linkCount <= 1
-    ) {
+    if (CRM_STATUSES_REQUIRING_APARTMENT.includes(deal.status) && linkCount <= 1) {
       throw new BadRequestException(
         `Cannot unlink the last apartment while status is ${deal.status}`,
       );
     }
-
-    await this.prisma.db.$transaction(async (tx) => {
-      await tx.crmDealApartmentLink.delete({ where: { id: link.id } });
-      await tx.crmFollowUpActivity.create({
-        data: {
-          crmDealId: deal.id,
-          type: CrmActivityType.status_update,
-          title: DETACH_ACTIVITY_TITLE,
-          description: `Apartment: ${link.apartment.number}`,
-          status: CrmActivityStatus.done,
-          createdByUserId: actorUserId,
-          completedAt: new Date(),
-        },
-      });
-      await tx.crmDeal.update({
-        where: { id: deal.id },
-        data: { lastActivityAt: new Date() },
-      });
-    });
   }
 
-  private async requireCompanyDeal(
-    companyId: string,
-    dealId: string,
-  ): Promise<{ id: string; status: CrmDealStatus; projectId: string | null }> {
+  private async requireCompanyDeal(companyId: string, dealId: string): Promise<DealRow> {
     const deal = await this.prisma.db.crmDeal.findFirst({
       where: { id: dealId, companyId },
       select: { id: true, status: true, projectId: true },
     });
     if (!deal) {
-      throw entityNotFound("Deal");
+      throw entityNotFound('Deal');
     }
     return deal;
   }

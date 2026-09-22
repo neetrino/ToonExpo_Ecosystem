@@ -65,6 +65,7 @@ const toListParams = (
   projectId?: string,
   search?: string,
   floorId?: string | readonly string[],
+  salesStatus?: string,
 ): ListAdminInventoryParams => ({
   page,
   pageSize,
@@ -77,6 +78,7 @@ const toListParams = (
   ...(projectId ? { projectId } : {}),
   ...(floorId && (Array.isArray(floorId) ? floorId.length > 0 : floorId) ? { floorId } : {}),
   ...(search ? { search } : {}),
+  ...(salesStatus ? { salesStatus } : {}),
 });
 
 const adminCatalogScope = (companyId: string): CatalogScope => ({
@@ -94,14 +96,7 @@ export const useAdminBuildingsQuery = (
   projectId?: string,
   options?: { enabled?: boolean; search?: string },
 ) => {
-  const params = toListParams(
-    page,
-    pageSize,
-    companyId,
-    undefined,
-    projectId,
-    options?.search,
-  );
+  const params = toListParams(page, pageSize, companyId, undefined, projectId, options?.search);
   return useQuery({
     queryKey: adminBuildingsQueryKey(params),
     queryFn: () => listAdminBuildings(params),
@@ -140,8 +135,18 @@ export const useAdminApartmentsQuery = (
   buildingId?: string | readonly string[],
   search?: string,
   floorId?: string | readonly string[],
+  salesStatus?: string,
 ) => {
-  const params = toListParams(page, pageSize, companyId, buildingId, undefined, search, floorId);
+  const params = toListParams(
+    page,
+    pageSize,
+    companyId,
+    buildingId,
+    undefined,
+    search,
+    floorId,
+    salesStatus,
+  );
   return useQuery({
     queryKey: adminApartmentsQueryKey(params),
     queryFn: () => listAdminApartments(params),
@@ -357,7 +362,7 @@ export const useSetAdminApartmentFeaturedOnHomeMutation = () => {
 };
 
 /**
- * Deletes a draft building (admin catalog).
+ * Deletes a building (admin catalog).
  */
 export const useAdminDeleteBuildingMutation = () => {
   const queryClient = useQueryClient();
@@ -374,7 +379,7 @@ export const useAdminDeleteBuildingMutation = () => {
 };
 
 /**
- * Deletes a draft floor (admin catalog).
+ * Deletes a floor (admin catalog).
  */
 export const useAdminDeleteFloorMutation = () => {
   const queryClient = useQueryClient();

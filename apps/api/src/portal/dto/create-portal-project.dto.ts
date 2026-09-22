@@ -1,5 +1,5 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { Type } from "class-transformer";
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsDateString,
@@ -10,7 +10,7 @@ import {
   MaxLength,
   MinLength,
   ValidateNested,
-} from "class-validator";
+} from 'class-validator';
 
 import {
   PORTAL_ADDRESS_MAX_LENGTH,
@@ -18,12 +18,13 @@ import {
   PORTAL_DESCRIPTION_MAX_LENGTH,
   PORTAL_LOCATION_MAX_LENGTH,
   PORTAL_PROJECT_NAME_MAX_LENGTH,
+  PORTAL_PROJECT_TYPE_MAX_LENGTH,
   PORTAL_SLUG_MAX_LENGTH,
-} from "../portal.constants.js";
-import { PortalTranslationsDto } from "./portal-translations.dto.js";
+} from '../portal.constants.js';
+import { PortalTranslationsDto } from './portal-translations.dto.js';
 
 export class CreatePortalProjectDto {
-  @ApiProperty({ example: "Northern Hills" })
+  @ApiProperty({ example: 'Northern Hills' })
   @IsString()
   @MinLength(1)
   @MaxLength(PORTAL_PROJECT_NAME_MAX_LENGTH)
@@ -85,7 +86,7 @@ export class CreatePortalProjectDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  @MaxLength(120)
+  @MaxLength(PORTAL_PROJECT_TYPE_MAX_LENGTH)
   projectType?: string;
 
   @ApiPropertyOptional()
@@ -94,7 +95,7 @@ export class CreatePortalProjectDto {
   @MaxLength(120)
   constructionStatus?: string;
 
-  @ApiPropertyOptional({ example: "2027-06-01" })
+  @ApiPropertyOptional({ example: '2027-06-01' })
   @IsOptional()
   @IsDateString()
   completionDate?: string;

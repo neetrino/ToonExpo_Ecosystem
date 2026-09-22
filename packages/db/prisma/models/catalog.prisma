@@ -97,6 +97,9 @@ model Project {
   featuredOnHome      Boolean           @default(false) @map("featured_on_home")
   /// Public "Verified" badge — set from Admin/builder project form.
   verified            Boolean           @default(false)
+  /// When true, public catalog hides all apartment prices in this project and shows a request CTA.
+  /// New buildings inherit this flag; toggling also cascades to existing buildings.
+  priceOnRequestEnabled Boolean         @default(false) @map("price_on_request_enabled")
   createdByUserId     String?           @map("created_by_user_id")
   updatedByUserId     String?           @map("updated_by_user_id")
   createdAt           DateTime          @default(now()) @map("created_at")

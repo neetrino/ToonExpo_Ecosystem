@@ -13,7 +13,11 @@ type ApartmentPriceRow = {
   priceCurrency: string;
   priceVisibility: string;
   priceOnRequestEnabled?: boolean;
-  building?: { priceOnRequestEnabled?: boolean } | null;
+  building?: {
+    priceOnRequestEnabled?: boolean;
+    project?: { priceOnRequestEnabled?: boolean } | null;
+  } | null;
+  project?: { priceOnRequestEnabled?: boolean } | null;
 };
 
 /**

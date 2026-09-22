@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type {
   CreateServiceProviderBody,
   CreateServiceProviderCategoryBody,
   UpdateServiceProviderBody,
   UpdateServiceProviderCategoryBody,
-} from "@toonexpo/contracts";
+} from '@toonexpo/contracts';
 
 import {
   createAdminServiceProvider,
@@ -18,17 +18,14 @@ import {
   updateAdminServiceProvider,
   updateAdminServiceProviderCategory,
   type ListAdminServiceProvidersParams,
-} from "@/features/admin/api/admin-service-providers-api";
+} from '@/features/admin/api/admin-service-providers-api';
 
 export const ADMIN_SERVICE_PROVIDER_CATEGORIES_QUERY_KEY = [
-  "admin",
-  "service-provider-categories",
+  'admin',
+  'service-provider-categories',
 ] as const;
 
-export const ADMIN_SERVICE_PROVIDERS_QUERY_KEY = [
-  "admin",
-  "service-providers",
-] as const;
+export const ADMIN_SERVICE_PROVIDERS_QUERY_KEY = ['admin', 'service-providers'] as const;
 
 export const useAdminServiceProviderCategoriesQuery = () =>
   useQuery({
@@ -77,19 +74,17 @@ export const useDeleteServiceProviderCategoryMutation = () => {
   });
 };
 
-export const useAdminServiceProvidersQuery = (
-  params: ListAdminServiceProvidersParams = {},
-) =>
+export const useAdminServiceProvidersQuery = (params: ListAdminServiceProvidersParams = {}) =>
   useQuery({
     queryKey: [...ADMIN_SERVICE_PROVIDERS_QUERY_KEY, params],
     queryFn: () => listAdminServiceProviders(params),
+    placeholderData: keepPreviousData,
   });
 
 export const useCreateServiceProviderMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (body: CreateServiceProviderBody) =>
-      createAdminServiceProvider(body),
+    mutationFn: (body: CreateServiceProviderBody) => createAdminServiceProvider(body),
     onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: ADMIN_SERVICE_PROVIDERS_QUERY_KEY,

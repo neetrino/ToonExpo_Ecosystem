@@ -15,6 +15,7 @@ import {
   createProjectSchema,
   type CreateProjectFormValues,
 } from '@/features/builder/schemas/project.schema';
+import { projectLocaleField } from '@/features/builder/utils/project-locale-fields';
 import { toCreateProjectRequest } from '@/features/builder/utils/project-mappers';
 import { VerifiedStatusField } from '@/features/builder/components/verified-status-field';
 import { MediaUploadField } from '@/features/media/components/media-upload-field';
@@ -40,8 +41,12 @@ const emptyValues = (): CreateProjectFormValues => ({
   locationTextEn: '',
   address: '',
   city: '',
-  district: '',
-  projectType: '',
+  districtHy: '',
+  districtRu: '',
+  districtEn: '',
+  projectTypeHy: '',
+  projectTypeRu: '',
+  projectTypeEn: '',
   constructionStatus: '',
   completionDate: '',
   coverMediaId: '',
@@ -63,8 +68,7 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
   const siteLocale = useLocale();
   const router = useRouter();
   const createMutation = useCreatePortalProjectMutation();
-  const { showError, onInvalid, errorToast, focusLocale, focusTick } =
-    useProjectFormErrorToast();
+  const { showError, onInvalid, errorToast, focusLocale, focusTick } = useProjectFormErrorToast();
 
   const {
     register,
@@ -81,8 +85,7 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
   const { lockSlugAuto } = useAutoProjectSlug({
     control,
     getSlug: () => getValues('slug'),
-    setSlug: (slug) =>
-      setValue('slug', slug, { shouldDirty: true, shouldValidate: true }),
+    setSlug: (slug) => setValue('slug', slug, { shouldDirty: true, shouldValidate: true }),
   });
   const slugField = register('slug');
 
@@ -93,7 +96,7 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
         onCreated({ id: project.id, slug: project.slug });
         return;
       }
-      router.push(catalogProjectDetailHref(scope, project.slug));
+      router.push(catalogProjectDetailHref(scope, project.id));
     } catch {
       showError(t('errors.generic'));
     }
@@ -106,31 +109,34 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
       <TranslationTabs focusLocale={focusLocale} focusTick={focusTick}>
         {(locale) => (
           <div className="flex flex-col gap-4">
-            <FormField
-              id={`name-${locale}`}
-              label={t('form.name')}
-              error={locale === 'hy' && errors.nameHy ? t('validation.name') : undefined}
-            >
-              <Input
+            <div className="grid gap-4 sm:grid-cols-2">
+              <FormField
                 id={`name-${locale}`}
-                placeholder={getProjectFormPlaceholder(locale, 'name')}
-                aria-invalid={locale === 'hy' && Boolean(errors.nameHy)}
-                {...register(locale === 'hy' ? 'nameHy' : locale === 'ru' ? 'nameRu' : 'nameEn')}
-              />
-            </FormField>
+                label={t('form.name')}
+                error={locale === 'hy' && errors.nameHy ? t('validation.name') : undefined}
+              >
+                <Input
+                  id={`name-${locale}`}
+                  placeholder={getProjectFormPlaceholder(locale, 'name')}
+                  aria-invalid={locale === 'hy' && Boolean(errors.nameHy)}
+                  {...register(projectLocaleField('name', locale))}
+                />
+              </FormField>
+              <FormField id={`projectType-${locale}`} label={t('form.projectType')}>
+                <Input
+                  id={`projectType-${locale}`}
+                  placeholder={getProjectFormPlaceholder(locale, 'projectType')}
+                  {...register(projectLocaleField('projectType', locale))}
+                />
+              </FormField>
+            </div>
             <FormField id={`short-${locale}`} label={t('form.shortDescription')}>
               <textarea
                 id={`short-${locale}`}
                 rows={2}
                 placeholder={getProjectFormPlaceholder(locale, 'shortDescription')}
                 className="w-full rounded-sm border border-border bg-background px-4 py-3 text-base text-ink lg:text-sm focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20"
-                {...register(
-                  locale === 'hy'
-                    ? 'shortDescriptionHy'
-                    : locale === 'ru'
-                      ? 'shortDescriptionRu'
-                      : 'shortDescriptionEn',
-                )}
+                {...register(projectLocaleField('shortDescription', locale))}
               />
             </FormField>
             <FormField id={`full-${locale}`} label={t('form.fullDescription')}>
@@ -139,51 +145,24 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
                 rows={4}
                 placeholder={getProjectFormPlaceholder(locale, 'fullDescription')}
                 className="w-full rounded-sm border border-border bg-background px-4 py-3 text-base text-ink lg:text-sm focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20"
-                {...register(
-                  locale === 'hy'
-                    ? 'fullDescriptionHy'
-                    : locale === 'ru'
-                      ? 'fullDescriptionRu'
-                      : 'fullDescriptionEn',
-                )}
+                {...register(projectLocaleField('fullDescription', locale))}
               />
             </FormField>
             <div className="grid gap-4 sm:grid-cols-2">
-              <FormField id={`slug-${locale}`} label={t('form.slug')}>
-                <Input
-                  id={`slug-${locale}`}
-                  placeholder={getProjectFormPlaceholder(locale, 'slug')}
-                  name={slugField.name}
-                  ref={slugField.ref}
-                  onBlur={slugField.onBlur}
-                  onChange={(event) => {
-                    lockSlugAuto();
-                    void slugField.onChange(event);
-                  }}
-                />
-              </FormField>
               <FormField id={`location-${locale}`} label={t('form.locationText')}>
                 <Input
                   id={`location-${locale}`}
                   placeholder={getProjectFormPlaceholder(locale, 'locationText')}
-                  {...register(
-                    locale === 'hy'
-                      ? 'locationTextHy'
-                      : locale === 'ru'
-                        ? 'locationTextRu'
-                        : 'locationTextEn',
-                  )}
+                  {...register(projectLocaleField('locationText', locale))}
                 />
               </FormField>
-              <div className="sm:col-span-2">
-                <FormField id={`district-${locale}`} label={t('form.district')}>
-                  <Input
-                    id={`district-${locale}`}
-                    placeholder={getProjectFormPlaceholder(locale, 'district')}
-                    {...register('district')}
-                  />
-                </FormField>
-              </div>
+              <FormField id={`district-${locale}`} label={t('form.district')}>
+                <Input
+                  id={`district-${locale}`}
+                  placeholder={getProjectFormPlaceholder(locale, 'district')}
+                  {...register(projectLocaleField('district', locale))}
+                />
+              </FormField>
             </div>
           </div>
         )}
@@ -191,15 +170,28 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
 
       <fieldset className="flex flex-col gap-4">
         <legend className="text-sm font-semibold text-ink">{t('form.detailsSection')}</legend>
+        <FormField id="slug" label={t('form.slug')}>
+          <Input
+            id="slug"
+            placeholder={getProjectFormPlaceholder(siteLocale, 'slug')}
+            name={slugField.name}
+            ref={slugField.ref}
+            onBlur={slugField.onBlur}
+            onChange={(event) => {
+              lockSlugAuto();
+              void slugField.onChange(event);
+            }}
+          />
+        </FormField>
         <div className="grid gap-4 sm:grid-cols-2">
-          <FormField id="projectType" label={t('form.projectType')}>
+          <VerifiedStatusField id="project-verified" control={control} name="verified" />
+          <FormField id="constructionStatus" label={t('form.constructionStatus')}>
             <Input
-              id="projectType"
-              placeholder={getProjectFormPlaceholder(siteLocale, 'projectType')}
-              {...register('projectType')}
+              id="constructionStatus"
+              placeholder={getProjectFormPlaceholder(siteLocale, 'constructionStatus')}
+              {...register('constructionStatus')}
             />
           </FormField>
-          <VerifiedStatusField id="project-verified" control={control} name="verified" />
           <FormField id="completionDate" label={t('form.completionDate')}>
             <Controller
               name="completionDate"

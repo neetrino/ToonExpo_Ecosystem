@@ -22,7 +22,7 @@ type AnimatedCounterProps = {
    * Prefer this over a function formatter from RSC parents.
    */
   formatStyle?: AnimatedCounterFormatStyle | undefined;
-  /** BCP 47 locale used with `formatStyle`. */
+  /** BCP 47 locale; selects the digit grouping separator for `formatStyle`. */
   locale?: string | undefined;
 };
 

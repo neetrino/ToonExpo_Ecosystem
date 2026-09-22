@@ -8,6 +8,7 @@ type UseMappingCanvasKeyboardParams = {
   draftRef: MutableRefObject<{ length: number }>;
   selectedDraftIndexRef: MutableRefObject<number | null>;
   replaceOnCommitRef: MutableRefObject<boolean>;
+  selectedHasMarkerRef: MutableRefObject<boolean>;
   nudgeSelection: (dx: number, dy: number) => void;
   closePolygon: () => void;
   deleteSelectedDraftPoint: () => void;
@@ -15,6 +16,7 @@ type UseMappingCanvasKeyboardParams = {
   clearDraft: () => void;
   setSelectedDraftIndex: (index: number | null) => void;
   setMode: (mode: EditorMode) => void;
+  onDeleteMarker?: (() => void) | undefined;
 };
 
 export const useMappingCanvasKeyboard = ({
@@ -22,6 +24,7 @@ export const useMappingCanvasKeyboard = ({
   draftRef,
   selectedDraftIndexRef,
   replaceOnCommitRef,
+  selectedHasMarkerRef,
   nudgeSelection,
   closePolygon,
   deleteSelectedDraftPoint,
@@ -29,6 +32,7 @@ export const useMappingCanvasKeyboard = ({
   clearDraft,
   setSelectedDraftIndex,
   setMode,
+  onDeleteMarker,
 }: UseMappingCanvasKeyboardParams) => {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -97,6 +101,17 @@ export const useMappingCanvasKeyboard = ({
         return;
       }
 
+      if (
+        (event.key === 'Delete' || event.key === 'Backspace') &&
+        modeRef.current === 'select' &&
+        selectedHasMarkerRef.current &&
+        onDeleteMarker
+      ) {
+        event.preventDefault();
+        onDeleteMarker();
+        return;
+      }
+
       if (event.key === 'Escape') {
         if (selectedDraftIndexRef.current != null) {
           setSelectedDraftIndex(null);
@@ -115,8 +130,10 @@ export const useMappingCanvasKeyboard = ({
     draftRef,
     modeRef,
     nudgeSelection,
+    onDeleteMarker,
     replaceOnCommitRef,
     selectedDraftIndexRef,
+    selectedHasMarkerRef,
     setMode,
     setSelectedDraftIndex,
     undoLastDraftPoint,

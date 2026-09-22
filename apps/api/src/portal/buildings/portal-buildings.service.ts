@@ -52,22 +52,27 @@ export class PortalBuildingsService {
     projectId: string,
     dto: CreatePortalBuildingDto,
   ): Promise<PortalBuildingSummary> {
-    await requireOwnedProject(this.prisma, projectId, companyId);
+    const project = await requireOwnedProject(this.prisma, projectId, companyId);
     if (dto.districtId) {
       const district = await this.prisma.db.district.findFirst({
-        where: { id: dto.districtId, projectId },
+        where: { id: dto.districtId, projectId: project.id },
         select: { id: true },
       });
       if (!district) {
         throw new BadRequestException('District not found in this project');
       }
     }
+    const projectFlags = await this.prisma.db.project.findUniqueOrThrow({
+      where: { id: project.id },
+      select: { priceOnRequestEnabled: true },
+    });
     const building = await this.prisma.db.building.create({
       data: {
-        projectId,
+        projectId: project.id,
         name: dto.name,
         publicationStatus: PublicationStatus.draft,
         displayOrder: dto.displayOrder ?? 0,
+        priceOnRequestEnabled: projectFlags.priceOnRequestEnabled,
         createdByUserId: userId,
         updatedByUserId: userId,
         ...(dto.description !== undefined ? { description: dto.description } : {}),

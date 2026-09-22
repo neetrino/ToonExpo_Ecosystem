@@ -13,10 +13,10 @@ export const CATALOG_MAX_PAGE_SIZE = 50;
 export const CATALOG_MIN_PAGE = 1;
 
 /** Publication status exposed on public catalog endpoints. */
-export const PUBLIC_PUBLICATION_STATUS = "published" as const;
+export const PUBLIC_PUBLICATION_STATUS = 'published' as const;
 
 /** Default ISO currency for Armenian inventory when aggregating prices. */
-export const DEFAULT_CATALOG_CURRENCY = "AMD" as const;
+export const DEFAULT_CATALOG_CURRENCY = 'AMD' as const;
 
 /** Max project ids per authenticated price-range overlay batch (matches max page size). */
 export const CATALOG_PRICES_MAX_PROJECT_IDS = CATALOG_MAX_PAGE_SIZE;
@@ -28,7 +28,7 @@ export const CATALOG_PRICES_CACHE_CONTROL = 'private, no-store' as const;
 export const CATALOG_SEARCH_Q_MAX_LENGTH = 100;
 
 /** Max admin-curated projects on the public homepage developments band. */
-export const HOME_FEATURED_PROJECT_LIMIT = 3;
+export const HOME_FEATURED_PROJECT_LIMIT = 6;
 
 /** Max admin-curated apartments on the public homepage featured listings band. */
 export const HOME_FEATURED_APARTMENT_LIMIT = 6;

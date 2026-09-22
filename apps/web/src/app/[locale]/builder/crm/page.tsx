@@ -1,7 +1,7 @@
-import { setRequestLocale } from "next-intl/server";
-import { Suspense } from "react";
+import { getLocale, setRequestLocale } from 'next-intl/server';
+import { Suspense } from 'react';
 
-import { CrmDealsListPage } from "@/features/builder/components/crm-deals-list-page";
+import { CrmDealsListPage } from '@/features/builder/components/crm-deals-list-page';
 
 type BuilderCrmPageProps = {
   params: Promise<{ locale: string }>;
@@ -11,7 +11,8 @@ type BuilderCrmPageProps = {
  * Constructor CRM deals list.
  */
 export default async function BuilderCrmPage({ params }: BuilderCrmPageProps) {
-  const { locale } = await params;
+  await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return (

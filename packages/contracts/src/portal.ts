@@ -26,6 +26,8 @@ export type PortalTranslationsInput = {
   shortDescription?: LocaleTextMap;
   fullDescription?: LocaleTextMap;
   locationText?: LocaleTextMap;
+  district?: LocaleTextMap;
+  projectType?: LocaleTextMap;
   description?: LocaleTextMap;
 };
 
@@ -71,6 +73,8 @@ export type PortalProjectDetail = {
   coverMediaId: string | null;
   cover: MediaAssetSummary | null;
   verified: boolean;
+  /** When true, public catalog hides all apartment prices in this project. */
+  priceOnRequestEnabled: boolean;
   createdAt: string;
   updatedAt: string;
   buildings: PortalBuildingSummary[];

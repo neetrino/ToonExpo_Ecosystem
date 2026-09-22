@@ -37,7 +37,12 @@ describe('MediaUploadService', () => {
       return values[key];
     });
 
-    r2Storage = { uploadObject, deleteObject: vi.fn() };
+    r2Storage = {
+      uploadObject,
+      deleteObject: vi.fn(),
+      createPresignedPutUrl: vi.fn(),
+      headObject: vi.fn(),
+    };
     service = new MediaUploadService(
       {
         db: {
@@ -84,8 +89,10 @@ describe('MediaUploadService', () => {
     );
   });
 
-  it('rejects model3d files above the 15 MB limit', () => {
-    const oversized = Buffer.alloc(15 * 1024 * 1024 + 1);
+  it('rejects model3d files above the size limit', () => {
+    const oversized = {
+      byteLength: 100 * 1024 * 1024 + 1,
+    } as Buffer;
     expect(() =>
       service.validateUpload(oversized, 'model/gltf-binary', 'model3d', 'building.glb'),
     ).toThrow(BadRequestException);
@@ -216,7 +223,7 @@ describe('MediaUploadService', () => {
     const result = await service.listCompanyMedia('co_1', 1, 24);
 
     expect(mediaAssetCount).toHaveBeenCalledWith({
-      where: { ownerCompanyId: 'co_1' },
+      where: { ownerCompanyId: 'co_1', fileUrl: { not: 'pending' } },
     });
     expect(result.data).toHaveLength(1);
     expect(result.meta.total).toBe(1);

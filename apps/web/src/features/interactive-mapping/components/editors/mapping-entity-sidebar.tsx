@@ -70,7 +70,8 @@ const MappingEntityListItem = ({
       onClick={() => onSelect(entity.id)}
     >
       <span className="truncate">
-        {entity.label} · {entity.title}
+        {entity.label.length > 0 ? `${entity.label} · ` : ''}
+        {entity.title}
         {dirty ? ' · *' : ''}
       </span>
       <span className="text-[10px] text-ink-muted">
@@ -99,6 +100,9 @@ type MappingEntitySelectedPanelProps = {
   pending: boolean;
   message: string | null;
   labelDigitsOnly: boolean;
+  clearLabel: string;
+  saveLabel: string;
+  labelFieldLabel: string;
   onLabelChange: (id: string, label: string) => void;
   onSave: () => void;
   onClear: () => void;
@@ -109,18 +113,18 @@ const MappingEntitySelectedPanel = ({
   pending,
   message,
   labelDigitsOnly,
+  clearLabel,
+  saveLabel,
+  labelFieldLabel,
   onLabelChange,
   onSave,
   onClear,
 }: MappingEntitySelectedPanelProps) => (
   <div
-    className={cn(
-      CONTROL_RADIUS_CLASS,
-      'space-y-2 border border-border bg-background p-3 text-sm',
-    )}
+    className={cn(CONTROL_RADIUS_CLASS, 'space-y-2 border border-border bg-background p-3 text-sm')}
   >
     <label className="block text-ink-muted">
-      Label
+      {labelFieldLabel}
       <input
         className={cn(
           CONTROL_RADIUS_CLASS,
@@ -137,9 +141,9 @@ const MappingEntitySelectedPanel = ({
       />
     </label>
     <Button type="button" size="sm" className="w-full" disabled={pending} onClick={onSave}>
-      {pending ? '…' : 'Save'}
+      {pending ? '…' : saveLabel}
     </Button>
-    {selected.hotspotId ? (
+    {selected.hotspotId || selected.markerX != null || selected.svgPath ? (
       <Button
         type="button"
         size="sm"
@@ -148,7 +152,7 @@ const MappingEntitySelectedPanel = ({
         disabled={pending}
         onClick={onClear}
       >
-        Clear mapping
+        {clearLabel}
       </Button>
     ) : null}
     {message ? <p className="text-xs text-ink-muted">{message}</p> : null}
@@ -179,6 +183,7 @@ export const MappingEntitySidebar = ({
   onClearAllPolygons,
 }: MappingEntitySidebarProps) => {
   const t = useTranslations('Admin.interactiveMapping.forms');
+  const tCanvas = useTranslations('Admin.interactiveMapping.canvas');
   const [query, setQuery] = useState('');
   const selected = entities.find((item) => item.id === selectedId) ?? null;
   const polygonCount = entities.filter((entity) => entity.svgPath).length;
@@ -254,6 +259,9 @@ export const MappingEntitySidebar = ({
           pending={pending}
           message={message}
           labelDigitsOnly={labelDigitsOnly}
+          clearLabel={tCanvas('clearMapping')}
+          saveLabel={tCanvas('save')}
+          labelFieldLabel={tCanvas('labelField')}
           onLabelChange={onLabelChange}
           onSave={onSave}
           onClear={onClear}

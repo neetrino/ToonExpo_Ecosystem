@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
+import { AdminApartmentPriceStat } from '@/features/admin/components/admin-apartment-price';
 import { AdminFeaturedOnHomeButton } from '@/features/admin/components/admin-featured-on-home-button';
 import {
   AdminInventoryCardMetaRow,
@@ -15,9 +16,9 @@ import { useSetAdminApartmentFeaturedOnHomeMutation } from '@/features/admin/hoo
 import type { CatalogScope } from '@/features/builder/catalog-scope';
 import { catalogApartmentDetailHref } from '@/features/builder/catalog-scope';
 import { HOME_FEATURED_APARTMENT_LIMIT } from '@/features/catalog/constants/home-featured';
-import { Link } from '@/i18n/navigation';
 import { ApartmentSalesStatusBadge } from '@/shared/ui/apartment-sales-status-badge';
 import { cn } from '@/shared/ui/cn';
+import { LIST_CARD_FOREGROUND_CLASS, ListCardHitLink } from '@/shared/ui/list-card-hit-link';
 import { LIST_CARD_LIFT_CLASS } from '@/shared/ui/motion';
 
 /** Same chrome as builder readiness / admin company cards. */
@@ -57,11 +58,9 @@ type AdminApartmentImageProps = {
 const AdminApartmentImage = ({ apartment }: AdminApartmentImageProps) => {
   const [imageFailed, setImageFailed] = useState(false);
   const cover = apartment.cover;
-  const imageSource =
-    toSafeImageSource(cover?.thumbnailUrl) ?? toSafeImageSource(cover?.fileUrl);
+  const imageSource = toSafeImageSource(cover?.thumbnailUrl) ?? toSafeImageSource(cover?.fileUrl);
   const validImageSource = imageFailed ? undefined : imageSource;
-  const alt =
-    cover?.altText?.trim() || `${apartment.projectName} — ${apartment.number}`;
+  const alt = cover?.altText?.trim() || `${apartment.projectName} — ${apartment.number}`;
 
   return (
     <div
@@ -125,31 +124,22 @@ export const AdminApartmentCard = ({
         CARD_RADIUS_CLASS,
       )}
     >
+      <ListCardHitLink href={detailHref} label={t('unit', { number: apartment.number })} />
       <header className="flex items-start justify-between gap-2">
-        <Link
-          href={detailHref}
+        <h2
           className={cn(
             'min-w-0 flex-1 truncate text-base font-semibold tracking-tight text-ink',
             'transition-colors duration-[var(--duration-fast)] group-hover:text-brand-deep',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30',
           )}
         >
           {t('unit', { number: apartment.number })}
-        </Link>
+        </h2>
         <AdminInventoryPublicationBadge status={apartment.publicationStatus} />
       </header>
 
-      <Link
-        href={detailHref}
-        className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30"
-      >
-        <AdminApartmentImage key={apartment.cover?.id ?? 'fallback'} apartment={apartment} />
-      </Link>
+      <AdminApartmentImage key={apartment.cover?.id ?? 'fallback'} apartment={apartment} />
 
-      <Link
-        href={detailHref}
-        className="flex flex-col gap-1 text-sm text-ink-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30"
-      >
+      <div className="flex flex-col gap-1 text-sm text-ink-secondary">
         <AdminInventoryCardMetaRow icon={<Building className="size-3.5" strokeWidth={2} />}>
           {apartment.buildingName} · {t('floorNumber', { number: apartment.floorNumber })}
         </AdminInventoryCardMetaRow>
@@ -161,24 +151,27 @@ export const AdminApartmentCard = ({
         <AdminInventoryCardMetaRow icon={<Layers className="size-3.5" strokeWidth={2} />}>
           {apartment.projectName}
         </AdminInventoryCardMetaRow>
-      </Link>
+      </div>
 
-      <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-border pt-3">
-        <ApartmentSalesStatusBadge status={salesStatus} label={t(`sales.${salesStatus}`)} />
-        {showFeatured ? (
-          <div className="ml-auto">
-            <AdminFeaturedOnHomeButton
-              featuredOnHome={apartment.featuredOnHome}
-              limitLabel={tFeatured('apartmentLimit', { count: HOME_FEATURED_APARTMENT_LIMIT })}
-              onToggle={async (next) =>
-                featuredMutation.mutateAsync({
-                  apartmentId: apartment.id,
-                  featuredOnHome: next,
-                })
-              }
-            />
-          </div>
-        ) : null}
+      <div className="mt-auto flex flex-col gap-3 border-t border-border pt-3">
+        <AdminApartmentPriceStat apartment={apartment} />
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+          <ApartmentSalesStatusBadge status={salesStatus} label={t(`sales.${salesStatus}`)} />
+          {showFeatured ? (
+            <div className={cn('ml-auto', LIST_CARD_FOREGROUND_CLASS)}>
+              <AdminFeaturedOnHomeButton
+                featuredOnHome={apartment.featuredOnHome}
+                limitLabel={tFeatured('apartmentLimit', { count: HOME_FEATURED_APARTMENT_LIMIT })}
+                onToggle={async (next) =>
+                  featuredMutation.mutateAsync({
+                    apartmentId: apartment.id,
+                    featuredOnHome: next,
+                  })
+                }
+              />
+            </div>
+          ) : null}
+        </div>
       </div>
     </article>
   );

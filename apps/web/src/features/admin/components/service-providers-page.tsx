@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 import { useDeleteConfirm } from '@/shared/hooks/use-delete-confirm';
+import { useDebouncedSearch } from '@/shared/hooks/use-debounced-search';
 import { ConfirmDeleteModal } from '@/shared/ui/confirm-delete-modal';
 
 import {
@@ -37,9 +38,10 @@ export const ServiceProvidersPage = () => {
     active: '',
     categoryId: '',
   });
+  const activeSearch = useDebouncedSearch(providerFilters.search);
 
   const providersQuery = useAdminServiceProvidersQuery({
-    ...(providerFilters.search ? { search: providerFilters.search } : {}),
+    ...(activeSearch ? { search: activeSearch } : {}),
     ...(providerFilters.categoryId ? { categoryId: providerFilters.categoryId } : {}),
     ...(providerFilters.active === 'true' ? { active: true } : {}),
     ...(providerFilters.active === 'false' ? { active: false } : {}),
@@ -52,7 +54,10 @@ export const ServiceProvidersPage = () => {
   const updateProviderMutation = useUpdateServiceProviderMutation();
   const deleteProviderMutation = useDeleteServiceProviderMutation();
 
-  if (categoriesQuery.isLoading || providersQuery.isLoading) {
+  if (
+    (categoriesQuery.isLoading && !categoriesQuery.data) ||
+    (providersQuery.isLoading && !providersQuery.data)
+  ) {
     return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
   }
 

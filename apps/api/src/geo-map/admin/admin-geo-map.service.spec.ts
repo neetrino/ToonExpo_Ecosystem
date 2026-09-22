@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, NotFoundException } from '@nestjs/common';
+import { ConflictException, NotFoundException } from '@nestjs/common';
 import type { Prisma } from '@toonexpo/db';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -104,19 +104,25 @@ describe('AdminGeoMapService', () => {
     expect(result.sourceOsmId).toBe('582962758');
   });
 
-  it('rejects publishing an unassigned model on create', async () => {
+  it('publishes an unassigned model on create', async () => {
     mediaAssetFindUnique.mockResolvedValue({ id: 'media_1' });
+    projectMapModelCreate.mockResolvedValue({
+      ...baseRow,
+      projectId: null,
+      project: null,
+      isPublished: true,
+    });
 
-    await expect(
-      service.create('user_1', {
-        mediaAssetId: 'media_1',
-        longitude: 44.5,
-        latitude: 40.1,
-        isPublished: true,
-      }),
-    ).rejects.toBeInstanceOf(BadRequestException);
+    const result = await service.create('user_1', {
+      mediaAssetId: 'media_1',
+      longitude: 44.5,
+      latitude: 40.1,
+      isPublished: true,
+    });
 
-    expect(projectMapModelCreate).not.toHaveBeenCalled();
+    expect(projectMapModelCreate).toHaveBeenCalled();
+    expect(result.isPublished).toBe(true);
+    expect(result.projectId).toBeNull();
   });
 
   it('rejects create when project already has a model', async () => {
@@ -206,17 +212,28 @@ describe('AdminGeoMapService', () => {
     );
   });
 
-  it('rejects publishing when the model stays unassigned', async () => {
+  it('publishes when the model stays unassigned', async () => {
     projectMapModelFindUnique.mockResolvedValue({
       id: 'pmm_1',
       projectId: null,
       isPublished: false,
     });
+    projectMapModelUpdate.mockResolvedValue({
+      ...baseRow,
+      projectId: null,
+      project: null,
+      isPublished: true,
+    });
 
-    await expect(service.update('pmm_1', 'user_1', { isPublished: true })).rejects.toBeInstanceOf(
-      BadRequestException,
+    const result = await service.update('pmm_1', 'user_1', { isPublished: true });
+
+    expect(projectMapModelUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ isPublished: true }),
+      }),
     );
-    expect(projectMapModelUpdate).not.toHaveBeenCalled();
+    expect(result.isPublished).toBe(true);
+    expect(result.projectId).toBeNull();
   });
 
   it('rejects update when model is missing', async () => {

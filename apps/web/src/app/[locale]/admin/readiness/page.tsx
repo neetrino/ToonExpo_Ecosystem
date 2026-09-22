@@ -1,7 +1,7 @@
-import { setRequestLocale } from "next-intl/server";
-import { Suspense } from "react";
+import { getLocale, setRequestLocale } from 'next-intl/server';
+import { Suspense } from 'react';
 
-import { ReadinessAssessmentsListPage } from "@/features/admin/components/readiness-assessments-list-page";
+import { ReadinessAssessmentsListPage } from '@/features/admin/components/readiness-assessments-list-page';
 
 type AdminReadinessPageProps = {
   params: Promise<{ locale: string }>;
@@ -10,10 +10,9 @@ type AdminReadinessPageProps = {
 /**
  * Platform admin readiness assessments list.
  */
-export default async function AdminReadinessPage({
-  params,
-}: AdminReadinessPageProps) {
-  const { locale } = await params;
+export default async function AdminReadinessPage({ params }: AdminReadinessPageProps) {
+  await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return (

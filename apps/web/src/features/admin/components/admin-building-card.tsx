@@ -12,6 +12,7 @@ import {
 } from '@/features/admin/components/admin-inventory-card';
 import { Button } from '@/shared/ui/button';
 import { cn } from '@/shared/ui/cn';
+import { LIST_CARD_FOREGROUND_CLASS } from '@/shared/ui/list-card-hit-link';
 
 type AdminBuildingCardProps = {
   building: AdminBuildingListItem;
@@ -32,14 +33,16 @@ export const AdminBuildingCard = ({
   const t = useTranslations('Admin.buildings');
 
   return (
-    <div className={cn(ADMIN_INVENTORY_CARD_CLASS, 'w-full')}>
+    <div className={cn(ADMIN_INVENTORY_CARD_CLASS, 'relative w-full')}>
       <button
         type="button"
         onClick={() => {
           onSelect(building.id);
         }}
-        className="flex flex-1 flex-col p-4 text-left"
-      >
+        className="absolute inset-0 z-[1] rounded-[inherit] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30"
+        aria-label={building.name}
+      />
+      <div className="flex flex-1 flex-col p-4">
         <div className="flex flex-wrap items-start justify-between gap-2">
           <h2 className="min-w-0 flex-1 text-base font-semibold tracking-tight text-ink">
             {building.name}
@@ -57,7 +60,7 @@ export const AdminBuildingCard = ({
             {building.projectName}
           </AdminInventoryCardMetaRow>
         </div>
-      </button>
+      </div>
 
       <div className="mt-auto flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-border px-4 py-3">
         <AdminInventoryCardStat
@@ -71,19 +74,20 @@ export const AdminBuildingCard = ({
           value={building.apartmentsCount}
         />
         {onOpenReadiness ? (
-          <Button
-            type="button"
-            size="sm"
-            variant="secondary"
-            className="ml-auto"
-            onClick={(event) => {
-              event.stopPropagation();
-              onOpenReadiness(building);
-            }}
-          >
-            <ClipboardCheck className="size-3.5" aria-hidden />
-            {t('readiness')}
-          </Button>
+          <div className={cn('ml-auto', LIST_CARD_FOREGROUND_CLASS)}>
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              onClick={(event) => {
+                event.stopPropagation();
+                onOpenReadiness(building);
+              }}
+            >
+              <ClipboardCheck className="size-3.5" aria-hidden />
+              {t('readiness')}
+            </Button>
+          </div>
         ) : null}
       </div>
     </div>

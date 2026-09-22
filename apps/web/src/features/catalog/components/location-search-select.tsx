@@ -33,6 +33,8 @@ type LocationSearchSelectProps = {
   'aria-label': string;
   /** Section chrome (padding / borders) — root is the portal width anchor. */
   className?: string | undefined;
+  /** `compact` fits the Buy filter bar; default is the home hero cell. */
+  variant?: 'hero' | 'compact' | undefined;
 };
 
 const normalize = (value: string): string => value.trim().toLocaleLowerCase();
@@ -51,7 +53,9 @@ const SelectionMark = ({ checked }: { checked: boolean }) => (
 
 /**
  * Hero location picker — searchable multi-select over catalog cities.
- * Empty selection means "Any location". Menu stays open while toggling.
+ * Empty selection means "Any location" and only that row stays checked; picking a
+ * city then starts a concrete selection (same rules as the beds filter).
+ * Menu stays open while toggling.
  */
 export const LocationSearchSelect = ({
   values,
@@ -61,6 +65,7 @@ export const LocationSearchSelect = ({
   fieldLabel,
   'aria-label': ariaLabel,
   className,
+  variant = 'hero',
 }: LocationSearchSelectProps) => {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -125,7 +130,7 @@ export const LocationSearchSelect = ({
 
   const toggleOption = (option: string): void => {
     if (isAny) {
-      onChange(options.filter((item) => item !== option));
+      onChange([option]);
       return;
     }
     if (values.includes(option)) {
@@ -148,8 +153,22 @@ export const LocationSearchSelect = ({
   };
 
   return (
-    <div ref={rootRef} className={cn('relative flex w-full min-w-0 flex-col gap-1', className)}>
-      <span className="hidden text-[10px] font-bold tracking-[0.1em] text-header-muted uppercase lg:inline">
+    <div
+      ref={rootRef}
+      className={cn(
+        'relative flex min-w-0 flex-col',
+        variant === 'compact' ? 'w-auto gap-1.5' : 'w-full gap-1',
+        className,
+      )}
+    >
+      <span
+        className={cn(
+          'font-bold text-header-muted uppercase',
+          variant === 'compact'
+            ? 'text-[10px] tracking-widest'
+            : 'hidden text-[10px] tracking-[0.1em] lg:inline',
+        )}
+      >
         {fieldLabel}
       </span>
       <HeroFilterTrigger
@@ -158,6 +177,7 @@ export const LocationSearchSelect = ({
         value={displayLabel}
         open={open}
         mutedValue={isAny}
+        variant={variant}
         aria-label={ariaLabel}
         aria-haspopup="listbox"
         aria-expanded={open}
@@ -168,7 +188,12 @@ export const LocationSearchSelect = ({
         }}
       />
 
-      <DropdownPortal open={open} anchorRef={rootRef} exactWidth>
+      <DropdownPortal
+        open={open}
+        anchorRef={rootRef}
+        exactWidth={variant !== 'compact'}
+        matchWidth={variant === 'compact'}
+      >
         <div ref={panelRef} className={HERO_FILTER_PANEL_CLASS}>
           <div className="border-b border-header-border bg-canvas/80 p-2.5">
             <div className="relative">
@@ -222,7 +247,7 @@ export const LocationSearchSelect = ({
               </button>
             </li>
             {filtered.map((option) => {
-              const active = isAny || values.includes(option);
+              const active = values.includes(option);
               return (
                 <li key={option} role="none">
                   <button

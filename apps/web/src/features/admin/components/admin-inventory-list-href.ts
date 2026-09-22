@@ -1,13 +1,19 @@
-import type { IntegratedSearchFilterConfig } from '@/shared/ui/integrated-search-filters.types';
-import type { AdminBuildingListItem, AdminFloorListItem } from '@toonexpo/contracts';
+import type {
+  ApartmentSalesStatus,
+  AdminBuildingListItem,
+  AdminFloorListItem,
+} from '@toonexpo/contracts';
 
 import {
   ADMIN_INVENTORY_FILTER_BUILDING_KEY,
   ADMIN_INVENTORY_FILTER_COMPANY_KEY,
   ADMIN_INVENTORY_FILTER_FLOOR_KEY,
+  ADMIN_INVENTORY_FILTER_SALES_STATUS_KEY,
+  ADMIN_INVENTORY_SALES_STATUSES,
   encodeIntegratedFilterIds,
   formatFloorOptionLabel,
 } from '@/features/admin/components/admin-inventory-list-filters';
+import type { IntegratedSearchFilterConfig } from '@/shared/ui/integrated-search-filters.types';
 
 type CompanyOption = { id: string; name: string };
 
@@ -18,6 +24,7 @@ type BuildInventoryFilterConfigsParams = {
   effectiveBuildingIds: readonly string[];
   showBuildingFilter: boolean;
   showFloorFilter: boolean;
+  showSalesStatusFilter: boolean;
   labels: {
     builder: string;
     allBuilders: string;
@@ -26,6 +33,9 @@ type BuildInventoryFilterConfigsParams = {
     floor: string;
     allFloors: string;
     selectBuildingFirst: string;
+    salesStatus: string;
+    allSalesStatuses: string;
+    salesStatusOption: (status: ApartmentSalesStatus) => string;
     selectedCount: (count: number) => string;
   };
 };
@@ -37,6 +47,7 @@ export const buildAdminInventoryFilterConfigs = ({
   effectiveBuildingIds,
   showBuildingFilter,
   showFloorFilter,
+  showSalesStatusFilter,
   labels,
 }: BuildInventoryFilterConfigsParams): IntegratedSearchFilterConfig[] => {
   const configs: IntegratedSearchFilterConfig[] = [
@@ -93,6 +104,17 @@ export const buildAdminInventoryFilterConfigs = ({
           })),
     });
   }
+  if (showSalesStatusFilter) {
+    configs.push({
+      key: ADMIN_INVENTORY_FILTER_SALES_STATUS_KEY,
+      label: labels.salesStatus,
+      allOptionLabel: labels.allSalesStatuses,
+      options: ADMIN_INVENTORY_SALES_STATUSES.map((status) => ({
+        value: status,
+        label: labels.salesStatusOption(status),
+      })),
+    });
+  }
   return configs;
 };
 
@@ -103,14 +125,17 @@ type BuildInventoryListHrefParams = {
   buildingIds: readonly string[];
   floorIds: readonly string[];
   projectId: string | undefined;
+  salesStatus: ApartmentSalesStatus | undefined;
   showBuildingFilter: boolean;
   showFloorFilter: boolean;
+  showSalesStatusFilter: boolean;
   next: {
     page?: number;
     companyIds?: string[] | null;
     buildingIds?: string[] | null;
     floorIds?: string[] | null;
     projectId?: string | null;
+    salesStatus?: ApartmentSalesStatus | null;
   };
 };
 
@@ -121,16 +146,19 @@ export const buildAdminInventoryListHref = ({
   buildingIds,
   floorIds,
   projectId,
+  salesStatus,
   showBuildingFilter,
   showFloorFilter,
+  showSalesStatusFilter,
   next,
 }: BuildInventoryListHrefParams): string => {
   const params = new URLSearchParams();
   const nextCompanyIds = next.companyIds === undefined ? companyIds : (next.companyIds ?? []);
-  const nextBuildingIds =
-    next.buildingIds === undefined ? buildingIds : (next.buildingIds ?? []);
+  const nextBuildingIds = next.buildingIds === undefined ? buildingIds : (next.buildingIds ?? []);
   const nextFloorIds = next.floorIds === undefined ? floorIds : (next.floorIds ?? []);
   const nextProjectId = next.projectId === undefined ? projectId : next.projectId || undefined;
+  const nextSalesStatus =
+    next.salesStatus === undefined ? salesStatus : next.salesStatus || undefined;
   const nextPage = next.page ?? page;
 
   const companyEncoded = encodeIntegratedFilterIds(nextCompanyIds);
@@ -148,6 +176,9 @@ export const buildAdminInventoryListHref = ({
     if (floorEncoded) {
       params.set('floorId', floorEncoded);
     }
+  }
+  if (showSalesStatusFilter && nextSalesStatus) {
+    params.set('salesStatus', nextSalesStatus);
   }
   if (nextProjectId) {
     params.set('projectId', nextProjectId);

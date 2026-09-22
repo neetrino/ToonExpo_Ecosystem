@@ -38,7 +38,7 @@ export const CreateProjectSheet = ({ open, onClose, onCreated }: CreateProjectSh
             onCreated(project.id);
             return;
           }
-          router.push(catalogProjectDetailHref(scope, project.slug));
+          router.push(catalogProjectDetailHref(scope, project.id));
         }}
       />
     </AdminCreateSheet>

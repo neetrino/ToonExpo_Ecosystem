@@ -16,7 +16,6 @@ import {
   type ProjectFilterParams,
 } from '@/features/catalog/utils/project-filters';
 import { Link } from '@/i18n/navigation';
-import { Button } from '@/shared/ui/button';
 import { cn } from '@/shared/ui/cn';
 import { Form } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
@@ -28,8 +27,7 @@ type ProjectFiltersFormProps = {
 
 /** Compact control height for the projects filter toolbar. */
 const FILTER_CONTROL_CLASS = 'h-10 px-3.5 text-base lg:text-sm';
-const FILTER_FIELD_CLASS =
-  'flex min-w-0 flex-col gap-1 text-xs font-medium text-ink-secondary';
+const FILTER_FIELD_CLASS = 'flex min-w-0 flex-col gap-1 text-xs font-medium text-ink-secondary';
 const FILTER_PRICE_MOBILE_CLASS =
   'col-span-3 row-start-2 sm:col-auto sm:row-auto sm:min-w-[6.5rem] sm:flex-none';
 
@@ -59,9 +57,19 @@ export const ProjectFiltersForm = ({ filters }: ProjectFiltersFormProps) => {
       onSubmit={handleSubmit}
       className="rounded-md border border-border/70 bg-surface-elevated/95 p-3 shadow-sm backdrop-blur-sm sm:p-4"
     >
-      <div className="mb-3 flex items-center gap-2">
-        <SlidersHorizontal className="size-3.5 text-brand" aria-hidden />
-        <p className="text-xs font-semibold text-ink">{t('filters.title')}</p>
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <SlidersHorizontal className="size-3.5 text-brand" aria-hidden />
+          <p className="text-xs font-semibold text-ink">{t('filters.title')}</p>
+        </div>
+        {hasActiveFilters ? (
+          <Link
+            href={CATALOG_PROJECTS_PATH}
+            className="inline-flex h-7 items-center rounded-sm border border-border bg-surface-elevated px-2.5 text-xs font-medium text-ink hover:border-border-strong hover:bg-surface"
+          >
+            {t('filters.reset')}
+          </Link>
+        ) : null}
       </div>
 
       <div className="grid grid-cols-6 items-end gap-2 sm:flex sm:flex-wrap sm:gap-2.5">
@@ -122,21 +130,6 @@ export const ProjectFiltersForm = ({ filters }: ProjectFiltersFormProps) => {
               <option value="sold">{t('status.sold')}</option>
             </Select>
           </label>
-
-          {hasActiveFilters ? (
-            <div className="flex shrink-0 items-end">
-              <Link href={CATALOG_PROJECTS_PATH}>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="h-10 rounded-sm px-3 sm:px-5"
-                >
-                  {t('filters.reset')}
-                </Button>
-              </Link>
-            </div>
-          ) : null}
         </div>
       </div>
     </Form>

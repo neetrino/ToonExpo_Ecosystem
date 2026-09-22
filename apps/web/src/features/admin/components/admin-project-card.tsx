@@ -2,7 +2,15 @@
 
 import type { AdminProjectListItem } from '@toonexpo/contracts';
 import type { LucideIcon } from 'lucide-react';
-import { Building, Building2, CheckCircle2, CircleDashed, Home, MapPin, QrCode } from 'lucide-react';
+import {
+  Building,
+  Building2,
+  CheckCircle2,
+  CircleDashed,
+  Home,
+  MapPin,
+  QrCode,
+} from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -10,14 +18,15 @@ import { useState } from 'react';
 import { AdminFeaturedOnHomeButton } from '@/features/admin/components/admin-featured-on-home-button';
 import { AdminInventoryCardMetaRow } from '@/features/admin/components/admin-inventory-card';
 import { useSetAdminProjectFeaturedOnHomeMutation } from '@/features/admin/hooks/use-admin-companies';
+import { catalogProjectDetailHref } from '@/features/builder/catalog-scope';
 import { ProjectQrDialog } from '@/features/builder/components/project-qr-dialog';
 import { HOME_FEATURED_PROJECT_LIMIT } from '@/features/catalog/constants/home-featured';
 import { toCatalogPublicationStatus } from '@/features/catalog/utils/catalog-publication-status';
-import { Link } from '@/i18n/navigation';
 import { resolvePublicAssetUrl } from '@/shared/lib/static-asset-url';
 import { AdminListCardLogo } from '@/shared/ui/admin-list-card-logo';
 import { cn } from '@/shared/ui/cn';
 import { IconButton } from '@/shared/ui/icon-button';
+import { LIST_CARD_FOREGROUND_CLASS, ListCardHitLink } from '@/shared/ui/list-card-hit-link';
 import { LIST_CARD_LIFT_CLASS } from '@/shared/ui/motion';
 
 const MEDIA_RADIUS_CLASS = 'rounded-[15px]';
@@ -56,8 +65,7 @@ type AdminProjectImageProps = {
 const AdminProjectImage = ({ project }: AdminProjectImageProps) => {
   const [imageFailed, setImageFailed] = useState(false);
   const cover = project.cover;
-  const imageSource =
-    toSafeImageSource(cover?.thumbnailUrl) ?? toSafeImageSource(cover?.fileUrl);
+  const imageSource = toSafeImageSource(cover?.thumbnailUrl) ?? toSafeImageSource(cover?.fileUrl);
   const validImageSource = imageFailed ? undefined : imageSource;
 
   return (
@@ -158,6 +166,10 @@ export const AdminProjectCard = ({ project, onOpenBuildings }: AdminProjectCardP
   const [qrOpen, setQrOpen] = useState(false);
   const featuredMutation = useSetAdminProjectFeaturedOnHomeMutation();
   const openBuildingsLabel = t('openBuildings', { name: project.name });
+  const detailHref = catalogProjectDetailHref(
+    { mode: 'admin', companyId: project.builderCompanyId },
+    project.id,
+  );
 
   return (
     <>
@@ -169,6 +181,7 @@ export const AdminProjectCard = ({ project, onOpenBuildings }: AdminProjectCardP
           'rounded-[15px]',
         )}
       >
+        <ListCardHitLink href={detailHref} label={project.name} />
         <header className="flex flex-col gap-2">
           <div className="flex items-start justify-between gap-2">
             <div className="flex min-w-0 items-center gap-2.5">
@@ -193,35 +206,30 @@ export const AdminProjectCard = ({ project, onOpenBuildings }: AdminProjectCardP
             </span>
           </div>
           <div className="flex items-start justify-between gap-2">
-            <Link
-              href={`/admin/projects/${encodeURIComponent(project.slug)}`}
+            <h2
               className={cn(
                 'min-w-0 flex-1 text-lg font-semibold tracking-tight text-ink sm:text-xl',
                 'transition-colors duration-[var(--duration-fast)] group-hover:text-brand-deep',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30',
               )}
             >
               {project.name}
-            </Link>
-            <AdminFeaturedOnHomeButton
-              featuredOnHome={project.featuredOnHome}
-              limitLabel={tFeatured('projectLimit', { count: HOME_FEATURED_PROJECT_LIMIT })}
-              onToggle={async (next) =>
-                featuredMutation.mutateAsync({
-                  projectId: project.id,
-                  featuredOnHome: next,
-                })
-              }
-            />
+            </h2>
+            <div className={LIST_CARD_FOREGROUND_CLASS}>
+              <AdminFeaturedOnHomeButton
+                featuredOnHome={project.featuredOnHome}
+                limitLabel={tFeatured('projectLimit', { count: HOME_FEATURED_PROJECT_LIMIT })}
+                onToggle={async (next) =>
+                  featuredMutation.mutateAsync({
+                    projectId: project.id,
+                    featuredOnHome: next,
+                  })
+                }
+              />
+            </div>
           </div>
         </header>
 
-        <Link
-          href={`/admin/projects/${encodeURIComponent(project.slug)}`}
-          className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30"
-        >
-          <AdminProjectImage key={project.cover?.id ?? 'fallback'} project={project} />
-        </Link>
+        <AdminProjectImage key={project.cover?.id ?? 'fallback'} project={project} />
 
         {project.city ? (
           <AdminInventoryCardMetaRow icon={<MapPin className="size-3.5" strokeWidth={2} />}>
@@ -229,36 +237,39 @@ export const AdminProjectCard = ({ project, onOpenBuildings }: AdminProjectCardP
           </AdminInventoryCardMetaRow>
         ) : null}
 
-        <div className="mt-auto flex flex-wrap items-center gap-x-5 gap-y-3 border-t border-border/70 pt-3">
-          <AdminProjectStat
-            icon={Building}
-            label={t('columns.buildings')}
-            value={project.buildingsCount}
-            onClick={
-              onOpenBuildings
-                ? () => {
-                    onOpenBuildings(project);
-                  }
-                : undefined
-            }
-            buttonAriaLabel={openBuildingsLabel}
-          />
+        <div className="mt-auto flex items-center gap-3 border-t border-border/70 pt-3">
+          <div className={onOpenBuildings ? LIST_CARD_FOREGROUND_CLASS : undefined}>
+            <AdminProjectStat
+              icon={Building}
+              label={t('columns.buildings')}
+              value={project.buildingsCount}
+              onClick={
+                onOpenBuildings
+                  ? () => {
+                      onOpenBuildings(project);
+                    }
+                  : undefined
+              }
+              buttonAriaLabel={openBuildingsLabel}
+            />
+          </div>
           <AdminProjectStat
             icon={Home}
             label={t('columns.apartments')}
             value={project.apartmentsCount}
           />
-          <IconButton
-            label={tQr('open')}
-            variant="soft"
-            size="md"
-            className="ml-auto"
-            onClick={() => {
-              setQrOpen(true);
-            }}
-          >
-            <QrCode className="size-4" aria-hidden />
-          </IconButton>
+          <div className={cn('ml-auto shrink-0', LIST_CARD_FOREGROUND_CLASS)}>
+            <IconButton
+              label={tQr('open')}
+              variant="soft"
+              size="md"
+              onClick={() => {
+                setQrOpen(true);
+              }}
+            >
+              <QrCode className="size-4" aria-hidden />
+            </IconButton>
+          </div>
         </div>
       </article>
 

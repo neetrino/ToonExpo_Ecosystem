@@ -1,4 +1,4 @@
-import { setRequestLocale } from 'next-intl/server';
+import { getLocale, setRequestLocale } from 'next-intl/server';
 import { Suspense } from 'react';
 
 import { AdminProjectsListPage } from '@/features/admin/components/admin-projects-list-page';
@@ -11,7 +11,8 @@ type AdminProjectsPageProps = {
  * Platform-admin hub for all builder projects.
  */
 export default async function AdminProjectsPage({ params }: AdminProjectsPageProps) {
-  const { locale } = await params;
+  await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return (

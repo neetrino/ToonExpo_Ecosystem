@@ -17,6 +17,7 @@ import {
   MEDIA_MAX_PAGE_SIZE,
   MEDIA_MIN_PAGE,
   MEDIA_MODEL3D_CANONICAL_MIME,
+  MEDIA_PENDING_FILE_URL,
   MEDIA_UPLOAD_KINDS,
   R2_NOT_CONFIGURED_MESSAGE,
   R2_UPLOAD_FAILED_MESSAGE,
@@ -127,7 +128,7 @@ export class MediaUploadService {
       data: {
         ownerCompanyId,
         type: kindConfig.assetType,
-        fileUrl: 'pending',
+        fileUrl: MEDIA_PENDING_FILE_URL,
         title: sanitizeOriginalFilename(input.originalFilename),
         width: dimensions?.width ?? null,
         height: dimensions?.height ?? null,
@@ -203,10 +204,15 @@ export class MediaUploadService {
     );
     const skip = (page - 1) * pageSize;
 
+    const whereClause = {
+      ...where,
+      fileUrl: { not: MEDIA_PENDING_FILE_URL },
+    };
+
     const [total, rows] = await Promise.all([
-      this.prisma.db.mediaAsset.count({ where }),
+      this.prisma.db.mediaAsset.count({ where: whereClause }),
       this.prisma.db.mediaAsset.findMany({
-        where,
+        where: whereClause,
         orderBy: [{ createdAt: 'desc' }],
         skip,
         take: pageSize,

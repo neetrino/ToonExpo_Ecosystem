@@ -1,6 +1,6 @@
 'use client';
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type {
   CreateDistrictRequest,
   SetupBuildingFloorsRequest,
@@ -42,6 +42,7 @@ export const useInteractiveMappingProjectsQuery = (params: {
         pageSize: params.pageSize,
         ...(search ? { search } : {}),
       }),
+    placeholderData: keepPreviousData,
   });
 };
 

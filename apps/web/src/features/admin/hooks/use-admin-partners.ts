@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type {
   CreateAdminPartnerBody,
   CreatePartnerOfferBody,
   UpdateAdminPartnerBody,
   UpdatePartnerOfferBody,
-} from "@toonexpo/contracts";
+} from '@toonexpo/contracts';
 
 import {
   createAdminPartner,
@@ -18,17 +18,15 @@ import {
   updateAdminPartner,
   updateAdminPartnerOffer,
   type ListAdminPartnersParams,
-} from "@/features/admin/api/admin-partners-api";
-import {
-  ADMIN_PARTNERS_QUERY_KEY,
-  adminPartnerQueryKey,
-} from "@/features/partners/constants";
-import { ADMIN_COMPANIES_QUERY_KEY } from "@/features/admin/constants";
+} from '@/features/admin/api/admin-partners-api';
+import { ADMIN_PARTNERS_QUERY_KEY, adminPartnerQueryKey } from '@/features/partners/constants';
+import { ADMIN_COMPANIES_QUERY_KEY } from '@/features/admin/constants';
 
 export const useAdminPartnersQuery = (params: ListAdminPartnersParams) =>
   useQuery({
     queryKey: [...ADMIN_PARTNERS_QUERY_KEY, params],
     queryFn: () => listAdminPartners(params),
+    placeholderData: keepPreviousData,
   });
 
 export const useAdminPartnerQuery = (id: string) =>
@@ -63,8 +61,7 @@ export const useUpdatePartnerMutation = (id: string) => {
 export const useCreatePartnerOfferMutation = (partnerId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (body: CreatePartnerOfferBody) =>
-      createAdminPartnerOffer(partnerId, body),
+    mutationFn: (body: CreatePartnerOfferBody) => createAdminPartnerOffer(partnerId, body),
     onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: adminPartnerQueryKey(partnerId),
@@ -76,13 +73,8 @@ export const useCreatePartnerOfferMutation = (partnerId: string) => {
 export const useUpdatePartnerOfferMutation = (partnerId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({
-      offerId,
-      body,
-    }: {
-      offerId: string;
-      body: UpdatePartnerOfferBody;
-    }) => updateAdminPartnerOffer(partnerId, offerId, body),
+    mutationFn: ({ offerId, body }: { offerId: string; body: UpdatePartnerOfferBody }) =>
+      updateAdminPartnerOffer(partnerId, offerId, body),
     onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: adminPartnerQueryKey(partnerId),
@@ -106,8 +98,7 @@ export const useDeletePartnerMutation = () => {
 export const useDeletePartnerOfferMutation = (partnerId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (offerId: string) =>
-      deleteAdminPartnerOffer(partnerId, offerId),
+    mutationFn: (offerId: string) => deleteAdminPartnerOffer(partnerId, offerId),
     onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: adminPartnerQueryKey(partnerId),

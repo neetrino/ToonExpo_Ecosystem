@@ -10,6 +10,14 @@ import type {
   PaginatedResponse,
   PublicationStatus,
 } from './catalog.js';
+import type { LocaleTextMap } from './portal.js';
+
+/** Per-locale company copy for public catalog (name + descriptions). */
+export type CompanyTranslationsInput = {
+  name?: LocaleTextMap;
+  shortDescription?: LocaleTextMap;
+  description?: LocaleTextMap;
+};
 
 export type CompanyStatus = 'active' | 'inactive' | 'pending';
 
@@ -43,6 +51,7 @@ export type CompanyResponse = {
   advertisingMaterialsUrl: string | null;
   createdAt: string;
   updatedAt: string;
+  translations?: CompanyTranslationsInput;
 };
 
 /**
@@ -83,6 +92,7 @@ export type CreateCompanyRequest = {
   adminPhone?: string;
   /** Locale segment in the set-password link; defaults to platform DEFAULT_LOCALE (`hy`). */
   locale?: string;
+  translations?: CompanyTranslationsInput;
 };
 
 /**
@@ -105,6 +115,7 @@ export type UpdateCompanyRequest = {
   address?: string | null;
   mediaMaterialsUrl?: string | null;
   advertisingMaterialsUrl?: string | null;
+  translations?: CompanyTranslationsInput;
 };
 
 /**
@@ -298,6 +309,9 @@ export type AdminApartmentListItem = {
   companyName: string;
   /** Admin-curated homepage featured listings (max 6). */
   featuredOnHome: boolean;
+  /** Stored unit price (builder/admin always see the entered amount). */
+  price: string | null;
+  priceCurrency: string;
   /** Main card image — apartment cover only (no project/building fallback). */
   cover: MediaAssetSummary | null;
 };

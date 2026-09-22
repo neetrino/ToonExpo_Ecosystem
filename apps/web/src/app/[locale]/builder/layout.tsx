@@ -1,6 +1,6 @@
 import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getTranslations } from 'next-intl/server';
 import type { ReactNode } from 'react';
 
 import { getMeSessionCached } from '@/features/auth/api/get-me-or-null-cached';
@@ -9,6 +9,7 @@ import { BuilderMobileStack } from '@/features/builder/components/builder-mobile
 import { BuilderNav } from '@/features/builder/components/builder-nav';
 import { redirect } from '@/i18n/navigation';
 import { isApiErrorStatus } from '@/shared/api/errors';
+import { PanelIntlProvider, resolvePanelLocale } from '@/shared/i18n/panel-intl-provider';
 import { ApiUnavailablePanel } from '@/shared/ui/api-unavailable-panel';
 import { PortalShell } from '@/shared/ui/portal-shell';
 
@@ -21,8 +22,8 @@ type BuilderLayoutProps = {
  * Server-gated builder portal shell. Non-builder members get a generic 404.
  */
 export default async function BuilderLayout({ children, params }: BuilderLayoutProps) {
-  const { locale } = await params;
-  setRequestLocale(locale);
+  const { locale: urlLocale } = await params;
+  const panelLocale = await resolvePanelLocale(urlLocale);
 
   const headerStore = await headers();
   const cookieHeader = headerStore.get('cookie') ?? undefined;
@@ -33,7 +34,7 @@ export default async function BuilderLayout({ children, params }: BuilderLayoutP
   const { user } = session;
 
   if (!user) {
-    redirect({ href: '/auth/login', locale });
+    redirect({ href: '/auth/login', locale: urlLocale });
     return null;
   }
 
@@ -46,30 +47,32 @@ export default async function BuilderLayout({ children, params }: BuilderLayoutP
     notFound();
   }
 
-  const t = await getTranslations('Builder');
+  const t = await getTranslations({ locale: panelLocale, namespace: 'Builder' });
 
   return (
-    <PortalShell
-      brandHref="/builder"
-      badge={t('badge')}
-      userEmail={user.email}
-      profileLabel={t('profileLink')}
-      profileHref="/builder/settings"
-      navLabel={t('nav.label')}
-      variant="rail"
-      mobileDrawerControlledByNavbar
-      className="bg-canvas"
-      railHeader={
-        <p className="truncate text-xs font-semibold uppercase tracking-[0.16em] text-on-dark/65">
-          {t('nav.portalLabel')}
-        </p>
-      }
-      sidebar={<BuilderNav companyName={company.name} />}
-    >
-      <BuilderMobileStack name={user.name} email={user.email} companyName={company.name}>
-        {children}
-      </BuilderMobileStack>
-    </PortalShell>
+    <PanelIntlProvider urlLocale={urlLocale}>
+      <PortalShell
+        brandHref="/builder"
+        badge={t('badge')}
+        userEmail={user.email}
+        profileLabel={t('profileLink')}
+        profileHref="/builder/settings"
+        navLabel={t('nav.label')}
+        variant="rail"
+        mobileDrawerControlledByNavbar
+        className="bg-canvas"
+        railHeader={
+          <p className="line-clamp-2 text-xs font-semibold uppercase leading-tight tracking-[0.16em] text-balance text-on-dark/65">
+            {t('nav.portalLabel')}
+          </p>
+        }
+        sidebar={<BuilderNav companyName={company.name} />}
+      >
+        <BuilderMobileStack name={user.name} email={user.email} companyName={company.name}>
+          {children}
+        </BuilderMobileStack>
+      </PortalShell>
+    </PanelIntlProvider>
   );
 }
 

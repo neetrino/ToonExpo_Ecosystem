@@ -19,8 +19,7 @@ type HomeHeroBackdropProps = {
  * Auto-advance honors `prefers-reduced-motion`; edge buttons still work.
  */
 export const HomeHeroBackdrop = ({ imageUrls, children }: HomeHeroBackdropProps) => {
-  const slides =
-    imageUrls.length > 0 ? imageUrls : ([DEFAULT_HOME_HERO_IMAGE_SRC] as const);
+  const slides = imageUrls.length > 0 ? imageUrls : ([DEFAULT_HOME_HERO_IMAGE_SRC] as const);
   const { activeIndex, canRotate, goBy } = useHomeHeroRotation(slides.length);
 
   return (
@@ -57,6 +56,8 @@ export const HomeHeroBackdrop = ({ imageUrls, children }: HomeHeroBackdropProps)
             </div>
           );
         })}
+        {/* Dark scrim so on-dark text stays readable on any banner photo */}
+        <div className="pointer-events-none absolute inset-0 z-[1] bg-black/30" aria-hidden />
       </div>
       {canRotate ? (
         <HomeHeroNavButtons

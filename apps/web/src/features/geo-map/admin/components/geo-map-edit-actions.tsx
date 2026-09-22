@@ -11,7 +11,6 @@ import { Button } from '@/shared/ui/button';
 
 type GeoMapEditActionsProps = {
   busy: boolean;
-  canPublish: boolean;
   isPublished: boolean;
   isSaving: boolean;
   isDeleting: boolean;
@@ -22,10 +21,10 @@ type GeoMapEditActionsProps = {
 
 /**
  * Sticky Save / Delete / Publish bar — stays visible while the edit form scrolls.
+ * Publish does not require an attached project.
  */
 export const GeoMapEditActions = ({
   busy,
-  canPublish,
   isPublished,
   isSaving,
   isDeleting,
@@ -65,9 +64,9 @@ export const GeoMapEditActions = ({
           size="sm"
           variant={isPublished ? 'soft' : 'outline'}
           className={GEO_MAP_EDIT_ACTION_BUTTON_CLASS}
-          disabled={busy || !canPublish}
+          disabled={busy}
           aria-pressed={isPublished}
-          title={canPublish ? publishLabel : t('edit.publishRequiresProject')}
+          title={publishLabel}
           onClick={() => onPublishChange(!isPublished)}
         >
           <Globe2 className={GEO_MAP_EDIT_ACTION_ICON_CLASS} strokeWidth={1.75} aria-hidden />

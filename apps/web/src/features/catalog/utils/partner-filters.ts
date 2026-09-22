@@ -1,5 +1,5 @@
 import {
-  EXHIBITOR_TAB_BUILDER,
+  EXHIBITOR_TAB_ALL,
   isExhibitorTab,
   type ExhibitorTab,
 } from '@/features/catalog/constants/exhibitor-tabs';
@@ -9,7 +9,7 @@ export const PARTNER_SEARCH_Q_MAX_LENGTH = 100;
 
 export type PartnerListFilters = {
   page: number;
-  /** Single exhibitor tab. Default is builders. */
+  /** Single exhibitor tab. Default lists every exhibitor. */
   tab: ExhibitorTab;
   /** Free-text keyword (name / slug / description). */
   q?: string;
@@ -42,11 +42,11 @@ const readParam = (
 
 const parseTabParam = (raw: string | undefined): ExhibitorTab => {
   if (raw == null || raw.trim().length === 0) {
-    return EXHIBITOR_TAB_BUILDER;
+    return EXHIBITOR_TAB_ALL;
   }
 
   const first = raw.split(',')[0]?.trim() ?? '';
-  return isExhibitorTab(first) ? first : EXHIBITOR_TAB_BUILDER;
+  return isExhibitorTab(first) ? first : EXHIBITOR_TAB_ALL;
 };
 
 export const parsePartnerFilters = (

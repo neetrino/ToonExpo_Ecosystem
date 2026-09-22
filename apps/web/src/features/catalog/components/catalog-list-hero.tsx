@@ -1,5 +1,11 @@
 import Image from 'next/image';
 
+import {
+  CATALOG_OVERLAY_HERO_BODY_CLASS,
+  CATALOG_OVERLAY_HERO_COPY_WIDTH_CLASS,
+  CATALOG_OVERLAY_HERO_SCRIM_CLASS,
+  CATALOG_OVERLAY_HERO_TITLE_CLASS,
+} from '@/features/catalog/constants/catalog-overlay-hero';
 import { cn } from '@/shared/ui/cn';
 
 type CatalogListHeroProps = {
@@ -23,7 +29,7 @@ export const CatalogListHero = ({ title, description, imageSrc }: CatalogListHer
           className="object-cover object-center"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-ink/55 via-ink/25 to-transparent" />
+        <div className={CATALOG_OVERLAY_HERO_SCRIM_CLASS} />
       </div>
 
       <div
@@ -32,27 +38,14 @@ export const CatalogListHero = ({ title, description, imageSrc }: CatalogListHer
           'pt-[clamp(6.25rem,4.75rem+3.5vw,9.5rem)] pb-[clamp(2.5rem,2rem+2vw,4rem)]',
         )}
       >
-        <div className="flex max-w-3xl flex-col gap-[clamp(0.75rem,0.4rem+1.2vw,1.25rem)]">
-          <h1
-            className={cn(
-              'font-brand font-bold text-on-dark',
-              'text-[clamp(2rem,1.05rem+3.8vw,3.75rem)]',
-              'leading-[1.05] tracking-[-0.025em]',
-              'text-balance',
-            )}
-          >
-            {title}
-          </h1>
-          <p
-            className={cn(
-              'max-w-xl text-on-dark/95',
-              'text-[clamp(0.9375rem,0.82rem+0.45vw,1.125rem)]',
-              'leading-[1.55]',
-              'text-pretty',
-            )}
-          >
-            {description}
-          </p>
+        <div
+          className={cn(
+            'flex flex-col gap-[clamp(0.75rem,0.4rem+1.2vw,1.25rem)]',
+            CATALOG_OVERLAY_HERO_COPY_WIDTH_CLASS,
+          )}
+        >
+          <h1 className={CATALOG_OVERLAY_HERO_TITLE_CLASS}>{title}</h1>
+          <p className={CATALOG_OVERLAY_HERO_BODY_CLASS}>{description}</p>
         </div>
       </div>
     </section>

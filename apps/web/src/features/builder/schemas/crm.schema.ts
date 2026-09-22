@@ -1,67 +1,61 @@
-import { z } from "zod";
-import type { CrmActivityType, CrmDealStatus, RequestSource } from "@toonexpo/contracts";
+import { z } from 'zod';
+import type { CrmActivityType, CrmDealStatus, RequestSource } from '@toonexpo/contracts';
 
-import {
-  EMAIL_MAX_LENGTH,
-  NAME_MAX_LENGTH,
-} from "@/shared/config/auth.constants";
-import { isValidOptionalPhone } from "@/shared/lib/phone";
+import { EMAIL_MAX_LENGTH, NAME_MAX_LENGTH } from '@/shared/config/auth.constants';
+import { isValidOptionalPhone } from '@/shared/lib/phone';
 
 export const CRM_NOTE_MAX_LENGTH = 4000;
 export const CRM_ACTIVITY_TITLE_MAX_LENGTH = 200;
 export const CRM_LOST_REASON_MAX_LENGTH = 500;
 export const CRM_CONTACT_NAME_MAX_LENGTH = 200;
+/** Mirrors API CRM_PAYMENT_AMOUNT_MIN. */
+export const CRM_PAYMENT_AMOUNT_MIN = 0.01;
+/** Mirrors API CRM_PAYMENT_AMOUNT_MAX (Decimal 14,2). */
+export const CRM_PAYMENT_AMOUNT_MAX = 999_999_999_999.99;
+/** Mirrors API CRM_PAYMENT_NOTE_MAX_LENGTH. */
+export const CRM_PAYMENT_NOTE_MAX_LENGTH = 500;
 
 export const CRM_DEAL_STATUSES = [
-  "new_request",
-  "assigned",
-  "contacted",
-  "follow_up_needed",
-  "apartment_selected",
-  "reserved",
-  "converted",
-  "closed",
-  "lost",
+  'new_request',
+  'assigned',
+  'contacted',
+  'follow_up_needed',
+  'apartment_selected',
+  'reserved',
+  'converted',
+  'closed',
+  'lost',
 ] as const satisfies readonly CrmDealStatus[];
 
 export const CRM_REQUEST_SOURCES = [
-  "buyer_project_request",
-  "builder_buyer_qr_scan",
-  "manual_builder_entry",
-  "event_interaction",
+  'buyer_project_request',
+  'builder_buyer_qr_scan',
+  'manual_builder_entry',
+  'event_interaction',
 ] as const satisfies readonly RequestSource[];
 
 export const CRM_ACTIVITY_TYPES = [
-  "call",
-  "email",
-  "meeting",
-  "send_offer",
-  "follow_up",
-  "status_update",
-  "other",
+  'call',
+  'email',
+  'meeting',
+  'send_offer',
+  'follow_up',
+  'status_update',
+  'other',
 ] as const satisfies readonly CrmActivityType[];
 
 /**
  * Manual CRM deal create form.
  */
 export const createManualDealSchema = z.object({
-  contactName: z
-    .string()
-    .trim()
-    .min(1)
-    .max(CRM_CONTACT_NAME_MAX_LENGTH),
-  contactPhone: z
-    .string()
-    .trim()
-    .refine(isValidOptionalPhone, { message: "phone" }),
+  contactName: z.string().trim().min(1).max(CRM_CONTACT_NAME_MAX_LENGTH),
+  contactPhone: z.string().trim().refine(isValidOptionalPhone, { message: 'phone' }),
   contactEmail: z
     .string()
     .trim()
     .refine(
-      (value) =>
-        value.length === 0 ||
-        (value.includes("@") && value.length <= EMAIL_MAX_LENGTH),
-      { message: "email" },
+      (value) => value.length === 0 || (value.includes('@') && value.length <= EMAIL_MAX_LENGTH),
+      { message: 'email' },
     ),
   projectId: z.string().trim().optional(),
   note: z.string().trim().max(CRM_NOTE_MAX_LENGTH).optional(),
@@ -78,11 +72,11 @@ export const updateDealStatusSchema = z
     lostReason: z.string().trim().max(CRM_LOST_REASON_MAX_LENGTH).optional(),
   })
   .superRefine((value, ctx) => {
-    if (value.status === "lost" && !value.lostReason?.trim()) {
+    if (value.status === 'lost' && !value.lostReason?.trim()) {
       ctx.addIssue({
-        code: "custom",
-        path: ["lostReason"],
-        message: "lostReason",
+        code: 'custom',
+        path: ['lostReason'],
+        message: 'lostReason',
       });
     }
   });

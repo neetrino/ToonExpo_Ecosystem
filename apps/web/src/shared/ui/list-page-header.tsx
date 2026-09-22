@@ -30,12 +30,14 @@ export type ListPageHeaderProps = {
   actions?: ReactNode | undefined;
   /** Overrides default search slot width (`min-w-[12rem] max-w-md flex-1`). */
   searchClassName?: string | undefined;
+  /** Keep search + actions on their own row under the title (long hy copy). */
+  stackControls?: boolean | undefined;
   className?: string | undefined;
 };
 
 /**
  * List chrome: title + search. Mobile stacks search under the title;
- * `md+` keeps title left and search/actions right.
+ * `md+` keeps title left and search/actions right unless `stackControls`.
  */
 export const ListPageHeader = ({
   title,
@@ -55,6 +57,7 @@ export const ListPageHeader = ({
   onClearAll,
   actions,
   searchClassName,
+  stackControls = false,
   className,
 }: ListPageHeaderProps) => {
   const t = useTranslations('Common.integratedSearch');
@@ -63,17 +66,28 @@ export const ListPageHeader = ({
     <Reveal force>
       <div className={cn('flex shrink-0 flex-col gap-1', className)}>
         {eyebrow ? <p className="crm-board-page__eyebrow">{eyebrow}</p> : null}
-        <div className="flex flex-col gap-3 md:flex-row md:flex-nowrap md:items-center md:justify-between">
+        <div
+          className={cn(
+            'flex flex-col gap-3',
+            !stackControls && 'md:flex-row md:flex-nowrap md:items-center md:justify-between',
+          )}
+        >
           <PageTitleBlock
             title={title}
             {...(subtitle ? { subtitle } : {})}
             {...(icon ? { icon } : {})}
             className="min-w-0 shrink"
           />
-          <div className="flex w-full min-w-0 items-center gap-2 md:flex-1 md:justify-end max-md:flex-wrap">
+          <div
+            className={cn(
+              'flex w-full min-w-0 items-center gap-2',
+              stackControls ? 'flex-nowrap' : 'flex-wrap md:flex-1 md:flex-nowrap md:justify-end',
+            )}
+          >
             <div
               className={cn(
-                'relative w-full min-w-0 md:min-w-[12rem] md:max-w-md md:flex-1',
+                'relative min-w-0 flex-1',
+                !stackControls && 'w-full md:min-w-[12rem] md:max-w-md',
                 searchClassName,
               )}
             >

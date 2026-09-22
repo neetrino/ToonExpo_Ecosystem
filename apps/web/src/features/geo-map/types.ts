@@ -21,11 +21,11 @@ export type GeoMapLngLat = {
  * `utils/map-object-mapper.ts` — this is the only shape `GeoMapCanvas` renders.
  */
 export type GeoMapObject = {
-  /** Stable id used for click/hover/drag callbacks (`ProjectMapModel.id`, or `projectId` for public payloads). */
+  /** Stable id used for click/hover/drag callbacks (`ProjectMapModel.id`). */
   id: string;
-  /** Null for admin unassigned placements (not yet attached to a project). */
+  /** Null when the placement is not attached to a catalog project. */
   projectId: string | null;
-  /** Public project slug for detail links; null for admin unassigned placements. */
+  /** Public project slug for detail links; null when unassigned. */
   projectSlug: string | null;
   /** Project name — shown in the hover/select info card (not on the dot marker). */
   label: string;

@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import type { MediaUploadContext } from "@/features/media/api/media-api";
-import { MediaUploadField } from "@/features/media/components/media-upload-field";
-import { useTranslations } from "next-intl";
-import type { Control } from "react-hook-form";
-import { Controller } from "react-hook-form";
+import type { MediaUploadContext } from '@/features/media/api/media-api';
+import { MediaUploadField } from '@/features/media/components/media-upload-field';
+import { useTranslations } from 'next-intl';
+import type { Control } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 
 export type PartnerMediaFieldValues = {
   logoMediaId: string;
@@ -27,22 +27,22 @@ export const PartnerMediaFields = ({
   logoPreviewUrl,
   coverPreviewUrl,
 }: PartnerMediaFieldsProps) => {
-  const t = useTranslations("Partners.form");
+  const t = useTranslations('Partners.form');
 
   return (
-    <div className="grid items-start gap-4 sm:grid-cols-2">
+    <div className="grid min-w-0 items-start gap-4 sm:grid-cols-2 [&>*]:min-w-0">
       <Controller
         control={control}
         name="logoMediaId"
         render={({ field, fieldState }) => (
           <MediaUploadField
             id="partner-logo"
-            label={t("logoMedia")}
+            label={t('logoMedia')}
             context={context}
             value={field.value}
             onChange={field.onChange}
             previewUrl={logoPreviewUrl}
-            description={t("logoMediaHint")}
+            description={t('logoMediaHint')}
             error={fieldState.error?.message}
           />
         )}
@@ -53,12 +53,12 @@ export const PartnerMediaFields = ({
         render={({ field, fieldState }) => (
           <MediaUploadField
             id="partner-cover"
-            label={t("coverMedia")}
+            label={t('coverMedia')}
             context={context}
             value={field.value}
             onChange={field.onChange}
             previewUrl={coverPreviewUrl}
-            description={t("coverMediaHint")}
+            description={t('coverMediaHint')}
             error={fieldState.error?.message}
           />
         )}

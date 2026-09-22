@@ -11,17 +11,17 @@ import {
   AdminInventoryListShell,
   useAdminInventoryListParams,
 } from '@/features/admin/components/admin-inventory-list-shell';
-import {
-  ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS,
-  ADMIN_VIEW_MODE_KEYS,
-} from '@/features/admin/constants';
+import { ADMIN_VIEW_MODE_KEYS } from '@/features/admin/constants';
+import { useBulkDeleteApartmentsMutation } from '@/features/admin/hooks/use-inventory-bulk-delete';
+import { useInventoryListSelection } from '@/features/admin/hooks/use-inventory-list-selection';
 import { useAdminApartmentsQuery } from '@/features/admin/hooks/use-admin-inventory';
 import { HOME_FEATURED_APARTMENT_LIMIT } from '@/features/catalog/constants/home-featured';
 import { usePathname, useRouter } from '@/i18n/navigation';
-import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
+import { useDebouncedSearch } from '@/shared/hooks/use-debounced-search';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
+import { ListSelectionToolbar } from '@/shared/ui/list-selection-toolbar';
 
 const FIRST_PAGE = 1;
 
@@ -30,12 +30,10 @@ const FIRST_PAGE = 1;
  */
 export const AdminApartmentsListPage = () => {
   const t = useTranslations('Admin.apartments');
-  const { page, pageSize, companyIds, buildingIds, floorIds, companyId, buildingId } =
+  const { page, pageSize, companyIds, buildingIds, floorIds, companyId, buildingId, salesStatus } =
     useAdminInventoryListParams();
   const [search, setSearch] = useState('');
-  const trimmedSearch = search.trim();
-  const debouncedSearch = useDebouncedValue(trimmedSearch, ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS);
-  const activeSearch = trimmedSearch.length === 0 ? '' : debouncedSearch;
+  const activeSearch = useDebouncedSearch(search);
   const query = useAdminApartmentsQuery(
     page,
     pageSize,
@@ -43,6 +41,7 @@ export const AdminApartmentsListPage = () => {
     buildingIds,
     activeSearch || undefined,
     floorIds,
+    salesStatus,
   );
   const response = query.data;
   const [showCreate, setShowCreate] = useState(false);
@@ -52,6 +51,9 @@ export const AdminApartmentsListPage = () => {
   const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(
     ADMIN_VIEW_MODE_KEYS.apartments,
   );
+  const apartments = response?.data ?? [];
+  const listBulk = useInventoryListSelection(apartments, effectiveViewMode, { enabled: true });
+  const bulkDeleteMutation = useBulkDeleteApartmentsMutation();
   const returnTo = (() => {
     const queryString = searchParams.toString();
     return queryString.length > 0 ? `${pathname}?${queryString}` : pathname;
@@ -93,6 +95,7 @@ export const AdminApartmentsListPage = () => {
         icon={Home}
         showBuildingFilter
         showFloorFilter
+        showSalesStatusFilter
         viewMode={viewMode}
         onViewModeChange={setViewMode}
         headerActions={
@@ -109,11 +112,19 @@ export const AdminApartmentsListPage = () => {
         }
       >
         {response ? (
-          <AdminApartmentsTable
-            apartments={response.data}
-            returnTo={returnTo}
-            viewMode={effectiveViewMode}
-          />
+          <div className="flex flex-col gap-3">
+            <ListSelectionToolbar
+              selectedCount={listBulk.selectedCount}
+              onClear={listBulk.selectionClear}
+              onConfirmDelete={() => bulkDeleteMutation.mutateAsync(listBulk.selectedTargets)}
+            />
+            <AdminApartmentsTable
+              apartments={response.data}
+              returnTo={returnTo}
+              viewMode={effectiveViewMode}
+              listSelection={listBulk.listSelection}
+            />
+          </div>
         ) : null}
       </AdminInventoryListShell>
 

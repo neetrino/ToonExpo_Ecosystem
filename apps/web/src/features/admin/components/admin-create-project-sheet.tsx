@@ -88,7 +88,7 @@ export const AdminCreateProjectSheet = ({
                   onCreated(project.id);
                   return;
                 }
-                router.push(`/admin/projects/${encodeURIComponent(project.slug)}`);
+                router.push(`/admin/projects/${project.id}`);
               }}
             />
           </CatalogScopeProvider>

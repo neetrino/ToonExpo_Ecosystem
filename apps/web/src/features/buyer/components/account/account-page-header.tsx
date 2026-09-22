@@ -19,12 +19,7 @@ import { PageTitleIcon } from '@/shared/ui/page-title-icon';
 
 /** Serializable icon keys for RSC → client headers (cannot pass Lucide components). */
 export type AccountPageTitleIconName =
-  | 'dashboard'
-  | 'qr'
-  | 'favorites'
-  | 'requests'
-  | 'checkin'
-  | 'settings';
+  'dashboard' | 'qr' | 'favorites' | 'requests' | 'checkin' | 'settings';
 
 const ACCOUNT_PAGE_TITLE_ICONS: Record<AccountPageTitleIconName, LucideIcon> = {
   dashboard: LayoutDashboard,
@@ -71,9 +66,11 @@ export const AccountPageHeader = ({
         className={cn('flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between', className)}
       >
         <div className="flex min-w-0 flex-col gap-1">
-          {onBack ? <AccountMobileBackLink onBack={onBack} className="-ml-2 mb-3 md:hidden" /> : null}
+          {onBack ? (
+            <AccountMobileBackLink onBack={onBack} className="-ml-2 mb-3 md:hidden" />
+          ) : null}
           <div className="flex min-w-0 items-start gap-3">
-            {resolvedIcon ? <PageTitleIcon icon={resolvedIcon} /> : null}
+            {resolvedIcon ? <PageTitleIcon icon={resolvedIcon} className="mt-0.5" /> : null}
             <div className="flex min-w-0 flex-col gap-1">
               <HeadingTag className="text-page-title min-w-0 text-ink">{title}</HeadingTag>
               {subtitle ? (
@@ -82,7 +79,9 @@ export const AccountPageHeader = ({
             </div>
           </div>
         </div>
-        {actions ? <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div> : null}
+        {actions ? (
+          <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div>
+        ) : null}
       </div>
     </Reveal>
   );

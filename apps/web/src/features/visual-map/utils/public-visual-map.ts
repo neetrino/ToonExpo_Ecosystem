@@ -28,6 +28,10 @@ export const pickPrimaryVisualCanvas = (
   return withHotspots ?? canvases[0] ?? null;
 };
 
+/** True when the canvas has apartment polygons that carry a sales status. */
+export const hasApartmentSalesStatusLegend = (hotspots: PublicVisualHotspotItem[]): boolean =>
+  hotspots.some((hotspot) => hotspot.salesStatus != null);
+
 export const buildApartmentHref = (apartmentId: string): string =>
   buildApartmentPublicHref(apartmentId);
 
@@ -37,11 +41,8 @@ export const buildBuildingHref = (projectSlug: string, buildingId: string): stri
 export const buildDistrictHref = (projectSlug: string, districtId: string): string =>
   buildProjectDistrictPublicHref(projectSlug, districtId);
 
-export const buildFloorHref = (
-  projectSlug: string,
-  buildingId: string,
-  floorId: string,
-): string => buildProjectFloorPublicHref(projectSlug, buildingId, floorId);
+export const buildFloorHref = (projectSlug: string, buildingId: string, floorId: string): string =>
+  buildProjectFloorPublicHref(projectSlug, buildingId, floorId);
 
 /**
  * Sync public path for a hotspot when the destination can be derived without an extra fetch.

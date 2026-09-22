@@ -113,19 +113,21 @@ export const BuyApartmentCard = ({
         <p className="min-h-4 truncate text-xs leading-4 text-header-muted">
           {listing.locationLine}
         </p>
-        <div
-          className={cn(
-            'mt-auto flex flex-wrap items-center gap-4 border-t border-header-border pt-3',
-            'text-[11px] font-medium tracking-tight text-header-muted uppercase',
-          )}
-        >
-          <span>{bedCount != null ? t('specBed', { count: bedCount }) : '—'}</span>
-          <span>
-            {listing.bathrooms != null ? t('specBath', { count: listing.bathrooms }) : '—'}
-          </span>
-          <span>
-            {listing.areaTotal != null ? t('specArea', { area: listing.areaTotal }) : '—'}
-          </span>
+        <div className="mt-auto pt-3">
+          <div
+            className={cn(
+              'flex flex-wrap items-center gap-4 border-t border-header-border pt-3',
+              'text-[11px] font-medium tracking-tight text-header-muted uppercase',
+            )}
+          >
+            <span>{bedCount != null ? t('specBed', { count: bedCount }) : '—'}</span>
+            <span>
+              {listing.bathrooms != null ? t('specBath', { count: listing.bathrooms }) : '—'}
+            </span>
+            <span>
+              {listing.areaTotal != null ? t('specArea', { area: listing.areaTotal }) : '—'}
+            </span>
+          </div>
         </div>
       </div>
     </article>

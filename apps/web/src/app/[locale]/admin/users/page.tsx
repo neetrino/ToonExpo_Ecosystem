@@ -1,4 +1,4 @@
-import { setRequestLocale } from 'next-intl/server';
+import { getLocale, setRequestLocale } from 'next-intl/server';
 import { Suspense } from 'react';
 
 import { UsersListPage } from '@/features/admin/components/users-list-page';
@@ -11,7 +11,8 @@ type AdminUsersPageProps = {
  * Platform admin users directory.
  */
 export default async function AdminUsersPage({ params }: AdminUsersPageProps) {
-  const { locale } = await params;
+  await params;
+  const locale = await getLocale();
   setRequestLocale(locale);
 
   return (

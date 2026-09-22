@@ -25,6 +25,7 @@ export type UseMaplibreMapOptions = {
   styleUrl: string;
   initialCenter: GeoMapLngLat;
   initialZoom: number;
+  enabled?: boolean;
   /**
    * When set, camera starts at this pitch (lab/tests). When omitted, mounts at
    * pitch 0 and eases once to {@link DEFAULT_MAP_PITCH_DEG} after style idle.
@@ -36,6 +37,7 @@ export type UseMaplibreMapOptions = {
 export type UseMaplibreMapResult = {
   map: MapLibreMap | null;
   isMapLoaded: boolean;
+  initializationError: Error | null;
 };
 
 type CreateMapInstanceOptions = {
@@ -116,13 +118,19 @@ export const useMaplibreMap = ({
   styleUrl,
   initialCenter,
   initialZoom,
+  enabled = true,
   initialPitch,
   initialBearing = DEFAULT_MAP_BEARING_DEG,
 }: UseMaplibreMapOptions): UseMaplibreMapResult => {
   const [map, setMap] = useState<MapLibreMap | null>(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const [initializationError, setInitializationError] = useState<Error | null>(null);
 
   useEffect(() => {
+    if (!enabled) {
+      return;
+    }
+
     const container = containerRef.current;
     if (!container) {
       return;
@@ -130,16 +138,27 @@ export const useMaplibreMap = ({
 
     configureMaplibreWorker();
     const hasExplicitPitch = initialPitch !== undefined;
-    const mapInstance = createMapInstance({
-      container,
-      styleUrl,
-      initialCenter,
-      initialZoom,
-      startPitch: hasExplicitPitch ? initialPitch : COLD_START_MAP_PITCH_DEG,
-      initialBearing,
-      easePitchOnIdle: !hasExplicitPitch,
-      onLoaded: () => setIsMapLoaded(true),
-    });
+    let mapInstance: MapLibreMap;
+    try {
+      mapInstance = createMapInstance({
+        container,
+        styleUrl,
+        initialCenter,
+        initialZoom,
+        startPitch: hasExplicitPitch ? initialPitch : COLD_START_MAP_PITCH_DEG,
+        initialBearing,
+        easePitchOnIdle: !hasExplicitPitch,
+        onLoaded: () => setIsMapLoaded(true),
+      });
+      setInitializationError(null);
+    } catch (error) {
+      setMap(null);
+      setIsMapLoaded(false);
+      setInitializationError(
+        error instanceof Error ? error : new Error('Failed to initialize the map canvas.'),
+      );
+      return;
+    }
     setMap(mapInstance);
 
     const resizeObserver = new ResizeObserver(() => {
@@ -155,7 +174,7 @@ export const useMaplibreMap = ({
     };
     // Style/center/zoom/pitch/bearing are only ever applied on the initial mount;
     // intentionally omitted from deps so later prop changes don't recreate the map.
-  }, [containerRef]);
+  }, [containerRef, enabled]);
 
-  return { map, isMapLoaded };
+  return { map, isMapLoaded, initializationError };
 };

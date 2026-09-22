@@ -14,9 +14,7 @@ import {
   isProjectCatalogDateKey,
   isProjectCatalogTextareaKey,
 } from '@/features/builder/constants/project-catalog-editor';
-import {
-  getCatalogFieldPlaceholder,
-} from '@/features/builder/constants/project-content-placeholders';
+import { getCatalogFieldPlaceholder } from '@/features/builder/constants/project-content-placeholders';
 import type { UpdateProjectFormValues } from '@/features/builder/schemas/project.schema';
 import { DatePicker } from '@/shared/ui/date-picker';
 import { parseIsoDate, toIsoDate } from '@/shared/ui/date-picker-utils';
@@ -26,9 +24,13 @@ import { cn } from '@/shared/ui/cn';
 
 type TranslationLocale = (typeof TRANSLATION_LOCALES)[number];
 
-/** Compact value control — sits on the right of the label row (public catalog layout). */
+/** Compact value control — fixed right column so rows stay aligned without overflow. */
+const CATALOG_VALUE_COL_CLASS = 'min-w-0 w-full';
 const CATALOG_VALUE_CONTROL_CLASS =
-  'ml-auto h-10 w-full max-w-[12.5rem] shrink-0 text-left text-sm font-semibold text-ink-navy';
+  'h-10 w-full min-w-0 text-left text-sm font-semibold text-ink-navy';
+/** Label | value: value column capped so long Armenian labels wrap instead of pushing out. */
+const CATALOG_KV_ROW_CLASS =
+  'grid min-w-0 grid-cols-[minmax(0,1fr)_minmax(0,12.5rem)] items-start gap-3 border-b border-header-border py-3';
 
 const EXTRA_FIELD_LABEL_KEYS = new Set([
   'pricePerSqmMin',
@@ -90,7 +92,7 @@ const CatalogDateValue = ({ fieldId, fieldKey, locale, control }: CatalogDateVal
       control={control}
       name={`catalogDetails.${fieldKey}.${locale}`}
       render={({ field }) => (
-        <div className="ml-auto w-full max-w-[12.5rem] shrink-0">
+        <div className={CATALOG_VALUE_COL_CLASS}>
           <DatePicker
             id={fieldId}
             name={field.name}
@@ -98,7 +100,7 @@ const CatalogDateValue = ({ fieldId, fieldKey, locale, control }: CatalogDateVal
             aria-label={ariaLabel}
             onBlur={field.onBlur}
             onChange={(iso) => field.onChange(isoToCatalogMonthYear(iso))}
-            className="h-10 justify-start text-left text-sm font-semibold text-ink-navy"
+            className="h-10 w-full min-w-0 justify-start text-left text-sm font-semibold text-ink-navy"
           />
         </div>
       )}
@@ -116,11 +118,7 @@ type OverviewEditorProps = {
 /**
  * Overview stats editor — equal columns, matches public catalog icon layout.
  */
-export const ProjectCatalogOverviewEditor = ({
-  keys,
-  locale,
-  register,
-}: OverviewEditorProps) => {
+export const ProjectCatalogOverviewEditor = ({ keys, locale, register }: OverviewEditorProps) => {
   return (
     <div
       className={cn(
@@ -157,13 +155,7 @@ type OverviewFieldProps = {
   register: UseFormRegister<UpdateProjectFormValues>;
 };
 
-const OverviewField = ({
-  fieldId,
-  fieldKey,
-  locale,
-  Icon,
-  register,
-}: OverviewFieldProps) => {
+const OverviewField = ({ fieldId, fieldKey, locale, Icon, register }: OverviewFieldProps) => {
   const label = useCatalogFieldLabel(fieldKey);
   const placeholder = getCatalogFieldPlaceholder(locale, fieldKey);
   return (
@@ -213,13 +205,7 @@ type CatalogKvItemProps = {
   register: UseFormRegister<UpdateProjectFormValues>;
 };
 
-const CatalogKvItem = ({
-  sectionId,
-  fieldKey,
-  locale,
-  control,
-  register,
-}: CatalogKvItemProps) => {
+const CatalogKvItem = ({ sectionId, fieldKey, locale, control, register }: CatalogKvItemProps) => {
   const fieldId = `catalog-${sectionId}-${fieldKey}-${locale}`;
   const useTextarea = isProjectCatalogTextareaKey(fieldKey);
   const wide = sectionId === 'bankPartner' ? fieldKey === 'specialTerms' : useTextarea;
@@ -228,36 +214,26 @@ const CatalogKvItem = ({
   const label = useCatalogFieldLabel(fieldKey);
   const placeholder = getCatalogFieldPlaceholder(locale, fieldKey);
   return (
-    <div
-      className={cn(
-        'flex items-start justify-between gap-4 border-b border-header-border py-3',
-        wide && 'sm:col-span-2 sm:flex-col sm:items-stretch',
-      )}
-    >
+    <div className={cn(CATALOG_KV_ROW_CLASS, wide && 'sm:col-span-2 sm:grid-cols-1')}>
       <label
         htmlFor={fieldId}
-        className="flex shrink-0 items-start gap-2 pt-2.5 text-sm text-ink-muted"
+        className="flex min-w-0 items-start gap-2 pt-2.5 text-sm text-ink-muted"
       >
         {sectionId !== 'bankPartner' ? (
           <Icon className="mt-0.5 size-4 shrink-0 text-brand" strokeWidth={1.75} aria-hidden />
         ) : null}
-        {label}
+        <span className="min-w-0 break-words">{label}</span>
       </label>
       {useTextarea ? (
         <Textarea
           id={fieldId}
           rows={3}
           placeholder={placeholder}
-          className="min-h-20 w-full text-left text-sm font-semibold text-ink-navy"
+          className="min-h-20 w-full min-w-0 text-left text-sm font-semibold text-ink-navy"
           {...register(`catalogDetails.${fieldKey}.${locale}`)}
         />
       ) : dateField ? (
-        <CatalogDateValue
-          fieldId={fieldId}
-          fieldKey={fieldKey}
-          locale={locale}
-          control={control}
-        />
+        <CatalogDateValue fieldId={fieldId} fieldKey={fieldKey} locale={locale} control={control} />
       ) : (
         <Input
           id={fieldId}
@@ -280,7 +256,7 @@ export const ProjectCatalogKvEditor = ({
   control,
   register,
 }: KvEditorProps) => (
-  <div className="grid grid-cols-1 gap-x-10 sm:grid-cols-2">
+  <div className="grid min-w-0 grid-cols-1 gap-x-10 sm:grid-cols-2">
     {keys.map((key) => {
       if (isCatalogPairFollower(key)) {
         return null;
@@ -310,7 +286,7 @@ export const ProjectCatalogKvEditor = ({
       return (
         <div
           key={`catalog-${sectionId}-pair-${key}-${locale}`}
-          className="grid grid-cols-1 gap-x-10 sm:col-span-2 sm:grid-cols-2"
+          className="grid min-w-0 grid-cols-1 gap-x-10 sm:col-span-2 sm:grid-cols-2"
         >
           {item}
           <CatalogKvItem

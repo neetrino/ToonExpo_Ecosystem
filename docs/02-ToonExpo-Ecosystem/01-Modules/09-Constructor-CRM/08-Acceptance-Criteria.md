@@ -26,12 +26,14 @@
 - Lost reserved deal releases apartment if no other active hold exists.
 - Reservation conflicts are blocked by default.
 
-## Activities / Notes
+## Activities / Notes / Payments
 
 - Builder can add internal note to deal.
 - Builder can add CRM follow-up activity.
 - Activity can be planned/done/cancelled.
 - Buyer cannot see internal notes.
+- Builder can record a payment after an apartment is linked.
+- Payment tab shows apartment price, paid total, remaining, and history.
 
 ## Buyer History
 
@@ -54,4 +56,3 @@ v1 does not require:
 - email/phone integration;
 - complex builder sub-roles;
 - general task management system.
-

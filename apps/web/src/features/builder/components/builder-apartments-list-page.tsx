@@ -6,7 +6,8 @@ import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
 import { AdminApartmentsTable } from '@/features/admin/components/admin-apartments-table';
-import { ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS } from '@/features/admin/constants';
+import { useBulkDeleteApartmentsMutation } from '@/features/admin/hooks/use-inventory-bulk-delete';
+import { useInventoryListSelection } from '@/features/admin/hooks/use-inventory-list-selection';
 import { catalogApartmentsListHref } from '@/features/builder/catalog-scope';
 import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import {
@@ -15,12 +16,14 @@ import {
 } from '@/features/builder/components/builder-inventory-list-shell';
 import { PortalCreateApartmentSheet } from '@/features/builder/components/portal-create-apartment-sheet';
 import { APARTMENTS_VIEW_MODE_KEY } from '@/features/builder/constants';
+import { useIsCompanyAdmin } from '@/features/builder/hooks/use-company-profile';
 import { usePortalInventoryApartmentsQuery } from '@/features/builder/hooks/use-portal-inventory-hub';
 import { useRouter } from '@/i18n/navigation';
-import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
+import { useDebouncedSearch } from '@/shared/hooks/use-debounced-search';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
+import { ListSelectionToolbar } from '@/shared/ui/list-selection-toolbar';
 
 const FIRST_PAGE = 1;
 
@@ -32,9 +35,7 @@ export const BuilderApartmentsListPage = () => {
   const scope = useCatalogScope();
   const { page, pageSize, buildingId } = useBuilderInventoryListParams();
   const [search, setSearch] = useState('');
-  const trimmedSearch = search.trim();
-  const debouncedSearch = useDebouncedValue(trimmedSearch, ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS);
-  const activeSearch = trimmedSearch.length === 0 ? '' : debouncedSearch;
+  const activeSearch = useDebouncedSearch(search);
   const query = usePortalInventoryApartmentsQuery(
     page,
     pageSize,
@@ -47,6 +48,12 @@ export const BuilderApartmentsListPage = () => {
   const searchParams = useSearchParams();
   const { viewMode, effectiveViewMode, setViewMode } =
     usePersistedViewMode(APARTMENTS_VIEW_MODE_KEY);
+  const isCompanyAdmin = useIsCompanyAdmin();
+  const apartments = response?.data ?? [];
+  const listBulk = useInventoryListSelection(apartments, effectiveViewMode, {
+    enabled: isCompanyAdmin,
+  });
+  const bulkDeleteMutation = useBulkDeleteApartmentsMutation(scope);
   const listHref = catalogApartmentsListHref(scope);
   const returnTo = (() => {
     const queryString = searchParams.toString();
@@ -96,13 +103,21 @@ export const BuilderApartmentsListPage = () => {
         }
       >
         {response ? (
-          <AdminApartmentsTable
-            apartments={response.data}
-            returnTo={returnTo}
-            viewMode={effectiveViewMode}
-            showCompany={false}
-            catalogScope={scope}
-          />
+          <div className="flex flex-col gap-3">
+            <ListSelectionToolbar
+              selectedCount={listBulk.selectedCount}
+              onClear={listBulk.selectionClear}
+              onConfirmDelete={() => bulkDeleteMutation.mutateAsync(listBulk.selectedTargets)}
+            />
+            <AdminApartmentsTable
+              apartments={response.data}
+              returnTo={returnTo}
+              viewMode={effectiveViewMode}
+              showCompany={false}
+              catalogScope={scope}
+              listSelection={listBulk.listSelection}
+            />
+          </div>
         ) : null}
       </BuilderInventoryListShell>
 
