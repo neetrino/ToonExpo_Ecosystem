@@ -1075,7 +1075,10 @@
       "submit": "Send reset link",
       "submitting": "Sending…",
       "success": "If the email exists, a link has been sent.",
-      "backToLogin": "Back to sign in"
+      "backToLogin": "Back to sign in",
+      "placeholders": {
+        "email": "john.doe@example.com"
+      }
     },
     "register": {
       "title": "Create account",

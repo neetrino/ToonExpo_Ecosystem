@@ -1075,7 +1075,10 @@
       "submit": "Отправить ссылку",
       "submitting": "Отправка…",
       "success": "Если email существует, ссылка отправлена.",
-      "backToLogin": "Вернуться ко входу"
+      "backToLogin": "Вернуться ко входу",
+      "placeholders": {
+        "email": "john.doe@example.com"
+      }
     },
     "register": {
       "title": "Регистрация",

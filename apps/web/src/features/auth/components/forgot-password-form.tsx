@@ -71,6 +71,7 @@ export const ForgotPasswordForm = () => {
           id="forgot-email"
           type="email"
           autoComplete="email"
+          placeholder={t('forgotPassword.placeholders.email')}
           aria-invalid={Boolean(errors.email)}
           {...register('email')}
         />

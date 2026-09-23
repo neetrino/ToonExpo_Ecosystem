@@ -1075,7 +1075,10 @@
       "submit": "Ուղարկել հղումը",
       "submitting": "Ուղարկում…",
       "success": "Եթե էլ․ փոստը գոյություն ունի, հղումն ուղարկվել է։",
-      "backToLogin": "Վերադառնալ մուտքին"
+      "backToLogin": "Վերադառնալ մուտքին",
+      "placeholders": {
+        "email": "john.doe@example.com"
+      }
     },
     "register": {
       "title": "Գրանցում",
