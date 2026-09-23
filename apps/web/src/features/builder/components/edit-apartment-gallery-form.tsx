@@ -110,11 +110,10 @@ export const EditApartmentGalleryForm = ({ apartment }: EditApartmentGalleryForm
     }
     setBusy(true);
     setError(null);
+    const uploaded: GalleryItem[] = [];
     try {
-      for (const file of Array.from(files)) {
-        if (items.length >= GALLERY_MAX) {
-          break;
-        }
+      const freeSlots = Math.max(0, GALLERY_MAX - items.length);
+      for (const file of Array.from(files).slice(0, freeSlots)) {
         if (!isAllowedMediaMimeType(file.type)) {
           setError(tMedia('errors.type'));
           continue;
@@ -123,7 +122,26 @@ export const EditApartmentGalleryForm = ({ apartment }: EditApartmentGalleryForm
           setError(tMedia('errors.size'));
           continue;
         }
-        addAsset(await uploadMediaAsset(mediaContext, file));
+        const asset = await uploadMediaAsset(mediaContext, file);
+        uploaded.push({ id: asset.id, fileUrl: asset.fileUrl });
+      }
+
+      if (uploaded.length === 0) {
+        return;
+      }
+
+      setItems((current) => {
+        const next = [...current];
+        for (const asset of uploaded) {
+          if (next.some((item) => item.id === asset.id) || next.length >= GALLERY_MAX) {
+            continue;
+          }
+          next.push(asset);
+        }
+        return next;
+      });
+      if (items.length === 0 && uploaded[0]) {
+        setMainId(uploaded[0].id);
       }
     } catch {
       setError(t('errors.generic'));

@@ -3359,7 +3359,7 @@
         "nearbyItemPlaceholder": "օր. Դպրոց — 300 մ",
         "galleryHint": "Վերբեռնեք նախագծի ռենդերների նկարներ կամ տեղադրեք նկարի հղումներ՝ յուրաքանչյուրը նոր տողից։",
         "galleryUploadLabel": "Պատկերասրահի վերբեռնում",
-        "galleryUploadHint": "Ընտրված յուրաքանչյուր նկար ավտոմատ ավելանում է պատկերասրահի URL-ների ցանկում։",
+        "galleryUploadHint": "Կարող եք միանգամից ընտրել մի քանի նկար՝ յուրաքանչյուրը ավտոմատ կավելանա պատկերասրահին։",
         "galleryUrlsLabel": "Պատկերասրահի նկարի հղումներ",
         "galleryUrlsPlaceholder": "https://cdn.example.com/render-1.jpg",
         "galleryImageAlt": "Պատկերասրահի նկար {index}",

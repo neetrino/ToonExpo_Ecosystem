@@ -3359,7 +3359,7 @@
         "nearbyItemPlaceholder": "напр. Школа — 300 м",
         "galleryHint": "Загрузите фото рендеров проекта или вставьте по одной ссылке на изображение в строке.",
         "galleryUploadLabel": "Загрузка в галерею",
-        "galleryUploadHint": "Каждое выбранное фото автоматически добавляется в список URL галереи.",
+        "galleryUploadHint": "Можно выбрать несколько фото сразу — каждое добавится в галерею автоматически.",
         "galleryUrlsLabel": "Ссылки на изображения галереи",
         "galleryUrlsPlaceholder": "https://cdn.example.com/render-1.jpg",
         "galleryImageAlt": "Изображение галереи {index}",
