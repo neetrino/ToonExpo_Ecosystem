@@ -39,11 +39,18 @@ export type MediaUploadFieldProps = {
   onChange: (mediaAssetId: string) => void;
   /** Fired with the full asset after upload or library pick (optional). */
   onAssetSelected?: ((asset: MediaAssetItem) => void) | undefined;
+  /**
+   * Fired once with all successfully uploaded assets when `multiple` is true.
+   * Prefer this over per-file `onAssetSelected` for gallery-style append flows.
+   */
+  onAssetsSelected?: ((assets: MediaAssetItem[]) => void) | undefined;
   previewUrl?: string | null | undefined;
   /** Extra field-specific hint above the generic file-type help. */
   description?: string | undefined;
   /** When true (default), shows a control to clear the selected image. */
   allowClear?: boolean | undefined;
+  /** When true, the file picker accepts multiple images in one selection. */
+  multiple?: boolean | undefined;
   error?: string | undefined;
 };
 
@@ -57,9 +64,11 @@ export const MediaUploadField = ({
   value,
   onChange,
   onAssetSelected,
+  onAssetsSelected,
   previewUrl,
   description,
   allowClear = true,
+  multiple = false,
   error,
 }: MediaUploadFieldProps) => {
   const t = useTranslations('Media.upload');
@@ -97,26 +106,57 @@ export const MediaUploadField = ({
     onChange('');
   };
 
-  const handleUpload = async (file: File) => {
+  const handleUpload = async (file: File): Promise<MediaAssetItem | null> => {
     const validationError = validateFile(file);
     if (validationError) {
       setLocalError(validationError);
-      return;
+      return null;
     }
 
-    setBusy(true);
-    setLocalError(null);
-
     try {
-      const asset = await uploadMediaAsset(context, file);
-      setThumbnailUrl(asset.fileUrl);
-      onChange(asset.id);
-      onAssetSelected?.(asset);
+      return await uploadMediaAsset(context, file);
     } catch (uploadError) {
       if (uploadError instanceof ApiError && uploadError.status === 503) {
         setLocalError(t('errors.notConfigured'));
       } else {
         setLocalError(t('errors.uploadFailed'));
+      }
+      return null;
+    }
+  };
+
+  const handleFilesSelected = async (files: FileList | null): Promise<void> => {
+    if (files == null || files.length === 0) {
+      return;
+    }
+
+    const selected = multiple ? Array.from(files) : [files[0]!];
+    setBusy(true);
+    setLocalError(null);
+
+    try {
+      const uploaded: MediaAssetItem[] = [];
+      for (const file of selected) {
+        const asset = await handleUpload(file);
+        if (asset) {
+          uploaded.push(asset);
+        }
+      }
+
+      if (uploaded.length === 0) {
+        return;
+      }
+
+      const last = uploaded[uploaded.length - 1]!;
+      setThumbnailUrl(last.fileUrl);
+      onChange(last.id);
+
+      if (onAssetsSelected) {
+        onAssetsSelected(uploaded);
+      } else {
+        for (const asset of uploaded) {
+          onAssetSelected?.(asset);
+        }
       }
     } finally {
       setBusy(false);
@@ -184,14 +224,13 @@ export const MediaUploadField = ({
               id={inputId}
               type="file"
               accept="image/jpeg,image/png,image/webp,image/avif"
+              multiple={multiple}
               className="absolute inset-0 cursor-pointer opacity-0"
               disabled={busy}
               onChange={(event) => {
-                const file = event.target.files?.[0];
+                const { files } = event.target;
                 event.target.value = '';
-                if (file) {
-                  void handleUpload(file);
-                }
+                void handleFilesSelected(files);
               }}
             />
           </label>
