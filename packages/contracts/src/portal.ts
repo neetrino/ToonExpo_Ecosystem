@@ -260,6 +260,13 @@ export type UpdatePortalFloorRequest = {
   floorplanMediaId?: string | null;
 };
 
+/** Copies a floor's plan, apartments, and floor-plan hotspots onto a new floor number. */
+export type DuplicatePortalFloorRequest = {
+  floorNumber: number;
+  name?: string;
+  displayLabel?: string;
+};
+
 export type CreatePortalApartmentRequest = {
   number: string;
   rooms?: number;

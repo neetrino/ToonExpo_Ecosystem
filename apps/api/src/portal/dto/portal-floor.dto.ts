@@ -48,6 +48,25 @@ export class CreatePortalFloorDto {
   floorplanMediaId?: string;
 }
 
+export class DuplicatePortalFloorDto {
+  @ApiProperty({ example: 2, description: 'New floor number within the same building' })
+  @Type(() => Number)
+  @IsInt()
+  floorNumber!: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(120)
+  name?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(120)
+  displayLabel?: string;
+}
+
 export class UpdatePortalFloorDto {
   @ApiPropertyOptional({ description: "Floor number within the building" })
   @IsOptional()

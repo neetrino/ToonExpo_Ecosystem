@@ -1,39 +1,25 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import type { PortalFloorSummary } from '@toonexpo/contracts';
 import { Prisma, PublicationStatus } from '@toonexpo/db';
 
 import { WebRevalidationService } from '../../common/web-revalidation/web-revalidation.service.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { syncFloorPlanMediaToCanvas } from '../../visual-map/utils/sync-floor-plan-media.js';
-import type { CreatePortalFloorDto, UpdatePortalFloorDto } from '../dto/portal-floor.dto.js';
+import type {
+  CreatePortalFloorDto,
+  DuplicatePortalFloorDto,
+  UpdatePortalFloorDto,
+} from '../dto/portal-floor.dto.js';
 import type { UpdatePortalPublicationDto } from '../dto/update-portal-publication.dto.js';
 import { mapPortalFloor } from '../mappers/portal.mapper.js';
 import { entityNotFound } from '../utils/access.js';
 import { requireOwnedBuilding, requireOwnedFloor } from '../utils/ownership.js';
+import { duplicateOwnedFloor } from './duplicate-floor.js';
+import { rethrowFloorNumberConflict } from './floor-number-conflict.js';
 
 const floorInclude = {
   _count: { select: { apartments: true } },
 } satisfies Prisma.FloorInclude;
-
-const FLOOR_NUMBER_CONFLICT_MESSAGE =
-  'This building already has a floor with this number. Enter a different number or open the existing floor.';
-
-const isFloorNumberUniqueViolation = (target: unknown): boolean => {
-  if (!Array.isArray(target)) {
-    return false;
-  }
-  const fields = new Set(target.map((field) => String(field)));
-  return fields.has('number') && (fields.has('buildingId') || fields.has('building_id'));
-};
-
-const rethrowFloorNumberConflict = (error: unknown): void => {
-  if (!(error instanceof Prisma.PrismaClientKnownRequestError) || error.code !== 'P2002') {
-    return;
-  }
-  if (isFloorNumberUniqueViolation(error.meta?.['target'])) {
-    throw new ConflictException(FLOOR_NUMBER_CONFLICT_MESSAGE);
-  }
-};
 
 @Injectable()
 export class PortalFloorsService {
@@ -90,6 +76,29 @@ export class PortalFloorsService {
       rethrowFloorNumberConflict(error);
       throw error;
     }
+  }
+
+  /**
+   * Copies plan, apartments, and floor-plan hotspots onto a new floor number.
+   */
+  async duplicate(
+    companyId: string,
+    userId: string,
+    floorId: string,
+    dto: DuplicatePortalFloorDto,
+  ): Promise<PortalFloorSummary> {
+    const result = await duplicateOwnedFloor(this.prisma.db, {
+      companyId,
+      userId,
+      floorId,
+      floorNumber: dto.floorNumber,
+      ...(dto.name !== undefined ? { name: dto.name } : {}),
+      ...(dto.displayLabel !== undefined ? { displayLabel: dto.displayLabel } : {}),
+    });
+    if (result.revalidate) {
+      this.webRevalidation.revalidateCatalog(result.projectId);
+    }
+    return mapPortalFloor(result.floor);
   }
 
   async update(

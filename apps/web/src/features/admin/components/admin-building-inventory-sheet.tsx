@@ -36,6 +36,9 @@ type AdminBuildingInventorySheetProps = {
 type FloorSheetSnapshot = {
   floorId: string;
   floorLabel: string;
+  floorNumber: number;
+  floorName: string | null;
+  floorDisplayLabel: string | null;
   publicationStatus: PublicationStatus;
   floorplan: MediaAssetSummary | null;
 };
@@ -79,6 +82,9 @@ export const AdminBuildingInventorySheet = ({
     floorSnapshotRef.current = {
       floorId: selectedFloor.id,
       floorLabel: t('floorCode', { number: selectedFloor.number }),
+      floorNumber: selectedFloor.number,
+      floorName: selectedFloor.name,
+      floorDisplayLabel: selectedFloor.displayLabel,
       publicationStatus: selectedFloor.publicationStatus,
       floorplan: selectedFloor.floorplan,
     };
@@ -93,6 +99,10 @@ export const AdminBuildingInventorySheet = ({
   const floorSheetPlan = selectedFloor?.floorplan ?? floorSnapshotRef.current?.floorplan ?? null;
   const floorSheetStatus =
     selectedFloor?.publicationStatus ?? floorSnapshotRef.current?.publicationStatus ?? 'draft';
+  const floorSheetNumber = selectedFloor?.number ?? floorSnapshotRef.current?.floorNumber ?? null;
+  const floorSheetName = selectedFloor?.name ?? floorSnapshotRef.current?.floorName ?? null;
+  const floorSheetDisplayLabel =
+    selectedFloor?.displayLabel ?? floorSnapshotRef.current?.floorDisplayLabel ?? null;
 
   const title = glance?.name ?? t('sheetTitle');
   const description = glance ? glance.projectName : undefined;
@@ -193,6 +203,9 @@ export const AdminBuildingInventorySheet = ({
           buildingId={glance.id}
           floorId={floorSheetFloorId}
           floorLabel={floorSheetLabel}
+          floorNumber={floorSheetNumber}
+          floorName={floorSheetName}
+          floorDisplayLabel={floorSheetDisplayLabel}
           publicationStatus={floorSheetStatus}
           floorplan={floorSheetPlan}
           stackLevel={stackLevel + 1}

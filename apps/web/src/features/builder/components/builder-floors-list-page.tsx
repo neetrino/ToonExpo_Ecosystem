@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 
 import { AdminFloorApartmentsSheet } from '@/features/admin/components/admin-floor-apartments-sheet';
+import { CopyFloorSheet } from '@/features/admin/components/copy-floor-sheet';
 import { AdminFloorsTable } from '@/features/admin/components/admin-floors-table';
 import { useBulkDeleteFloorsMutation } from '@/features/admin/hooks/use-inventory-bulk-delete';
 import { useInventoryListSelection } from '@/features/admin/hooks/use-inventory-list-selection';
@@ -50,6 +51,7 @@ export const BuilderFloorsListPage = () => {
   const response = query.data;
   const [showCreate, setShowCreate] = useState(false);
   const [selectedFloor, setSelectedFloor] = useState<AdminFloorListItem | null>(null);
+  const [copyFloor, setCopyFloor] = useState<AdminFloorListItem | null>(null);
   const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(FLOORS_VIEW_MODE_KEY);
   const isCompanyAdmin = useIsCompanyAdmin();
   const floors = response?.data ?? [];
@@ -135,6 +137,7 @@ export const BuilderFloorsListPage = () => {
               showCompany={false}
               listSelection={listBulk.listSelection}
               onSelectFloor={setSelectedFloor}
+              onCopyFloor={setCopyFloor}
             />
           </div>
         ) : null}
@@ -148,6 +151,15 @@ export const BuilderFloorsListPage = () => {
         defaultBuildingId={buildingId}
       />
 
+      <CopyFloorSheet
+        open={copyFloor != null}
+        floor={copyFloor}
+        scope={scope}
+        onClose={() => {
+          setCopyFloor(null);
+        }}
+      />
+
       {selectedFloor ? (
         <AdminFloorApartmentsSheet
           open
@@ -157,6 +169,9 @@ export const BuilderFloorsListPage = () => {
           floorId={selectedFloor.id}
           floorLabel={floorLabel}
           publicationStatus={selectedFloor.publicationStatus}
+          floorNumber={selectedFloor.number}
+          floorName={selectedFloor.name}
+          floorDisplayLabel={selectedFloor.displayLabel}
           floorplan={floorplan}
           sheetScope={PORTAL_INVENTORY_SHEET_SCOPE}
           onClose={() => {

@@ -10,6 +10,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { AdminFloorAddApartmentsSheet } from '@/features/admin/components/admin-floor-add-apartments-sheet';
+import { CopyFloorSheet, toCopyFloorTarget } from '@/features/admin/components/copy-floor-sheet';
 import { AdminInventorySheetDelete } from '@/features/admin/components/admin-inventory-sheet-delete';
 import { FloorPlanGlanceIcon } from '@/features/admin/components/floor-plan-glance-icon';
 import { FloorPlanLightbox } from '@/features/admin/components/floor-plan-lightbox';
@@ -25,6 +26,8 @@ import {
 import { catalogApartmentDetailHref } from '@/features/builder/catalog-scope';
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
 import { Link, usePathname } from '@/i18n/navigation';
+import { Copy } from 'lucide-react';
+
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { ApartmentSalesStatusBadge } from '@/shared/ui/apartment-sales-status-badge';
 import { Button } from '@/shared/ui/button';
@@ -37,6 +40,9 @@ type AdminFloorApartmentsSheetProps = {
   buildingId: string;
   floorId: string;
   floorLabel: string;
+  floorNumber: number | null;
+  floorName: string | null;
+  floorDisplayLabel: string | null;
   publicationStatus: PublicationStatus;
   floorplan: MediaAssetSummary | null;
   onClose: () => void;
@@ -54,6 +60,9 @@ export const AdminFloorApartmentsSheet = ({
   buildingId,
   floorId,
   floorLabel,
+  floorNumber,
+  floorName,
+  floorDisplayLabel,
   floorplan,
   onClose,
   stackLevel = 1,
@@ -61,6 +70,7 @@ export const AdminFloorApartmentsSheet = ({
 }: AdminFloorApartmentsSheetProps) => {
   const t = useTranslations('Admin.buildings.inventory');
   const createT = useTranslations('Admin.apartments.create');
+  const copyT = useTranslations('Admin.floors.copy');
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const mutationScope = toCatalogMutationScope(sheetScope, companyId);
@@ -68,6 +78,7 @@ export const AdminFloorApartmentsSheet = ({
   const apartments = query.data ?? [];
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
+  const [copyOpen, setCopyOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const deleteMutation = useAdminDeleteFloorMutation();
@@ -81,6 +92,7 @@ export const AdminFloorApartmentsSheet = ({
   useEffect(() => {
     if (!open) {
       setAddOpen(false);
+      setCopyOpen(false);
       setLightboxOpen(false);
       setConfirmDelete(false);
       setDeleteError(null);
@@ -112,6 +124,19 @@ export const AdminFloorApartmentsSheet = ({
         escapeEnabled={!confirmDelete}
         headerActions={
           <div className="flex flex-wrap items-center justify-end gap-2">
+            {floorNumber != null ? (
+              <Button
+                type="button"
+                size="sm"
+                variant="secondary"
+                onClick={() => {
+                  setCopyOpen(true);
+                }}
+              >
+                <Copy className="size-3.5" aria-hidden />
+                {copyT('cta')}
+              </Button>
+            ) : null}
             <Button
               type="button"
               size="sm"
@@ -243,6 +268,22 @@ export const AdminFloorApartmentsSheet = ({
         />
       ) : null}
 
+      <CopyFloorSheet
+        open={copyOpen}
+        stackLevel={stackLevel + 1}
+        scope={mutationScope}
+        floor={toCopyFloorTarget({
+          floorId,
+          floorNumber,
+          floorName,
+          floorDisplayLabel,
+          buildingId,
+          companyId,
+        })}
+        onClose={() => {
+          setCopyOpen(false);
+        }}
+      />
       <AdminFloorAddApartmentsSheet
         open={addOpen}
         companyId={companyId}
