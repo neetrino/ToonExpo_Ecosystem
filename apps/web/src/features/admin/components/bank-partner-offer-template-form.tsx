@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
-  BANK_PARTNER_OFFER_FINANCE_KEYS,
+  type BankPartnerOfferFinanceFields,
   type BankPartnerOfferTemplateItem,
 } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
@@ -32,19 +32,6 @@ type BankPartnerOfferTemplateFormProps = {
   isBusy: boolean;
 };
 
-const toFormFields = (
-  fields: BankPartnerOfferFinanceFields,
-): BankPartnerOfferTemplateFormValues['fields'] => {
-  const next = emptyFinanceFields();
-  for (const key of BANK_PARTNER_OFFER_FINANCE_KEYS) {
-    next[key] = {
-      ...emptyLocaleText(),
-      ...fields[key],
-    };
-  }
-  return next;
-};
-
 /**
  * Admin create/edit form for reusable finance templates (name + Finance fields).
  */
@@ -63,7 +50,7 @@ export const BankPartnerOfferTemplateForm = ({
     defaultValues: initial
       ? {
           name: initial.name,
-          fields: toFormFields(initial.fields),
+          fields: hydrateBankPartnerFinanceFields(initial.fields),
         }
       : {
           name: '',
@@ -102,7 +89,7 @@ export const BankPartnerOfferTemplateForm = ({
         <legend className="mb-2.5 text-xs font-semibold tracking-wide text-ink-muted uppercase">
           {t('sections.finance')}
         </legend>
-        <BankPartnerOfferFinanceFieldsEditor register={form.register} />
+        <BankPartnerOfferFinanceFieldsEditor register={form.register} control={form.control} />
       </fieldset>
 
       <div className="flex flex-wrap gap-2 pt-2">

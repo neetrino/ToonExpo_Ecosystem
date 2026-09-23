@@ -1,5 +1,6 @@
 import {
   BANK_PARTNER_OFFER_FINANCE_KEYS,
+  BANK_PARTNER_OFFER_STATIC_KEYS,
   type BankPartnerOfferFinanceFields,
   type BankPartnerOfferFinanceKey,
   type ProjectBankPartnerOfferSummary,
@@ -28,11 +29,29 @@ const resolveLocaleText = (
   return value && value.length > 0 ? value : null;
 };
 
+const STATIC_OFFER_KEYS = new Set<string>(BANK_PARTNER_OFFER_STATIC_KEYS);
+
+const resolveStaticOfferText = (
+  text: { hy: string; ru: string; en: string },
+): string | null => {
+  const value = text.hy.trim() || text.ru.trim() || text.en.trim();
+  return value.length > 0 ? value : null;
+};
+
 const resolveOfferField = (
   fields: BankPartnerOfferFinanceFields,
   key: BankPartnerOfferFinanceKey,
   locale: SupportedLocale,
-): string | null => resolveLocaleText(fields[key], locale);
+): string | null => {
+  const text = fields[key];
+  if (!text) {
+    return null;
+  }
+  if (STATIC_OFFER_KEYS.has(key)) {
+    return resolveStaticOfferText(text);
+  }
+  return resolveLocaleText(text, locale);
+};
 
 /**
  * Build display rows for one project bank partner offer (public catalog).
