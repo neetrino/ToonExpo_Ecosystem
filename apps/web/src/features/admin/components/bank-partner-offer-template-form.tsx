@@ -3,7 +3,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   BANK_PARTNER_OFFER_FINANCE_KEYS,
-  type BankPartnerOfferFinanceFields,
   type BankPartnerOfferTemplateItem,
 } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
@@ -13,7 +12,7 @@ import { BankPartnerOfferFinanceFieldsEditor } from '@/features/admin/components
 import {
   bankPartnerOfferTemplateFormSchema,
   emptyFinanceFields,
-  emptyLocaleText,
+  hydrateBankPartnerFinanceFields,
   type BankPartnerOfferTemplateFormValues,
 } from '@/features/admin/schemas/bank-partner-offer-template.schema';
 import { Button } from '@/shared/ui/button';
