@@ -1,3 +1,13 @@
+import { buildTransactionalEmailHtml } from "./email-html.js";
+
+export type AccountEmail = {
+  subject: string;
+  text: string;
+  html: string;
+};
+
+const PASSWORD_RESET_EXPIRY_LABEL = "one hour";
+
 /**
  * Builds English (v1) set-password invitation email copy.
  * Localization of transactional email is deferred.
@@ -5,7 +15,7 @@
 export const buildSetPasswordEmail = (input: {
   recipientName: string;
   setPasswordUrl: string;
-}): { subject: string; text: string } => {
+}): AccountEmail => {
   const subject = "Set your ToonExpo password";
   const text = [
     `Hello ${input.recipientName},`,
@@ -18,7 +28,17 @@ export const buildSetPasswordEmail = (input: {
     "— ToonExpo",
   ].join("\n");
 
-  return { subject, text };
+  const html = buildTransactionalEmailHtml({
+    preheader: "Set your ToonExpo password",
+    heading: "Set your password",
+    greeting: `Hello ${input.recipientName},`,
+    body: "Your ToonExpo account has been created. Choose a password to finish signing in.",
+    actionLabel: "Set password",
+    actionUrl: input.setPasswordUrl,
+    footnote: "This link is single-use and expires soon. If you did not expect this email, you can ignore it.",
+  });
+
+  return { subject, text, html };
 };
 
 /**
@@ -27,7 +47,7 @@ export const buildSetPasswordEmail = (input: {
 export const buildPasswordResetEmail = (input: {
   recipientName: string;
   setPasswordUrl: string;
-}): { subject: string; text: string } => {
+}): AccountEmail => {
   const subject = "Reset your ToonExpo password";
   const text = [
     `Hello ${input.recipientName},`,
@@ -35,10 +55,20 @@ export const buildPasswordResetEmail = (input: {
     "We received a request to reset your ToonExpo password. Use the link below:",
     input.setPasswordUrl,
     "",
-    "This link is single-use and expires in one hour. If you did not request a reset, ignore this email.",
+    `This link is single-use and expires in ${PASSWORD_RESET_EXPIRY_LABEL}. If you did not request a reset, ignore this email.`,
     "",
     "— ToonExpo",
   ].join("\n");
 
-  return { subject, text };
+  const html = buildTransactionalEmailHtml({
+    preheader: "Reset your ToonExpo password",
+    heading: "Reset your password",
+    greeting: `Hello ${input.recipientName},`,
+    body: "We received a request to reset your ToonExpo password. Use the button below to choose a new one.",
+    actionLabel: "Reset password",
+    actionUrl: input.setPasswordUrl,
+    footnote: `This link is single-use and expires in ${PASSWORD_RESET_EXPIRY_LABEL}. If you did not request a reset, you can ignore this email.`,
+  });
+
+  return { subject, text, html };
 };

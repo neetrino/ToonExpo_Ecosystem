@@ -35,6 +35,7 @@ export class InviteMailerService {
       to: input.email,
       subject: message.subject,
       text: message.text,
+      html: message.html,
     });
   }
 
@@ -55,6 +56,7 @@ export class InviteMailerService {
       to: input.email,
       subject: message.subject,
       text: message.text,
+      html: message.html,
     });
   }
 
