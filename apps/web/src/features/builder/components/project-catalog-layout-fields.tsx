@@ -2,7 +2,7 @@
 
 import type { ProjectCatalogDetails } from '@/features/catalog/utils/project-catalog-details';
 import { PROJECT_CATALOG_CRITERION_ICON } from '@/features/catalog/components/project-catalog-details-bits';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import type { Control, UseFormRegister } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 
@@ -10,10 +10,11 @@ import type { TRANSLATION_LOCALES } from '@/features/builder/constants';
 import {
   catalogDetailKeyToCriterionId,
   catalogPairFollower,
-  isCatalogPairFollower,
+  catalogPairLeader,
   isProjectCatalogDateKey,
   isProjectCatalogTextareaKey,
 } from '@/features/builder/constants/project-catalog-editor';
+import { ProjectCatalogSharedValue } from '@/features/builder/components/project-catalog-shared-value';
 import { getCatalogFieldPlaceholder } from '@/features/builder/constants/project-content-placeholders';
 import type { UpdateProjectFormValues } from '@/features/builder/schemas/project.schema';
 import { DatePicker } from '@/shared/ui/date-picker';
@@ -83,7 +84,7 @@ const CatalogDateValue = ({ fieldId, fieldKey, locale, control }: CatalogDateVal
 
 type OverviewEditorProps = {
   keys: readonly (keyof ProjectCatalogDetails)[];
-  locale: TranslationLocale;
+  locale?: TranslationLocale | undefined;
   control: Control<UpdateProjectFormValues>;
   register: UseFormRegister<UpdateProjectFormValues>;
 };
@@ -91,7 +92,12 @@ type OverviewEditorProps = {
 /**
  * Overview stats editor — equal columns, matches public catalog icon layout.
  */
-export const ProjectCatalogOverviewEditor = ({ keys, locale, register }: OverviewEditorProps) => {
+export const ProjectCatalogOverviewEditor = ({
+  keys,
+  locale,
+  register,
+  control,
+}: OverviewEditorProps) => {
   return (
     <div
       className={cn(
@@ -104,7 +110,7 @@ export const ProjectCatalogOverviewEditor = ({ keys, locale, register }: Overvie
       {keys.map((key) => {
         const criterionId = catalogDetailKeyToCriterionId(key);
         const Icon = PROJECT_CATALOG_CRITERION_ICON[criterionId];
-        const fieldId = `catalog-overview-${key}-${locale}`;
+        const fieldId = `catalog-overview-${key}-${locale ?? 'shared'}`;
         return (
           <OverviewField
             key={fieldId}
@@ -113,6 +119,7 @@ export const ProjectCatalogOverviewEditor = ({ keys, locale, register }: Overvie
             locale={locale}
             Icon={Icon}
             register={register}
+            control={control}
           />
         );
       })}
@@ -123,14 +130,29 @@ export const ProjectCatalogOverviewEditor = ({ keys, locale, register }: Overvie
 type OverviewFieldProps = {
   fieldId: string;
   fieldKey: keyof ProjectCatalogDetails;
-  locale: TranslationLocale;
+  locale?: TranslationLocale | undefined;
   Icon: (typeof PROJECT_CATALOG_CRITERION_ICON)[keyof typeof PROJECT_CATALOG_CRITERION_ICON];
   register: UseFormRegister<UpdateProjectFormValues>;
+  control: Control<UpdateProjectFormValues>;
 };
 
-const OverviewField = ({ fieldId, fieldKey, locale, Icon, register }: OverviewFieldProps) => {
+const OVERVIEW_INPUT_CLASS = cn(
+  'h-10 w-full min-w-0 rounded-lg border-border/70 bg-surface px-2.5',
+  'text-center text-sm font-semibold tracking-tight text-ink-navy',
+  'placeholder:font-medium',
+);
+
+const OverviewField = ({
+  fieldId,
+  fieldKey,
+  locale,
+  Icon,
+  register,
+  control,
+}: OverviewFieldProps) => {
+  const uiLocale = useLocale();
   const label = useCatalogFieldLabel(fieldKey);
-  const placeholder = getCatalogFieldPlaceholder(locale, fieldKey);
+  const placeholder = getCatalogFieldPlaceholder(locale ?? uiLocale, fieldKey);
   return (
     <div className="flex min-w-0 flex-col items-center gap-2.5 text-center">
       <span
@@ -139,17 +161,25 @@ const OverviewField = ({ fieldId, fieldKey, locale, Icon, register }: OverviewFi
       >
         <Icon className="size-5" strokeWidth={1.75} />
       </span>
-      <Input
-        id={fieldId}
-        placeholder={placeholder}
-        title={label}
-        className={cn(
-          'h-10 w-full min-w-0 rounded-lg border-border/70 bg-surface px-2.5',
-          'text-center text-sm font-semibold tracking-tight text-ink-navy',
-          'placeholder:font-medium',
-        )}
-        {...register(`catalogDetails.${fieldKey}.${locale}`)}
-      />
+      {locale == null ? (
+        <ProjectCatalogSharedValue
+          fieldId={fieldId}
+          fieldKey={fieldKey}
+          control={control}
+          kind="input"
+          placeholder={placeholder}
+          ariaLabel={label}
+          className={OVERVIEW_INPUT_CLASS}
+        />
+      ) : (
+        <Input
+          id={fieldId}
+          placeholder={placeholder}
+          title={label}
+          className={OVERVIEW_INPUT_CLASS}
+          {...register(`catalogDetails.${fieldKey}.${locale}`)}
+        />
+      )}
       <label
         htmlFor={fieldId}
         className="line-clamp-2 min-h-8 text-xs font-medium leading-snug text-ink-muted"
@@ -165,7 +195,7 @@ type CatalogKvSectionId = 'details' | 'finance' | 'bankPartner';
 type KvEditorProps = {
   sectionId: CatalogKvSectionId;
   keys: readonly (keyof ProjectCatalogDetails)[];
-  locale: TranslationLocale;
+  locale?: TranslationLocale | undefined;
   control: Control<UpdateProjectFormValues>;
   register: UseFormRegister<UpdateProjectFormValues>;
 };
@@ -173,19 +203,21 @@ type KvEditorProps = {
 type CatalogKvItemProps = {
   sectionId: CatalogKvSectionId;
   fieldKey: keyof ProjectCatalogDetails;
-  locale: TranslationLocale;
+  locale?: TranslationLocale | undefined;
   control: Control<UpdateProjectFormValues>;
   register: UseFormRegister<UpdateProjectFormValues>;
 };
 
 const CatalogKvItem = ({ sectionId, fieldKey, locale, control, register }: CatalogKvItemProps) => {
-  const fieldId = `catalog-${sectionId}-${fieldKey}-${locale}`;
+  const uiLocale = useLocale();
+  const fieldId = `catalog-${sectionId}-${fieldKey}-${locale ?? 'shared'}`;
   const useTextarea = isProjectCatalogTextareaKey(fieldKey);
   const wide = sectionId === 'bankPartner' ? fieldKey === 'specialTerms' : useTextarea;
   const dateField = isProjectCatalogDateKey(fieldKey);
   const Icon = PROJECT_CATALOG_CRITERION_ICON[catalogDetailKeyToCriterionId(fieldKey)];
   const label = useCatalogFieldLabel(fieldKey);
-  const placeholder = getCatalogFieldPlaceholder(locale, fieldKey);
+  const placeholder = getCatalogFieldPlaceholder(locale ?? uiLocale, fieldKey);
+  const sharedKind = useTextarea ? 'textarea' : dateField ? 'date' : 'input';
   return (
     <div className={cn(CATALOG_KV_ROW_CLASS, wide && 'sm:col-span-2 sm:grid-cols-1')}>
       <label
@@ -197,7 +229,21 @@ const CatalogKvItem = ({ sectionId, fieldKey, locale, control, register }: Catal
         ) : null}
         <span className="min-w-0 break-words">{label}</span>
       </label>
-      {useTextarea ? (
+      {locale == null ? (
+        <ProjectCatalogSharedValue
+          fieldId={fieldId}
+          fieldKey={fieldKey}
+          control={control}
+          kind={sharedKind}
+          placeholder={placeholder}
+          ariaLabel={label}
+          className={
+            useTextarea
+              ? 'min-h-20 w-full min-w-0 text-left text-sm font-semibold text-ink-navy'
+              : CATALOG_VALUE_CONTROL_CLASS
+          }
+        />
+      ) : useTextarea ? (
         <Textarea
           id={fieldId}
           rows={3}
@@ -231,23 +277,17 @@ export const ProjectCatalogKvEditor = ({
 }: KvEditorProps) => (
   <div className="grid min-w-0 grid-cols-1 gap-x-10 sm:grid-cols-2">
     {keys.map((key) => {
-      if (isCatalogPairFollower(key)) {
+      const leader = catalogPairLeader(key);
+      if (leader != null && keys.includes(leader)) {
         return null;
       }
       const follower = catalogPairFollower(key);
-      const item = (
-        <CatalogKvItem
-          sectionId={sectionId}
-          fieldKey={key}
-          locale={locale}
-          control={control}
-          register={register}
-        />
-      );
-      if (!follower) {
+      const pairedFollower = follower != null && keys.includes(follower) ? follower : null;
+      const itemKey = `catalog-${sectionId}-${key}-${locale ?? 'shared'}`;
+      if (pairedFollower == null) {
         return (
           <CatalogKvItem
-            key={`catalog-${sectionId}-${key}-${locale}`}
+            key={itemKey}
             sectionId={sectionId}
             fieldKey={key}
             locale={locale}
@@ -258,13 +298,19 @@ export const ProjectCatalogKvEditor = ({
       }
       return (
         <div
-          key={`catalog-${sectionId}-pair-${key}-${locale}`}
+          key={`catalog-${sectionId}-pair-${key}-${locale ?? 'shared'}`}
           className="grid min-w-0 grid-cols-1 gap-x-10 sm:col-span-2 sm:grid-cols-2"
         >
-          {item}
           <CatalogKvItem
             sectionId={sectionId}
-            fieldKey={follower}
+            fieldKey={key}
+            locale={locale}
+            control={control}
+            register={register}
+          />
+          <CatalogKvItem
+            sectionId={sectionId}
+            fieldKey={pairedFollower}
             locale={locale}
             control={control}
             register={register}

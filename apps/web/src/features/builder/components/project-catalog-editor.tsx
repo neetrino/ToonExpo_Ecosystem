@@ -9,6 +9,7 @@ import {
   PROJECT_CATALOG_FINANCE_KEYS,
   PROJECT_CATALOG_OVERVIEW_KEYS,
   PROJECT_CATALOG_SOCIAL_LINK_EDITOR_IDS,
+  splitCatalogEditorKeys,
 } from '@/features/builder/constants/project-catalog-editor';
 import {
   getCatalogListPlaceholder,

@@ -1,4 +1,5 @@
 import type { ProjectCatalogDetails } from '@/features/catalog/utils/project-catalog-details';
+import { isProjectCatalogStaticKey } from '@/features/catalog/utils/project-catalog-static-fields';
 import type { ProjectCatalogCriterionId } from '@/features/catalog/utils/build-project-catalog-rows';
 import type { ProjectCatalogLinkId } from '@/features/catalog/utils/project-catalog-links';
 import {
@@ -58,9 +59,17 @@ const CATALOG_PAIR_FOLLOWERS = new Set<string>(
   PROJECT_CATALOG_DETAILS_PAIRS.map((pair) => pair[1]),
 );
 
+const CATALOG_PAIR_LEADER_BY_FOLLOWER: Partial<
+  Record<keyof ProjectCatalogDetails, keyof ProjectCatalogDetails>
+> = Object.fromEntries(PROJECT_CATALOG_DETAILS_PAIRS.map((pair) => [pair[1], pair[0]]));
+
 export const catalogPairFollower = (
   key: keyof ProjectCatalogDetails,
 ): keyof ProjectCatalogDetails | null => CATALOG_PAIR_FOLLOWER_BY_START[key] ?? null;
+
+export const catalogPairLeader = (
+  key: keyof ProjectCatalogDetails,
+): keyof ProjectCatalogDetails | null => CATALOG_PAIR_LEADER_BY_FOLLOWER[key] ?? null;
 
 export const isCatalogPairFollower = (key: keyof ProjectCatalogDetails): boolean =>
   CATALOG_PAIR_FOLLOWERS.has(key);
@@ -204,4 +213,25 @@ export const catalogDetailKeyToCriterionId = (
     return mapped;
   }
   return key as ProjectCatalogCriterionId;
+};
+
+/**
+ * Splits an editor section into values entered once and values entered per language.
+ */
+export const splitCatalogEditorKeys = (
+  keys: readonly (keyof ProjectCatalogDetails)[],
+): {
+  staticKeys: (keyof ProjectCatalogDetails)[];
+  translatedKeys: (keyof ProjectCatalogDetails)[];
+} => {
+  const staticKeys: (keyof ProjectCatalogDetails)[] = [];
+  const translatedKeys: (keyof ProjectCatalogDetails)[] = [];
+  for (const key of keys) {
+    if (isProjectCatalogStaticKey(key)) {
+      staticKeys.push(key);
+      continue;
+    }
+    translatedKeys.push(key);
+  }
+  return { staticKeys, translatedKeys };
 };
