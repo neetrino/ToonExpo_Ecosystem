@@ -34,7 +34,7 @@ describe('project-catalog-amenities', () => {
     const slice = catalogJsonToFormSlice(amenities, nearbyPlaces);
     expect(slice.catalogDetails.propertyType.hy).toBe('Բնակելի');
     expect(slice.catalogDetails.propertyType.en).toBe('Residential');
-    expect(slice.catalogDetails.apartmentsCount.hy).toBe('12');
+    expect(slice.catalogDetails.apartmentsCount).toEqual({ hy: '12', ru: '12', en: '12' });
     expect(slice.catalogDetails.slogan.hy).toBe('Ապրիր լավ');
     expect(slice.catalogLinks.floorplans2d).toBe('https://example.com/plans-2d');
     expect(slice.catalogGallery).toBe(
@@ -49,7 +49,7 @@ describe('project-catalog-amenities', () => {
     expect(written.amenities).toMatchObject({
       details: {
         propertyType: { hy: 'Բնակելի', en: 'Residential' },
-        apartmentsCount: { hy: '12' },
+        apartmentsCount: '12',
         slogan: { hy: 'Ապրիր լավ', en: 'Live well' },
       },
       labels: {
@@ -66,6 +66,34 @@ describe('project-catalog-amenities', () => {
       places: {
         hy: ['Արագած'],
         en: ['Aragats'],
+      },
+    });
+  });
+
+  it('stores a price once even when older locale copies differ', () => {
+    const slice = catalogJsonToFormSlice(
+      {
+        details: {
+          pricePerSqmMin: { hy: '420000', ru: '1', en: '2' },
+          unitPriceMin: { en: '28000000' },
+        },
+      },
+      null,
+    );
+    expect(slice.catalogDetails.pricePerSqmMin).toEqual({
+      hy: '420000',
+      ru: '420000',
+      en: '420000',
+    });
+    expect(slice.catalogDetails.unitPriceMin).toEqual({
+      hy: '28000000',
+      ru: '28000000',
+      en: '28000000',
+    });
+    expect(catalogFormSliceToJson(slice).amenities).toMatchObject({
+      details: {
+        pricePerSqmMin: '420000',
+        unitPriceMin: '28000000',
       },
     });
   });

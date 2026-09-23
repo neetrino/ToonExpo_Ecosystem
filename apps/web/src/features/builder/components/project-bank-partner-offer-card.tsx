@@ -12,7 +12,6 @@ import { useForm } from 'react-hook-form';
 
 import { BankPartnerOfferFinanceFieldsEditor } from '@/features/admin/components/bank-partner-offer-finance-fields-editor';
 import {
-  emptyFinanceFields,
   hydrateBankPartnerFinanceFields,
   projectBankPartnerOfferFormSchema,
   type ProjectBankPartnerOfferFormValues,
