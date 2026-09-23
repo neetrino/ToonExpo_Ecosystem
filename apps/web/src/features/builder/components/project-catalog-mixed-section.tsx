@@ -23,7 +23,7 @@ type CatalogMixedSectionProps = {
 /**
  * Catalog card: language-independent fields once, translated fields behind hy/ru/en tabs.
  */
-export const CatalogMixedSection = ({
+export const ProjectCatalogMixedSection = ({
   title,
   keys,
   variant,
