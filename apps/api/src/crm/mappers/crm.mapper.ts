@@ -10,6 +10,7 @@ import type {
   CrmRequestHistoryItem,
 } from '@toonexpo/contracts';
 import type { CrmDealStatus, Prisma, RequestSource } from '@toonexpo/db';
+import { formatPersonName } from '@toonexpo/shared';
 
 import { CRM_DEFAULT_PAYMENT_CURRENCY } from '../crm.constants.js';
 import { mapDealStatusToBuyerFacing } from '../status/deal-status.transitions.js';
@@ -23,11 +24,12 @@ const decimalToString = (value: Prisma.Decimal | null | undefined): string | nul
 type BuyerProfileRow = {
   id: string;
   name: string;
+  surname?: string | null;
   phone: string;
   email: string;
 } | null;
 
-type AssignedUserRow = { id: string; name: string } | null;
+type AssignedUserRow = { id: string; name: string; surname?: string | null } | null;
 
 type ProjectRow = { id: string; name: string } | null;
 
@@ -40,7 +42,9 @@ export const mapBuyerContact = (
   },
 ): CrmBuyerContact => ({
   buyerProfileId: profile?.id ?? null,
-  name: profile?.name ?? fallback.contactName,
+  name: profile
+    ? formatPersonName(profile.name, profile.surname)
+    : fallback.contactName,
   phone: profile?.phone ?? fallback.contactPhone,
   email: profile?.email ?? fallback.contactEmail,
 });
@@ -73,7 +77,9 @@ export const mapDealListItem = (row: DealListRow): CrmDealListItem => ({
   projectName: row.project?.name ?? null,
   buyer: mapBuyerContact(row.buyerProfile, row),
   assignedUserId: row.assignedUserId,
-  assignedUserName: row.assignedUser?.name ?? null,
+  assignedUserName: row.assignedUser
+    ? formatPersonName(row.assignedUser.name, row.assignedUser.surname)
+    : null,
   lastActivityAt: toIso(row.lastActivityAt),
   nextFollowUpAt: toIso(row.nextFollowUpAt),
   createdAt: row.createdAt.toISOString(),
@@ -133,14 +139,14 @@ export const mapPaymentItem = (row: {
   note: string | null;
   createdByUserId: string;
   createdAt: Date;
-  createdBy: { name: string };
+  createdBy: { name: string; surname?: string | null };
 }): CrmPaymentItem => ({
   id: row.id,
   amount: row.amount.toString(),
   currency: row.currency,
   note: row.note,
   createdByUserId: row.createdByUserId,
-  createdByName: row.createdBy.name,
+  createdByName: formatPersonName(row.createdBy.name, row.createdBy.surname),
   createdAt: row.createdAt.toISOString(),
 });
 
@@ -151,13 +157,13 @@ export const mapNoteItem = (row: {
   authorUserId: string;
   createdAt: Date;
   updatedAt: Date;
-  author: { name: string };
+  author: { name: string; surname?: string | null };
 }): CrmNoteItem => ({
   id: row.id,
   body: row.body,
   visibility: row.visibility,
   authorUserId: row.authorUserId,
-  authorName: row.author.name,
+  authorName: formatPersonName(row.author.name, row.author.surname),
   createdAt: row.createdAt.toISOString(),
   updatedAt: row.updatedAt.toISOString(),
 });

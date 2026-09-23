@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import type { ReactNode } from 'react';
 
+import { formatPersonName } from '@toonexpo/shared';
+
 import { AdminMobileStack } from '@/features/admin/components/admin-mobile-stack';
 import { AdminNav } from '@/features/admin/components/admin-nav';
 import { ADMIN_RAIL_COLLAPSED_STORAGE_KEY } from '@/features/admin/constants';
@@ -67,7 +69,7 @@ export default async function AdminLayout({ children, params }: AdminLayoutProps
         }
         sidebar={<AdminNav />}
       >
-        <AdminMobileStack name={user.name} email={user.email}>
+        <AdminMobileStack name={formatPersonName(user.name, user.surname)} email={user.email}>
           {children}
         </AdminMobileStack>
       </PortalShell>

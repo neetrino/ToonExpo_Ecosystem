@@ -16,11 +16,17 @@ import {
 } from "../../common/constants/app.constants.js";
 
 export class RegisterDto {
-  @ApiProperty({ example: "Ani Hakobyan" })
+  @ApiProperty({ example: "Ani" })
   @IsString()
   @MinLength(1)
   @MaxLength(NAME_MAX_LENGTH)
   name!: string;
+
+  @ApiProperty({ example: "Hakobyan" })
+  @IsString()
+  @MinLength(1)
+  @MaxLength(NAME_MAX_LENGTH)
+  surname!: string;
 
   @ApiProperty({ example: "ani@example.com" })
   @IsEmail()

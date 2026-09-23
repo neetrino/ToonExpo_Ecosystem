@@ -3,6 +3,7 @@ import type { AccountType, UserResponse, UserStatus } from "@toonexpo/contracts"
 type UserRecord = {
   id: string;
   name: string;
+  surname?: string | null;
   email: string;
   phone: string | null;
   accountType: AccountType;
@@ -18,6 +19,7 @@ type UserRecord = {
 export const toUserResponse = (user: UserRecord): UserResponse => ({
   id: user.id,
   name: user.name,
+  surname: user.surname ?? null,
   email: user.email,
   phone: user.phone,
   accountType: user.accountType,

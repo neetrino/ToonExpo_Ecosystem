@@ -1,6 +1,7 @@
 'use client';
 
 import type { CompanyMemberResponse, CompanyMemberStatus } from '@toonexpo/contracts';
+import { formatPersonName } from '@toonexpo/shared';
 import { CheckCircle2, CircleDashed, Mail, Shield, UserRound } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -47,7 +48,9 @@ export const BuilderTeamMemberCard = ({
     >
       <div className="flex flex-1 gap-2 p-4">
         <div className="flex min-w-0 flex-1 flex-col">
-          <h2 className="text-base font-semibold tracking-tight text-ink">{member.user.name}</h2>
+          <h2 className="text-base font-semibold tracking-tight text-ink">
+            {formatPersonName(member.user.name, member.user.surname)}
+          </h2>
           <div className="mt-2 flex flex-col gap-1 text-sm text-ink-secondary">
             <span className="inline-flex min-w-0 items-center gap-1.5">
               <Mail className="size-3.5 shrink-0 opacity-70" aria-hidden />

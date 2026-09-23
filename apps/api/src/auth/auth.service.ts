@@ -43,7 +43,7 @@ export class AuthService {
   ) {}
 
   async register(
-    input: { name: string; email: string; phone: string; password: string },
+    input: { name: string; surname: string; email: string; phone: string; password: string },
     meta: ClientMeta,
     response: Response,
   ): Promise<AuthSessionResponse> {
@@ -55,19 +55,24 @@ export class AuthService {
     }
 
     const passwordHash = await hashPassword(input.password);
+    const name = input.name.trim();
+    const surname = input.surname.trim();
+    const phone = input.phone.trim();
     const user = await this.prisma.db.$transaction(async (tx) => {
       const created = await tx.user.create({
         data: {
-          name: input.name.trim(),
+          name,
+          surname,
           email,
-          phone: input.phone.trim(),
+          phone,
           passwordHash,
           accountType: AccountType.buyer,
           status: UserStatus.active,
           buyerProfile: {
             create: {
-              name: input.name.trim(),
-              phone: input.phone.trim(),
+              name,
+              surname,
+              phone,
               email,
             },
           },
@@ -146,16 +151,18 @@ export class AuthService {
    */
   async updateProfile(
     user: AuthenticatedUser,
-    input: { name: string; phone?: string },
+    input: { name: string; surname?: string; phone?: string },
   ): Promise<UserResponse> {
     const name = input.name.trim();
+    const surnameRaw = input.surname?.trim() ?? '';
+    const surname = surnameRaw.length > 0 ? surnameRaw : null;
     const phoneRaw = input.phone?.trim() ?? '';
     const phone = phoneRaw.length > 0 ? phoneRaw : null;
 
     const updated = await this.prisma.db.$transaction(async (tx) => {
       const nextUser = await tx.user.update({
         where: { id: user.id },
-        data: { name, phone },
+        data: { name, surname, phone },
       });
 
       const buyerProfile = await tx.buyerProfile.findUnique({
@@ -168,6 +175,7 @@ export class AuthService {
           where: { id: buyerProfile.id },
           data: {
             name,
+            surname,
             phone: phone ?? buyerProfile.phone,
           },
         });

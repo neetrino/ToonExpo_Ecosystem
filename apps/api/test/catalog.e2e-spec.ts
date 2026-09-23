@@ -209,7 +209,8 @@ describe('Catalog public endpoints (e2e)', () => {
     const registerResponse = await request(app.getHttpServer())
       .post(`${API_V1_PREFIX}/auth/register`)
       .send({
-        name: 'Catalog E2E Buyer',
+        name: 'Catalog',
+        surname: 'Buyer',
         email,
         phone: '+37491112233',
         password: 'password123',

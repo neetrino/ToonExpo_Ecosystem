@@ -10,6 +10,7 @@ const user = (
   id: 'user-1',
   email: 'staff@example.com',
   name: 'Staff',
+  surname: null,
   phone: null,
   status: 'active',
   accountType,

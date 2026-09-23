@@ -6,6 +6,7 @@ import {
   QrCodeStatus,
   hashQrToken,
 } from "@toonexpo/db";
+import { formatPersonName } from "@toonexpo/shared";
 
 import type { AppEnv } from "../../config/env.validation.js";
 import { PrismaService } from "../../prisma/prisma.service.js";
@@ -93,7 +94,7 @@ export class CheckInScanService {
 
     const qr = await this.prisma.db.qrCode.findUnique({
       where: { tokenHash },
-      include: { buyerProfile: { select: { id: true, name: true } } },
+      include: { buyerProfile: { select: { id: true, name: true, surname: true } } },
     });
 
     if (!qr) {
@@ -127,7 +128,7 @@ export class CheckInScanService {
       status,
       visitorDisplayName:
         status === CheckInStatus.denied_blocked
-          ? qr.buyerProfile.name
+          ? formatPersonName(qr.buyerProfile.name, qr.buyerProfile.surname)
           : null,
       checkedInAt: checkedInAt.toISOString(),
       duplicateWarning: false,

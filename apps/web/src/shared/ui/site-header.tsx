@@ -1,5 +1,6 @@
 'use client';
 
+import { formatPersonName } from '@toonexpo/shared';
 import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
@@ -240,7 +241,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
 
               <div className="hidden lg:block">
                 <ProfileMenu
-                  userName={user?.name}
+                  userName={user ? formatPersonName(user.name, user.surname) : undefined}
                   userEmail={user?.email}
                   accountType={user?.accountType}
                   companyType={user?.companyType}

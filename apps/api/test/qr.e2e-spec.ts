@@ -123,7 +123,8 @@ describe('Buyer QR system (e2e)', () => {
     const registerResponse = await request(app.getHttpServer())
       .post(`${API_V1_PREFIX}/auth/register`)
       .send({
-        name: 'QR Reg Buyer',
+        name: 'QR',
+        surname: 'Buyer',
         email,
         phone: '+37491112233',
         password,

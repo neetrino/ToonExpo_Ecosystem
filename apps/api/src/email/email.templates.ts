@@ -8,34 +8,51 @@ export type AccountEmail = {
 
 const PASSWORD_RESET_EXPIRY_LABEL = "one hour";
 
+/** Matches ACCOUNT_ACCESS_TOKEN_TTL_SECONDS (7 days). */
+const SET_PASSWORD_EXPIRY_LABEL = "7 days";
+
+const companyLabel = (companyName: string | undefined): string | undefined => {
+  const label = companyName?.replaceAll(/[\r\n]+/g, " ").trim();
+  return label || undefined;
+};
+
 /**
  * Builds English (v1) set-password invitation email copy.
+ * Uses the same branded card as the password-reset email.
  * Localization of transactional email is deferred.
  */
 export const buildSetPasswordEmail = (input: {
   recipientName: string;
   setPasswordUrl: string;
+  companyName?: string;
 }): AccountEmail => {
-  const subject = "Set your ToonExpo password";
+  const company = companyLabel(input.companyName);
+  const subject = company
+    ? `You're invited to ${company} on ToonExpo`
+    : "Set your ToonExpo password";
+  const body = company
+    ? `You have been invited to administer ${company} on ToonExpo. Set your password to open the company portal.`
+    : "Your ToonExpo account has been created. Choose a password to finish signing in.";
+  const footnote = `This link is single-use and expires in ${SET_PASSWORD_EXPIRY_LABEL}. If you did not expect this email, you can ignore it.`;
   const text = [
     `Hello ${input.recipientName},`,
     "",
-    "Your ToonExpo account has been created. Set your password using the link below:",
+    body,
     input.setPasswordUrl,
     "",
-    "This link is single-use and expires soon. If you did not expect this email, ignore it.",
+    footnote,
     "",
     "— ToonExpo",
   ].join("\n");
 
   const html = buildTransactionalEmailHtml({
-    preheader: "Set your ToonExpo password",
-    heading: "Set your password",
+    preheader: subject,
+    heading: company ? "You're invited" : "Set your password",
     greeting: `Hello ${input.recipientName},`,
-    body: "Your ToonExpo account has been created. Choose a password to finish signing in.",
+    body,
     actionLabel: "Set password",
     actionUrl: input.setPasswordUrl,
-    footnote: "This link is single-use and expires soon. If you did not expect this email, you can ignore it.",
+    footnote,
   });
 
   return { subject, text, html };

@@ -74,6 +74,7 @@ export type CompanyMemberStatus = 'active' | 'inactive' | 'removed';
  */
 export type RegisterRequest = {
   name: string;
+  surname: string;
   email: string;
   phone: string;
   password: string;
@@ -107,6 +108,7 @@ export type ForgotPasswordResponse = {
 export type UserResponse = {
   id: string;
   name: string;
+  surname: string | null;
   email: string;
   phone: string | null;
   accountType: AccountType;
@@ -130,6 +132,7 @@ export const PROFILE_PHONE_MAX_LENGTH = 32;
  */
 export const updateProfileRequestSchema = z.object({
   name: z.string().trim().min(1).max(PROFILE_NAME_MAX_LENGTH),
+  surname: z.string().trim().max(PROFILE_NAME_MAX_LENGTH).optional(),
   phone: z
     .string()
     .trim()

@@ -7,11 +7,17 @@ import { NAME_MAX_LENGTH, PHONE_MAX_LENGTH } from '../../common/constants/app.co
  * Self-service profile update — name and optional phone.
  */
 export class UpdateProfileDto {
-  @ApiProperty({ example: 'Ani Hakobyan' })
+  @ApiProperty({ example: 'Ani' })
   @IsString()
   @MinLength(1)
   @MaxLength(NAME_MAX_LENGTH)
   name!: string;
+
+  @ApiPropertyOptional({ example: 'Hakobyan' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(NAME_MAX_LENGTH)
+  surname?: string;
 
   @ApiPropertyOptional({ example: '+37491111222', nullable: true })
   @IsOptional()

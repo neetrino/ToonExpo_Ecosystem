@@ -52,7 +52,7 @@ export class PortalCrmPaymentsService {
         note: body.note?.trim() || null,
         createdByUserId: actorUserId,
       },
-      include: { createdBy: { select: { name: true } } },
+      include: { createdBy: { select: { name: true, surname: true } } },
     });
     await this.prisma.db.crmDeal.update({
       where: { id: deal.id },

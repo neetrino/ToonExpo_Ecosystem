@@ -60,9 +60,9 @@ export class PortalCrmDealsService {
         include: {
           project: { select: { id: true, name: true } },
           buyerProfile: {
-            select: { id: true, name: true, phone: true, email: true },
+            select: { id: true, name: true, surname: true, phone: true, email: true },
           },
-          assignedUser: { select: { id: true, name: true } },
+          assignedUser: { select: { id: true, name: true, surname: true } },
         },
       }),
     ]);
@@ -223,9 +223,9 @@ export class PortalCrmDealsService {
       include: {
         project: { select: { id: true, name: true } },
         buyerProfile: {
-          select: { id: true, name: true, phone: true, email: true },
+          select: { id: true, name: true, surname: true, phone: true, email: true },
         },
-        assignedUser: { select: { id: true, name: true } },
+        assignedUser: { select: { id: true, name: true, surname: true } },
         requests: { orderBy: { createdAt: 'asc' } },
         apartmentLinks: {
           include: {
@@ -234,11 +234,11 @@ export class PortalCrmDealsService {
           orderBy: { createdAt: 'asc' },
         },
         payments: {
-          include: { createdBy: { select: { name: true } } },
+          include: { createdBy: { select: { name: true, surname: true } } },
           orderBy: { createdAt: 'desc' },
         },
         notes: {
-          include: { author: { select: { name: true } } },
+          include: { author: { select: { name: true, surname: true } } },
           orderBy: { createdAt: 'desc' },
         },
         activities: { orderBy: { createdAt: 'desc' } },

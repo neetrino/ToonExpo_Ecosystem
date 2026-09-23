@@ -38,7 +38,7 @@ export class PortalCrmNotesActivitiesService {
         body: body.body.trim(),
         visibility: CrmNoteVisibility.internal,
       },
-      include: { author: { select: { name: true } } },
+      include: { author: { select: { name: true, surname: true } } },
     });
     await this.touchDeal(dealId);
     return mapNoteItem(note);

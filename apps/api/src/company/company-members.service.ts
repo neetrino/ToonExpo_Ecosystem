@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import type { CompanyMemberListResponse, CompanyMemberResponse } from '@toonexpo/contracts';
 import { AccountType, CompanyMemberRole, CompanyMemberStatus, UserStatus } from '@toonexpo/db';
+import { formatPersonName } from '@toonexpo/shared';
 
 import { InviteMailerService } from '../access-tokens/invite-mailer.service.js';
 import { normalizeEmail } from '../auth/mappers/user.mapper.js';
@@ -70,7 +71,11 @@ export class CompanyMembersService {
             },
           },
         },
-        include: { companyMembership: true },
+        include: {
+          companyMembership: {
+            include: { company: { select: { name: true } } },
+          },
+        },
       });
 
       const membership = user.companyMembership;
@@ -84,7 +89,8 @@ export class CompanyMembersService {
     await this.inviteMailer.sendSetPasswordInvite({
       userId: member.user.id,
       email: member.user.email,
-      name: member.user.name,
+      name: formatPersonName(member.user.name, member.user.surname),
+      companyName: member.company.name,
       ...(input.locale ? { locale: input.locale } : {}),
     });
 

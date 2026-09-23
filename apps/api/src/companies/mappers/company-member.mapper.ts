@@ -19,6 +19,7 @@ type MemberRecord = {
   user: {
     id: string;
     name: string;
+    surname?: string | null;
     email: string;
     phone: string | null;
     accountType: UserResponse["accountType"];

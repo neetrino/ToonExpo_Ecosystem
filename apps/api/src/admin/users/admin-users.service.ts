@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import type { AdminUserListItem, AdminUserListResponse } from '@toonexpo/contracts';
 import type { Prisma } from '@toonexpo/db';
+import { formatPersonName } from '@toonexpo/shared';
 
 import { toUserResponse } from '../../auth/mappers/user.mapper.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
@@ -24,7 +25,7 @@ const toAdminUserListItem = (row: UserListRow): AdminUserListItem => {
 
   return {
     id: base.id,
-    name: base.name,
+    name: formatPersonName(base.name, base.surname),
     email: base.email,
     phone: base.phone,
     accountType: base.accountType,

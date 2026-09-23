@@ -23,12 +23,14 @@ export class InviteMailerService {
     email: string;
     name: string;
     locale?: string;
+    companyName?: string;
   }): Promise<void> {
     const issued = await this.accessTokens.issueSetPasswordToken(input.userId);
     const url = this.buildSetPasswordUrl(issued.rawToken, input.locale);
     const message = buildSetPasswordEmail({
       recipientName: input.name,
       setPasswordUrl: url,
+      ...(input.companyName ? { companyName: input.companyName } : {}),
     });
 
     await this.emailService.send({

@@ -8,6 +8,8 @@ import type { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 
+import { formatPersonName } from '@toonexpo/shared';
+
 import { useUpdateProfileMutation } from '@/features/auth/hooks/use-auth';
 import {
   updateProfileFormSchema,
@@ -106,29 +108,32 @@ export const AccountProfileBanner = ({ user, className }: AccountProfileBannerPr
     formState: { errors, isSubmitting },
   } = useForm<UpdateProfileFormValues>({
     resolver: zodResolver(updateProfileFormSchema),
-    defaultValues: { name: user.name, phone: user.phone ?? '' },
+    defaultValues: { name: user.name, surname: user.surname ?? '', phone: user.phone ?? '' },
   });
 
   const watchedName = useWatch({ control, name: 'name' });
+  const watchedSurname = useWatch({ control, name: 'surname' });
 
   useEffect(() => {
     if (!isEditing) {
-      reset({ name: user.name, phone: user.phone ?? '' });
+      reset({ name: user.name, surname: user.surname ?? '', phone: user.phone ?? '' });
     }
-  }, [isEditing, reset, user.name, user.phone]);
+  }, [isEditing, reset, user.name, user.surname, user.phone]);
 
   const accountTypeLabel = t(`accountTypes.${user.accountType}`);
-  const displayName = isEditing ? watchedName?.trim() || user.name : user.name;
+  const displayName = isEditing
+    ? formatPersonName(watchedName ?? '', watchedSurname)
+    : formatPersonName(user.name, user.surname);
   const busy = isSubmitting || updateMutation.isPending;
 
   const startEditing = () => {
-    reset({ name: user.name, phone: user.phone ?? '' });
+    reset({ name: user.name, surname: user.surname ?? '', phone: user.phone ?? '' });
     setFormError(null);
     setIsEditing(true);
   };
 
   const cancelEditing = () => {
-    reset({ name: user.name, phone: user.phone ?? '' });
+    reset({ name: user.name, surname: user.surname ?? '', phone: user.phone ?? '' });
     setFormError(null);
     setIsEditing(false);
   };
@@ -138,6 +143,7 @@ export const AccountProfileBanner = ({ user, className }: AccountProfileBannerPr
     try {
       await updateMutation.mutateAsync({
         name: values.name,
+        surname: values.surname,
         phone: normalizePhoneForSubmit(values.phone),
       });
       setIsEditing(false);
@@ -212,6 +218,19 @@ export const AccountProfileBanner = ({ user, className }: AccountProfileBannerPr
               </>
             ) : (
               <p className="break-words text-sm font-medium text-ink">{user.name}</p>
+            )}
+          </BannerDetail>
+          <BannerDetail icon={UserRound} label={t('fields.surname')}>
+            {isEditing ? (
+              <Input
+                id="profile-inline-surname"
+                autoComplete="family-name"
+                aria-invalid={Boolean(errors.surname)}
+                className={INLINE_INPUT_CLASS}
+                {...register('surname')}
+              />
+            ) : (
+              <p className="break-words text-sm font-medium text-ink">{user.surname ?? t('fields.phoneEmpty')}</p>
             )}
           </BannerDetail>
           <BannerDetail icon={Mail} label={t('fields.email')}>

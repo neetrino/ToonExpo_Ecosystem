@@ -8,6 +8,7 @@ import {
   CompanyType,
   UserStatus,
 } from "@toonexpo/db";
+import { formatPersonName } from "@toonexpo/shared";
 
 import { CompanyProvisioningService } from "../../company/provisioning/company-provisioning.service.js";
 import { PrismaService } from "../../prisma/prisma.service.js";
@@ -126,6 +127,7 @@ export class BosProvisioningExecutorService {
       recordId,
       txResult.user,
       body.request_id,
+      txResult.company.name,
     );
 
     return {
@@ -183,6 +185,7 @@ export class BosProvisioningExecutorService {
     recordId: string,
     user: UserRecord,
     requestId: string,
+    companyName: string,
   ): Promise<boolean> {
     if (user.status === UserStatus.active && user.passwordHash) {
       return false;
@@ -192,7 +195,8 @@ export class BosProvisioningExecutorService {
       await this.provisioning.sendSetPasswordInvite({
         userId: user.id,
         email: user.email,
-        name: user.name,
+        name: formatPersonName(user.name, user.surname),
+        companyName,
       });
       await this.audit.write(this.prisma.db, recordId, "invitation_sent", {
         userId: user.id,

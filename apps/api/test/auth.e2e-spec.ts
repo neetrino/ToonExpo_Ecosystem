@@ -79,7 +79,8 @@ describe('Auth endpoints (e2e)', () => {
     const registerResponse = await request(app.getHttpServer())
       .post(`${API_V1_PREFIX}/auth/register`)
       .send({
-        name: 'E2E Buyer',
+        name: 'E2E',
+        surname: 'Buyer',
         email,
         phone: '+37491110001',
         password,
@@ -89,7 +90,8 @@ describe('Auth endpoints (e2e)', () => {
     expect(registerResponse.body.user).toMatchObject({
       email,
       accountType: 'buyer',
-      name: 'E2E Buyer',
+      name: 'E2E',
+      surname: 'Buyer',
     });
     expect(registerResponse.body.csrfToken).toEqual(expect.any(String));
     expect(registerResponse.body.user).not.toHaveProperty('passwordHash');
@@ -162,7 +164,8 @@ describe('Auth endpoints (e2e)', () => {
     const registerResponse = await request(app.getHttpServer())
       .post(`${API_V1_PREFIX}/auth/register`)
       .send({
-        name: 'CSRF Buyer',
+        name: 'CSRF',
+        surname: 'Buyer',
         email,
         phone: '+37491110004',
         password: 'password123',
@@ -211,7 +214,8 @@ describe('Auth endpoints (e2e)', () => {
     await request(app.getHttpServer())
       .post(`${API_V1_PREFIX}/auth/register`)
       .send({
-        name: 'Origin Buyer',
+        name: 'Origin',
+        surname: 'Buyer',
         email,
         phone: '+37491110005',
         password,
@@ -243,7 +247,8 @@ describe('Auth endpoints (e2e)', () => {
     await request(app.getHttpServer())
       .post(`${API_V1_PREFIX}/auth/register`)
       .send({
-        name: 'Wrong Pass',
+        name: 'Wrong',
+        surname: 'Pass',
         email,
         phone: '+37491110002',
         password: 'password123',
@@ -262,7 +267,8 @@ describe('Auth endpoints (e2e)', () => {
     const email = uniqueEmail('duplicate');
     createdEmails.push(email);
     const payload = {
-      name: 'Dup User',
+      name: 'Dup',
+      surname: 'User',
       email,
       phone: '+37491110003',
       password: 'password123',

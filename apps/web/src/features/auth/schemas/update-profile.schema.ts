@@ -8,6 +8,7 @@ import { isValidOptionalPhone } from '@/shared/lib/phone';
  */
 export const updateProfileFormSchema = z.object({
   name: z.string().trim().min(1).max(PROFILE_NAME_MAX_LENGTH),
+  surname: z.string().trim().max(PROFILE_NAME_MAX_LENGTH),
   phone: z
     .string()
     .trim()
