@@ -92,6 +92,7 @@ export const AccountProfileBanner = ({ user, className }: AccountProfileBannerPr
   const t = useTranslations('Profile');
   const tEdit = useTranslations('Profile.editProfile');
   const tAuth = useTranslations('Auth');
+  const tCommon = useTranslations('Common');
   const router = useRouter();
   const updateMutation = useUpdateProfileMutation();
   const [isEditing, setIsEditing] = useState(false);
@@ -198,6 +199,7 @@ export const AccountProfileBanner = ({ user, className }: AccountProfileBannerPr
                 <Input
                   id="profile-inline-name"
                   autoComplete="name"
+                  placeholder={tCommon('placeholders.personName')}
                   aria-invalid={Boolean(errors.name)}
                   className={INLINE_INPUT_CLASS}
                   {...register('name')}

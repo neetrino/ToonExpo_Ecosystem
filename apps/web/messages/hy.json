@@ -51,7 +51,9 @@
       "nextYear": "Հաջորդ տարի"
     },
     "placeholders": {
-      "url": "https://"
+      "url": "https://",
+      "personName": "John Doe",
+      "personEmail": "john.doe@example.com"
     },
     "back": "Հետ",
     "formErrors": {
@@ -638,8 +640,8 @@
       "reserveSubtitle": "Ներբեռնեք բրոշյուրը, պլանավորեք այց կամ խոսեք կառուցապատողի վաճառքի թիմի հետ։",
       "downloadBrochure": "Ներբեռնել բրոշյուրը",
       "scheduleVisit": "Պլանավորել այց",
-      "reserveName": "Անուն Ազգանուն",
-      "reserveEmail": "Էլ. փոստ",
+      "reserveName": "John Doe",
+      "reserveEmail": "john.doe@example.com",
       "reservePhone": "Հեռախոս",
       "reserveSubmit": "Խնդրել զանգ",
       "reserveSubmitting": "Ուղարկվում է…",
@@ -855,8 +857,8 @@
       "inquireSubtitle": "Մենք կկապենք ձեզ կառուցապատողի հետ։",
       "inquireAgentRole": "ToonExpo գործընկեր",
       "inquireAgentMeta": "Ստուգված գործակալ · պատասխանում է 1 ժամում",
-      "inquireNamePlaceholder": "Ձեր անունը",
-      "inquireEmailPlaceholder": "Էլ․ փոստ",
+      "inquireNamePlaceholder": "John Doe",
+      "inquireEmailPlaceholder": "john.doe@example.com",
       "inquirePhonePlaceholder": "Հեռախոս",
       "inquireMessagePlaceholder": "Ձեր հաղորդագրությունը",
       "inquireMessageDefault": "Ցանկանում եմ դիտում նշանակել՝ {project}։",
@@ -1065,7 +1067,7 @@
       "noAccount": "Դեռ հաշիվ չունե՞ք",
       "registerLink": "Գրանցվել",
       "placeholders": {
-        "email": "john.smith@example.com",
+        "email": "john.doe@example.com",
         "password": "********"
       }
     },
@@ -1089,9 +1091,9 @@
       "loginLink": "Մուտք",
       "placeholders": {
         "firstName": "John",
-        "surname": "Smith",
+        "surname": "Doe",
         "phone": "37491111222",
-        "email": "john.smith@example.com",
+        "email": "john.doe@example.com",
         "password": "********",
         "confirmPassword": "********"
       }
@@ -2311,8 +2313,8 @@
         "placeholders": {
           "name": "Acme Partners",
           "adminFirstName": "John",
-          "adminSurname": "Smith",
-          "adminEmail": "john.smith@example.com",
+          "adminSurname": "Doe",
+          "adminEmail": "john.doe@example.com",
           "adminPhone": "+37491111222"
         },
         "submit": "Ստեղծել և ուղարկել հրավեր",
@@ -3906,11 +3908,11 @@
         "cta": "+ Նոր գործարք",
         "title": "Նոր գործարք",
         "contactName": "Ամբողջական անուն",
-        "contactNamePlaceholder": "John Smith",
+        "contactNamePlaceholder": "John Doe",
         "contactPhone": "Հեռախոս",
         "contactPhonePlaceholder": "37491111222",
         "contactEmail": "Էլ․ փոստ",
-        "contactEmailPlaceholder": "john.smith@example.com",
+        "contactEmailPlaceholder": "john.doe@example.com",
         "project": "Նախագիծ",
         "projectOptional": "Առանց նախագծի",
         "note": "Նշում",

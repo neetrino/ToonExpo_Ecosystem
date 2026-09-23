@@ -42,6 +42,7 @@ const mapCreateError = (error: unknown): 'emailTaken' | 'generic' => {
  */
 export const CreateCompanyForm = ({ onSuccess }: CreateCompanyFormProps) => {
   const t = useTranslations('Admin.companies');
+  const tCommon = useTranslations('Common');
   const locale = useLocale();
   const createMutation = useCreateAdminCompanyMutation();
   const [focusLocale, setFocusLocale] = useState<TranslationLocale | undefined>();
@@ -122,6 +123,7 @@ export const CreateCompanyForm = ({ onSuccess }: CreateCompanyFormProps) => {
         >
           <Input
             id="admin-name"
+            placeholder={tCommon('placeholders.personName')}
             aria-invalid={Boolean(errors.adminName)}
             {...register('adminName')}
           />
@@ -135,6 +137,7 @@ export const CreateCompanyForm = ({ onSuccess }: CreateCompanyFormProps) => {
             id="admin-email"
             type="email"
             autoComplete="email"
+            placeholder={tCommon('placeholders.personEmail')}
             aria-invalid={Boolean(errors.adminEmail)}
             {...register('adminEmail')}
           />

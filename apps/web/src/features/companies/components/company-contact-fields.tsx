@@ -60,6 +60,7 @@ export const CompanyContactFields = <TFieldValues extends FieldValues>({
       >
         <Input
           id={`${idPrefix}-contact-person`}
+          placeholder={tCommon('placeholders.personName')}
           {...register(field<TFieldValues>('contactPerson'))}
         />
       </FormField>

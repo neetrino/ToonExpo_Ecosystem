@@ -35,6 +35,7 @@ const mapInviteError = (error: unknown): 'emailTaken' | 'generic' => {
  */
 export const InviteMemberForm = ({ onSuccess }: InviteMemberFormProps) => {
   const t = useTranslations('Builder.team');
+  const tCommon = useTranslations('Common');
   const locale = useLocale();
   const mutation = useInviteMemberMutation();
   const { showError, onInvalid, errorToast } = useFormErrorToast({
@@ -87,14 +88,23 @@ export const InviteMemberForm = ({ onSuccess }: InviteMemberFormProps) => {
         label={t('form.name')}
         error={errors.name ? t('validation.name') : undefined}
       >
-        <Input id="invite-name" {...register('name')} />
+        <Input
+          id="invite-name"
+          placeholder={tCommon('placeholders.personName')}
+          {...register('name')}
+        />
       </FormField>
       <FormField
         id="invite-email"
         label={t('form.email')}
         error={errors.email ? t('validation.email') : undefined}
       >
-        <Input id="invite-email" type="email" {...register('email')} />
+        <Input
+          id="invite-email"
+          type="email"
+          placeholder={tCommon('placeholders.personEmail')}
+          {...register('email')}
+        />
       </FormField>
       <FormField
         id="invite-phone"

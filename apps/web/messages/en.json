@@ -51,7 +51,9 @@
       "nextYear": "Next year"
     },
     "placeholders": {
-      "url": "https://"
+      "url": "https://",
+      "personName": "John Doe",
+      "personEmail": "john.doe@example.com"
     },
     "back": "Back",
     "formErrors": {
@@ -638,8 +640,8 @@
       "reserveSubtitle": "Download the brochure, schedule a model-suite visit, or speak directly with the developer's sales team.",
       "downloadBrochure": "Download brochure",
       "scheduleVisit": "Schedule visit",
-      "reserveName": "Full name",
-      "reserveEmail": "Email",
+      "reserveName": "John Doe",
+      "reserveEmail": "john.doe@example.com",
       "reservePhone": "Phone",
       "reserveSubmit": "Request callback",
       "reserveSubmitting": "Sending…",
@@ -855,8 +857,8 @@
       "inquireSubtitle": "We'll connect you with the builder.",
       "inquireAgentRole": "ToonExpo listing partner",
       "inquireAgentMeta": "Verified agent · responds in 1h",
-      "inquireNamePlaceholder": "Your name",
-      "inquireEmailPlaceholder": "Email",
+      "inquireNamePlaceholder": "John Doe",
+      "inquireEmailPlaceholder": "john.doe@example.com",
       "inquirePhonePlaceholder": "Phone",
       "inquireMessagePlaceholder": "Your message",
       "inquireMessageDefault": "I'd like to schedule a viewing for {project}.",
@@ -1065,7 +1067,7 @@
       "noAccount": "No account yet?",
       "registerLink": "Create one",
       "placeholders": {
-        "email": "john.smith@example.com",
+        "email": "john.doe@example.com",
         "password": "********"
       }
     },
@@ -1089,9 +1091,9 @@
       "loginLink": "Sign in",
       "placeholders": {
         "firstName": "John",
-        "surname": "Smith",
+        "surname": "Doe",
         "phone": "37491111222",
-        "email": "john.smith@example.com",
+        "email": "john.doe@example.com",
         "password": "********",
         "confirmPassword": "********"
       }
@@ -2311,8 +2313,8 @@
         "placeholders": {
           "name": "Acme Partners",
           "adminFirstName": "John",
-          "adminSurname": "Smith",
-          "adminEmail": "john.smith@example.com",
+          "adminSurname": "Doe",
+          "adminEmail": "john.doe@example.com",
           "adminPhone": "+37491111222"
         },
         "submit": "Create & send invite",
@@ -4166,11 +4168,11 @@
         "cta": "+ New Deal",
         "title": "New deal",
         "contactName": "Full name",
-        "contactNamePlaceholder": "John Smith",
+        "contactNamePlaceholder": "John Doe",
         "contactPhone": "Phone",
         "contactPhonePlaceholder": "37491111222",
         "contactEmail": "Email",
-        "contactEmailPlaceholder": "john.smith@example.com",
+        "contactEmailPlaceholder": "john.doe@example.com",
         "project": "Project",
         "projectOptional": "No project",
         "note": "Note",
