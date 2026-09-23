@@ -4,6 +4,8 @@ import type { FormEvent } from 'react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
+import { formatPersonName } from '@toonexpo/shared';
+
 import { useMeQuery } from '@/features/auth/hooks/use-auth';
 import { useCreateBuyerRequestMutation } from '@/features/buyer/hooks/use-buyer';
 import { isNonBuyerStaff } from '@/features/buyer/utils/is-buyer-account';
@@ -45,7 +47,9 @@ export const ProjectReserveCta = ({ projectId, projectName }: ProjectReserveCtaP
     if (!user) {
       return;
     }
-    setName((current) => (current.trim() === '' ? user.name : current));
+    setName((current) =>
+      current.trim() === '' ? formatPersonName(user.name, user.surname) : current,
+    );
     setEmail((current) => (current.trim() === '' ? user.email : current));
     setPhone((current) =>
       current.trim() === '' ? sanitizePhoneInput(user.phone ?? '') : current,

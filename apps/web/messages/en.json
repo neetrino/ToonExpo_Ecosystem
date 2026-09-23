@@ -1198,6 +1198,7 @@
     },
     "fields": {
       "name": "Name",
+      "surname": "Surname",
       "email": "Email",
       "phone": "Phone",
       "phoneEmpty": "Not set",

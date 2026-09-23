@@ -1,6 +1,8 @@
 import { headers } from 'next/headers';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
+import { formatPersonName } from '@toonexpo/shared';
+
 import { getMeSessionCached } from '@/features/auth/api/get-me-or-null-cached';
 import { AccountDashboardView } from '@/features/buyer/components/account/account-dashboard-view';
 import {
@@ -56,7 +58,7 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
     <AccountPageEnter>
       <div className="hidden flex-col gap-6 md:flex">
         <AccountPageHeader
-          title={t('dashboard.welcome', { name: user.name })}
+          title={t('dashboard.welcome', { name: formatPersonName(user.name, user.surname) })}
           subtitle={t('dashboard.subtitle')}
           iconName="dashboard"
         />

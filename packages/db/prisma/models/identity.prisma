@@ -55,6 +55,7 @@ enum AccountAccessTokenPurpose {
 model User {
   id            String      @id @default(cuid())
   name          String
+  surname       String?
   email         String      @unique
   phone         String?
   /// Null until set-password (provisioned / invited users).
@@ -132,6 +133,7 @@ model BuyerProfile {
   id        String   @id @default(cuid())
   userId    String   @unique @map("user_id")
   name      String
+  surname   String?
   phone     String
   email     String
   createdAt DateTime @default(now()) @map("created_at")

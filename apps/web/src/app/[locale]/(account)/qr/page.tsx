@@ -1,6 +1,8 @@
 import { headers } from 'next/headers';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
+import { formatPersonName } from '@toonexpo/shared';
+
 import { getMeSessionCached } from '@/features/auth/api/get-me-or-null-cached';
 import {
   AccountPageEnter,
@@ -47,7 +49,7 @@ export default async function MyQrPage({ params }: MyQrPageProps) {
     <AccountPageEnter mobilePush>
       <AccountPageHeader title={t('title')} subtitle={t('subtitle')} iconName="qr" />
       <AccountContentReveal>
-        <BuyerQrPageContent buyerName={user.name} />
+        <BuyerQrPageContent buyerName={formatPersonName(user.name, user.surname)} />
       </AccountContentReveal>
     </AccountPageEnter>
   );

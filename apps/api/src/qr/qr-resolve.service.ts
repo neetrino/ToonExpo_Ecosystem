@@ -4,6 +4,7 @@ import {
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import type { QrResolveResponse } from "@toonexpo/contracts";
+import { formatPersonName } from "@toonexpo/shared";
 import {
   AccountType,
   CompanyMemberStatus,
@@ -37,6 +38,7 @@ type QrWithBuyer = {
     id: string;
     userId: string;
     name: string;
+    surname?: string | null;
     phone: string;
     email: string;
   };
@@ -127,7 +129,7 @@ export class QrResolveService {
       kind: "owner_profile",
       buyerId: qr.buyerProfile.userId,
       buyerProfileId: qr.buyerProfile.id,
-      name: qr.buyerProfile.name,
+      name: formatPersonName(qr.buyerProfile.name, qr.buyerProfile.surname),
       phone: qr.buyerProfile.phone,
       email: qr.buyerProfile.email,
       scanEventId,
@@ -151,7 +153,7 @@ export class QrResolveService {
       kind: "entrance_checkin",
       buyerId: qr.buyerProfile.userId,
       buyerProfileId: qr.buyerProfile.id,
-      name: qr.buyerProfile.name,
+      name: formatPersonName(qr.buyerProfile.name, qr.buyerProfile.surname),
       scanEventId,
       qrCodeId: qr.id,
     };
@@ -195,7 +197,7 @@ export class QrResolveService {
       kind: "buyer_action",
       buyerId: qr.buyerProfile.userId,
       buyerProfileId: qr.buyerProfile.id,
-      name: qr.buyerProfile.name,
+      name: formatPersonName(qr.buyerProfile.name, qr.buyerProfile.surname),
       phone: qr.buyerProfile.phone,
       email: qr.buyerProfile.email,
       scanEventId,

@@ -6,6 +6,7 @@ import type {
 } from '@toonexpo/contracts';
 import { CHANGE_PASSWORD_ERROR_CODES } from '@toonexpo/contracts';
 import { AccountAccessTokenPurpose, UserStatus } from '@toonexpo/db';
+import { formatPersonName } from '@toonexpo/shared';
 import type { Response } from 'express';
 
 import { AccessTokenService } from '../access-tokens/access-token.service.js';
@@ -39,7 +40,7 @@ export class AuthPasswordService {
       await this.inviteMailer.sendPasswordReset({
         userId: user.id,
         email: user.email,
-        name: user.name,
+        name: formatPersonName(user.name, user.surname),
         ...(user.defaultLocale ? { locale: user.defaultLocale } : {}),
       });
     }

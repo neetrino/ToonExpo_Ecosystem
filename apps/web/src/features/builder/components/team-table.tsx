@@ -1,6 +1,7 @@
 'use client';
 
 import type { CompanyMemberResponse, CompanyMemberStatus } from '@toonexpo/contracts';
+import { formatPersonName } from '@toonexpo/shared';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
@@ -89,7 +90,9 @@ export const TeamTable = ({ members, canManage, viewMode = VIEW_MODE_CARDS }: Te
 
   const isRolePending = pendingAction?.type === 'role';
   const isActivating = pendingAction?.type === 'status' && pendingAction.nextStatus === 'active';
-  const pendingName = pendingAction?.member.user.name ?? '';
+  const pendingName = pendingAction
+    ? formatPersonName(pendingAction.member.user.name, pendingAction.member.user.surname)
+    : '';
   const pendingRoleLabel =
     pendingAction?.type === 'role' ? t(`roles.${pendingAction.nextRole}`) : '';
 
@@ -141,7 +144,7 @@ export const TeamTable = ({ members, canManage, viewMode = VIEW_MODE_CARDS }: Te
               {members.map((member) => (
                 <tr key={member.id} className="border-t border-border hover:bg-surface/60">
                   <td className="px-3 py-2.5 align-middle font-medium text-ink">
-                    {member.user.name}
+                    {formatPersonName(member.user.name, member.user.surname)}
                   </td>
                   <td className="px-3 py-2.5 align-middle text-ink-secondary">
                     {member.user.email}

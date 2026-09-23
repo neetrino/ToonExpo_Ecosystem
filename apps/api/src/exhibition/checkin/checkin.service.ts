@@ -5,6 +5,7 @@ import type {
   RecentCheckInResponse,
 } from "@toonexpo/contracts";
 import { CheckInStatus, EventStatus } from "@toonexpo/db";
+import { formatPersonName } from "@toonexpo/shared";
 
 import type { AuthenticatedUser } from "../../auth/types/authenticated-user.js";
 import { PrismaService } from "../../prisma/prisma.service.js";
@@ -93,13 +94,13 @@ export class CheckInService {
       orderBy: [{ checkedInAt: "desc" }],
       take: RECENT_CHECKINS_LIMIT,
       include: {
-        buyerProfile: { select: { name: true } },
+        buyerProfile: { select: { name: true, surname: true } },
       },
     });
 
     return {
       data: records.map((row) => ({
-        visitorDisplayName: row.buyerProfile.name,
+        visitorDisplayName: formatPersonName(row.buyerProfile.name, row.buyerProfile.surname),
         status: row.status,
         checkedInAt: row.checkedInAt.toISOString(),
       })),

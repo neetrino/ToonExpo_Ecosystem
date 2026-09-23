@@ -56,3 +56,22 @@ export type PublicCacheTag = (typeof PUBLIC_CACHE_TAG)[keyof typeof PUBLIC_CACHE
 
 /** Per-project catalog detail tag (`catalog-project-<id>`). */
 export const catalogProjectCacheTag = (projectId: string): string => `catalog-project-${projectId}`;
+
+/**
+ * Joins a person's given name and surname for greetings and display.
+ * Surname is omitted when it was never collected.
+ */
+export const formatPersonName = (name: string, surname?: string | null): string => {
+  const given = name.trim();
+  const family = surname?.trim() ?? '';
+
+  if (!given) {
+    return family;
+  }
+
+  if (!family) {
+    return given;
+  }
+
+  return `${given} ${family}`;
+};

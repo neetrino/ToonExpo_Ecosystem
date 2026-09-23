@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import type { ReactNode } from 'react';
 
+import { formatPersonName } from '@toonexpo/shared';
+
 import { getMeSessionCached } from '@/features/auth/api/get-me-or-null-cached';
 import { getCompanyProfileCached as getCompanyProfile } from '@/features/builder/api/get-company-profile-cached';
 import { BuilderMobileStack } from '@/features/builder/components/builder-mobile-stack';
@@ -68,7 +70,11 @@ export default async function BuilderLayout({ children, params }: BuilderLayoutP
         }
         sidebar={<BuilderNav companyName={company.name} />}
       >
-        <BuilderMobileStack name={user.name} email={user.email} companyName={company.name}>
+        <BuilderMobileStack
+          name={formatPersonName(user.name, user.surname)}
+          email={user.email}
+          companyName={company.name}
+        >
           {children}
         </BuilderMobileStack>
       </PortalShell>

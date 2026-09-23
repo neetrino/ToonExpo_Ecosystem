@@ -14,7 +14,7 @@ const namePartSchema = z.string().trim().min(1).max(NAME_MAX_LENGTH);
 
 /**
  * Client registration form schema.
- * API still receives a single `name` (first + surname) via {@link toRegisterRequest}.
+ * `firstName` and `surname` are stored as separate account fields.
  */
 export const registerSchema = z
   .object({
@@ -36,10 +36,6 @@ export const registerSchema = z
   .refine((values) => values.password === values.confirmPassword, {
     path: ['confirmPassword'],
     message: 'mismatch',
-  })
-  .refine((values) => `${values.firstName} ${values.surname}`.length <= NAME_MAX_LENGTH, {
-    path: ['surname'],
-    message: 'nameTooLong',
   });
 
 export type RegisterFormValues = z.infer<typeof registerSchema>;
@@ -51,11 +47,13 @@ export const toRegisterRequest = (
   values: RegisterFormValues,
 ): {
   name: string;
+  surname: string;
   email: string;
   phone: string;
   password: string;
 } => ({
-  name: `${values.firstName} ${values.surname}`.trim(),
+  name: values.firstName,
+  surname: values.surname,
   email: values.email,
   phone: values.phone,
   password: values.password,

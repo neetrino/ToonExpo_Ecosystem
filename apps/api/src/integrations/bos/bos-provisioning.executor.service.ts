@@ -8,6 +8,7 @@ import {
   CompanyType,
   UserStatus,
 } from "@toonexpo/db";
+import { formatPersonName } from "@toonexpo/shared";
 
 import { CompanyProvisioningService } from "../../company/provisioning/company-provisioning.service.js";
 import { PrismaService } from "../../prisma/prisma.service.js";
@@ -194,7 +195,7 @@ export class BosProvisioningExecutorService {
       await this.provisioning.sendSetPasswordInvite({
         userId: user.id,
         email: user.email,
-        name: user.name,
+        name: formatPersonName(user.name, user.surname),
         companyName,
       });
       await this.audit.write(this.prisma.db, recordId, "invitation_sent", {

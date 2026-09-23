@@ -5,6 +5,8 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
+import { formatPersonName } from '@toonexpo/shared';
+
 import { useMeQuery } from '@/features/auth/hooks/use-auth';
 import { ApartmentDetailFavorite } from '@/features/buyer/components/apartment-detail-favorite';
 import { useCreateBuyerRequestMutation } from '@/features/buyer/hooks/use-buyer';
@@ -62,7 +64,9 @@ export const ApartmentInquireCard = ({
     if (!user) {
       return;
     }
-    setName((current) => (current.trim() === '' ? user.name : current));
+    setName((current) =>
+      current.trim() === '' ? formatPersonName(user.name, user.surname) : current,
+    );
     setEmail((current) => (current.trim() === '' ? user.email : current));
     setPhone((current) =>
       current.trim() === '' ? sanitizePhoneInput(user.phone ?? '') : current,

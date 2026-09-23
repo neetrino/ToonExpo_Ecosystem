@@ -94,7 +94,8 @@ describe('Password reset (e2e)', () => {
     const register = await request(app.getHttpServer())
       .post(`${API_V1_PREFIX}/auth/register`)
       .send({
-        name: 'Reset Buyer',
+        name: 'Reset',
+        surname: 'Buyer',
         email,
         phone: '+37491112233',
         password: oldPassword,

@@ -209,7 +209,8 @@ describe('Company provisioning (e2e)', () => {
     const buyerRegister = await request(app.getHttpServer())
       .post(`${API_V1_PREFIX}/auth/register`)
       .send({
-        name: 'E2E Buyer',
+        name: 'E2E',
+        surname: 'Buyer',
         email: buyerEmail,
         phone: '+37491119999',
         password: 'buyer-password',

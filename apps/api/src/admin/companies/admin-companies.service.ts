@@ -18,6 +18,7 @@ import {
   UserStatus,
   type Prisma,
 } from '@toonexpo/db';
+import { formatPersonName } from '@toonexpo/shared';
 
 import { toMediaSummary } from '../../catalog/mappers/catalog.mapper.js';
 import { findProjectByRef } from '../../common/utils/resolve-project-ref.js';
@@ -393,7 +394,7 @@ export class AdminCompaniesService {
     await this.provisioning.sendSetPasswordInvite({
       userId: membership.user.id,
       email: membership.user.email,
-      name: membership.user.name,
+      name: formatPersonName(membership.user.name, membership.user.surname),
       companyName: membership.company.name,
       ...(locale ? { locale } : {}),
     });

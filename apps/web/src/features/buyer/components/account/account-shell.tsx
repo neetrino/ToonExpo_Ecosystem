@@ -2,6 +2,8 @@ import type { ReactNode } from 'react';
 import { headers } from 'next/headers';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
+import { formatPersonName } from '@toonexpo/shared';
+
 import { getMeSessionCached } from '@/features/auth/api/get-me-or-null-cached';
 import { AccountMobileStack } from '@/features/buyer/components/account/account-mobile-stack';
 import { AccountNav } from '@/features/buyer/components/account/account-nav';
@@ -66,7 +68,7 @@ export const AccountShell = async ({ children, locale }: AccountShellProps) => {
       }
       sidebar={<AccountNav accountType={user.accountType} />}
     >
-      <AccountMobileStack name={user.name} email={user.email} accountType={user.accountType}>
+      <AccountMobileStack name={formatPersonName(user.name, user.surname)} email={user.email} accountType={user.accountType}>
         {children}
       </AccountMobileStack>
     </PortalShell>

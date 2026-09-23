@@ -131,6 +131,7 @@ describe('AuthService', () => {
     const result = await service.register(
       {
         name: 'Ani',
+        surname: 'Hakobyan',
         email: 'Ani@Example.com',
         phone: '+37491111222',
         password: 'password123',
@@ -178,6 +179,7 @@ describe('AuthService', () => {
       service.register(
         {
           name: 'Ani',
+          surname: 'Hakobyan',
           email: 'ani@example.com',
           phone: '+37491111222',
           password: 'password123',

@@ -1,6 +1,7 @@
 'use client';
 
 import type { CrmDealDetail } from '@toonexpo/contracts';
+import { formatPersonName } from '@toonexpo/shared';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
@@ -55,7 +56,7 @@ export const CrmDealAssigneeControl = ({ deal }: CrmDealAssigneeControlProps) =>
           <option value="">{t('unassigned')}</option>
           {members.map((member) => (
             <option key={member.user.id} value={member.user.id}>
-              {member.user.name}
+              {formatPersonName(member.user.name, member.user.surname)}
             </option>
           ))}
         </Select>

@@ -1,5 +1,6 @@
 'use client';
 
+import { formatPersonName } from '@toonexpo/shared';
 import { useQueryClient } from '@tanstack/react-query';
 import type { CrmDealStatus } from '@toonexpo/contracts';
 import { Briefcase } from 'lucide-react';
@@ -95,7 +96,7 @@ export const CrmDealsListPage = () => {
         .filter((member) => member.status === 'active')
         .map((member) => ({
           id: member.user.id,
-          name: member.user.name,
+          name: formatPersonName(member.user.name, member.user.surname),
         })),
     [membersQuery.data],
   );
