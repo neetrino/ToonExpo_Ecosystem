@@ -20,6 +20,11 @@ export const BANK_PARTNER_OFFER_FINANCE_KEYS = [
 export type BankPartnerOfferFinanceKey =
   (typeof BANK_PARTNER_OFFER_FINANCE_KEYS)[number];
 
+/** Finance values that do not change by language (one shared string). */
+export const BANK_PARTNER_OFFER_STATIC_KEYS = ['parkingPrice'] as const satisfies ReadonlyArray<
+  BankPartnerOfferFinanceKey
+>;
+
 export type BankPartnerOfferLocaleText = {
   hy: string;
   ru: string;

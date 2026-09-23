@@ -8,6 +8,10 @@ import {
   parseProjectCatalogLinks,
   type ProjectCatalogLink,
 } from '@/features/catalog/utils/project-catalog-links';
+import {
+  isProjectCatalogStaticKey,
+  resolveStaticCatalogText,
+} from '@/features/catalog/utils/project-catalog-static-fields';
 
 export type {
   ProjectCatalogLink,
@@ -216,7 +220,9 @@ const parseDetailsRecord = (
 ): ProjectCatalogDetails => {
   const details = { ...EMPTY_DETAILS };
   for (const key of DETAIL_KEYS) {
-    details[key] = resolveLocaleText(record[key], locale);
+    details[key] = isProjectCatalogStaticKey(key)
+      ? resolveStaticCatalogText(record[key])
+      : resolveLocaleText(record[key], locale);
   }
   return details;
 };

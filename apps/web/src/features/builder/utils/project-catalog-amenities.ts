@@ -1,5 +1,10 @@
 import type { ProjectCatalogDetails } from '@/features/catalog/utils/project-catalog-details';
 import { PROJECT_CATALOG_DETAIL_KEYS } from '@/features/catalog/utils/project-catalog-details';
+import {
+  isProjectCatalogStaticKey,
+  readSharedCatalogText,
+  writeSharedCatalogText,
+} from '@/features/catalog/utils/project-catalog-static-fields';
 import type { ProjectCatalogLinkId } from '@/features/catalog/utils/project-catalog-links';
 import { PROJECT_CATALOG_LINK_IDS } from '@/features/catalog/utils/project-catalog-links';
 import {
@@ -186,7 +191,9 @@ export const catalogJsonToFormSlice = (
         : record;
 
     for (const key of PROJECT_CATALOG_DETAIL_KEYS) {
-      slice.catalogDetails[key] = readCatalogLocaleText(detailsSource[key]);
+      slice.catalogDetails[key] = isProjectCatalogStaticKey(key)
+        ? readSharedCatalogText(detailsSource[key])
+        : readCatalogLocaleText(detailsSource[key]);
     }
 
     slice.timelineStageDates = readTimelineStageDates(record['timelineStageDates']);
@@ -261,7 +268,9 @@ export const catalogFormSliceToJson = (
 ): { amenities: Record<string, unknown> | null; nearbyPlaces: Record<string, unknown> | null } => {
   const details: Record<string, unknown> = {};
   for (const key of PROJECT_CATALOG_DETAIL_KEYS) {
-    const written = writeCatalogLocaleText(slice.catalogDetails[key]);
+    const written = isProjectCatalogStaticKey(key)
+      ? writeSharedCatalogText(slice.catalogDetails[key])
+      : writeCatalogLocaleText(slice.catalogDetails[key]);
     if (written) {
       details[key] = written;
     }

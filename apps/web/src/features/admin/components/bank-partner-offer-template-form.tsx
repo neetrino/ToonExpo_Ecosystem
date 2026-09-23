@@ -2,7 +2,6 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
-  BANK_PARTNER_OFFER_FINANCE_KEYS,
   type BankPartnerOfferFinanceFields,
   type BankPartnerOfferTemplateItem,
 } from '@toonexpo/contracts';
@@ -13,7 +12,7 @@ import { BankPartnerOfferFinanceFieldsEditor } from '@/features/admin/components
 import {
   bankPartnerOfferTemplateFormSchema,
   emptyFinanceFields,
-  emptyLocaleText,
+  hydrateBankPartnerFinanceFields,
   type BankPartnerOfferTemplateFormValues,
 } from '@/features/admin/schemas/bank-partner-offer-template.schema';
 import { Button } from '@/shared/ui/button';
@@ -31,19 +30,6 @@ type BankPartnerOfferTemplateFormProps = {
   onUpdate?: ((body: TemplateSubmitBody) => Promise<void>) | undefined;
   onCancel: () => void;
   isBusy: boolean;
-};
-
-const toFormFields = (
-  fields: BankPartnerOfferFinanceFields,
-): BankPartnerOfferTemplateFormValues['fields'] => {
-  const next = emptyFinanceFields();
-  for (const key of BANK_PARTNER_OFFER_FINANCE_KEYS) {
-    next[key] = {
-      ...emptyLocaleText(),
-      ...fields[key],
-    };
-  }
-  return next;
 };
 
 /**
@@ -64,7 +50,7 @@ export const BankPartnerOfferTemplateForm = ({
     defaultValues: initial
       ? {
           name: initial.name,
-          fields: toFormFields(initial.fields),
+          fields: hydrateBankPartnerFinanceFields(initial.fields),
         }
       : {
           name: '',
@@ -103,7 +89,7 @@ export const BankPartnerOfferTemplateForm = ({
         <legend className="mb-2.5 text-xs font-semibold tracking-wide text-ink-muted uppercase">
           {t('sections.finance')}
         </legend>
-        <BankPartnerOfferFinanceFieldsEditor register={form.register} />
+        <BankPartnerOfferFinanceFieldsEditor register={form.register} control={form.control} />
       </fieldset>
 
       <div className="flex flex-wrap gap-2 pt-2">

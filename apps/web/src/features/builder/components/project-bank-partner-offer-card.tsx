@@ -2,8 +2,6 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
-  BANK_PARTNER_OFFER_FINANCE_KEYS,
-  type BankPartnerOfferFinanceFields,
   type ProjectBankPartnerOfferItem,
   type UpdateProjectBankPartnerOfferBody,
 } from '@toonexpo/contracts';
@@ -14,8 +12,7 @@ import { useForm } from 'react-hook-form';
 
 import { BankPartnerOfferFinanceFieldsEditor } from '@/features/admin/components/bank-partner-offer-finance-fields-editor';
 import {
-  emptyFinanceFields,
-  emptyLocaleText,
+  hydrateBankPartnerFinanceFields,
   projectBankPartnerOfferFormSchema,
   type ProjectBankPartnerOfferFormValues,
 } from '@/features/admin/schemas/bank-partner-offer-template.schema';
@@ -40,19 +37,6 @@ type ProjectBankPartnerOfferCardProps = {
   projectId: string;
   offer: ProjectBankPartnerOfferItem;
   isPending?: boolean;
-};
-
-const toFormFields = (
-  fields: BankPartnerOfferFinanceFields,
-): ProjectBankPartnerOfferFormValues['fields'] => {
-  const next = emptyFinanceFields();
-  for (const key of BANK_PARTNER_OFFER_FINANCE_KEYS) {
-    next[key] = {
-      ...emptyLocaleText(),
-      ...fields[key],
-    };
-  }
-  return next;
 };
 
 const readOfferFormValues = (
@@ -88,7 +72,7 @@ export const ProjectBankPartnerOfferCard = ({
     resolver: zodResolver(projectBankPartnerOfferFormSchema),
     defaultValues: {
       name: offer.name,
-      fields: toFormFields(offer.fields),
+      fields: hydrateBankPartnerFinanceFields(offer.fields),
       sortOrder: offer.sortOrder,
     },
   });
@@ -96,7 +80,7 @@ export const ProjectBankPartnerOfferCard = ({
   useEffect(() => {
     form.reset({
       name: offer.name,
-      fields: toFormFields(offer.fields),
+      fields: hydrateBankPartnerFinanceFields(offer.fields),
       sortOrder: offer.sortOrder,
     });
   }, [form, offer.id, offer.updatedAt]);
@@ -183,7 +167,7 @@ export const ProjectBankPartnerOfferCard = ({
             />
           </FormField>
 
-          <BankPartnerOfferFinanceFieldsEditor register={form.register} />
+          <BankPartnerOfferFinanceFieldsEditor register={form.register} control={form.control} />
         </div>
       </ProjectCatalogSectionCard>
 
