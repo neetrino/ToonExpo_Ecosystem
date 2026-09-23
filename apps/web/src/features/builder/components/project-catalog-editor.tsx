@@ -9,7 +9,6 @@ import {
   PROJECT_CATALOG_FINANCE_KEYS,
   PROJECT_CATALOG_OVERVIEW_KEYS,
   PROJECT_CATALOG_SOCIAL_LINK_EDITOR_IDS,
-  splitCatalogEditorKeys,
 } from '@/features/builder/constants/project-catalog-editor';
 import {
   getCatalogListPlaceholder,
@@ -17,15 +16,11 @@ import {
 } from '@/features/builder/constants/project-content-placeholders';
 import { ProjectCatalogChecklistEditor } from '@/features/builder/components/project-catalog-checklist-editor';
 import { ProjectCatalogGalleryEditor } from '@/features/builder/components/project-catalog-gallery-editor';
-import {
-  ProjectCatalogKvEditor,
-  ProjectCatalogOverviewEditor,
-} from '@/features/builder/components/project-catalog-layout-fields';
+import { ProjectCatalogMixedSection } from '@/features/builder/components/project-catalog-mixed-section';
 import { ProjectConstructionTimelineEditor } from '@/features/builder/components/project-construction-timeline-editor';
 import { ProjectBankPartnerOffersSection } from '@/features/builder/components/project-bank-partner-offers-section';
 import { TranslationTabs } from '@/features/builder/components/translation-tabs';
 import type { UpdateProjectFormValues } from '@/features/builder/schemas/project.schema';
-import type { ProjectCatalogDetails } from '@/features/catalog/utils/project-catalog-details';
 import { ProjectCatalogSectionCard } from '@/features/catalog/components/project-catalog-section-card';
 import type { ProjectCatalogLinkId } from '@/features/catalog/utils/project-catalog-links';
 import { FormField } from '@/shared/ui/form-field';
