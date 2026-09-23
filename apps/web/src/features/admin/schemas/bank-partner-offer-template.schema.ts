@@ -1,4 +1,8 @@
-import { BANK_PARTNER_OFFER_FINANCE_KEYS } from '@toonexpo/contracts';
+import {
+  BANK_PARTNER_OFFER_FINANCE_KEYS,
+  BANK_PARTNER_OFFER_STATIC_KEYS,
+  type BankPartnerOfferFinanceFields,
+} from '@toonexpo/contracts';
 import { z } from 'zod';
 
 const FIELD_MAX = 2_000;
@@ -37,6 +41,32 @@ export const emptyFinanceFields = (): BankPartnerOfferTemplateFormValues['fields
     fields[key] = emptyLocaleText();
   }
   return fields;
+};
+
+const STATIC_FINANCE_KEYS = new Set<string>(BANK_PARTNER_OFFER_STATIC_KEYS);
+
+const shareLocaleText = (value: {
+  hy: string;
+  ru: string;
+  en: string;
+}): { hy: string; ru: string; en: string } => {
+  const shared = value.hy.trim() || value.ru.trim() || value.en.trim();
+  return { hy: shared, ru: shared, en: shared };
+};
+
+/**
+ * Loads finance fields into the admin form.
+ * Static keys (price) are copied into every locale so one input covers hy/ru/en.
+ */
+export const hydrateBankPartnerFinanceFields = (
+  fields: BankPartnerOfferFinanceFields,
+): BankPartnerOfferTemplateFormValues['fields'] => {
+  const next = emptyFinanceFields();
+  for (const key of BANK_PARTNER_OFFER_FINANCE_KEYS) {
+    const merged = { ...emptyLocaleText(), ...fields[key] };
+    next[key] = STATIC_FINANCE_KEYS.has(key) ? shareLocaleText(merged) : merged;
+  }
+  return next;
 };
 
 export const projectBankPartnerOfferFormSchema = z.object({
