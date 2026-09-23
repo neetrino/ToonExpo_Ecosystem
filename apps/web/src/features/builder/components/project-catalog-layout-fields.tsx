@@ -23,7 +23,6 @@ import { cn } from '@/shared/ui/cn';
 type TranslationLocale = (typeof TRANSLATION_LOCALES)[number];
 
 /** Compact value control — fixed right column so rows stay aligned without overflow. */
-const CATALOG_VALUE_COL_CLASS = 'min-w-0 w-full';
 const CATALOG_VALUE_CONTROL_CLASS =
   'h-10 w-full min-w-0 text-left text-sm font-semibold text-ink-navy';
 /** Label | value: value column capped so long Armenian labels wrap instead of pushing out. */
