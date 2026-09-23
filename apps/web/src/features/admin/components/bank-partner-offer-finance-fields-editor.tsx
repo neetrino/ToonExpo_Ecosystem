@@ -6,7 +6,7 @@ import {
   type BankPartnerOfferFinanceKey,
 } from '@toonexpo/contracts';
 import { useLocale, useTranslations } from 'next-intl';
-import type { Control, UseFormRegister } from 'react-hook-form';
+import type { Control, FieldPath, UseFormRegister } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 
 import type { TRANSLATION_LOCALES } from '@/features/builder/constants';
@@ -25,9 +25,9 @@ type FinanceFieldsFormShape = {
   >;
 };
 
-type BankPartnerOfferFinanceFieldsEditorProps = {
-  register: UseFormRegister<FinanceFieldsFormShape>;
-  control: Control<FinanceFieldsFormShape>;
+type BankPartnerOfferFinanceFieldsEditorProps<T extends FinanceFieldsFormShape> = {
+  register: UseFormRegister<T>;
+  control: Control<T>;
 };
 
 const TEXTAREA_KEYS = new Set<BankPartnerOfferFinanceKey>([
@@ -53,7 +53,11 @@ const shareLocaleText = (next: string): { hy: string; ru: string; en: string } =
 /**
  * One input for finance values that do not change by language (parking price).
  */
-const StaticFinanceFields = ({ control }: { control: Control<FinanceFieldsFormShape> }) => {
+const StaticFinanceFields = <T extends FinanceFieldsFormShape>({
+  control,
+}: {
+  control: Control<T>;
+}) => {
   const uiLocale = useLocale();
   const tCatalog = useTranslations('Catalog.projectDetail.catalog');
 
@@ -65,17 +69,20 @@ const StaticFinanceFields = ({ control }: { control: Control<FinanceFieldsFormSh
           <FormField key={key} id={fieldId} label={tCatalog(key)}>
             <Controller
               control={control}
-              name={`fields.${key}`}
-              render={({ field }) => (
-                <Input
-                  id={fieldId}
-                  type="text"
-                  placeholder={getCatalogFieldPlaceholder(uiLocale, key)}
-                  value={field.value.hy}
-                  onBlur={field.onBlur}
-                  onChange={(event) => field.onChange(shareLocaleText(event.target.value))}
-                />
-              )}
+              name={`fields.${key}` as FieldPath<T>}
+              render={({ field }) => {
+                const current = field.value as { hy: string };
+                return (
+                  <Input
+                    id={fieldId}
+                    type="text"
+                    placeholder={getCatalogFieldPlaceholder(uiLocale, key)}
+                    value={current.hy}
+                    onBlur={field.onBlur}
+                    onChange={(event) => field.onChange(shareLocaleText(event.target.value))}
+                  />
+                );
+              }}
             />
           </FormField>
         );
@@ -88,10 +95,10 @@ const StaticFinanceFields = ({ control }: { control: Control<FinanceFieldsFormSh
  * Localized finance fields matching project catalog Bank partner section keys.
  * Parking price is entered once and stored for every language.
  */
-export const BankPartnerOfferFinanceFieldsEditor = ({
+export const BankPartnerOfferFinanceFieldsEditor = <T extends FinanceFieldsFormShape>({
   register,
   control,
-}: BankPartnerOfferFinanceFieldsEditorProps) => {
+}: BankPartnerOfferFinanceFieldsEditorProps<T>) => {
   const tCatalog = useTranslations('Catalog.projectDetail.catalog');
 
   return (
@@ -112,14 +119,14 @@ export const BankPartnerOfferFinanceFieldsEditor = ({
                       id={fieldId}
                       rows={3}
                       placeholder={placeholder}
-                      {...register(`fields.${key}.${locale}`)}
+                      {...register(`fields.${key}.${locale}` as FieldPath<T>)}
                     />
                   ) : (
                     <Input
                       id={fieldId}
                       type="text"
                       placeholder={placeholder}
-                      {...register(`fields.${key}.${locale}`)}
+                      {...register(`fields.${key}.${locale}` as FieldPath<T>)}
                     />
                   )}
                 </FormField>
