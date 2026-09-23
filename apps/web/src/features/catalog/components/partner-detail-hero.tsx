@@ -20,7 +20,6 @@ type PartnerDetailHeroProps = {
  * Full-bleed partner hero — Figma photo treatment with existing partner copy.
  */
 export const PartnerDetailHero = async ({ partner }: PartnerDetailHeroProps) => {
-  const t = await getTranslations('Partners');
   const tCatalog = await getTranslations('Catalog.partnersPage');
   const heroImageUrl = partner.coverUrl ?? PARTNER_DEMO_PHOTO_SRC;
   const mortgageRate = partner.type === 'bank' ? partner.mortgageRate : null;
@@ -61,18 +60,8 @@ export const PartnerDetailHero = async ({ partner }: PartnerDetailHeroProps) => 
             <PartnerTypeLabel type={partner.type} />
           </p>
 
-          <h1 className={cn('flex flex-wrap items-center gap-3', CATALOG_OVERLAY_HERO_TITLE_CLASS)}>
+          <h1 className={cn(CATALOG_OVERLAY_HERO_TITLE_CLASS)}>
             <span className="min-w-0 break-words text-balance">{partner.name}</span>
-            {partner.featured ? (
-              <span
-                className={cn(
-                  'inline-flex shrink-0 items-center rounded-[10px] bg-canvas/95 px-2 py-1',
-                  'text-[10px] font-bold tracking-widest text-brand-deep uppercase',
-                )}
-              >
-                {t('featured')}
-              </span>
-            ) : null}
           </h1>
 
           {mortgageRate != null ? (
