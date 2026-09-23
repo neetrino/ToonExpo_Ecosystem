@@ -13,7 +13,10 @@ import { buildCopiedApartmentData } from './duplicate-floor-apartment.js';
 import { remapCopiedHotspotTarget } from './duplicate-floor-canvas.js';
 import { duplicateOwnedFloor } from './duplicate-floor.js';
 import type { DuplicateFloorSource } from './duplicate-floor.types.js';
-import { FLOOR_NUMBER_CONFLICT_MESSAGE } from './floor-number-conflict.js';
+import {
+  FLOOR_NUMBER_CONFLICT_MESSAGE,
+  rethrowFloorNumberConflict,
+} from './floor-number-conflict.js';
 
 const sourceApartment = {
   id: 'apt_1',
@@ -294,6 +297,21 @@ describe('duplicateOwnedFloor', () => {
         floorNumber: 3,
       }),
     ).rejects.toBeInstanceOf(NotFoundException);
+  });
+
+  it('maps a Prisma 7 floor unique error without meta.target', () => {
+    const error = new Prisma.PrismaClientKnownRequestError(
+      'Unique constraint failed on the fields: (`building_id`, `number`)',
+      {
+        code: 'P2002',
+        clientVersion: '7.8.0',
+        meta: { modelName: 'Floor' },
+      },
+    );
+
+    expect(() => {
+      rethrowFloorNumberConflict(error);
+    }).toThrow(FLOOR_NUMBER_CONFLICT_MESSAGE);
   });
 
   it('turns a duplicate floor number into a conflict', async () => {
