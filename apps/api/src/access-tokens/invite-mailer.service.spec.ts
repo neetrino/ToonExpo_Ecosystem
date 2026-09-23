@@ -80,6 +80,10 @@ describe('InviteMailerService', () => {
     expect(message.text).toContain(
       `https://app.toonexpo.com/${DEFAULT_LOCALE}/auth/set-password#token=reset%2Btoken%3Dxyz`,
     );
+    expect(message.html).toContain(
+      `https://app.toonexpo.com/${DEFAULT_LOCALE}/auth/set-password#token=reset%2Btoken%3Dxyz`,
+    );
+    expect(message.html).toContain('Reset password');
     expect(message.text).not.toContain('?token=');
   });
 });

@@ -51,7 +51,9 @@
       "nextYear": "Следующий год"
     },
     "placeholders": {
-      "url": "https://"
+      "url": "https://",
+      "personName": "John Doe",
+      "personEmail": "john.doe@example.com"
     },
     "back": "Назад",
     "formErrors": {
@@ -638,8 +640,8 @@
       "reserveSubtitle": "Скачайте брошюру, запишитесь на показ или свяжитесь с отделом продаж застройщика.",
       "downloadBrochure": "Скачать брошюру",
       "scheduleVisit": "Записаться на визит",
-      "reserveName": "Имя и фамилия",
-      "reserveEmail": "Email",
+      "reserveName": "John Doe",
+      "reserveEmail": "john.doe@example.com",
       "reservePhone": "Телефон",
       "reserveSubmit": "Заказать звонок",
       "reserveSubmitting": "Отправка…",
@@ -855,8 +857,8 @@
       "inquireSubtitle": "Мы свяжем вас с застройщиком.",
       "inquireAgentRole": "Партнёр ToonExpo",
       "inquireAgentMeta": "Проверенный агент · отвечает за 1 час",
-      "inquireNamePlaceholder": "Ваше имя",
-      "inquireEmailPlaceholder": "Email",
+      "inquireNamePlaceholder": "John Doe",
+      "inquireEmailPlaceholder": "john.doe@example.com",
       "inquirePhonePlaceholder": "Телефон",
       "inquireMessagePlaceholder": "Ваше сообщение",
       "inquireMessageDefault": "Хочу записаться на просмотр: {project}.",
@@ -1065,7 +1067,7 @@
       "noAccount": "Ещё нет аккаунта?",
       "registerLink": "Зарегистрироваться",
       "placeholders": {
-        "email": "john.smith@example.com",
+        "email": "john.doe@example.com",
         "password": "********"
       }
     },
@@ -1075,7 +1077,10 @@
       "submit": "Отправить ссылку",
       "submitting": "Отправка…",
       "success": "Если email существует, ссылка отправлена.",
-      "backToLogin": "Вернуться ко входу"
+      "backToLogin": "Вернуться ко входу",
+      "placeholders": {
+        "email": "john.doe@example.com"
+      }
     },
     "register": {
       "title": "Регистрация",
@@ -1086,9 +1091,9 @@
       "loginLink": "Войти",
       "placeholders": {
         "firstName": "John",
-        "surname": "Smith",
+        "surname": "Doe",
         "phone": "37491111222",
-        "email": "john.smith@example.com",
+        "email": "john.doe@example.com",
         "password": "********",
         "confirmPassword": "********"
       }
@@ -2575,8 +2580,8 @@
         "placeholders": {
           "name": "Acme Partners",
           "adminFirstName": "John",
-          "adminSurname": "Smith",
-          "adminEmail": "john.smith@example.com",
+          "adminSurname": "Doe",
+          "adminEmail": "john.doe@example.com",
           "adminPhone": "+37491111222"
         },
         "submit": "Создать и отправить приглашение",
@@ -3903,11 +3908,11 @@
         "cta": "+ Новая сделка",
         "title": "Новая сделка",
         "contactName": "Полное имя",
-        "contactNamePlaceholder": "John Smith",
+        "contactNamePlaceholder": "John Doe",
         "contactPhone": "Телефон",
         "contactPhonePlaceholder": "37491111222",
         "contactEmail": "Email",
-        "contactEmailPlaceholder": "john.smith@example.com",
+        "contactEmailPlaceholder": "john.doe@example.com",
         "project": "Проект",
         "projectOptional": "Без проекта",
         "note": "Заметка",

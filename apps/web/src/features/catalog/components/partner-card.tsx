@@ -19,7 +19,6 @@ type PartnerCardProps = {
  * Public partner card — same chrome as home featured project cards.
  */
 export const PartnerCard = ({ partner, className }: PartnerCardProps) => {
-  const t = useTranslations('Partners');
   const tCatalog = useTranslations('Catalog.partnersPage');
   const photoSrc = partner.coverUrl ?? PARTNER_DEMO_PHOTO_SRC;
 
@@ -42,17 +41,6 @@ export const PartnerCard = ({ partner, className }: PartnerCardProps) => {
             sizes="(max-width: 768px) 100vw, 33vw"
           />
         </Link>
-
-        {partner.featured ? (
-          <span
-            className={cn(
-              'pointer-events-none absolute top-3 left-3 rounded-sm bg-canvas/95 px-2 py-1',
-              'text-[10px] font-bold tracking-widest text-brand-deep uppercase',
-            )}
-          >
-            {t('featured')}
-          </span>
-        ) : null}
       </div>
 
       <div className="flex flex-1 flex-col px-3 pt-4 pb-3">
