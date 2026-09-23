@@ -4,7 +4,6 @@ import type { ProjectCatalogDetails } from '@/features/catalog/utils/project-cat
 import { PROJECT_CATALOG_CRITERION_ICON } from '@/features/catalog/components/project-catalog-details-bits';
 import { useLocale, useTranslations } from 'next-intl';
 import type { Control, UseFormRegister } from 'react-hook-form';
-import { Controller } from 'react-hook-form';
 
 import type { TRANSLATION_LOCALES } from '@/features/builder/constants';
 import {
@@ -17,8 +16,6 @@ import {
 import { ProjectCatalogSharedValue } from '@/features/builder/components/project-catalog-shared-value';
 import { getCatalogFieldPlaceholder } from '@/features/builder/constants/project-content-placeholders';
 import type { UpdateProjectFormValues } from '@/features/builder/schemas/project.schema';
-import { DatePicker } from '@/shared/ui/date-picker';
-import { parseFlexibleDateToIso } from '@/shared/ui/date-picker-utils';
 import { Input } from '@/shared/ui/input';
 import { Textarea } from '@/shared/ui/textarea';
 import { cn } from '@/shared/ui/cn';
@@ -50,36 +47,6 @@ const useCatalogFieldLabel = (fieldKey: keyof ProjectCatalogDetails): string => 
     return tExtra(fieldKey as 'pricePerSqmMin');
   }
   return tCatalog(fieldKey as 'propertyType');
-};
-
-type CatalogDateValueProps = {
-  fieldId: string;
-  fieldKey: keyof ProjectCatalogDetails;
-  locale: TranslationLocale;
-  control: Control<UpdateProjectFormValues>;
-};
-
-const CatalogDateValue = ({ fieldId, fieldKey, locale, control }: CatalogDateValueProps) => {
-  const ariaLabel = useCatalogFieldLabel(fieldKey);
-  return (
-    <Controller
-      control={control}
-      name={`catalogDetails.${fieldKey}.${locale}`}
-      render={({ field }) => (
-        <div className={CATALOG_VALUE_COL_CLASS}>
-          <DatePicker
-            id={fieldId}
-            name={field.name}
-            value={parseFlexibleDateToIso(field.value ?? '')}
-            aria-label={ariaLabel}
-            onBlur={field.onBlur}
-            onChange={(iso) => field.onChange(iso)}
-            className="h-10 w-full min-w-0 justify-start text-left text-sm font-semibold text-ink-navy"
-          />
-        </div>
-      )}
-    />
-  );
 };
 
 type OverviewEditorProps = {
@@ -229,12 +196,12 @@ const CatalogKvItem = ({ sectionId, fieldKey, locale, control, register }: Catal
         ) : null}
         <span className="min-w-0 break-words">{label}</span>
       </label>
-      {locale == null ? (
+      {locale == null || dateField ? (
         <ProjectCatalogSharedValue
           fieldId={fieldId}
           fieldKey={fieldKey}
           control={control}
-          kind={sharedKind}
+          kind={dateField ? 'date' : sharedKind}
           placeholder={placeholder}
           ariaLabel={label}
           className={
@@ -251,8 +218,6 @@ const CatalogKvItem = ({ sectionId, fieldKey, locale, control, register }: Catal
           className="min-h-20 w-full min-w-0 text-left text-sm font-semibold text-ink-navy"
           {...register(`catalogDetails.${fieldKey}.${locale}`)}
         />
-      ) : dateField ? (
-        <CatalogDateValue fieldId={fieldId} fieldKey={fieldKey} locale={locale} control={control} />
       ) : (
         <Input
           id={fieldId}
