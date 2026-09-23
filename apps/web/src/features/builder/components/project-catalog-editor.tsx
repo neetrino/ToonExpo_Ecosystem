@@ -25,6 +25,7 @@ import { ProjectConstructionTimelineEditor } from '@/features/builder/components
 import { ProjectBankPartnerOffersSection } from '@/features/builder/components/project-bank-partner-offers-section';
 import { TranslationTabs } from '@/features/builder/components/translation-tabs';
 import type { UpdateProjectFormValues } from '@/features/builder/schemas/project.schema';
+import type { ProjectCatalogDetails } from '@/features/catalog/utils/project-catalog-details';
 import { ProjectCatalogSectionCard } from '@/features/catalog/components/project-catalog-section-card';
 import type { ProjectCatalogLinkId } from '@/features/catalog/utils/project-catalog-links';
 import { FormField } from '@/shared/ui/form-field';
@@ -103,9 +104,91 @@ const CatalogLinkFields = ({ ids, register, labelFor }: CatalogLinkFieldsProps) 
   </div>
 );
 
+type CatalogMixedSectionProps = {
+  title: string;
+  keys: readonly (keyof ProjectCatalogDetails)[];
+  variant: 'overview' | 'details' | 'finance';
+  register: UseFormRegister<UpdateProjectFormValues>;
+  control: Control<UpdateProjectFormValues>;
+};
+
+const CatalogMixedSection = ({
+  title,
+  keys,
+  variant,
+  register,
+  control,
+}: CatalogMixedSectionProps) => {
+  const split = splitCatalogEditorKeys(keys);
+  return (
+    <ProjectCatalogSectionCard title={title}>
+      <div className="flex flex-col gap-6">
+        {split.staticKeys.length > 0 ? (
+          <CatalogKeyFields
+            keys={split.staticKeys}
+            variant={variant}
+            register={register}
+            control={control}
+          />
+        ) : null}
+        {split.translatedKeys.length > 0 ? (
+          <TranslationTabs>
+            {(locale) => (
+              <CatalogKeyFields
+                keys={split.translatedKeys}
+                variant={variant}
+                locale={locale}
+                register={register}
+                control={control}
+              />
+            )}
+          </TranslationTabs>
+        ) : null}
+      </div>
+    </ProjectCatalogSectionCard>
+  );
+};
+
+type CatalogKeyFieldsProps = {
+  keys: readonly (keyof ProjectCatalogDetails)[];
+  variant: 'overview' | 'details' | 'finance';
+  locale?: TranslationLocale | undefined;
+  register: UseFormRegister<UpdateProjectFormValues>;
+  control: Control<UpdateProjectFormValues>;
+};
+
+const CatalogKeyFields = ({
+  keys,
+  variant,
+  locale,
+  register,
+  control,
+}: CatalogKeyFieldsProps) => {
+  if (variant === 'overview') {
+    return (
+      <ProjectCatalogOverviewEditor
+        keys={keys}
+        locale={locale}
+        control={control}
+        register={register}
+      />
+    );
+  }
+  return (
+    <ProjectCatalogKvEditor
+      sectionId={variant}
+      keys={keys}
+      locale={locale}
+      control={control}
+      register={register}
+    />
+  );
+};
+
 /**
  * Admin catalog editor laid out like the public Project details cards
  * (Overview / Details / Finance / Bank partner / Features / Nearby / Links / Socials).
+ * Prices, dates, counts, and codes are entered once and shown in every language.
  */
 export const ProjectCatalogEditor = ({
   projectId,
@@ -128,38 +211,31 @@ export const ProjectCatalogEditor = ({
         <ProjectConstructionTimelineEditor control={control} />
       </ProjectCatalogSectionCard>
 
+      <CatalogMixedSection
+        title={tCatalog('overview')}
+        keys={PROJECT_CATALOG_OVERVIEW_KEYS}
+        variant="overview"
+        register={register}
+        control={control}
+      />
+      <CatalogMixedSection
+        title={tCatalog('details')}
+        keys={PROJECT_CATALOG_DETAILS_KEYS}
+        variant="details"
+        register={register}
+        control={control}
+      />
+      <CatalogMixedSection
+        title={tCatalog('finance')}
+        keys={PROJECT_CATALOG_FINANCE_KEYS}
+        variant="finance"
+        register={register}
+        control={control}
+      />
+
       <TranslationTabs>
         {(locale) => (
           <div className="space-y-5 sm:space-y-6">
-            <ProjectCatalogSectionCard title={tCatalog('overview')}>
-              <ProjectCatalogOverviewEditor
-                keys={PROJECT_CATALOG_OVERVIEW_KEYS}
-                locale={locale}
-                control={control}
-                register={register}
-              />
-            </ProjectCatalogSectionCard>
-
-            <ProjectCatalogSectionCard title={tCatalog('details')}>
-              <ProjectCatalogKvEditor
-                sectionId="details"
-                keys={PROJECT_CATALOG_DETAILS_KEYS}
-                locale={locale}
-                control={control}
-                register={register}
-              />
-            </ProjectCatalogSectionCard>
-
-            <ProjectCatalogSectionCard title={tCatalog('finance')}>
-              <ProjectCatalogKvEditor
-                sectionId="finance"
-                keys={PROJECT_CATALOG_FINANCE_KEYS}
-                locale={locale}
-                control={control}
-                register={register}
-              />
-            </ProjectCatalogSectionCard>
-
             <ProjectCatalogSectionCard title={tCatalog('amenities')}>
               <Controller
                 control={control}
