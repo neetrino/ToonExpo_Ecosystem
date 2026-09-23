@@ -140,6 +140,7 @@ export class AdminPartnersService {
       userId: adminUser.id,
       email: adminUser.email,
       name: adminUser.name,
+      companyName,
       ...(dto.locale ? { locale: dto.locale } : {}),
     });
 

@@ -172,6 +172,7 @@ export class AdminCompaniesService {
       userId: result.adminUser.id,
       email: result.adminUser.email,
       name: result.adminUser.name,
+      companyName: result.company.name,
       ...(input.locale ? { locale: input.locale } : {}),
     });
 
@@ -381,7 +382,7 @@ export class AdminCompaniesService {
         status: { not: CompanyMemberStatus.removed },
         user: { status: UserStatus.invited },
       },
-      include: { user: true },
+      include: { user: true, company: { select: { name: true } } },
       orderBy: { createdAt: 'asc' },
     });
 
@@ -393,6 +394,7 @@ export class AdminCompaniesService {
       userId: membership.user.id,
       email: membership.user.email,
       name: membership.user.name,
+      companyName: membership.company.name,
       ...(locale ? { locale } : {}),
     });
   }

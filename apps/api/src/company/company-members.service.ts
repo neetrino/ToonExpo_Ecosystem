@@ -70,7 +70,11 @@ export class CompanyMembersService {
             },
           },
         },
-        include: { companyMembership: true },
+        include: {
+          companyMembership: {
+            include: { company: { select: { name: true } } },
+          },
+        },
       });
 
       const membership = user.companyMembership;
@@ -85,6 +89,7 @@ export class CompanyMembersService {
       userId: member.user.id,
       email: member.user.email,
       name: member.user.name,
+      companyName: member.company.name,
       ...(input.locale ? { locale: input.locale } : {}),
     });
 

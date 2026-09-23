@@ -47,6 +47,7 @@ type SetPasswordInviteInput = {
   email: string;
   name: string;
   locale?: string;
+  companyName?: string;
 };
 
 /**
@@ -73,6 +74,8 @@ export class CompanyProvisioningService {
   async createCompanyWithPrimaryAdmin(
     input: CompanyAdminTransactionInput,
   ): Promise<{ company: CompanyRecord; adminUser: UserRecord }> {
+    const adminEmail = normalizeEmail(input.adminEmail);
+
     return this.prisma.db.$transaction(async (tx) => {
       const company = await tx.company.create({
         data: {
@@ -89,7 +92,7 @@ export class CompanyProvisioningService {
       const adminUser = await tx.user.create({
         data: {
           name: input.adminName,
-          email: input.adminEmail,
+          email: adminEmail,
           phone: input.adminPhone ?? null,
           accountType: AccountType.company_member,
           status: UserStatus.invited,

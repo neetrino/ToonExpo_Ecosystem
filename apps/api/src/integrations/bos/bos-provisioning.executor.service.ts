@@ -126,6 +126,7 @@ export class BosProvisioningExecutorService {
       recordId,
       txResult.user,
       body.request_id,
+      txResult.company.name,
     );
 
     return {
@@ -183,6 +184,7 @@ export class BosProvisioningExecutorService {
     recordId: string,
     user: UserRecord,
     requestId: string,
+    companyName: string,
   ): Promise<boolean> {
     if (user.status === UserStatus.active && user.passwordHash) {
       return false;
@@ -193,6 +195,7 @@ export class BosProvisioningExecutorService {
         userId: user.id,
         email: user.email,
         name: user.name,
+        companyName,
       });
       await this.audit.write(this.prisma.db, recordId, "invitation_sent", {
         userId: user.id,

@@ -62,7 +62,28 @@ describe('InviteMailerService', () => {
     expect(message.text).toContain(
       'https://app.toonexpo.com/hy/auth/set-password#token=invite-token-abc',
     );
+    expect(message.html).toContain('Set password');
+    expect(message.html).toContain('TOON');
+    expect(message.html).toContain('REAL ESTATE EXPO');
     expect(message.text).not.toContain('?token=');
+  });
+
+  it('names the company in the branded invite when a company is provided', async () => {
+    issueSetPasswordToken.mockResolvedValue({ rawToken: 'invite-token-abc' });
+    send.mockResolvedValue(undefined);
+
+    await service.sendSetPasswordInvite({
+      userId: 'user_1',
+      email: 'admin@example.com',
+      name: 'Admin',
+      companyName: 'Glendale Hills',
+    });
+
+    const message = send.mock.calls[0]?.[0] as EmailMessage;
+    expect(message.subject).toContain('Glendale Hills');
+    expect(message.html).toContain('You&#39;re invited');
+    expect(message.html).toContain('Glendale Hills');
+    expect(message.html).toContain('expires in 7 days');
   });
 
   it('emails a password-reset link with the token in the URL fragment', async () => {
