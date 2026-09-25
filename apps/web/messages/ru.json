@@ -1410,7 +1410,43 @@
       "checkin": "Сканер check-in",
       "bos": "BOS",
       "homepage": "Баннер главной",
+      "publicPages": "Публичные страницы",
       "settings": "Настройки"
+    },
+    "publicPages": {
+      "title": "Публичные страницы",
+      "subtitle": "Включайте или отключайте маркетинговые страницы сайта. Отключённые скрыты в навигации и возвращают 404.",
+      "loading": "Загрузка страниц…",
+      "save": "Сохранить",
+      "saving": "Сохранение…",
+      "saveSuccess": "Видимость публичных страниц обновлена",
+      "active": "Активна",
+      "inactive": "Отключена",
+      "toggleAria": "Переключить {page}",
+      "pages": {
+        "apartments": "Купить квартиры",
+        "projects": "Проекты",
+        "partners": "Участники / Застройщики",
+        "insights": "Аналитика рынка",
+        "mortgage": "Калькулятор",
+        "expo": "Карта площадки",
+        "map": "3D карта",
+        "discover": "Discover"
+      },
+      "paths": {
+        "apartments": "/apartments",
+        "projects": "/projects",
+        "partners": "/partners, /builders",
+        "insights": "/insights",
+        "mortgage": "/mortgage",
+        "expo": "/expo",
+        "map": "/map",
+        "discover": "/discover"
+      },
+      "errors": {
+        "load": "Не удалось загрузить настройки страниц.",
+        "save": "Не удалось сохранить. Попробуйте ещё раз."
+      }
     },
     "homeBanner": {
       "title": "Баннер главной страницы",

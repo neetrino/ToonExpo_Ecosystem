@@ -3,7 +3,10 @@ import type { ReactNode } from 'react';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import { PUBLIC_SITE_PAGE_KEYS, type PublicSitePages } from '@toonexpo/contracts';
 
+import { getPublicSitePages } from '@/features/catalog/api/public-site-pages-api';
+import { PublicSitePagesProvider } from '@/features/catalog/providers/public-site-pages-provider';
 import { routing } from '@/i18n/routing';
 import { resolveSiteUrl } from '@/shared/config/site-url';
 import { QueryProvider } from '@/shared/providers/query-provider';
@@ -21,6 +24,14 @@ const SITE_DESCRIPTION =
 const SHARE_IMAGE_PATH = '/brand/og-share.png';
 const SHARE_IMAGE_WIDTH = 1200;
 const SHARE_IMAGE_HEIGHT = 630;
+
+const defaultPublicSitePages = (): PublicSitePages => {
+  const pages = {} as PublicSitePages;
+  for (const key of PUBLIC_SITE_PAGE_KEYS) {
+    pages[key] = true;
+  }
+  return pages;
+};
 
 export const generateMetadata = async ({
   params,
@@ -88,11 +99,16 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   // shared [locale] layout is reused across client navigations.
   setRequestLocale(urlLocale);
   const messages = (await import(`../../../messages/${urlLocale}.json`)).default;
+  const sitePages = await getPublicSitePages()
+    .then((response) => response.pages)
+    .catch(() => defaultPublicSitePages());
 
   return (
     <NextIntlClientProvider locale={urlLocale} messages={messages}>
       <QueryProvider>
-        <PublicChrome>{children}</PublicChrome>
+        <PublicSitePagesProvider pages={sitePages}>
+          <PublicChrome>{children}</PublicChrome>
+        </PublicSitePagesProvider>
       </QueryProvider>
     </NextIntlClientProvider>
   );

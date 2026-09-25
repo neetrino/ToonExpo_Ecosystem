@@ -5,6 +5,8 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 import { useMeQuery } from '@/features/auth/hooks/use-auth';
+import { SITE_HEADER_HREF_PAGE_KEY } from '@/features/catalog/constants/public-site-pages';
+import { usePublicSitePages } from '@/features/catalog/providers/public-site-pages-provider';
 import { Link, usePathname } from '@/i18n/navigation';
 import { isPartnerCompatibleCompany } from '@/features/partners/utils/is-partner-compatible-company';
 import {
@@ -50,6 +52,13 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
   const { edgeInsetClass, contentInsetPx } = resolveHeaderPillLayout(useLocale());
   const pathname = usePathname();
   const { data: user } = useMeQuery();
+  const { isPageEnabled } = usePublicSitePages();
+  const navItems = SITE_HEADER_NAV_HREFS.filter((item) =>
+    isPageEnabled(SITE_HEADER_HREF_PAGE_KEY[item.href]),
+  );
+  const mobileNavItems = SITE_HEADER_MOBILE_NAV_HREFS.filter((item) =>
+    isPageEnabled(SITE_HEADER_HREF_PAGE_KEY[item.href]),
+  );
   const [menuOpen, setMenuOpen] = useState(false);
   const [accountNavOpen, setAccountNavOpen] = useState(false);
   const [showPill, setShowPill] = useState(false);
@@ -205,7 +214,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
               style={{ transitionDuration: `${PILL_APPEAR_MS}ms` }}
               aria-label={t('main')}
             >
-              {SITE_HEADER_NAV_HREFS.map((item) => {
+              {navItems.map((item) => {
                 const active = isSiteHeaderNavActive(pathname, item.href);
                 return (
                   <Link
@@ -283,7 +292,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
           {menuRendered ? (
             <div className={cn('absolute top-full z-10 mt-2 lg:hidden', edgeInsetClass)}>
               <SiteHeaderMobileNav
-                navItems={SITE_HEADER_MOBILE_NAV_HREFS}
+                navItems={mobileNavItems}
                 pathname={pathname}
                 onClose={() => setMenuOpen(false)}
                 isNavActive={isSiteHeaderNavActive}

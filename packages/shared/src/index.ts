@@ -50,6 +50,7 @@ export const PUBLIC_CACHE_TAG = {
   VISUAL_MAP: 'visual-map',
   GEO_MAP: 'geo-map',
   HOME: 'home',
+  PUBLIC_PAGES: 'public-pages',
 } as const;
 
 export type PublicCacheTag = (typeof PUBLIC_CACHE_TAG)[keyof typeof PUBLIC_CACHE_TAG];

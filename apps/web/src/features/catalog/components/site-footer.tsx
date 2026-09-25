@@ -1,7 +1,10 @@
+import type { PublicSitePageKey, PublicSitePages } from '@toonexpo/contracts';
+import { PUBLIC_SITE_PAGE_KEYS } from '@toonexpo/contracts';
 import { Facebook, Instagram } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import type { ComponentProps, ReactNode } from 'react';
 
+import { getPublicSitePages } from '@/features/catalog/api/public-site-pages-api';
 import { Link } from '@/i18n/navigation';
 
 const FOOTER_SOCIAL = [
@@ -20,8 +23,21 @@ const FOOTER_SOCIAL = [
 type AppHref = ComponentProps<typeof Link>['href'];
 
 type FooterNavItem =
-  | { label: string; href: AppHref; external?: false | undefined }
-  | { label: string; href: string; external: true };
+  | {
+      label: string;
+      href: AppHref;
+      external?: false | undefined;
+      pageKey?: PublicSitePageKey | undefined;
+    }
+  | { label: string; href: string; external: true; pageKey?: undefined };
+
+const defaultPages = (): PublicSitePages => {
+  const pages = {} as PublicSitePages;
+  for (const key of PUBLIC_SITE_PAGE_KEYS) {
+    pages[key] = true;
+  }
+  return pages;
+};
 
 type FooterColumn = {
   title: string;
@@ -34,6 +50,9 @@ type FooterColumn = {
 export const SiteFooter = async () => {
   const t = await getTranslations('Footer');
   const tNav = await getTranslations('Nav');
+  const pages = await getPublicSitePages()
+    .then((response) => response.pages)
+    .catch(() => defaultPages());
   const contactEmail = t('contactEmail');
   const mail = (subject: string): string =>
     `mailto:${contactEmail}?subject=${encodeURIComponent(subject)}`;
@@ -42,16 +61,16 @@ export const SiteFooter = async () => {
     {
       title: t('marketplace'),
       items: [
-        { label: tNav('buy'), href: '/apartments' },
-        { label: tNav('projects'), href: '/projects' },
-        { label: t('links.specialOffers'), href: '/mortgage' },
-        { label: tNav('geoMap'), href: '/map' },
+        { label: tNav('buy'), href: '/apartments', pageKey: 'apartments' },
+        { label: tNav('projects'), href: '/projects', pageKey: 'projects' },
+        { label: t('links.specialOffers'), href: '/mortgage', pageKey: 'mortgage' },
+        { label: tNav('geoMap'), href: '/map', pageKey: 'map' },
       ],
     },
     {
       title: t('developersPartners'),
       items: [
-        { label: tNav('partners'), href: '/partners' },
+        { label: tNav('partners'), href: '/partners', pageKey: 'partners' },
         {
           label: t('links.becomePartner'),
           href: mail(t('links.becomePartner')),
@@ -67,13 +86,14 @@ export const SiteFooter = async () => {
     {
       title: t('financeInsights'),
       items: [
-        { label: tNav('mortgage'), href: '/mortgage' },
+        { label: tNav('mortgage'), href: '/mortgage', pageKey: 'mortgage' },
         {
           label: t('links.mortgageCalculator'),
           href: { pathname: '/mortgage', hash: 'calculator' },
+          pageKey: 'mortgage',
         },
-        { label: tNav('marketInsights'), href: '/insights' },
-        { label: t('links.marketReports'), href: '/insights' },
+        { label: tNav('marketInsights'), href: '/insights', pageKey: 'insights' },
+        { label: t('links.marketReports'), href: '/insights', pageKey: 'insights' },
       ],
     },
     {
@@ -120,11 +140,18 @@ export const SiteFooter = async () => {
     },
   ];
 
+  const visibleColumns = columns
+    .map((column) => ({
+      ...column,
+      items: column.items.filter((item) => !item.pageKey || pages[item.pageKey] !== false),
+    }))
+    .filter((column) => column.items.length > 0);
+
   return (
     <footer className="hidden border-t border-header-border bg-canvas lg:block">
       <div className="page-container pt-12 pb-4">
         <div className="mb-12 flex justify-between gap-8">
-          {columns.map((column) => (
+          {visibleColumns.map((column) => (
             <FooterNavColumn key={column.title} title={column.title} items={column.items} />
           ))}
         </div>

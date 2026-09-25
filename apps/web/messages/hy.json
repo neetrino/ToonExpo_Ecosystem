@@ -1410,7 +1410,43 @@
       "checkin": "Գրանցման սկաներ",
       "bos": "BOS",
       "homepage": "Գլխավոր banner",
+      "publicPages": "Հանրային էջեր",
       "settings": "Կարգավորումներ"
+    },
+    "publicPages": {
+      "title": "Հանրային էջեր",
+      "subtitle": "Միացրու կամ անջատիր կայքի մարքեթինգային էջերը։ Անջատված էջերը չեն երևում նավիգացիայում և վերադարձնում են 404։",
+      "loading": "Էջերը բեռնվում են…",
+      "save": "Պահպանել",
+      "saving": "Պահպանվում է…",
+      "saveSuccess": "Հանրային էջերի տեսանելիությունը թարմացված է",
+      "active": "Ակտիվ",
+      "inactive": "Անջատված",
+      "toggleAria": "Փոխել {page}",
+      "pages": {
+        "apartments": "Գնել բնակարաններ",
+        "projects": "Նախագծեր",
+        "partners": "Մասնակիցներ / Կառուցապատողներ",
+        "insights": "Շուկայի վերլուծություն",
+        "mortgage": "Հաշվիչ",
+        "expo": "Venue Map",
+        "map": "3D քարտեզ",
+        "discover": "Բացահայտել"
+      },
+      "paths": {
+        "apartments": "/apartments",
+        "projects": "/projects",
+        "partners": "/partners, /builders",
+        "insights": "/insights",
+        "mortgage": "/mortgage",
+        "expo": "/expo",
+        "map": "/map",
+        "discover": "/discover"
+      },
+      "errors": {
+        "load": "Չհաջողվեց բեռնել էջերի կարգավորումները։",
+        "save": "Չհաջողվեց պահպանել։ Փորձիր նորից։"
+      }
     },
     "homeBanner": {
       "title": "Գլխավոր էջի banner",

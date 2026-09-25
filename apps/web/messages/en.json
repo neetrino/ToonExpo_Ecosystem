@@ -1410,7 +1410,43 @@
       "checkin": "Check-in scanner",
       "bos": "BOS",
       "homepage": "Homepage banner",
+      "publicPages": "Public pages",
       "settings": "Settings"
+    },
+    "publicPages": {
+      "title": "Public pages",
+      "subtitle": "Activate or deactivate marketing pages on the public site. Disabled pages are hidden from navigation and return 404.",
+      "loading": "Loading pages…",
+      "save": "Save",
+      "saving": "Saving…",
+      "saveSuccess": "Public page visibility updated",
+      "active": "Active",
+      "inactive": "Inactive",
+      "toggleAria": "Toggle {page}",
+      "pages": {
+        "apartments": "Buy apartments",
+        "projects": "Projects",
+        "partners": "Partners / Builders",
+        "insights": "Market insights",
+        "mortgage": "Calculator",
+        "expo": "Venue map",
+        "map": "3D map",
+        "discover": "Discover"
+      },
+      "paths": {
+        "apartments": "/apartments",
+        "projects": "/projects",
+        "partners": "/partners, /builders",
+        "insights": "/insights",
+        "mortgage": "/mortgage",
+        "expo": "/expo",
+        "map": "/map",
+        "discover": "/discover"
+      },
+      "errors": {
+        "load": "Could not load page settings.",
+        "save": "Could not save page settings. Try again."
+      }
     },
     "homeBanner": {
       "title": "Homepage banner",
