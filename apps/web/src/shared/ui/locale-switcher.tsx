@@ -11,6 +11,7 @@ import { usePanelLocale } from '@/shared/i18n/panel-intl-client-provider';
 import { buildPanelLocaleCookie } from '@/shared/i18n/panel-locale';
 import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
 import { cn } from '@/shared/ui/cn';
+import { LocaleFlag } from '@/shared/ui/locale-flag';
 import type { SupportedLocale } from '@toonexpo/shared';
 
 /** Figma header trigger — uppercase 2-letter codes (`EN`). */
@@ -37,7 +38,7 @@ type LocaleSwitcherProps = {
 };
 
 /**
- * Compact language control — Figma header: plain `EN` + chevron (no pill).
+ * Compact language control — selected locale shows flag + code, then chevron.
  * Opens on click only (not hover). Menu stays `absolute` under the trigger so
  * it inherits desktop `zoom` (Safari-safe — no body portal).
  * Wrapped in Suspense for `useSearchParams` during static prerender.
@@ -63,11 +64,12 @@ const LocaleSwitcherFallback = ({ tone = 'light', mode = 'site' }: LocaleSwitche
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 rounded-[10px] px-2.5 py-1.5 text-sm font-medium leading-5',
+        'inline-flex items-center gap-1.5 rounded-[10px] px-2.5 py-1.5 text-sm font-medium leading-5',
         isDark ? 'text-on-dark' : 'text-brand-deep',
       )}
       aria-hidden
     >
+      <LocaleFlag locale={activeLocale} />
       <span>{LOCALE_CODE[activeLocale] ?? activeLocale.toUpperCase()}</span>
       <ChevronDown className="size-3.5 shrink-0 opacity-70" />
     </span>
@@ -160,7 +162,7 @@ const LocaleSwitcherInner = ({ tone = 'light', mode = 'site' }: LocaleSwitcherPr
       <button
         type="button"
         className={cn(
-          'group inline-flex cursor-pointer items-center gap-1 rounded-[10px] px-2.5 py-1.5',
+          'group inline-flex cursor-pointer items-center gap-1.5 rounded-[10px] px-2.5 py-1.5',
           'text-sm font-medium leading-5',
           'transition-[color,background-color,transform,box-shadow] duration-[var(--duration-base)]',
           'ease-[var(--ease-out-premium)] active:scale-[0.97]',
@@ -186,6 +188,7 @@ const LocaleSwitcherInner = ({ tone = 'light', mode = 'site' }: LocaleSwitcherPr
           setOpen((current) => !current);
         }}
       >
+        <LocaleFlag locale={displayLocale} />
         <span>{LOCALE_CODE[displayLocale] ?? displayLocale.toUpperCase()}</span>
         <ChevronDown
           className={cn(
@@ -227,7 +230,10 @@ const LocaleSwitcherInner = ({ tone = 'light', mode = 'site' }: LocaleSwitcherPr
                     )}
                     onClick={() => switchLocale(code)}
                   >
-                    <span>{LOCALE_FULL[code] ?? code}</span>
+                    <span className="inline-flex items-center gap-2">
+                      <LocaleFlag locale={code} />
+                      <span>{LOCALE_FULL[code] ?? code}</span>
+                    </span>
                     {active ? (
                       <Check className="size-3.5 shrink-0 text-brand-logo" aria-hidden />
                     ) : null}
