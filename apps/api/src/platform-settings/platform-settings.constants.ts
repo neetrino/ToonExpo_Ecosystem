@@ -21,3 +21,9 @@ export const HOME_HERO_TITLE_MAX_LENGTH = 200;
 
 /** Max characters for the home hero subheadline (per locale). */
 export const HOME_HERO_SUBTITLE_MAX_LENGTH = 400;
+
+/** JSON map of public marketing page keys → enabled booleans. */
+export const PLATFORM_SETTING_PUBLIC_SITE_PAGES = 'site.publicPages';
+
+export const PLATFORM_SETTING_PUBLIC_SITE_PAGES_DESCRIPTION =
+  'Which public marketing pages are visible in nav and reachable by URL';

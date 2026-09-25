@@ -13,14 +13,14 @@ type HomeHeroProps = {
 };
 
 type HomeHeroHeadlineProps = {
-  eyebrow: string;
   title: string;
   subtitle: string;
 };
 
 /**
  * Public home hero — full-bleed skyline with marketplace search.
- * Slides and optional headline copy come from platform settings.
+ * Slides and headline copy come from platform settings (admin).
+ * Subtitle is CMS-only — no i18n fallback.
  */
 export const HomeHero = async ({ locations = [], projects = [] }: HomeHeroProps) => {
   const t = await getTranslations('HomePage');
@@ -29,6 +29,7 @@ export const HomeHero = async ({ locations = [], projects = [] }: HomeHeroProps)
   const imageUrls = (hero?.slides ?? [])
     .map((slide) => slide.imageUrl.trim())
     .filter((url) => url.length > 0);
+  const subtitle = pickHomeHeroCopy(hero?.subtitle, locale, '');
 
   return (
     <section className="relative isolate flex min-h-fluid-screen flex-col bg-canvas">
@@ -40,9 +41,8 @@ export const HomeHero = async ({ locations = [], projects = [] }: HomeHeroProps)
           )}
         >
           <HomeHeroHeadline
-            eyebrow={t('hero.eyebrow')}
             title={pickHomeHeroCopy(hero?.title, locale, t('hero.title'))}
-            subtitle={pickHomeHeroCopy(hero?.subtitle, locale, t('hero.subtitle'))}
+            subtitle={subtitle}
           />
           <div className="mt-[clamp(1.5rem,1rem+2vw,2.5rem)] w-full">
             <HeroSearch locations={locations} projects={projects} />
@@ -53,17 +53,8 @@ export const HomeHero = async ({ locations = [], projects = [] }: HomeHeroProps)
   );
 };
 
-const HomeHeroHeadline = ({ eyebrow, title, subtitle }: HomeHeroHeadlineProps) => (
+const HomeHeroHeadline = ({ title, subtitle }: HomeHeroHeadlineProps) => (
   <div className="flex max-w-3xl flex-col gap-[clamp(0.75rem,0.4rem+1.2vw,1.5rem)]">
-    <p
-      className={cn(
-        'font-bold uppercase text-on-dark',
-        'text-[clamp(0.625rem,0.55rem+0.2vw,0.6875rem)]',
-        'tracking-[0.2em] leading-none',
-      )}
-    >
-      {eyebrow}
-    </p>
     <h1
       className={cn(
         'font-brand font-bold text-on-dark',
@@ -74,15 +65,17 @@ const HomeHeroHeadline = ({ eyebrow, title, subtitle }: HomeHeroHeadlineProps) =
     >
       {title}
     </h1>
-    <p
-      className={cn(
-        'max-w-xl text-on-dark/95',
-        'text-[clamp(0.9375rem,0.82rem+0.45vw,1.125rem)]',
-        'leading-[1.55]',
-        'text-pretty',
-      )}
-    >
-      {subtitle}
-    </p>
+    {subtitle.length > 0 ? (
+      <p
+        className={cn(
+          'max-w-xl text-on-dark/95',
+          'text-[clamp(0.9375rem,0.82rem+0.45vw,1.125rem)]',
+          'leading-[1.55]',
+          'text-pretty',
+        )}
+      >
+        {subtitle}
+      </p>
+    ) : null}
   </div>
 );

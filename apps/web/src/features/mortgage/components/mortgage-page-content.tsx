@@ -16,12 +16,13 @@ export const MortgagePageContent = () => {
   return (
     <>
       <section className="-mt-[4.5rem] border-b border-header-border bg-band-mist/30 pt-[4.5rem]">
-        <div className="page-container pt-[clamp(3.5rem,8vw,5rem)] pb-[clamp(3.5rem,8vw,5.5rem)]">
+        <div className="@container page-container pt-[clamp(3.5rem,8vw,5rem)] pb-[clamp(3.5rem,8vw,5.5rem)]">
           <p className="text-[11px] font-bold tracking-[0.2em] text-brand-secondary uppercase">
             {t('eyebrow')}
           </p>
-          <h1 className="mt-3 max-w-4xl font-brand text-[clamp(2.25rem,5.5vw,3.75rem)] font-bold leading-[1.12] tracking-[-0.03em] text-ink-navy text-balance">
-            {t('headline')}
+          <h1 className="mt-3 font-brand text-[clamp(1.4rem,5.4cqi,3.1rem)] font-bold leading-[1.15] tracking-[-0.03em] text-ink-navy">
+            <span className="block whitespace-nowrap">{t('titleLine1')}</span>
+            <span className="block whitespace-nowrap">{t('titleLine2')}</span>
           </h1>
           <p className="mt-5 max-w-xl text-lg leading-7 text-header-muted">{t('subtitle')}</p>
         </div>

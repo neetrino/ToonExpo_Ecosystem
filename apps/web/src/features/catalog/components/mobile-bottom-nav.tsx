@@ -15,6 +15,7 @@ import {
   type BottomNavId,
   type BottomNavItem,
 } from '@/features/catalog/components/mobile-bottom-nav.items';
+import { usePublicSitePages } from '@/features/catalog/providers/public-site-pages-provider';
 import { Link, usePathname } from '@/i18n/navigation';
 import { isAdminPortalPath, isBuilderPortalPath } from '@/shared/ui/account-mobile-nav-controller';
 import { cn } from '@/shared/ui/cn';
@@ -88,6 +89,7 @@ export const MobileBottomNav = () => {
   const t = useTranslations('Nav');
   const pathname = usePathname();
   const { data: me } = useMeQuery();
+  const { isPageEnabled } = usePublicSitePages();
   const [pendingId, setPendingId] = useState<BottomNavId | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [host, setHost] = useState<HTMLElement | null>(null);
@@ -106,11 +108,24 @@ export const MobileBottomNav = () => {
       ? isAdminPortalPath(pathname)
       : resolveBuyerProfileActive(pathname);
 
-  const items = isBuilder
+  const rawItems = isBuilder
     ? BUILDER_NAV_ITEMS
     : isAdmin
       ? buildAdminNavItems(isProfileActive)
       : buildPublicNavItems(profileHref, isProfileActive);
+
+  const items =
+    isBuilder || isAdmin
+      ? rawItems
+      : rawItems.filter((item) => {
+          if (item.id === 'discover') {
+            return isPageEnabled('discover');
+          }
+          if (item.id === 'map') {
+            return isPageEnabled('map');
+          }
+          return true;
+        });
 
   const routeActiveIndex = items.findIndex((item) => item.match(pathname));
   const pendingIndex = pendingId ? items.findIndex((item) => item.id === pendingId) : -1;

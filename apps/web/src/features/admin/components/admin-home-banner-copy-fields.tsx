@@ -92,7 +92,7 @@ export const AdminHomeBannerCopyFields = ({
               maxLength={HOME_HERO_SUBTITLE_MAX_LENGTH}
               disabled={disabled}
               value={value.subtitle[locale]}
-              placeholder={locale === siteLocale ? tHero('subtitle') : undefined}
+              placeholder={t('subtitlePlaceholder')}
               className="min-h-24"
               onChange={(event) => updateField('subtitle', locale, event.target.value)}
             />

@@ -83,3 +83,9 @@ export const homeHeroFetch = (): PublicFetchInit =>
    * Admin banner changes should appear on Home immediately after save.
    */
   publicCachedGet(0, [PUBLIC_CACHE_TAG.HOME]);
+
+export const publicSitePagesFetch = (): PublicFetchInit =>
+  /**
+   * Admin page visibility toggles must appear in nav immediately after save.
+   */
+  publicCachedGet(0, [PUBLIC_CACHE_TAG.PUBLIC_PAGES]);

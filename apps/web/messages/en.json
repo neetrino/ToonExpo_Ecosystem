@@ -203,9 +203,7 @@
       "description": "Public catalog of new developments, apartments and builders in Armenia."
     },
     "hero": {
-      "eyebrow": "The marketplace · 14,802 verified listings",
       "title": "Find the address that defines your next chapter.",
-      "subtitle": "Search homes, compare developments, and finance with partner banks — transparently, in one place.",
       "findProject": "Find your next home with confidence",
       "searchLabel": "Search projects",
       "searchPlaceholder": "Project, builder, or city…",
@@ -237,7 +235,6 @@
       "bedsSelectedCount": "{count} selected",
       "previousBanner": "Previous banner",
       "nextBanner": "Next banner",
-      "popular": "Popular:",
       "popularCities": {
         "yerevan": "Yerevan",
         "gyumri": "Gyumri",
@@ -261,16 +258,11 @@
     },
     "stats": {
       "badge": "Market pulse",
-      "projectCount": "Number of projects",
-      "projectCountHint": "+18 this month",
-      "apartmentCount": "Number of apartments",
-      "apartmentCountHint": "+240 this week",
-      "marketValue": "Total market value (mln)",
-      "marketValueHint": "+4.2% YoY",
-      "participantCount": "Number of participants",
-      "participantCountHint": "Growing",
-      "avgMortgagePayment": "Avg. monthly mortgage payment",
-      "avgMortgagePaymentHint": "Stable"
+      "participantCount": "Participants",
+      "internationalParticipantCount": "International participants",
+      "visitorCount": "Visitors",
+      "soldPropertyCount": "Sold property",
+      "soldPropertyCountHint": "~$950m"
     },
     "featured": {
       "eyebrow": "Newest for sale",
@@ -391,7 +383,7 @@
     "projects": "Projects",
     "builders": "Builders",
     "partners": "Exhibitors",
-    "mortgage": "Mortgage",
+    "mortgage": "Calculator",
     "venueMap": "Venue Map",
     "geoMap": "3D Map",
     "expoMap": "Expo map",
@@ -1418,7 +1410,43 @@
       "checkin": "Check-in scanner",
       "bos": "BOS",
       "homepage": "Homepage banner",
+      "publicPages": "Public pages",
       "settings": "Settings"
+    },
+    "publicPages": {
+      "title": "Public pages",
+      "subtitle": "Activate or deactivate marketing pages on the public site. Disabled pages are hidden from navigation and return 404.",
+      "loading": "Loading pages…",
+      "save": "Save",
+      "saving": "Saving…",
+      "saveSuccess": "Public page visibility updated",
+      "active": "Active",
+      "inactive": "Inactive",
+      "toggleAria": "Toggle {page}",
+      "pages": {
+        "apartments": "Buy apartments",
+        "projects": "Projects",
+        "partners": "Partners / Builders",
+        "insights": "Market insights",
+        "mortgage": "Calculator",
+        "expo": "Venue map",
+        "map": "3D map",
+        "discover": "Discover"
+      },
+      "paths": {
+        "apartments": "/apartments",
+        "projects": "/projects",
+        "partners": "/partners, /builders",
+        "insights": "/insights",
+        "mortgage": "/mortgage",
+        "expo": "/expo",
+        "map": "/map",
+        "discover": "/discover"
+      },
+      "errors": {
+        "load": "Could not load page settings.",
+        "save": "Could not save page settings. Try again."
+      }
     },
     "homeBanner": {
       "title": "Homepage banner",
@@ -1442,7 +1470,8 @@
         "titleSection": "Title and subtitle",
         "title": "Title",
         "subtitle": "Subtitle",
-        "hint": "This copy appears on the banner. Leave a field empty to keep the site default. Fill hy / ru / en tabs."
+        "subtitlePlaceholder": "From admin only — empty field is hidden on the site",
+        "hint": "This copy appears on the banner. An empty title keeps the site default. Subtitle comes from admin only — an empty field is hidden. Fill hy / ru / en tabs."
       },
       "errors": {
         "load": "Could not load the current banners.",
@@ -3268,7 +3297,6 @@
   "Mortgage": {
     "eyebrow": "Real-estate financing",
     "title": "Mortgage calculator",
-    "headline": "Calculate. Compare. Get pre-qualified.",
     "titleLine1": "Calculate. Compare.",
     "titleLine2": "Get pre-qualified.",
     "subtitle": "Live offers from our partner banks. Adjust the inputs and see your real monthly payment per lender.",
@@ -3290,11 +3318,6 @@
       "terms": "Terms",
       "years": "years",
       "estimatedMonthly": "Est. {amount}/mo"
-    },
-    "prequalify": {
-      "title": "Get pre-qualified with {bank}",
-      "subtitle": "Soft credit check · no impact on score · 2-minute form.",
-      "cta": "Start application"
     },
     "calculator": {
       "inputsTitle": "Your loan",

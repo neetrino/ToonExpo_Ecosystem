@@ -9,6 +9,7 @@ import { routing } from '@/i18n/routing';
 import { usePanelLocale } from '@/shared/i18n/panel-intl-client-provider';
 import { buildPanelLocaleCookie } from '@/shared/i18n/panel-locale';
 import { cn } from '@/shared/ui/cn';
+import { LocaleFlag } from '@/shared/ui/locale-flag';
 import type { SupportedLocale } from '@toonexpo/shared';
 
 /** Uppercase 2-letter codes — matches header LocaleSwitcher. */
@@ -56,8 +57,8 @@ const segmentShellClass = (size: 'md' | 'sm'): string =>
 const segmentButtonClass = (size: 'md' | 'sm', active: boolean): string =>
   cn(
     size === 'sm'
-      ? 'flex h-7 min-w-9 items-center justify-center rounded-full px-2 text-xs'
-      : 'flex h-9 flex-1 items-center justify-center rounded-full text-sm',
+      ? 'flex h-7 min-w-9 items-center justify-center gap-1 rounded-full px-2 text-xs'
+      : 'flex h-9 flex-1 items-center justify-center gap-1.5 rounded-full text-sm',
     'transition-colors duration-[var(--duration-fast)]',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-deep/30',
     'disabled:opacity-60',
@@ -94,6 +95,7 @@ const LocaleSegmentSwitcherFallback = ({
         const active = code === activeLocale;
         return (
           <span key={code} className={segmentButtonClass(size, active)}>
+            <LocaleFlag locale={code} />
             {LOCALE_CODE[code] ?? code.toUpperCase()}
           </span>
         );
@@ -168,6 +170,7 @@ const LocaleSegmentSwitcherInner = ({
             className={segmentButtonClass(size, active)}
             onClick={() => switchLocale(code)}
           >
+            <LocaleFlag locale={code} />
             {LOCALE_CODE[code] ?? code.toUpperCase()}
           </button>
         );

@@ -3,24 +3,17 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import { AnimatedCounter } from '@/shared/ui/motion/animated-counter';
 import { cn } from '@/shared/ui/cn';
 
-type StatTone = 'positive' | 'caution';
-
 type MarketStat = {
   id: string;
   label: string;
   hint: string;
-  tone: StatTone;
   numericValue: number;
 };
 
-const STAT_PROJECTS = 250;
-const STAT_APARTMENTS = 3_500;
-const STAT_MARKET_VALUE_MLN = 30_450_000;
-const STAT_PARTICIPANTS = 20_000_000;
-const STAT_AVG_MORTGAGE_PAYMENT = 15_000_000;
-
-/** Tablet grid fits three stats per row; the wrapped row is centered from this index on. */
-const TABLET_ROW_SIZE = 3;
+const STAT_PARTICIPANTS = 370;
+const STAT_INTERNATIONAL_PARTICIPANTS = 30;
+const STAT_VISITORS = 140_000;
+const STAT_SOLD_PROPERTIES = 9_500;
 
 /**
  * Brand-deep market pulse bar under the hero — Figma node `81:152`.
@@ -32,39 +25,28 @@ export const HomeStats = async () => {
 
   const stats: MarketStat[] = [
     {
-      id: 'projects',
-      label: t('projectCount'),
-      hint: t('projectCountHint'),
-      tone: 'positive',
-      numericValue: STAT_PROJECTS,
-    },
-    {
-      id: 'apartments',
-      label: t('apartmentCount'),
-      hint: t('apartmentCountHint'),
-      tone: 'positive',
-      numericValue: STAT_APARTMENTS,
-    },
-    {
-      id: 'marketValue',
-      label: t('marketValue'),
-      hint: t('marketValueHint'),
-      tone: 'positive',
-      numericValue: STAT_MARKET_VALUE_MLN,
-    },
-    {
       id: 'participants',
       label: t('participantCount'),
-      hint: t('participantCountHint'),
-      tone: 'positive',
+      hint: '',
       numericValue: STAT_PARTICIPANTS,
     },
     {
-      id: 'mortgagePayment',
-      label: t('avgMortgagePayment'),
-      hint: t('avgMortgagePaymentHint'),
-      tone: 'caution',
-      numericValue: STAT_AVG_MORTGAGE_PAYMENT,
+      id: 'internationalParticipants',
+      label: t('internationalParticipantCount'),
+      hint: '',
+      numericValue: STAT_INTERNATIONAL_PARTICIPANTS,
+    },
+    {
+      id: 'visitors',
+      label: t('visitorCount'),
+      hint: '',
+      numericValue: STAT_VISITORS,
+    },
+    {
+      id: 'soldProperties',
+      label: t('soldPropertyCount'),
+      hint: t('soldPropertyCountHint'),
+      numericValue: STAT_SOLD_PROPERTIES,
     },
   ];
 
@@ -77,17 +59,12 @@ export const HomeStats = async () => {
             'shadow-[0_20px_25px_-5px_rgb(25_38_67/0.1),0_8px_10px_-6px_rgb(25_38_67/0.1)]',
           )}
         >
-          <div className="grid w-full grid-cols-2 gap-x-4 md:grid-cols-6 md:gap-x-5 lg:grid-cols-5 lg:gap-x-4">
-            {stats.map((stat, index) => (
+          <div className="grid w-full grid-cols-2 gap-x-4 md:grid-cols-4 md:gap-x-5 lg:gap-x-4">
+            {stats.map((stat) => (
               <div
                 key={stat.id}
-                className={cn(
-                  'row-span-3 grid min-w-0 grid-rows-subgrid justify-items-center px-0.5 py-3 text-center',
-                  'last:col-span-2 md:col-span-2 lg:col-span-1 lg:last:col-span-1',
-                  index === TABLET_ROW_SIZE && 'md:col-start-2 lg:col-start-auto',
-                )}
+                className="row-span-3 grid min-w-0 grid-rows-subgrid justify-items-center px-0.5 py-3 text-center"
               >
-                {/* Desktop: keep every label on one line so the 5-col bar stays even. */}
                 <p
                   className={cn(
                     'self-end max-w-full min-w-0 text-balance text-[10px] font-bold uppercase',
@@ -108,15 +85,15 @@ export const HomeStats = async () => {
                     formatStyle="integer"
                     locale={locale}
                   />
+                  +
                 </p>
-                <p
-                  className={cn(
-                    'mt-1 max-w-full text-balance text-xs font-medium leading-4 tracking-normal',
-                    stat.tone === 'positive' ? 'text-stat-positive' : 'text-stat-caution',
-                  )}
-                >
-                  {stat.hint}
-                </p>
+                {stat.hint.length > 0 ? (
+                  <p className="mt-1 max-w-full text-balance text-xs font-medium leading-4 tracking-normal text-stat-positive">
+                    {stat.hint}
+                  </p>
+                ) : (
+                  <span className="mt-1 block h-4" aria-hidden />
+                )}
               </div>
             ))}
           </div>

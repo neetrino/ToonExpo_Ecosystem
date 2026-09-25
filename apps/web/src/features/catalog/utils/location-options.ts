@@ -51,15 +51,6 @@ export const POPULAR_CITY_KEYS = [
   'jermuk',
 ] as const;
 
-/** Compact Popular chips under home search — first five of the official list. */
-export const HERO_POPULAR_CITY_CHIP_KEYS = [
-  'yerevan',
-  'gyumri',
-  'vanadzor',
-  'abovyan',
-  'kapan',
-] as const satisfies readonly (typeof POPULAR_CITY_KEYS)[number][];
-
 const aliasToGroupId = (() => {
   const map = new Map<string, string>();
   for (const group of CITY_ALIAS_GROUPS) {

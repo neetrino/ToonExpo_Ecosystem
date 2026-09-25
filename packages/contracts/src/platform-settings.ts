@@ -35,3 +35,38 @@ export type UpdateHomeHeroRequest = {
   title?: LocaleTextMap;
   subtitle?: LocaleTextMap;
 };
+
+/**
+ * Toggleable public site pages (home `/` is always on and not listed).
+ * Keys match primary marketing routes under `apps/web`.
+ */
+export const PUBLIC_SITE_PAGE_KEYS = [
+  'apartments',
+  'projects',
+  'partners',
+  'insights',
+  'mortgage',
+  'expo',
+  'map',
+  'discover',
+] as const;
+
+export type PublicSitePageKey = (typeof PUBLIC_SITE_PAGE_KEYS)[number];
+
+/** Enabled map for every public site page key. */
+export type PublicSitePages = Record<PublicSitePageKey, boolean>;
+
+/** Public GET payload for which marketing pages are visible. */
+export type PublicSitePagesResponse = {
+  pages: PublicSitePages;
+};
+
+/** Admin GET payload (includes last update time when configured). */
+export type AdminSitePagesResponse = PublicSitePagesResponse & {
+  updatedAt: string | null;
+};
+
+/** Admin PATCH body — full enabled map for all known page keys. */
+export type UpdatePublicSitePagesRequest = {
+  pages: PublicSitePages;
+};
