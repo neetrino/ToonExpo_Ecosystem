@@ -10,11 +10,10 @@ import { LocationSearchSelect } from '@/features/catalog/components/location-sea
 import { PriceRangeSelect } from '@/features/catalog/components/price-range-select';
 import {
   expandCityFilterValues,
-  HERO_POPULAR_CITY_CHIP_KEYS,
   mergeLocationOptions,
   POPULAR_CITY_KEYS,
 } from '@/features/catalog/utils/location-options';
-import { Link, useRouter } from '@/i18n/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 import { MultiListboxSelect } from '@/shared/ui/multi-listbox-select';
 
@@ -164,32 +163,6 @@ export const HeroSearch = ({ className, locations = [], projects = [] }: HeroSea
           </button>
         </div>
       </form>
-
-      <div className="mt-8 flex flex-col gap-2">
-        <span className="text-sm font-medium leading-5 text-on-dark">{t('popular')}</span>
-        <div className="flex flex-wrap gap-2">
-          {HERO_POPULAR_CITY_CHIP_KEYS.map((key) => {
-            const city = t(`popularCities.${key}`);
-            const cityParam = expandCityFilterValues([city]).join(',');
-            return (
-              <Link
-                key={key}
-                href={`/projects?city=${encodeURIComponent(cityParam)}`}
-                className={cn(
-                  'inline-flex h-7 cursor-pointer items-center rounded-pill px-3',
-                  'bg-white/80 text-xs font-medium leading-4 text-ink-navy',
-                  'ring-1 ring-header-border backdrop-blur-[6px]',
-                  'transition-[background-color,color,box-shadow,transform] duration-[var(--duration-slow)] ease-[var(--ease-out-premium)]',
-                  'hover:bg-white hover:text-brand-deep hover:shadow-[0_0_0_1px_rgb(26_143_152/0.35),0_2px_8px_rgb(14_15_20/0.06)]',
-                  'active:scale-[0.98]',
-                )}
-              >
-                {city}
-              </Link>
-            );
-          })}
-        </div>
-      </div>
     </div>
   );
 };
