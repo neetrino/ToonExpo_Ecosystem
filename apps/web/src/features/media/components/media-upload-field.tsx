@@ -125,12 +125,12 @@ export const MediaUploadField = ({
     }
   };
 
-  const handleFilesSelected = async (files: FileList | null): Promise<void> => {
-    if (files == null || files.length === 0) {
+  const handleFilesSelected = async (files: readonly File[]): Promise<void> => {
+    if (files.length === 0) {
       return;
     }
 
-    const selected = multiple ? Array.from(files) : [files[0]!];
+    const selected = multiple ? [...files] : [files[0]!];
     setBusy(true);
     setLocalError(null);
 
@@ -228,7 +228,8 @@ export const MediaUploadField = ({
               className="absolute inset-0 cursor-pointer opacity-0"
               disabled={busy}
               onChange={(event) => {
-                const { files } = event.target;
+                // Snapshot files before clearing — FileList is live and empties with value=''.
+                const files = event.target.files ? Array.from(event.target.files) : [];
                 event.target.value = '';
                 void handleFilesSelected(files);
               }}

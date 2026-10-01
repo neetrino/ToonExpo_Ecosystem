@@ -36,6 +36,8 @@ import { Select } from '@/shared/ui/select';
 
 type EditCompanyFormProps = {
   company: CompanyResponse;
+  /** Called after a successful save (e.g. close the detail sheet). */
+  onSaved?: (() => void) | undefined;
 };
 
 const blurActiveField = (): void => {
@@ -48,7 +50,7 @@ const blurActiveField = (): void => {
 /**
  * Inline PATCH form for company profile fields and status.
  */
-export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
+export const EditCompanyForm = ({ company, onSaved }: EditCompanyFormProps) => {
   const t = useTranslations('Admin.companies');
   const updateMutation = useUpdateAdminCompanyMutation(company.id);
   const { showSuccess, successToast } = useSuccessToast();
@@ -96,6 +98,7 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
       });
       reset(values);
       showSuccess(t('detail.saveSuccess'));
+      onSaved?.();
     } catch {
       showError(t('errors.generic'));
     }

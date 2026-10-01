@@ -1,5 +1,6 @@
 import type {
   CreatePortalFloorRequest,
+  DuplicatePortalFloorRequest,
   PortalFloorSummary,
   UpdatePortalFloorRequest,
   UpdatePortalPublicationRequest,
@@ -33,6 +34,21 @@ export const createPortalFloor = (
 ): Promise<PortalFloorSummary> =>
   apiFetch<PortalFloorSummary>({
     path: catalogPath(`/portal/buildings/${encodeURIComponent(buildingId)}/floors`, options),
+    method: 'POST',
+    ...jsonCredentials,
+    body: JSON.stringify(body),
+  });
+
+/**
+ * Copies a floor's plan, apartments, and plan hotspots onto a new floor number.
+ */
+export const duplicatePortalFloor = (
+  id: string,
+  body: DuplicatePortalFloorRequest,
+  options: PortalRequestOptions = {},
+): Promise<PortalFloorSummary> =>
+  apiFetch<PortalFloorSummary>({
+    path: catalogPath(`/portal/floors/${encodeURIComponent(id)}/duplicate`, options),
     method: 'POST',
     ...jsonCredentials,
     body: JSON.stringify(body),

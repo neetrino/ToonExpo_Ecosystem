@@ -5,6 +5,7 @@ import type {
   BulkCreatePortalApartmentsRequest,
   CreatePortalBuildingRequest,
   CreatePortalFloorRequest,
+  DuplicatePortalFloorRequest,
   UpdatePortalBuildingRequest,
   UpdatePortalFloorRequest,
 } from '@toonexpo/contracts';
@@ -45,6 +46,7 @@ import {
 import {
   createPortalFloor,
   deletePortalFloor,
+  duplicatePortalFloor,
   listPortalFloors,
   updatePortalFloor,
 } from '@/features/builder/api/portal-floors-api';
@@ -259,6 +261,35 @@ export const useAdminCreateFloorMutation = () => {
       invalidateAdminInventory(queryClient);
       void queryClient.invalidateQueries({
         queryKey: adminBuildingInventoryGlanceQueryKey(input.buildingId),
+      });
+    },
+  });
+};
+
+/**
+ * Copies a floor's plan, apartments, and plan hotspots onto a new floor number.
+ */
+export const useDuplicateFloorMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: {
+      companyId: string;
+      floorId: string;
+      buildingId: string;
+      body: DuplicatePortalFloorRequest;
+      scope?: CatalogScope;
+    }) =>
+      duplicatePortalFloor(input.floorId, input.body, {
+        scope: mutationScope(input.companyId, input.scope),
+      }),
+    onSuccess: (_floor, input) => {
+      invalidateAdminInventory(queryClient);
+      void queryClient.invalidateQueries({
+        queryKey: adminBuildingInventoryGlanceQueryKey(input.buildingId),
+      });
+      void queryClient.invalidateQueries({
+        queryKey: ['admin', 'floors', input.floorId, 'apartments'],
       });
     },
   });

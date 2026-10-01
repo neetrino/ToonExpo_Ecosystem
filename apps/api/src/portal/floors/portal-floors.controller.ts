@@ -27,7 +27,11 @@ import { CurrentCompanyMember } from '../../company/decorators/current-company-m
 import { CompanyMemberGuard } from '../../company/guards/company-member.guard.js';
 import type { CompanyMemberContext } from '../../company/types/company-member-context.js';
 import { assertCompanyAdmin } from '../utils/access.js';
-import { CreatePortalFloorDto, UpdatePortalFloorDto } from '../dto/portal-floor.dto.js';
+import {
+  CreatePortalFloorDto,
+  DuplicatePortalFloorDto,
+  UpdatePortalFloorDto,
+} from '../dto/portal-floor.dto.js';
 import { UpdatePortalPublicationDto } from '../dto/update-portal-publication.dto.js';
 import { PortalFloorsService } from './portal-floors.service.js';
 
@@ -60,6 +64,19 @@ export class PortalFloorsController {
     @Body() body: CreatePortalFloorDto,
   ): Promise<PortalFloorSummary> {
     return this.floorsService.create(member.companyId, user.id, buildingId, body);
+  }
+
+  @Post('portal/floors/:floorId/duplicate')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Copy a floor onto a new floor number' })
+  @ApiCreatedResponse({ description: 'Copied floor' })
+  duplicate(
+    @CurrentCompanyMember() member: CompanyMemberContext,
+    @CurrentUser() user: AuthenticatedUser,
+    @Param('floorId') floorId: string,
+    @Body() body: DuplicatePortalFloorDto,
+  ): Promise<PortalFloorSummary> {
+    return this.floorsService.duplicate(member.companyId, user.id, floorId, body);
   }
 
   @Patch('portal/floors/:floorId')

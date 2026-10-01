@@ -1,6 +1,7 @@
 'use client';
 
 import type { AdminFloorListItem } from '@toonexpo/contracts';
+import { Copy } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { AdminFloorCard } from '@/features/admin/components/admin-floor-card';
@@ -10,11 +11,13 @@ import { LIST_STATUS_BADGE_COMPACT_CLASS } from '@/shared/ui/list-status-badge';
 import type { ListTableSelectionProps } from '@/shared/ui/list-selection.types';
 import { ListTableRowCheckbox, ListTableSelectAllCheckbox } from '@/shared/ui/list-table-checkbox';
 import { ListTableReveal } from '@/shared/ui/motion';
+import { Button } from '@/shared/ui/button';
 import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 
 type AdminFloorsTableProps = {
   floors: AdminFloorListItem[];
   onSelectFloor: (floor: AdminFloorListItem) => void;
+  onCopyFloor: (floor: AdminFloorListItem) => void;
   viewMode?: ViewMode | undefined;
   showCompany?: boolean | undefined;
   listSelection?: ListTableSelectionProps | undefined;
@@ -26,6 +29,7 @@ type AdminFloorsTableProps = {
 export const AdminFloorsTable = ({
   floors,
   onSelectFloor,
+  onCopyFloor,
   viewMode = VIEW_MODE_CARDS,
   showCompany = true,
   listSelection,
@@ -40,6 +44,7 @@ export const AdminFloorsTable = ({
             key={floor.id}
             floor={floor}
             onSelect={onSelectFloor}
+            onCopy={onCopyFloor}
             showCompany={showCompany}
           />
         ))}
@@ -72,6 +77,9 @@ export const AdminFloorsTable = ({
               <th className="px-3 py-2.5 text-left font-medium">{t('columns.project')}</th>
               <th className="px-3 py-2.5 text-center font-medium">{t('columns.status')}</th>
               <th className="px-3 py-2.5 text-center font-medium">{t('columns.apartments')}</th>
+              <th className="px-3 py-2.5 text-right font-medium">
+                <span className="sr-only">{t('copy.cta')}</span>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -123,6 +131,19 @@ export const AdminFloorsTable = ({
                   </td>
                   <td className="px-3 py-2.5 text-center align-middle text-ink-secondary">
                     {floor.apartmentsCount}
+                  </td>
+                  <td className="px-3 py-2.5 text-right align-middle">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => {
+                        onCopyFloor(floor);
+                      }}
+                    >
+                      <Copy className="size-3.5" aria-hidden />
+                      {t('copy.cta')}
+                    </Button>
                   </td>
                 </tr>
               );

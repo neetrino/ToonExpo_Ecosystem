@@ -2234,6 +2234,12 @@
         "noBuildingMatches": "No matching buildings",
         "pickBuilding": "Select a builder and building.",
         "submit": "Create floor"
+      },
+      "copy": {
+        "cta": "Copy",
+        "title": "Copy floor",
+        "hint": "Apartments, the floor plan, and plan hotspots are copied. Sales status starts as available.",
+        "submit": "Copy floor"
       }
     },
     "apartments": {

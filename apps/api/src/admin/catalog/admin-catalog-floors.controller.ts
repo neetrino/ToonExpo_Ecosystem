@@ -21,7 +21,11 @@ import type { PortalFloorSummary } from '@toonexpo/contracts';
 import { AccountTypes } from '../../auth/decorators/account-types.decorator.js';
 import { CurrentUser } from '../../auth/decorators/current-user.decorator.js';
 import type { AuthenticatedUser } from '../../auth/types/authenticated-user.js';
-import { CreatePortalFloorDto, UpdatePortalFloorDto } from '../../portal/dto/portal-floor.dto.js';
+import {
+  CreatePortalFloorDto,
+  DuplicatePortalFloorDto,
+  UpdatePortalFloorDto,
+} from '../../portal/dto/portal-floor.dto.js';
 import { UpdatePortalPublicationDto } from '../../portal/dto/update-portal-publication.dto.js';
 import { PortalFloorsService } from '../../portal/floors/portal-floors.service.js';
 import { AdminBuilderCompanyService } from './admin-builder-company.service.js';
@@ -58,6 +62,19 @@ export class AdminCatalogFloorsController {
   ): Promise<PortalFloorSummary> {
     const companyId = await this.builderCompanies.requireBuilderCompanyId(params.companyId);
     return this.floorsService.create(companyId, user.id, params.buildingId, body);
+  }
+
+  @Post('admin/companies/:companyId/catalog/floors/:floorId/duplicate')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Copy a floor onto a new floor number (admin)' })
+  @ApiCreatedResponse({ description: 'Copied floor' })
+  async duplicate(
+    @Param() params: AdminCatalogFloorParamDto,
+    @CurrentUser() user: AuthenticatedUser,
+    @Body() body: DuplicatePortalFloorDto,
+  ): Promise<PortalFloorSummary> {
+    const companyId = await this.builderCompanies.requireBuilderCompanyId(params.companyId);
+    return this.floorsService.duplicate(companyId, user.id, params.floorId, body);
   }
 
   @Patch('admin/companies/:companyId/catalog/floors/:floorId')

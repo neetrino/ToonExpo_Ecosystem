@@ -45,6 +45,14 @@ export const createFloorSchema = z.object({
 
 export type CreateFloorFormValues = z.infer<typeof createFloorSchema>;
 
+export const duplicateFloorSchema = createFloorSchema.pick({
+  floorNumber: true,
+  name: true,
+  displayLabel: true,
+});
+
+export type DuplicateFloorFormValues = z.infer<typeof duplicateFloorSchema>;
+
 export const updateFloorSchema = z.object({
   floorplanMediaId: optionalMediaIdField,
 });

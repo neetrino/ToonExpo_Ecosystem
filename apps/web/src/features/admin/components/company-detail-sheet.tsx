@@ -110,7 +110,7 @@ export const CompanyDetailSheet = ({ companyId, open, onClose }: CompanyDetailSh
 
         {company ? (
           <div className="flex flex-col gap-8">
-            <EditCompanyForm key={company.id} company={company} />
+            <EditCompanyForm key={company.id} company={company} onSaved={onClose} />
             {company.type === 'builder' ? <CompanyProjectsSection companyId={company.id} /> : null}
           </div>
         ) : null}

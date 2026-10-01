@@ -7,6 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
 
 import { AdminCreateFloorSheet } from '@/features/admin/components/admin-create-floor-sheet';
+import { CopyFloorSheet } from '@/features/admin/components/copy-floor-sheet';
 import { AdminFloorApartmentsSheet } from '@/features/admin/components/admin-floor-apartments-sheet';
 import { AdminFloorsTable } from '@/features/admin/components/admin-floors-table';
 import {
@@ -49,6 +50,7 @@ export const AdminFloorsListPage = () => {
   const response = query.data;
   const [showCreate, setShowCreate] = useState(false);
   const [selectedFloor, setSelectedFloor] = useState<AdminFloorListItem | null>(null);
+  const [copyFloor, setCopyFloor] = useState<AdminFloorListItem | null>(null);
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -131,6 +133,7 @@ export const AdminFloorsListPage = () => {
               onSelectFloor={(floor) => {
                 setSelectedFloor(floor);
               }}
+              onCopyFloor={setCopyFloor}
             />
           </div>
         ) : null}
@@ -145,6 +148,14 @@ export const AdminFloorsListPage = () => {
         defaultBuildingId={buildingId}
       />
 
+      <CopyFloorSheet
+        open={copyFloor != null}
+        floor={copyFloor}
+        onClose={() => {
+          setCopyFloor(null);
+        }}
+      />
+
       {selectedFloor ? (
         <AdminFloorApartmentsSheet
           open
@@ -154,6 +165,9 @@ export const AdminFloorsListPage = () => {
           floorId={selectedFloor.id}
           floorLabel={floorLabel}
           publicationStatus={selectedFloor.publicationStatus}
+          floorNumber={selectedFloor.number}
+          floorName={selectedFloor.name}
+          floorDisplayLabel={selectedFloor.displayLabel}
           floorplan={floorplan}
           onClose={() => {
             setSelectedFloor(null);
