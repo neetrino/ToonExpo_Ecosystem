@@ -1,28 +1,21 @@
 import type { Metadata } from 'next';
-import type { PaginatedResponse, ProjectListItem } from '@toonexpo/contracts';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { Suspense } from 'react';
 
-import { listProjects } from '@/features/catalog/api/catalog-api';
-import { FeaturedApartments } from '@/features/catalog/components/featured-apartments';
-import { HomeDevelopments } from '@/features/catalog/components/home-developments';
+import { HomeCatalogBands } from '@/features/catalog/components/home-catalog-bands';
 import { HomeHero } from '@/features/catalog/components/home-hero';
 import { HomeMapSection } from '@/features/catalog/components/home-map-section';
 import { HomeMortgage } from '@/features/catalog/components/home-mortgage';
+import {
+  HomeCatalogBandsFallback,
+  HomeHeroFallback,
+} from '@/features/catalog/components/home-page-fallbacks';
 import { HomeStats } from '@/features/catalog/components/home-stats';
 import { SiteFooter } from '@/features/catalog/components/site-footer';
-import { HOME_HERO_CATALOG_PAGE_SIZE } from '@/features/catalog/constants/hero-search';
-import { HOME_FEATURED_PROJECT_LIMIT } from '@/features/catalog/constants/home-featured';
-import { loadHomeFeaturedApartments } from '@/features/catalog/utils/load-home-featured-apartments';
-import { collectProjectCities } from '@/features/catalog/utils/location-options';
 
 type HomePageProps = {
   params: Promise<{ locale: string }>;
 };
-
-const emptyProjectPage = (pageSize: number): PaginatedResponse<ProjectListItem> => ({
-  data: [],
-  meta: { page: 1, pageSize, total: 0, totalPages: 0 },
-});
 
 export const generateMetadata = async ({ params }: HomePageProps): Promise<Metadata> => {
   const { locale } = await params;
@@ -35,34 +28,23 @@ export const generateMetadata = async ({ params }: HomePageProps): Promise<Metad
 };
 
 /**
- * Public home — soft-fails catalog fetches so `next build` can prerender
- * locales when the Nest API is not reachable (local / offline builds).
+ * Public home. Hero and featured bands suspend independently so the first
+ * byte is not blocked on the slowest catalog query. Fetches soft-fail inside
+ * those sections when the Nest API is unreachable.
  */
 export default async function HomePage({ params }: HomePageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [catalogResponse, featuredProjectsResponse, featuredApartments] = await Promise.all([
-    listProjects({ page: 1, pageSize: HOME_HERO_CATALOG_PAGE_SIZE }, { locale }).catch(() =>
-      emptyProjectPage(HOME_HERO_CATALOG_PAGE_SIZE),
-    ),
-    listProjects(
-      { page: 1, pageSize: HOME_FEATURED_PROJECT_LIMIT, featuredOnHome: true },
-      { locale, cacheMode: 'no-store' },
-    ).catch(() => emptyProjectPage(HOME_FEATURED_PROJECT_LIMIT)),
-    loadHomeFeaturedApartments(locale).catch(() => []),
-  ]);
-
-  const catalogProjects = catalogResponse.data;
-  const featuredProjects = featuredProjectsResponse.data;
-  const locations = collectProjectCities(catalogProjects);
-
   return (
     <div className="min-h-screen bg-canvas">
-      <HomeHero locations={locations} projects={catalogProjects} />
+      <Suspense fallback={<HomeHeroFallback />}>
+        <HomeHero />
+      </Suspense>
       <HomeStats />
-      <HomeDevelopments projects={featuredProjects} />
-      <FeaturedApartments listings={featuredApartments} />
+      <Suspense fallback={<HomeCatalogBandsFallback />}>
+        <HomeCatalogBands locale={locale} />
+      </Suspense>
       <HomeMapSection />
       <HomeMortgage />
       <SiteFooter />

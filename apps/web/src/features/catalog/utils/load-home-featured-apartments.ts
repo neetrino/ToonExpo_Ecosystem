@@ -16,7 +16,7 @@ export const loadHomeFeaturedApartments = async (
       pageSize: HOME_FEATURED_APARTMENT_LIMIT,
       featuredOnHome: true,
     },
-    { locale, cacheMode: 'no-store' },
+    { locale, cacheMode: 'home-shell' },
   );
 
   return curated.data.map(toBuyApartmentListing);

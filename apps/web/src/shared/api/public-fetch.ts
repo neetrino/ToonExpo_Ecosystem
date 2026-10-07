@@ -1,5 +1,6 @@
 import type { ApiFetchOptions } from '@/shared/api/client';
 import {
+  HOME_SHELL_CACHE_TTL_SECONDS,
   PUBLIC_CACHE_TAG,
   PUBLIC_CACHE_TTL_CATALOG_SECONDS,
   catalogProjectCacheTag,
@@ -80,12 +81,18 @@ export const geoMapFetch = (): PublicFetchInit =>
 
 export const homeHeroFetch = (): PublicFetchInit =>
   /**
-   * Admin banner changes should appear on Home immediately after save.
+   * Admin banner save purges `HOME` when the revalidate webhook is configured.
+   * Otherwise the shell TTL applies (see `HOME_SHELL_CACHE_TTL_SECONDS`).
    */
-  publicCachedGet(0, [PUBLIC_CACHE_TAG.HOME]);
+  publicCachedGet(HOME_SHELL_CACHE_TTL_SECONDS, [PUBLIC_CACHE_TAG.HOME]);
 
 export const publicSitePagesFetch = (): PublicFetchInit =>
   /**
-   * Admin page visibility toggles must appear in nav immediately after save.
+   * Admin visibility save purges `PUBLIC_PAGES` when the revalidate webhook is configured.
+   * This fetch runs in the locale layout, so an uncached call delays every public page.
    */
-  publicCachedGet(0, [PUBLIC_CACHE_TAG.PUBLIC_PAGES]);
+  publicCachedGet(HOME_SHELL_CACHE_TTL_SECONDS, [PUBLIC_CACHE_TAG.PUBLIC_PAGES]);
+
+/** Homepage featured projects/apartments — same shell TTL, purged with the catalog tag. */
+export const homeFeaturedFetch = (): PublicFetchInit =>
+  publicCachedGet(HOME_SHELL_CACHE_TTL_SECONDS, [PUBLIC_CACHE_TAG.CATALOG]);

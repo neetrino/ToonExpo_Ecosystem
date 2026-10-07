@@ -19,6 +19,7 @@ import {
   catalogBuildersFetch,
   catalogListFetch,
   catalogProjectFetch,
+  homeFeaturedFetch,
 } from '@/shared/api/public-fetch';
 
 export type CatalogRequestOptions = {
@@ -26,8 +27,19 @@ export type CatalogRequestOptions = {
   /**
    * `no-store` — browser map bootstrap; bypasses shared/HTTP cache so lat/lng
    * are not served from a stale Next Data Cache entry.
+   * `home-shell` — homepage featured bands; short TTL plus catalog tag purge.
    */
-  cacheMode?: 'default' | 'no-store';
+  cacheMode?: 'default' | 'no-store' | 'home-shell';
+};
+
+const listFetchInit = (cacheMode: CatalogRequestOptions['cacheMode']) => {
+  if (cacheMode === 'no-store') {
+    return { method: 'GET' as const, cache: 'no-store' as const };
+  }
+  if (cacheMode === 'home-shell') {
+    return homeFeaturedFetch();
+  }
+  return catalogListFetch();
 };
 
 const toSearchParams = (query: ListProjectsQuery): string => {
@@ -139,14 +151,9 @@ export const listProjects = (
     merged.locale = options.locale;
   }
 
-  const fetchInit =
-    options.cacheMode === 'no-store'
-      ? { method: 'GET' as const, cache: 'no-store' as const }
-      : catalogListFetch();
-
   return apiFetch<PaginatedResponse<ProjectListItem>>({
     path: `/projects${toSearchParams(merged)}`,
-    ...fetchInit,
+    ...listFetchInit(options.cacheMode),
   });
 };
 
@@ -162,14 +169,9 @@ export const listApartments = (
     merged.locale = options.locale;
   }
 
-  const fetchInit =
-    options.cacheMode === 'no-store'
-      ? { method: 'GET' as const, cache: 'no-store' as const }
-      : catalogListFetch();
-
   return apiFetch<PaginatedResponse<ApartmentListItem>>({
     path: `/apartments${toApartmentSearchParams(merged)}`,
-    ...fetchInit,
+    ...listFetchInit(options.cacheMode),
   });
 };
 
