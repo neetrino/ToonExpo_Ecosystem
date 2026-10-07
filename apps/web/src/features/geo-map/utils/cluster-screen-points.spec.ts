@@ -4,17 +4,25 @@ import { MARKER_CLUSTER_ZOOM_STEP, MAX_MAP_ZOOM } from '@/features/geo-map/const
 import {
   clusterScreenPoints,
   resolveClusterExpandZoom,
+  resolveClusterBubbleTone,
   shouldRenderClusterBubble,
   type ClusterScreenPoint,
 } from '@/features/geo-map/utils/cluster-screen-points';
 
-const point = (id: string, x: number, apartmentCount: number, y = 0): ClusterScreenPoint => ({
+const point = (
+  id: string,
+  x: number,
+  apartmentCount: number,
+  y = 0,
+  longitude = 44.51 + x / 1_000_000,
+  latitude = 40.19 + y / 1_000_000,
+): ClusterScreenPoint => ({
   id,
   x,
   y,
   apartmentCount,
-  longitude: x / 1000,
-  latitude: y / 1000,
+  longitude,
+  latitude,
 });
 
 describe('clusterScreenPoints', () => {
@@ -28,14 +36,43 @@ describe('clusterScreenPoints', () => {
     expect(clusters.map((cluster) => cluster.apartmentCount)).toEqual([10, 15]);
   });
 
+  it('does not merge pins that overlap on screen but sit in different districts', () => {
+    const clusters = clusterScreenPoints(
+      [point('a', 0, 50, 0, 44.51, 40.19), point('b', 20, 50, 0, 44.62, 40.19)],
+      160,
+    );
+    expect(clusters.map((cluster) => cluster.id)).toEqual(['a', 'b']);
+  });
+
+  it('merges a nearby pin into its district even when the icons do not overlap', () => {
+    const clusters = clusterScreenPoints(
+      [point('a', 0, 30, 0, 44.51, 40.19), point('b', 120, 9, 0, 44.53, 40.19)],
+      160,
+    );
+    expect(clusters).toHaveLength(1);
+    expect(clusters[0]?.apartmentCount).toBe(39);
+  });
+
+  it('does not let a chain of close links swallow the next district', () => {
+    const clusters = clusterScreenPoints(
+      [
+        point('a', 0, 14, 0, 44.5, 40.19),
+        point('b', 10, 6, 0, 44.52, 40.19),
+        point('c', 20, 6, 0, 44.58, 40.19),
+      ],
+      160,
+    );
+    expect(clusters.map((cluster) => cluster.apartmentCount)).toEqual([20, 6]);
+  });
+
   it('merges nearby pins and sums published apartments', () => {
     const clusters = clusterScreenPoints([point('a', 0, 30), point('b', 40, 20)], 56);
     expect(clusters).toHaveLength(1);
     expect(clusters[0]).toMatchObject({
       id: 'a|b',
       apartmentCount: 50,
-      longitude: (0 + 40) / 2 / 1000,
-      latitude: 0,
+      longitude: 44.51 + 20 / 1_000_000,
+      latitude: 40.19,
     });
   });
 
@@ -62,10 +99,20 @@ describe('clusterScreenPoints', () => {
 });
 
 describe('shouldRenderClusterBubble', () => {
-  it('shows a bubble only when several pins share published apartments', () => {
+  it('shows a count for every district that has published apartments', () => {
     expect(shouldRenderClusterBubble(2, 50)).toBe(true);
-    expect(shouldRenderClusterBubble(1, 50)).toBe(false);
+    expect(shouldRenderClusterBubble(1, 6)).toBe(true);
+    expect(shouldRenderClusterBubble(1, 0)).toBe(false);
     expect(shouldRenderClusterBubble(2, 0)).toBe(false);
+  });
+});
+
+describe('resolveClusterBubbleTone', () => {
+  it('stays copper below 50, turns green from 50, and returns to copper at 100', () => {
+    expect(resolveClusterBubbleTone(49)).toBe('copper');
+    expect(resolveClusterBubbleTone(50)).toBe('green');
+    expect(resolveClusterBubbleTone(99)).toBe('green');
+    expect(resolveClusterBubbleTone(100)).toBe('copper');
   });
 });
 

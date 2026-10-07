@@ -189,6 +189,11 @@
       background-color var(--duration-base) var(--ease-out-premium);
   }
 
+  .geo-map-cluster--green {
+    --geo-map-cluster-fill: #2f9e44;
+    --geo-map-cluster-fill-hover: #257d38;
+  }
+
   .geo-map-cluster--dense {
     width: 3.5rem;
     height: 3.5rem;

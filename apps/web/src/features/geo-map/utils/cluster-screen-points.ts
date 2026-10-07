@@ -1,4 +1,12 @@
-import { MARKER_CLUSTER_ZOOM_STEP, MAX_MAP_ZOOM } from '@/features/geo-map/constants';
+import {
+  MARKER_CLUSTER_DENSE_MIN_COUNT,
+  MARKER_CLUSTER_GREEN_MIN_COUNT,
+  MARKER_CLUSTER_MAX_DISTANCE_METERS,
+  MARKER_CLUSTER_ZOOM_STEP,
+  MAX_MAP_ZOOM,
+} from '@/features/geo-map/constants';
+
+const EARTH_RADIUS_METERS = 6_371_000;
 
 /** A map pin already projected into screen pixels. */
 export type ClusterScreenPoint = {
@@ -20,13 +28,22 @@ export type MapMarkerCluster<T extends ClusterScreenPoint> = {
   members: readonly T[];
 };
 
-const CELL_OFFSETS = [-1, 0, 1] as const;
-
-const cellKey = (x: number, y: number, cellSize: number): string =>
-  `${Math.floor(x / cellSize)}:${Math.floor(y / cellSize)}`;
-
 const screenDistance = (left: ClusterScreenPoint, right: ClusterScreenPoint): number =>
   Math.hypot(left.x - right.x, left.y - right.y);
+
+const toRadians = (degrees: number): number => (degrees * Math.PI) / 180;
+
+/** Ground distance so a cluster cannot swallow a whole city when zoomed out. */
+const geographicDistanceMeters = (left: ClusterScreenPoint, right: ClusterScreenPoint): number => {
+  const latitudeDelta = toRadians(right.latitude - left.latitude);
+  const longitudeDelta = toRadians(right.longitude - left.longitude);
+  const leftLat = toRadians(left.latitude);
+  const rightLat = toRadians(right.latitude);
+  const haversine =
+    Math.sin(latitudeDelta / 2) ** 2 +
+    Math.cos(leftLat) * Math.cos(rightLat) * Math.sin(longitudeDelta / 2) ** 2;
+  return 2 * EARTH_RADIUS_METERS * Math.asin(Math.min(1, Math.sqrt(haversine)));
+};
 
 const findRoot = (parent: readonly number[], index: number): number => {
   let cursor = index;
@@ -48,55 +65,112 @@ const union = (parent: number[], left: number, right: number): void => {
   }
 };
 
-const indexByCell = (
+type IndexPair = {
+  distanceMeters: number;
+  left: number;
+  right: number;
+};
+
+const pointAt = (
   points: readonly ClusterScreenPoint[],
-  cellSize: number,
-): Map<string, number[]> => {
-  const cells = new Map<string, number[]>();
-  for (const [index, point] of points.entries()) {
-    const key = cellKey(point.x, point.y, cellSize);
-    const bucket = cells.get(key);
-    if (bucket) {
-      bucket.push(index);
-      continue;
-    }
-    cells.set(key, [index]);
+  index: number,
+): ClusterScreenPoint | undefined => points[index];
+
+const pairDistanceMeters = (
+  points: readonly ClusterScreenPoint[],
+  left: number,
+  right: number,
+): number => {
+  const leftPoint = pointAt(points, left);
+  const rightPoint = pointAt(points, right);
+  if (!leftPoint || !rightPoint) {
+    return Number.POSITIVE_INFINITY;
   }
-  return cells;
+  return geographicDistanceMeters(leftPoint, rightPoint);
 };
 
-const neighborIndexes = (
-  cells: ReadonlyMap<string, readonly number[]>,
-  point: ClusterScreenPoint,
-  cellSize: number,
-): number[] => {
-  const originX = Math.floor(point.x / cellSize);
-  const originY = Math.floor(point.y / cellSize);
-  const indexes: number[] = [];
-  for (const offsetX of CELL_OFFSETS) {
-    for (const offsetY of CELL_OFFSETS) {
-      const bucket = cells.get(`${originX + offsetX}:${originY + offsetY}`);
-      if (bucket) {
-        indexes.push(...bucket);
+const neighborhoodPairs = (points: readonly ClusterScreenPoint[]): IndexPair[] => {
+  const pairs: IndexPair[] = [];
+  for (let left = 0; left < points.length; left += 1) {
+    for (let right = left + 1; right < points.length; right += 1) {
+      pairs.push({ distanceMeters: pairDistanceMeters(points, left, right), left, right });
+    }
+  }
+  return pairs.sort((left, right) => left.distanceMeters - right.distanceMeters);
+};
+
+const widestSpanMeters = (
+  points: readonly ClusterScreenPoint[],
+  indexes: readonly number[],
+): number => {
+  let widest = 0;
+  for (let left = 0; left < indexes.length; left += 1) {
+    for (let right = left + 1; right < indexes.length; right += 1) {
+      const leftIndex = indexes[left];
+      const rightIndex = indexes[right];
+      if (leftIndex === undefined || rightIndex === undefined) {
+        continue;
       }
+      widest = Math.max(widest, pairDistanceMeters(points, leftIndex, rightIndex));
     }
   }
-  return indexes;
+  return widest;
 };
 
-const linkNearbyPoints = (
+const membersOfRoots = (
+  parent: readonly number[],
+  leftRoot: number,
+  rightRoot: number,
+): number[] => {
+  const members: number[] = [];
+  for (let index = 0; index < parent.length; index += 1) {
+    const root = findRoot(parent, index);
+    if (root === leftRoot || root === rightRoot) {
+      members.push(index);
+    }
+  }
+  return members;
+};
+
+const withinScreenRadius = (
+  points: readonly ClusterScreenPoint[],
+  left: number,
+  right: number,
+  radiusPx: number,
+): boolean => {
+  const leftPoint = pointAt(points, left);
+  const rightPoint = pointAt(points, right);
+  if (!leftPoint || !rightPoint) {
+    return false;
+  }
+  return screenDistance(leftPoint, rightPoint) <= radiusPx;
+};
+
+/**
+ * Joins a pair only when the whole resulting group still fits in one district.
+ * A chain of close links cannot swallow the next district.
+ */
+const linkNeighborhoods = (
   points: readonly ClusterScreenPoint[],
   parent: number[],
   radiusPx: number,
+  maxDistanceMeters: number,
 ): void => {
-  const cells = indexByCell(points, radiusPx);
-  for (const [index, point] of points.entries()) {
-    for (const neighborIndex of neighborIndexes(cells, point, radiusPx)) {
-      const neighbor = points[neighborIndex];
-      const withinRadius = neighbor !== undefined && screenDistance(point, neighbor) <= radiusPx;
-      if (neighborIndex > index && withinRadius) {
-        union(parent, index, neighborIndex);
-      }
+  for (const pair of neighborhoodPairs(points)) {
+    if (pair.distanceMeters > maxDistanceMeters) {
+      return;
+    }
+    if (!withinScreenRadius(points, pair.left, pair.right, radiusPx)) {
+      continue;
+    }
+    const leftRoot = findRoot(parent, pair.left);
+    const rightRoot = findRoot(parent, pair.right);
+    if (leftRoot === rightRoot) {
+      continue;
+    }
+    const members = membersOfRoots(parent, leftRoot, rightRoot);
+    if (widestSpanMeters(points, members) <= maxDistanceMeters) {
+      union(parent, leftRoot, rightRoot);
     }
   }
 };
@@ -136,20 +210,22 @@ const buildClusters = <T extends ClusterScreenPoint>(
 };
 
 /**
- * Groups screen-projected pins that sit within `radiusPx` of each other,
- * including chains (A near B, B near C). Lone pins stay one-member clusters.
- * Cluster position is the mean of member coordinates; `apartmentCount` is the sum.
+ * Groups pins that sit in one district: close enough on screen to belong to
+ * the same overview, and no wider on the ground than `maxDistanceMeters`.
+ * Lone pins stay one-member clusters. Position is the mean of member
+ * coordinates; `apartmentCount` is the sum.
  */
 export const clusterScreenPoints = <T extends ClusterScreenPoint>(
   points: readonly T[],
   radiusPx: number,
+  maxDistanceMeters: number = MARKER_CLUSTER_MAX_DISTANCE_METERS,
 ): MapMarkerCluster<T>[] => {
   if (points.length === 0) {
     return [];
   }
   const parent = points.map((_, index) => index);
   if (radiusPx > 0) {
-    linkNearbyPoints(points, parent, radiusPx);
+    linkNeighborhoods(points, parent, radiusPx, maxDistanceMeters);
   }
   return buildClusters(points, parent);
 };
@@ -159,8 +235,18 @@ export const resolveClusterExpandZoom = (currentZoom: number): number =>
   Math.min(MAX_MAP_ZOOM, currentZoom + MARKER_CLUSTER_ZOOM_STEP);
 
 /**
- * A bubble is only for a real pile of apartments. Lone pins stay clickable,
- * and a pile with no published apartments stays as pins instead of a "0".
+ * A bubble shows the published-apartment count for a district, including a
+ * single project. A placement with no published apartments stays a pin.
  */
 export const shouldRenderClusterBubble = (memberCount: number, apartmentCount: number): boolean =>
-  memberCount > 1 && apartmentCount > 0;
+  memberCount > 0 && apartmentCount > 0;
+
+/** Fill of a count bubble: copper below 50, green from 50, copper again from 100. */
+export type ClusterBubbleTone = 'copper' | 'green';
+
+export const resolveClusterBubbleTone = (apartmentCount: number): ClusterBubbleTone => {
+  const inGreenBand =
+    apartmentCount >= MARKER_CLUSTER_GREEN_MIN_COUNT &&
+    apartmentCount < MARKER_CLUSTER_DENSE_MIN_COUNT;
+  return inGreenBand ? 'green' : 'copper';
+};
