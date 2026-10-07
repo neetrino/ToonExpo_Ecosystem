@@ -159,7 +159,7 @@ export const MARKER_CLUSTER_MAX_ZOOM = 13.5;
 /** Camera zoom added when a count bubble is activated. */
 export const MARKER_CLUSTER_ZOOM_STEP = 2;
 
-/** Apartment-count threshold for the larger orange bubble (green below). */
+/** Apartment-count threshold for the larger copper bubble. */
 export const MARKER_CLUSTER_DENSE_MIN_COUNT = 100;
 
 /** Count-bubble root. MapLibre owns its transform; the disc is the child. */

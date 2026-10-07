@@ -247,7 +247,7 @@ Stage rules:
   includes `logoUrl` from `builderCompany.logoMedia`.
 - **Zoom-out apartment clusters (done):** Read-only maps merge pins within
   `MARKER_CLUSTER_RADIUS_PX` into a bubble whose number is the sum of published
-  apartments in that group (green under 100, orange from 100). Activating a
+  apartments in that group. Bubbles are copper, outside the brand palette, so they stay distinct from teal pins. Activating a
   bubble eases the camera in. Clustering stops at zoom 13.5 so each pin stays
   clickable beside its GLB. The admin editor keeps one draggable pin per placement.
 - **Default pitched camera (done):** Default `GeoMapCanvas` path mounts at
