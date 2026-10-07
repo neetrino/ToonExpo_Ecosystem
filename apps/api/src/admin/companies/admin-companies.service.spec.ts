@@ -1,5 +1,6 @@
 import { NotFoundException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { CompanyType } from '@toonexpo/db';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ACCOUNT_TYPES_KEY } from '../../auth/decorators/account-types.decorator.js';
@@ -405,5 +406,81 @@ describe('AdminCompaniesService.remove', () => {
       message: expect.stringContaining('cannot be deleted'),
     });
     expect(transaction).not.toHaveBeenCalled();
+  });
+});
+
+describe('AdminCompaniesService.create', () => {
+  const sendSetPasswordInviteBestEffort = vi.fn();
+  const createCompanyWithPrimaryAdmin = vi.fn();
+  const readinessCreate = vi.fn();
+  let service: AdminCompaniesService;
+
+  const now = new Date('2026-10-07T00:00:00.000Z');
+  const company = {
+    id: 'co_1',
+    name: 'Builder Co',
+    description: null,
+    shortDescription: null,
+    type: 'builder' as const,
+    status: 'active' as const,
+    source: 'admin' as const,
+    bosCompanyId: null,
+    logoMediaId: null,
+    coverMediaId: null,
+    phone: null,
+    contactPerson: null,
+    email: null,
+    websiteUrl: null,
+    instagramUrl: null,
+    facebookUrl: null,
+    region: null,
+    address: null,
+    mediaMaterialsUrl: null,
+    advertisingMaterialsUrl: null,
+    createdAt: now,
+    updatedAt: now,
+  };
+  const adminUser = {
+    id: 'user_1',
+    name: 'Admin',
+    surname: null,
+    email: 'admin@example.com',
+    phone: null,
+    accountType: 'company_member' as const,
+    status: 'invited' as const,
+    defaultLocale: null,
+    passwordHash: null,
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    createCompanyWithPrimaryAdmin.mockResolvedValue({ company, adminUser });
+    readinessCreate.mockResolvedValue(undefined);
+    const prisma = {
+      db: { translation: { findMany: vi.fn().mockResolvedValue([]) } },
+    } as unknown as PrismaService;
+    service = new AdminCompaniesService(
+      prisma,
+      {
+        assertEmailAvailable: vi.fn().mockResolvedValue(undefined),
+        createCompanyWithPrimaryAdmin,
+        sendSetPasswordInviteBestEffort,
+      } as never,
+      { create: readinessCreate } as never,
+    );
+  });
+
+  it('does not email a set-password invite when creating a builder', async () => {
+    await service.create('actor_1', {
+      name: 'Builder Co',
+      type: CompanyType.builder,
+      adminName: 'Admin',
+      adminEmail: 'admin@example.com',
+    });
+
+    expect(sendSetPasswordInviteBestEffort).not.toHaveBeenCalled();
+    expect(readinessCreate).toHaveBeenCalledOnce();
   });
 });

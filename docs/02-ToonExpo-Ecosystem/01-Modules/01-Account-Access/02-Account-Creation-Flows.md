@@ -55,16 +55,22 @@ ToonExpo creates Company(type = builder | partner | bank | service)
 -> company_admin invites additional staff (each gets personal User + CompanyMember)
 ```
 
+Admin-created builders skip the set-password email. Partner, bank, service, and BOS provisioning still send it.
+
 Reasons for personal logins: audit (who changed apartment / created deal / sent offer), offboarding terminated staff, deal assignment.
 
 ## Builder Company Provisioning
 
-When `Company.type = builder`:
+When `Company.type = builder` and a platform admin creates the company:
 
 - Company is created;
-- first user is `company_member` with `CompanyMember.role = company_admin`;
+- first user is `company_member` with `User.status = invited` and `CompanyMember.role = company_admin`;
+- no set-password email is sent, so that user cannot sign in;
+- a platform admin can still resend the invite from the company screen;
 - builder company profile (`BuilderCompany`) is linked;
 - default builder modules are enabled (portal, projects, CRM, readiness, etc.).
+
+BOS provisioning of a builder still sends the set-password link.
 
 ## Partner Company Provisioning
 

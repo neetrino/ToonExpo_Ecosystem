@@ -129,7 +129,7 @@ describe('Company provisioning (e2e)', () => {
     };
   };
 
-  it('provisions company → set-password → me; invite staff; foreign access 403; token reuse fails', async () => {
+  it('provisions a builder without an invite email, then resend → set-password → me; invite staff; foreign access 403; token reuse fails', async () => {
     sentEmails.length = 0;
     const adminSession = await loginAs(platformAdminEmail, platformAdminPassword);
 
@@ -151,6 +151,15 @@ describe('Company provisioning (e2e)', () => {
     createdCompanyIds.push(provision.body.company.id as string);
     createdUserIds.push(provision.body.adminUser.id as string);
     expect(provision.body.adminUser.status).toBe('invited');
+    expect(sentEmails).toHaveLength(0);
+
+    await request(app.getHttpServer())
+      .post(`${API_V1_PREFIX}/admin/companies/${provision.body.company.id as string}/resend-invite`)
+      .set('Cookie', adminSession.cookieHeader)
+      .set('Origin', CORS_ORIGIN)
+      .set(CSRF_HEADER_NAME, adminSession.csrfToken)
+      .expect(204);
+
     expect(sentEmails).toHaveLength(1);
 
     const setPasswordToken = extractTokenFromEmail(sentEmails[0]);

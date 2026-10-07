@@ -24,7 +24,7 @@ import { PhoneFormControl } from '@/shared/ui/phone-form-control';
 import { useFormErrorToast } from '@/shared/ui/use-form-error-toast';
 
 type CreateCompanyFormProps = {
-  onSuccess: (adminEmail: string) => void;
+  onSuccess: () => void;
 };
 
 const BUILDER_COMPANY_TYPE = 'builder' as const;
@@ -37,7 +37,7 @@ const mapCreateError = (error: unknown): 'emailTaken' | 'generic' => {
 };
 
 /**
- * Form to provision a builder company and invite the first company_admin.
+ * Form to provision a builder company and its first company_admin, without an invite email.
  * Backend creates the company-level readiness assessment in the same flow.
  */
 export const CreateCompanyForm = ({ onSuccess }: CreateCompanyFormProps) => {
@@ -89,7 +89,7 @@ export const CreateCompanyForm = ({ onSuccess }: CreateCompanyFormProps) => {
 
     try {
       await createMutation.mutateAsync(body);
-      onSuccess(values.adminEmail);
+      onSuccess();
     } catch (error) {
       showError(t(`errors.${mapCreateError(error)}`));
     }
