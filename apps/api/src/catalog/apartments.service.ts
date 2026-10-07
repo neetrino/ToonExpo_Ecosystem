@@ -45,6 +45,18 @@ const orderApartmentGallery = (
   return [cover, ...media.filter((item) => item.id !== coverMediaId)];
 };
 
+const resolveBuilderCallPhone = (company: {
+  phone: string | null;
+  members: { user: { phone: string | null } }[];
+}): string | null => {
+  const companyPhone = company.phone?.trim();
+  if (companyPhone) {
+    return companyPhone;
+  }
+  const adminPhone = company.members[0]?.user.phone?.trim();
+  return adminPhone && adminPhone.length > 0 ? adminPhone : null;
+};
+
 @Injectable()
 export class ApartmentsService {
   constructor(
@@ -187,7 +199,16 @@ export class ApartmentsService {
         },
         project: {
           include: {
-            builderCompany: { include: { logoMedia: true } },
+            builderCompany: {
+              include: {
+                logoMedia: true,
+                members: {
+                  where: { status: 'active', role: 'company_admin' },
+                  select: { user: { select: { phone: true } } },
+                  take: 1,
+                },
+              },
+            },
           },
         },
         building: true,
@@ -296,6 +317,7 @@ export class ApartmentsService {
         logoUrl: apartment.project.builderCompany.logoMedia
           ? toPublicFileUrl(apartment.project.builderCompany.logoMedia.fileUrl)
           : null,
+        phone: resolveBuilderCallPhone(apartment.project.builderCompany),
       },
     };
   }

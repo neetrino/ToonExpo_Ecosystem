@@ -1,6 +1,7 @@
 'use client';
 
 import type { PriceVisibility, ProjectBankPartnerOfferSummary } from '@toonexpo/contracts';
+import { Phone } from 'lucide-react';
 import type { FormEvent } from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
@@ -27,6 +28,7 @@ type ApartmentInquireCardProps = {
   projectName: string;
   builderName: string;
   builderLogoUrl: string | null;
+  builderPhone: string | null;
   priceAmount: string | null;
   priceCurrency: string;
   priceVisibility: PriceVisibility;
@@ -49,6 +51,7 @@ export const ApartmentInquireCard = ({
   projectName,
   builderName,
   builderLogoUrl,
+  builderPhone,
   priceAmount,
   priceCurrency,
   priceVisibility,
@@ -99,6 +102,10 @@ export const ApartmentInquireCard = ({
   const isStaff = isNonBuyerStaff(user?.accountType);
   const initials = getAccountInitials(builderName);
   const loginHref = `/auth/login?returnUrl=${encodeURIComponent(pathname)}`;
+  const builderPhoneHref =
+    builderPhone != null && builderPhone.trim().length > 0
+      ? `tel:${sanitizePhoneInput(builderPhone)}`
+      : null;
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
@@ -144,7 +151,7 @@ export const ApartmentInquireCard = ({
         className,
       )}
     >
-      <div className="mb-4 flex items-start justify-between gap-3">
+      <div className="mb-4 flex items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
           {builderLogoUrl ? (
             <span className="relative size-12 shrink-0 overflow-hidden rounded-full bg-brand-deep">
@@ -166,6 +173,19 @@ export const ApartmentInquireCard = ({
             <p className="text-xs text-header-muted">{t('inquireAgentMeta')}</p>
           </div>
         </div>
+        {builderPhoneHref != null ? (
+          <a
+            href={builderPhoneHref}
+            aria-label={t('inquireCall')}
+            className={cn(
+              'grid size-11 shrink-0 place-items-center rounded-full',
+              'bg-brand text-on-brand',
+              'transition-colors hover:bg-brand-hover',
+            )}
+          >
+            <Phone className="size-5" aria-hidden />
+          </a>
+        ) : null}
       </div>
 
       {success ? (

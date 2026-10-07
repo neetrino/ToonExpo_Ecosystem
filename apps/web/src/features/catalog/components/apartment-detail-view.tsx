@@ -32,6 +32,7 @@ type ApartmentDetailViewProps = {
   /** Project catalog handover text (fallback when apartment has none). */
   projectHandoverDescription: string | null;
   bankOffers: ProjectBankPartnerOfferSummary[];
+  builderPhone: string | null;
 };
 
 /**
@@ -45,6 +46,7 @@ export const ApartmentDetailView = async ({
   district,
   projectHandoverDescription,
   bankOffers,
+  builderPhone,
 }: ApartmentDetailViewProps) => {
   const t = await getTranslations('Catalog');
   const locale = await getLocale();
@@ -304,6 +306,7 @@ export const ApartmentDetailView = async ({
             projectName={apartment.project.name}
             builderName={apartment.builder.name}
             builderLogoUrl={apartment.builder.logoUrl}
+            builderPhone={builderPhone}
             priceAmount={apartment.price}
             priceCurrency={apartment.priceCurrency}
             priceVisibility={apartment.priceVisibility}

@@ -857,6 +857,7 @@
       "inquirePhonePlaceholder": "Phone",
       "inquireMessagePlaceholder": "Your message",
       "inquireMessageDefault": "I'd like to schedule a viewing for {project}.",
+      "inquireCall": "Call",
       "inquireSubmit": "Request viewing",
       "inquireSubmitting": "Sending…",
       "inquireMortgage": "Get mortgage pre-qualification",
