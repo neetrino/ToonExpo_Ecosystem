@@ -18,7 +18,14 @@ export const ProjectDetailView = ({ project }: ProjectDetailViewProps) => (
     <ProjectDetailHero project={project} />
     <ProjectCatalogSection project={project} />
     <ProjectConstructionTimeline project={project} />
-    <ProjectApartmentCards projectId={project.id} buildings={project.buildings} />
+    <ProjectApartmentCards
+      projectId={project.id}
+      projectName={project.name}
+      city={project.city}
+      district={project.district}
+      locationText={project.locationText}
+      buildings={project.buildings}
+    />
     <ProjectReserveCta projectId={project.id} projectName={project.name} />
   </>
 );
