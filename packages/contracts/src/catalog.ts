@@ -273,6 +273,7 @@ export type ApartmentDetail = {
     id: string;
     name: string;
     logoUrl: string | null;
+    phone: string | null;
   };
 };
 

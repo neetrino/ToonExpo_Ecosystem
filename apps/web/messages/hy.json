@@ -857,6 +857,7 @@
       "inquirePhonePlaceholder": "Հեռախոս",
       "inquireMessagePlaceholder": "Ձեր հաղորդագրությունը",
       "inquireMessageDefault": "Ցանկանում եմ դիտում նշանակել՝ {project}։",
+      "inquireCall": "Զանգել",
       "inquireSubmit": "Խնդրել դիտում",
       "inquireSubmitting": "Ուղարկվում է…",
       "inquireMortgage": "Հիփոթեքի նախնական որակավորում",

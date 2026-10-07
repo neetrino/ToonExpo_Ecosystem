@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { cache } from 'react';
 
-import { getApartment, getProject } from '@/features/catalog/api/catalog-api';
+import { getApartment, getBuilder, getProject } from '@/features/catalog/api/catalog-api';
 import { ApartmentDetailView } from '@/features/catalog/components/apartment-detail-view';
 import { ComparableHomesSection } from '@/features/catalog/components/comparable-homes-section';
 import { ProjectPricesOverlayScope } from '@/features/catalog/components/price-overlay-scope';
@@ -55,7 +55,11 @@ export default async function ApartmentPage({ params }: ApartmentPageProps) {
 
   ensureCanonicalApartmentSlug(apartment, apartmentSlug, locale);
 
-  const project = await getProject(apartment.project.slug, { locale });
+  const [project, builder] = await Promise.all([
+    getProject(apartment.project.slug, { locale }),
+    getBuilder(apartment.builder.id, { locale }),
+  ]);
+  const builderPhone = builder?.phone ?? apartment.builder.phone ?? null;
   const locationLine = buildLocationLine(
     project?.address,
     project?.city,
@@ -95,6 +99,7 @@ export default async function ApartmentPage({ params }: ApartmentPageProps) {
             district={project?.district ?? null}
             projectHandoverDescription={projectHandoverDescription}
             bankOffers={project?.bankPartnerOffers ?? []}
+            builderPhone={builderPhone}
           />
           <ComparableHomesSection homes={comparableHomes} />
         </main>

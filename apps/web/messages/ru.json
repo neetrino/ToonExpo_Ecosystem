@@ -857,6 +857,7 @@
       "inquirePhonePlaceholder": "Телефон",
       "inquireMessagePlaceholder": "Ваше сообщение",
       "inquireMessageDefault": "Хочу записаться на просмотр: {project}.",
+      "inquireCall": "Позвонить",
       "inquireSubmit": "Запросить просмотр",
       "inquireSubmitting": "Отправка…",
       "inquireMortgage": "Предварительное одобрение ипотеки",
