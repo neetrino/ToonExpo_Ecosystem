@@ -8,10 +8,7 @@ import type { GeoMapLngLat, GeoMapObject } from '@/features/geo-map/types';
 /**
  * Client-only map object for an unsaved address pin (no API create).
  */
-export const buildGeoMapPreviewObject = (
-  position: GeoMapLngLat,
-  label: string,
-): GeoMapObject => ({
+export const buildGeoMapPreviewObject = (position: GeoMapLngLat, label: string): GeoMapObject => ({
   id: GEO_MAP_PREVIEW_PIN_ID,
   projectId: null,
   projectSlug: null,
@@ -28,4 +25,5 @@ export const buildGeoMapPreviewObject = (
   rollDeg: GEO_MAP_DEFAULT_CREATE_VALUES.rollDeg,
   scale: GEO_MAP_DEFAULT_CREATE_VALUES.scale,
   minZoom: GEO_MAP_PREVIEW_MIN_ZOOM,
+  apartmentCount: 0,
 });

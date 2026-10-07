@@ -163,6 +163,7 @@ export const GeoMapCanvas = ({
     markerObjects,
     zoom,
     editable,
+    clusterMarkers: !editable,
     highlightedObjectId,
     onObjectClick,
     onObjectHover: handleObjectHover,

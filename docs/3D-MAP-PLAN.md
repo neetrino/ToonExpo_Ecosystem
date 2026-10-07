@@ -108,7 +108,7 @@ Admin endpoints (super-admin guard, same as other admin controllers):
 Public endpoint (no auth, cacheable):
 
 - `GET /public/geo-map/models` — published + attached (`projectId` not null);
-  compact payload: project id/slug/name, `logoUrl`, `sourceOsmId`, marker data,
+  compact payload: project id/slug/name, `logoUrl`, `apartmentCount`, `sourceOsmId`, marker data,
   model URL + transform + minZoom.
 
 Contracts/DTO types go to `packages/contracts` per existing conventions.
@@ -245,6 +245,11 @@ Stage rules:
   the shared `GeoMapInfoCard` (logo + name) on the canvas — not as a name pill
   on the pin — so home, `/map`, and apartments share one UX. Public payload
   includes `logoUrl` from `builderCompany.logoMedia`.
+- **Zoom-out apartment clusters (done):** Read-only maps merge pins within
+  `MARKER_CLUSTER_RADIUS_PX` into a bubble whose number is the sum of published
+  apartments in that group (green under 100, orange from 100). Activating a
+  bubble eases the camera in. Clustering stops at zoom 13.5 so each pin stays
+  clickable beside its GLB. The admin editor keeps one draggable pin per placement.
 - **Default pitched camera (done):** Default `GeoMapCanvas` path mounts at
   pitch 0 for a fast first paint, then eases once to `DEFAULT_MAP_PITCH_DEG`
   (55°, same as `FOCUS_PITCH_DEG`) after style idle. Explicit `initialPitch`

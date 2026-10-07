@@ -50,6 +50,7 @@ describe('findFocusObject', () => {
       rollDeg: 0,
       scale: 1,
       minZoom: 14,
+      apartmentCount: 0,
     },
   ];
 

@@ -39,6 +39,7 @@ export const mapAdminGeoMapItemToObject = (item: AdminGeoMapModelItem): GeoMapOb
   addressLine: null,
   modelUrl: item.modelUrl,
   sourceOsmId: item.sourceOsmId,
+  apartmentCount: 0,
   ...toNumericTransform(item),
 });
 
@@ -58,6 +59,7 @@ export const mapPublicGeoMapItemToObject = (item: PublicGeoMapModelItem): GeoMap
   addressLine: formatGeoMapAddressLine(item),
   modelUrl: item.modelUrl,
   sourceOsmId: item.sourceOsmId,
+  apartmentCount: Number.isFinite(item.apartmentCount) ? item.apartmentCount : 0,
   ...toNumericTransform(item),
 });
 

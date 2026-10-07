@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useState, type MouseEvent } from 'react';
+import { useEffect, useState, type MouseEvent } from 'react';
 
 import { RequestFormPanel } from '@/features/buyer/components/request-form-panel';
 import { useMeQuery } from '@/features/auth/hooks/use-auth';
@@ -27,6 +27,21 @@ const stopCardNavigation = (event: MouseEvent<HTMLElement>): void => {
 };
 
 /**
+ * False on the server and the hydration render.
+ * Session state (`useMeQuery`) can already be loading when a Suspense chunk
+ * hydrates, which would paint a different tag than the anonymous server HTML.
+ */
+const useHydrated = (): boolean => {
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
+  return isHydrated;
+};
+
+/**
  * Catalog CTA: anonymous → login; buyer → request panel.
  * Price-on-request label stays a clickable control for every signed-in account.
  */
@@ -34,7 +49,9 @@ export const CatalogRequestButton = (props: CatalogRequestButtonProps) => {
   const { projectId, apartmentId, labelKey, appearance = 'button', className } = props;
   const t = useTranslations('Catalog');
   const pathname = usePathname();
-  const { data: user, isLoading } = useMeQuery();
+  const { data: sessionUser, isLoading } = useMeQuery();
+  const isHydrated = useHydrated();
+  const user = isHydrated ? sessionUser : undefined;
   const isPriceLabel = appearance === 'priceLabel';
   const label = isPriceLabel ? t('price.onRequest') : t(`actions.${labelKey}`);
   const triggerClass = cn(
@@ -44,7 +61,7 @@ export const CatalogRequestButton = (props: CatalogRequestButtonProps) => {
     className,
   );
 
-  if (isLoading) {
+  if (isHydrated && isLoading) {
     return isPriceLabel ? (
       <span className={cn(triggerClass, 'cursor-default')}>{label}</span>
     ) : null;

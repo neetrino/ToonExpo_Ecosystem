@@ -1,16 +1,12 @@
-import type { ProjectListItem } from '@toonexpo/contracts';
 import { getLocale, getTranslations } from 'next-intl/server';
+import { Suspense } from 'react';
 
 import { getPublicHomeHero } from '@/features/catalog/api/home-hero-api';
-import { HomeHeroBackdrop } from '@/features/catalog/components/home-hero-backdrop';
 import { HeroSearch } from '@/features/catalog/components/hero-search';
+import { HomeHeroBackdrop } from '@/features/catalog/components/home-hero-backdrop';
+import { HomeHeroSearchCatalog } from '@/features/catalog/components/home-hero-search-catalog';
 import { pickHomeHeroCopy } from '@/features/catalog/utils/pick-home-hero-copy';
 import { cn } from '@/shared/ui/cn';
-
-type HomeHeroProps = {
-  locations?: readonly string[] | undefined;
-  projects?: readonly ProjectListItem[] | undefined;
-};
 
 type HomeHeroHeadlineProps = {
   title: string;
@@ -22,7 +18,7 @@ type HomeHeroHeadlineProps = {
  * Slides and headline copy come from platform settings (admin).
  * Subtitle is CMS-only — no i18n fallback.
  */
-export const HomeHero = async ({ locations = [], projects = [] }: HomeHeroProps) => {
+export const HomeHero = async () => {
   const t = await getTranslations('HomePage');
   const locale = await getLocale();
   const hero = await getPublicHomeHero().catch(() => null);
@@ -45,7 +41,9 @@ export const HomeHero = async ({ locations = [], projects = [] }: HomeHeroProps)
             subtitle={subtitle}
           />
           <div className="mt-[clamp(1.5rem,1rem+2vw,2.5rem)] w-full">
-            <HeroSearch locations={locations} projects={projects} />
+            <Suspense fallback={<HeroSearch />}>
+              <HomeHeroSearchCatalog locale={locale} />
+            </Suspense>
           </div>
         </div>
       </HomeHeroBackdrop>

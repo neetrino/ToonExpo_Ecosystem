@@ -1,17 +1,21 @@
 'use client';
 
-import { Marker, type MapLibreMap } from 'maplibre-gl';
+import type { MapLibreMap } from 'maplibre-gl';
 import { useEffect, useRef } from 'react';
 
-import type { GeoMapLngLat, GeoMapObject } from '@/features/geo-map/types';
+import { MARKER_CLUSTER_MAX_ZOOM } from '@/features/geo-map/constants';
 import {
-  applyGeoMapPinState,
-  createGeoMapPinElement,
-  disposeGeoMapPinElement,
-  type GeoMapPinElement,
-} from '@/features/geo-map/utils/create-geo-map-pin-element';
-import { isValidGeoMapLngLat } from '@/features/geo-map/utils/validate-geo-map-position';
-import { computeMarkerFadeOpacity } from '@/features/geo-map/utils/zoom-fade-opacity';
+  clearClusterMarkers,
+  syncClusteredMarkers,
+  type ManagedClusterMarker,
+} from '@/features/geo-map/hooks/marker-layer-clusters';
+import {
+  clearPinMarkers,
+  syncPinMarkers,
+  type ManagedPinMarker,
+  type MarkerCallbacks,
+} from '@/features/geo-map/hooks/marker-layer-pins';
+import type { GeoMapLngLat, GeoMapObject } from '@/features/geo-map/types';
 
 export type UseMarkerLayerOptions = {
   map: MapLibreMap | null;
@@ -19,6 +23,11 @@ export type UseMarkerLayerOptions = {
   markerObjects: GeoMapObject[];
   zoom: number;
   editable: boolean;
+  /**
+   * When true and zoom is below {@link MARKER_CLUSTER_MAX_ZOOM}, nearby pins
+   * collapse into apartment-count bubbles. Admin editing passes false.
+   */
+  clusterMarkers?: boolean;
   highlightedObjectId?: string | null | undefined;
   onObjectClick?: ((id: string) => void) | undefined;
   onObjectHover?: ((id: string | null) => void) | undefined;
@@ -27,109 +36,9 @@ export type UseMarkerLayerOptions = {
   onObjectDragged?: ((id: string, position: GeoMapLngLat) => void) | undefined;
 };
 
-type ManagedMarker = {
-  marker: Marker;
-  pin: GeoMapPinElement;
-};
-
-type MarkerCallbacks = Pick<
-  UseMarkerLayerOptions,
-  'onObjectClick' | 'onObjectHover' | 'onObjectDragMove' | 'onObjectDragged'
->;
-
-const toLngLat = (marker: Marker): GeoMapLngLat => {
-  const lngLat = marker.getLngLat();
-  return { longitude: lngLat.lng, latitude: lngLat.lat };
-};
-
-/** Skips redundant `setLngLat` so re-renders never re-project an unchanged pin. */
-const syncMarkerPosition = (marker: Marker, object: GeoMapObject): void => {
-  const current = marker.getLngLat();
-  if (current.lng === object.longitude && current.lat === object.latitude) {
-    return;
-  }
-  marker.setLngLat([object.longitude, object.latitude]);
-};
-
-const removeManagedMarker = (
-  managed: ManagedMarker,
-  markers: Map<string, ManagedMarker>,
-  id: string,
-): void => {
-  managed.marker.remove();
-  disposeGeoMapPinElement(managed.pin);
-  markers.delete(id);
-};
-
-const attachMarkerHandlers = (
-  marker: Marker,
-  element: HTMLDivElement,
-  id: string,
-  draggingIdRef: { current: string | null },
-  callbacksRef: { current: MarkerCallbacks },
-): void => {
-  element.addEventListener('click', (event) => {
-    event.stopPropagation();
-    callbacksRef.current.onObjectClick?.(id);
-  });
-  element.addEventListener('mouseenter', () => callbacksRef.current.onObjectHover?.(id));
-  element.addEventListener('mouseleave', () => callbacksRef.current.onObjectHover?.(null));
-  marker.on('drag', () => {
-    draggingIdRef.current = id;
-    callbacksRef.current.onObjectDragMove?.(id, toLngLat(marker));
-  });
-  marker.on('dragend', () => {
-    draggingIdRef.current = null;
-    callbacksRef.current.onObjectDragged?.(id, toLngLat(marker));
-  });
-};
-
-const syncMarkers = (
-  map: MapLibreMap,
-  markers: Map<string, ManagedMarker>,
-  markerObjects: GeoMapObject[],
-  zoom: number,
-  editable: boolean,
-  highlightedObjectId: string | null | undefined,
-  draggingId: string | null,
-  draggingIdRef: { current: string | null },
-  callbacksRef: { current: MarkerCallbacks },
-): void => {
-  const placeableObjects = markerObjects.filter(isValidGeoMapLngLat);
-  const nextIds = new Set(placeableObjects.map((object) => object.id));
-  for (const [id, managed] of markers) {
-    if (!nextIds.has(id)) {
-      removeManagedMarker(managed, markers, id);
-    }
-  }
-
-  for (const object of placeableObjects) {
-    const opacity = String(computeMarkerFadeOpacity(zoom, object.minZoom));
-    const selected = object.id === highlightedObjectId;
-    const existing = markers.get(object.id);
-    if (existing) {
-      if (draggingId !== object.id) {
-        syncMarkerPosition(existing.marker, object);
-      }
-      existing.marker.setDraggable(editable);
-      existing.marker.setOpacity(opacity);
-      applyGeoMapPinState(existing.pin.element, object.label, editable, selected);
-      continue;
-    }
-
-    const pin = createGeoMapPinElement(object.label, editable, selected);
-    const marker = new Marker({ element: pin.element, draggable: editable, anchor: 'bottom' })
-      .setLngLat([object.longitude, object.latitude])
-      .setOpacity(opacity)
-      .addTo(map);
-    attachMarkerHandlers(marker, pin.element, object.id, draggingIdRef, callbacksRef);
-    markers.set(object.id, { marker, pin });
-  }
-};
-
 /**
- * Renders `markerObjects` as MapLibre HTML map-pin markers (always visible),
- * draggable when `editable`, reporting drag via `onObjectDragMove` / `onObjectDragged`.
+ * Renders `markerObjects` as MapLibre HTML pins. Read-only maps cluster
+ * overlapping pins into apartment-count bubbles until {@link MARKER_CLUSTER_MAX_ZOOM}.
  *
  * MapLibre positions each pin through the root element's inline `transform`, so
  * hover / selected styling is CSS-only on the Lucide SVG (`.geo-map-pin__shape`).
@@ -141,13 +50,15 @@ export const useMarkerLayer = ({
   markerObjects,
   zoom,
   editable,
+  clusterMarkers = false,
   highlightedObjectId = null,
   onObjectClick,
   onObjectHover,
   onObjectDragMove,
   onObjectDragged,
 }: UseMarkerLayerOptions): void => {
-  const markersRef = useRef(new Map<string, ManagedMarker>());
+  const pinsRef = useRef(new Map<string, ManagedPinMarker>());
+  const clustersRef = useRef(new Map<string, ManagedClusterMarker>());
   const draggingIdRef = useRef<string | null>(null);
   const callbacksRef = useRef<MarkerCallbacks>({
     onObjectClick,
@@ -166,25 +77,41 @@ export const useMarkerLayer = ({
     if (!map || !isMapLoaded) {
       return;
     }
-    syncMarkers(
+    const clustering = clusterMarkers && zoom < MARKER_CLUSTER_MAX_ZOOM;
+    if (!clustering) {
+      clearClusterMarkers(clustersRef.current);
+      syncPinMarkers(
+        map,
+        pinsRef.current,
+        markerObjects,
+        zoom,
+        editable,
+        highlightedObjectId,
+        draggingIdRef.current,
+        draggingIdRef,
+        callbacksRef,
+      );
+      return;
+    }
+    syncClusteredMarkers({
       map,
-      markersRef.current,
+      pins: pinsRef.current,
+      clusters: clustersRef.current,
       markerObjects,
       zoom,
-      editable,
       highlightedObjectId,
-      draggingIdRef.current,
+      draggingId: draggingIdRef.current,
       draggingIdRef,
       callbacksRef,
-    );
-  }, [map, isMapLoaded, markerObjects, zoom, editable, highlightedObjectId]);
+    });
+  }, [map, isMapLoaded, markerObjects, zoom, editable, clusterMarkers, highlightedObjectId]);
 
   useEffect(() => {
-    const markers = markersRef.current;
+    const pins = pinsRef.current;
+    const clusters = clustersRef.current;
     return () => {
-      for (const [id, managed] of markers) {
-        removeManagedMarker(managed, markers, id);
-      }
+      clearPinMarkers(pins);
+      clearClusterMarkers(clusters);
     };
   }, []);
 };

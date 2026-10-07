@@ -21,6 +21,7 @@ const objects: GeoMapObject[] = [
     rollDeg: 0,
     scale: 1,
     minZoom: 14,
+    apartmentCount: 0,
   },
   {
     id: 'b',
@@ -39,6 +40,7 @@ const objects: GeoMapObject[] = [
     rollDeg: 0,
     scale: 1,
     minZoom: 14,
+    apartmentCount: 0,
   },
 ];
 

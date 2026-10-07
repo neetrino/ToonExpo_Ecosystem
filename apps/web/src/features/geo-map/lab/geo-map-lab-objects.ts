@@ -30,6 +30,7 @@ export const GEO_MAP_LAB_OBJECTS: GeoMapObject[] = [
     rollDeg: 0,
     scale: DUCK_MODEL_SCALE,
     minZoom: DEFAULT_MODEL_MIN_ZOOM,
+    apartmentCount: 0,
   },
   {
     id: 'lab-2',
@@ -48,6 +49,7 @@ export const GEO_MAP_LAB_OBJECTS: GeoMapObject[] = [
     rollDeg: 0,
     scale: AVOCADO_MODEL_SCALE,
     minZoom: DEFAULT_MODEL_MIN_ZOOM,
+    apartmentCount: 0,
   },
   {
     id: 'lab-3',
@@ -66,5 +68,6 @@ export const GEO_MAP_LAB_OBJECTS: GeoMapObject[] = [
     rollDeg: 0,
     scale: DUCK_MODEL_SCALE,
     minZoom: DEFAULT_MODEL_MIN_ZOOM,
+    apartmentCount: 0,
   },
 ];
