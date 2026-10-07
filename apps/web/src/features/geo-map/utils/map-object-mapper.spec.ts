@@ -51,6 +51,7 @@ const publicItem: PublicGeoMapModelItem = {
   rollDeg: '0',
   scale: '1.5',
   minZoom: '14',
+  apartmentCount: 48,
 };
 
 describe('mapAdminGeoMapItemToObject', () => {
@@ -72,6 +73,7 @@ describe('mapAdminGeoMapItemToObject', () => {
       rollDeg: 0,
       scale: 1.5,
       minZoom: 14,
+      apartmentCount: 0,
     });
   });
 
@@ -110,6 +112,7 @@ describe('mapPublicGeoMapItemToObject', () => {
       rollDeg: 0,
       scale: 1.5,
       minZoom: 14,
+      apartmentCount: 48,
     });
   });
 

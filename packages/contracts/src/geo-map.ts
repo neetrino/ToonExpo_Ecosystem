@@ -88,6 +88,8 @@ export type PublicGeoMapModelItem = {
   rollDeg: string;
   scale: string;
   minZoom: string;
+  /** Published apartments on the attached project; `0` when the model is unassigned. */
+  apartmentCount: number;
 };
 
 export type PublicGeoMapModelListResponse = {

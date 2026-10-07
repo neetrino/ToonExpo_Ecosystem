@@ -53,6 +53,11 @@ export type GeoMapObject = {
   scale: number;
   /** Map zoom at which the 3D model appears (dots stay visible for discoverability). */
   minZoom: number;
+  /**
+   * Published apartments on the attached project. `0` for admin placements
+   * and models without a project. Public maps sum this into cluster bubbles.
+   */
+  apartmentCount: number;
 };
 
 /**

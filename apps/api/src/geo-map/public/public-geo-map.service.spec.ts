@@ -60,6 +60,7 @@ describe('PublicGeoMapService', () => {
           builderCompany: {
             logoMedia: { fileUrl: 'https://cdn.example.com/logo.png' },
           },
+          _count: { apartments: 48 },
         },
         mediaAsset: { fileUrl: 'https://cdn.example.com/model.glb' },
       },
@@ -92,6 +93,7 @@ describe('PublicGeoMapService', () => {
       rollDeg: '0',
       scale: '1',
       minZoom: '14',
+      apartmentCount: 48,
     });
   });
 
@@ -130,6 +132,7 @@ describe('PublicGeoMapService', () => {
         projectName: null,
         logoUrl: null,
         modelUrl: 'https://cdn.example.com/free.glb',
+        apartmentCount: 0,
       }),
     );
   });

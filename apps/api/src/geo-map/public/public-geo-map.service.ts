@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import type { PublicGeoMapModelListResponse } from '@toonexpo/contracts';
-import type { Prisma } from '@toonexpo/db';
+import { PublicationStatus, type Prisma } from '@toonexpo/db';
 
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { toPublicGeoMapModelItem } from '../mappers/geo-map.mapper.js';
@@ -15,6 +15,11 @@ const publicInclude = {
       city: true,
       district: true,
       builderCompany: { select: { logoMedia: { select: { fileUrl: true } } } },
+      _count: {
+        select: {
+          apartments: { where: { publicationStatus: PublicationStatus.published } },
+        },
+      },
     },
   },
   mediaAsset: { select: { fileUrl: true } },

@@ -23,6 +23,7 @@ type PublicGeoMapModelRow = Prisma.ProjectMapModelGetPayload<{
         city: true;
         district: true;
         builderCompany: { select: { logoMedia: { select: { fileUrl: true } } } };
+        _count: { select: { apartments: true } };
       };
     };
     mediaAsset: { select: { fileUrl: true } };
@@ -72,4 +73,5 @@ export const toPublicGeoMapModelItem = (row: PublicGeoMapModelRow): PublicGeoMap
   rollDeg: decimalToString(row.rollDeg),
   scale: decimalToString(row.scale),
   minZoom: decimalToString(row.minZoom),
+  apartmentCount: row.project?._count?.apartments ?? 0,
 });

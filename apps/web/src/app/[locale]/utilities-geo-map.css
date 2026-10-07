@@ -154,6 +154,50 @@
     transform: translateX(-50%);
   }
 
+  /**
+   * Apartment-count bubble. MapLibre anchors the root at its center.
+   * Hover scale stays on the disc so the anchored coordinate does not drift.
+   */
+  .geo-map-cluster {
+    width: 2.75rem;
+    height: 2.75rem;
+    z-index: 2;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .geo-map-cluster__disc {
+    display: grid;
+    position: absolute;
+    inset: 0;
+    place-items: center;
+    border: 2px solid #fff;
+    border-radius: 999px;
+    background: #2f9e44;
+    color: #fff;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    line-height: 1;
+    box-shadow:
+      0 1px 2px rgb(0 0 0 / 0.18),
+      0 4px 10px rgb(0 0 0 / 0.18);
+    transition: transform var(--duration-base) var(--ease-out-premium);
+  }
+
+  .geo-map-cluster--dense {
+    width: 3.25rem;
+    height: 3.25rem;
+  }
+
+  .geo-map-cluster--dense .geo-map-cluster__disc {
+    background: #ef8b1a;
+    font-size: 0.875rem;
+  }
+
+  .geo-map-cluster:hover .geo-map-cluster__disc {
+    transform: scale(1.06);
+  }
+
   /** Glass hover card surface — matches public catalog / header tokens. */
   .geo-map-info-card__surface {
     position: relative;
@@ -255,6 +299,10 @@
     .geo-map-pin__icon,
     .geo-map-pin__shape {
       transition: color var(--duration-fast) linear;
+    }
+
+    .geo-map-cluster__disc {
+      transition: none;
     }
 
     .geo-map-info-card__surface,

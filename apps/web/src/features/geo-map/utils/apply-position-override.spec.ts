@@ -22,6 +22,7 @@ const buildObject = (overrides: Partial<GeoMapObject> & { id: string }): GeoMapO
   rollDeg: 0,
   scale: 1,
   minZoom: 14,
+  apartmentCount: 0,
   ...overrides,
 });
 
