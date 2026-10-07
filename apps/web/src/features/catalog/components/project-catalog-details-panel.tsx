@@ -118,8 +118,14 @@ export const ProjectCatalogDetailsPanel = ({
   const hasSocialLinks = socialLinks.length > 0;
 
   return (
-    <section className="page-container py-12 sm:py-16">
-      <h2 className="font-brand text-3xl font-bold tracking-tight text-ink-navy sm:text-4xl">
+    <section className="page-container pb-12 sm:pb-16">
+      {hasExteriorRenderGallery ? (
+        <ProjectCatalogSectionCard title={galleryTitle}>
+          <ProjectCatalogImageCarousel images={exteriorRenderGalleryImages} />
+        </ProjectCatalogSectionCard>
+      ) : null}
+
+      <h2 className="mt-8 font-brand text-3xl font-bold tracking-tight text-ink-navy sm:text-4xl">
         {title}
       </h2>
 
@@ -241,12 +247,6 @@ export const ProjectCatalogDetailsPanel = ({
         <ProjectCatalogSectionCard title={linkLabels.map}>
           <ProjectCatalogGeoMap projectId={projectId} />
         </ProjectCatalogSectionCard>
-
-        {hasExteriorRenderGallery ? (
-          <ProjectCatalogSectionCard title={galleryTitle}>
-            <ProjectCatalogImageCarousel images={exteriorRenderGalleryImages} />
-          </ProjectCatalogSectionCard>
-        ) : null}
 
         {hasSocialLinks ? (
           <ProjectCatalogSectionCard title={socialsTitle}>
