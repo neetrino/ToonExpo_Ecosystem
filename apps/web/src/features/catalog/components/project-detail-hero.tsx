@@ -75,7 +75,7 @@ type ProjectHeroSummaryProps = {
   projectQrUrl: string;
   builderInitials: string;
   qrTitle: string;
-  description: string;
+  description: string | null;
 };
 
 const ProjectHeroSummary = ({
@@ -108,7 +108,7 @@ const ProjectHeroSummary = ({
       <h1 className="font-brand text-[clamp(1.75rem,4vw,2.75rem)] font-bold leading-[1.15] tracking-[-0.03em] text-ink-navy">
         {project.name}
       </h1>
-      <p className={CATALOG_HERO_CARD_DESCRIPTION_CLASS}>{description}</p>
+      {description ? <p className={CATALOG_HERO_CARD_DESCRIPTION_CLASS}>{description}</p> : null}
     </div>
 
     {/* Desktop / tablet */}
@@ -135,7 +135,9 @@ const ProjectHeroSummary = ({
             />
           </div>
         </div>
-        <p className={CATALOG_HERO_CARD_DESCRIPTION_DESKTOP_CLASS}>{description}</p>
+        {description ? (
+          <p className={CATALOG_HERO_CARD_DESCRIPTION_DESKTOP_CLASS}>{description}</p>
+        ) : null}
       </div>
     </div>
   </div>
@@ -152,7 +154,7 @@ export const ProjectDetailHero = ({ project }: ProjectDetailHeroProps) => {
   const range = usePriceOverlay().getProjectRange(project.id) ?? project;
   const soldPercent = computeSoldPercent(project);
   const badge = resolveBadge(soldPercent);
-  const completion = formatCompletionQuarter(project.completionDate) ?? t('completionTba');
+  const completion = formatCompletionQuarter(project.completionDate);
   const priceLabel = formatCompactPrice({
     amount: range.minPrice,
     currency: range.priceCurrency,
@@ -193,12 +195,12 @@ export const ProjectDetailHero = ({ project }: ProjectDetailHeroProps) => {
             projectQrUrl={projectQrUrl}
             builderInitials={builderInitials}
             qrTitle={t('qrTitle', { name: project.name })}
-            description={project.shortDescription ?? catalogT('project.noDescription')}
+            description={project.shortDescription?.trim() || null}
           />
 
           <dl className="mt-8 grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-5">
             <HeroStat label={t('statStatus')} value={homeT(`badges.${badge}`)} />
-            <HeroStat label={t('statCompletion')} value={completion} />
+            {completion ? <HeroStat label={t('statCompletion')} value={completion} /> : null}
             <HeroStat
               label={t('statFrom')}
               value={

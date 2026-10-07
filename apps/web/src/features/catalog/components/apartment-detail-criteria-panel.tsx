@@ -46,6 +46,10 @@ export const ApartmentDetailCriteriaPanel = ({
   title,
   rows,
 }: ApartmentDetailCriteriaPanelProps) => {
+  if (rows.length === 0) {
+    return null;
+  }
+
   const cardRows = rows.filter((row) => !row.wide);
   const listRows = rows.filter((row) => row.wide);
 

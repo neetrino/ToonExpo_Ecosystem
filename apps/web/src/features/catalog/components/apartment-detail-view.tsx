@@ -10,7 +10,6 @@ import { ApartmentDetailPrice } from '@/features/catalog/components/apartment-pr
 import { ApartmentDetailFavorite } from '@/features/buyer/components/apartment-detail-favorite';
 import { ApartmentInquireCard } from '@/features/catalog/components/apartment-inquire-card';
 import { ApartmentMortgageEstimate } from '@/features/catalog/components/apartment-mortgage-estimate';
-import { ApartmentNeighborhood } from '@/features/catalog/components/apartment-neighborhood';
 import { ApartmentPhotoGallery } from '@/features/catalog/components/apartment-photo-gallery';
 import { ApartmentPublicSalesStatus } from '@/features/catalog/components/apartment-public-sales-status';
 import { ApartmentPriceHistory } from '@/features/catalog/components/apartment-price-history';
@@ -34,8 +33,6 @@ type ApartmentDetailViewProps = {
   projectHandoverDescription: string | null;
   bankOffers: ProjectBankPartnerOfferSummary[];
 };
-
-const EMPTY_VALUE = '—';
 
 /**
  * Public apartment detail — Lovable about block + existing property-details cards.
@@ -81,21 +78,17 @@ export const ApartmentDetailView = async ({
     },
   }).filter((row) => row.id !== 'generalDescription');
 
-  const neighborhoodStats = [
-    { label: t('apartment.neighborhood.walkScore'), value: EMPTY_VALUE },
-    { label: t('apartment.neighborhood.transit'), value: EMPTY_VALUE },
-    { label: t('apartment.neighborhood.schools'), value: EMPTY_VALUE },
-    { label: t('apartment.neighborhood.crime'), value: EMPTY_VALUE },
-  ];
-
-  const priceHistoryRows = [
-    {
-      eventKey: 'listed' as const,
-      dateIso: null,
-      amount: apartment.price,
-      currency: apartment.priceCurrency,
-    },
-  ];
+  const priceHistoryRows =
+    apartment.price != null
+      ? [
+          {
+            eventKey: 'listed' as const,
+            dateIso: null,
+            amount: apartment.price,
+            currency: apartment.priceCurrency,
+          },
+        ]
+      : [];
 
   const floorLabel =
     apartment.floor.displayLabel?.trim() || t('project.floor', { number: apartment.floor.number });
@@ -231,52 +224,50 @@ export const ApartmentDetailView = async ({
                   )}
                 />
               </StatBlock>
-              <StatBlock
+              <ApartmentPricePerArea
+                apartmentId={apartment.id}
+                amount={apartment.price}
+                currency={apartment.priceCurrency}
+                priceVisibility={apartment.priceVisibility}
+                areaTotal={apartment.areaTotal}
                 label={t('apartment.pricePerAreaLabel')}
-                className="col-span-3 min-w-0 items-center text-center md:order-5 md:shrink-0"
-              >
-                <ApartmentPricePerArea
-                  apartmentId={apartment.id}
-                  amount={apartment.price}
-                  currency={apartment.priceCurrency}
-                  priceVisibility={apartment.priceVisibility}
-                  areaTotal={apartment.areaTotal}
-                  className="text-[clamp(1.125rem,4vw,1.5rem)] md:text-2xl"
-                />
-              </StatBlock>
-              <StatBlock
-                label={t('apartment.bedsLabel')}
-                className="col-span-2 min-w-0 -translate-x-[15px] items-center text-center md:order-2 md:translate-x-0"
-              >
-                <p className="font-brand text-2xl font-bold text-ink-navy">
-                  {apartment.bedrooms ?? EMPTY_VALUE}
-                </p>
-              </StatBlock>
-              <StatBlock
-                label={t('apartment.bathsLabel')}
-                className="col-span-2 min-w-0 -translate-x-[15px] items-center text-center md:order-3 md:translate-x-0"
-              >
-                <p className="font-brand text-2xl font-bold text-ink-navy">
-                  {apartment.bathrooms ?? EMPTY_VALUE}
-                </p>
-              </StatBlock>
-              <StatBlock
-                label={t('apartment.areaLabel')}
-                className="col-span-2 min-w-0 -translate-x-[15px] items-center text-center md:order-4 md:translate-x-0"
-              >
-                <p className="font-brand text-2xl font-bold text-ink-navy">
-                  {apartment.areaTotal != null
-                    ? t('apartment.area', { area: apartment.areaTotal })
-                    : EMPTY_VALUE}
-                </p>
-              </StatBlock>
+              />
+              {apartment.bedrooms != null ? (
+                <StatBlock
+                  label={t('apartment.bedsLabel')}
+                  className="col-span-2 min-w-0 -translate-x-[15px] items-center text-center md:order-2 md:translate-x-0"
+                >
+                  <p className="font-brand text-2xl font-bold text-ink-navy">
+                    {apartment.bedrooms}
+                  </p>
+                </StatBlock>
+              ) : null}
+              {apartment.bathrooms != null ? (
+                <StatBlock
+                  label={t('apartment.bathsLabel')}
+                  className="col-span-2 min-w-0 -translate-x-[15px] items-center text-center md:order-3 md:translate-x-0"
+                >
+                  <p className="font-brand text-2xl font-bold text-ink-navy">
+                    {apartment.bathrooms}
+                  </p>
+                </StatBlock>
+              ) : null}
+              {apartment.areaTotal != null ? (
+                <StatBlock
+                  label={t('apartment.areaLabel')}
+                  className="col-span-2 min-w-0 -translate-x-[15px] items-center text-center md:order-4 md:translate-x-0"
+                >
+                  <p className="font-brand text-2xl font-bold text-ink-navy">
+                    {t('apartment.area', { area: apartment.areaTotal })}
+                  </p>
+                </StatBlock>
+              ) : null}
             </div>
           </div>
 
           <ApartmentAboutSection
             title={t('apartment.aboutTitle')}
             description={apartment.description}
-            emptyLabel={t('apartment.aboutEmpty')}
           />
 
           <section className="py-10">
@@ -288,11 +279,6 @@ export const ApartmentDetailView = async ({
             external3dUrl={apartment.external3dUrl}
             matterportTitle={t('apartment.matterportTour')}
             external3dTitle={t('apartment.external3dTour')}
-          />
-
-          <ApartmentNeighborhood
-            title={t('apartment.neighborhoodTitle')}
-            stats={neighborhoodStats}
           />
 
           <ApartmentPriceHistory

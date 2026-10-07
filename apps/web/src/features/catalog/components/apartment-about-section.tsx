@@ -1,18 +1,16 @@
 type ApartmentAboutSectionProps = {
   title: string;
   description: string | null;
-  emptyLabel: string;
 };
 
 /**
  * Listing prose block — Lovable “About this home”.
  */
-export const ApartmentAboutSection = ({
-  title,
-  description,
-  emptyLabel,
-}: ApartmentAboutSectionProps) => {
+export const ApartmentAboutSection = ({ title, description }: ApartmentAboutSectionProps) => {
   const body = description?.trim();
+  if (!body) {
+    return null;
+  }
 
   return (
     <section className="min-w-0 py-10">
