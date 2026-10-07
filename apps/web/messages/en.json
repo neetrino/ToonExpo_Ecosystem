@@ -535,7 +535,8 @@
       "cancel": "Cancel",
       "close": "Close",
       "validation": {
-        "note": "Message is too long"
+        "note": "Message is too long",
+        "phone": "Enter a phone number"
       },
       "success": {
         "created": "Request sent. The builder will contact you.",

@@ -12,7 +12,7 @@ import { useCreateBuyerRequestMutation } from '@/features/buyer/hooks/use-buyer'
 import { isNonBuyerStaff } from '@/features/buyer/utils/is-buyer-account';
 import { getAccountInitials } from '@/shared/lib/account-initials';
 import { Link, usePathname } from '@/i18n/navigation';
-import { isBlankPhone, sanitizePhoneInput } from '@/shared/lib/phone';
+import { isBlankPhone, isValidFilledPhone, sanitizePhoneInput } from '@/shared/lib/phone';
 import { cn } from '@/shared/ui/cn';
 import { Form } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
@@ -109,6 +109,11 @@ export const ApartmentInquireCard = ({
       return;
     }
 
+    if (!isValidFilledPhone(phone)) {
+      setFormError(tRequest('validation.phone'));
+      return;
+    }
+
     const note = buildInquiryNote({ name, email, phone, message });
     try {
       await mutation.mutateAsync({
@@ -185,6 +190,7 @@ export const ApartmentInquireCard = ({
             value={phone}
             onChange={setPhone}
             className={FIELD_CLASS}
+            required
           />
           <Textarea
             name="message"
