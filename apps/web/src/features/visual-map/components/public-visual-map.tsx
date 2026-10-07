@@ -2,7 +2,7 @@
 
 import type { PublicVisualCanvasItem } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { isApiErrorStatus } from '@/shared/api/errors';
 import { FloorPlanSalesLegend } from '@/features/visual-map/components/floor-plan-sales-legend';
@@ -30,7 +30,14 @@ export const PublicVisualMap = ({ canvas, projectId, projectSlug }: PublicVisual
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isNavigating, setIsNavigating] = useState(false);
 
-  const interactive = !isNavigating && canvas.hotspots.length > 0;
+  const publicCanvas = useMemo(
+    () => ({
+      ...canvas,
+      hotspots: canvas.hotspots.filter((hotspot) => hotspot.target.type !== 'building'),
+    }),
+    [canvas],
+  );
+  const interactive = !isNavigating && publicCanvas.hotspots.length > 0;
 
   useEffect(() => {
     setSelectedHotspotId(null);
@@ -43,7 +50,7 @@ export const PublicVisualMap = ({ canvas, projectId, projectSlug }: PublicVisual
       return;
     }
 
-    const hotspot = canvas.hotspots.find((item) => item.id === hotspotId);
+    const hotspot = publicCanvas.hotspots.find((item) => item.id === hotspotId);
     if (!hotspot) {
       return;
     }
@@ -54,7 +61,7 @@ export const PublicVisualMap = ({ canvas, projectId, projectSlug }: PublicVisual
 
     void (async () => {
       try {
-        const href = await resolveHotspotHref(projectId, projectSlug, hotspot, canvas);
+        const href = await resolveHotspotHref(projectId, projectSlug, hotspot, publicCanvas);
         if (!href) {
           setErrorMessage(t('stageUnavailable'));
           setIsNavigating(false);
@@ -84,14 +91,14 @@ export const PublicVisualMap = ({ canvas, projectId, projectSlug }: PublicVisual
         }`}
       >
         <InteractiveMapImage
-          canvas={canvas}
+          canvas={publicCanvas}
           selectedHotspotId={selectedHotspotId}
           interactive={interactive}
           onSelectHotspot={openHotspot}
         />
       </div>
 
-      {hasApartmentSalesStatusLegend(canvas.hotspots) ? <FloorPlanSalesLegend /> : null}
+      {hasApartmentSalesStatusLegend(publicCanvas.hotspots) ? <FloorPlanSalesLegend /> : null}
 
       {errorMessage ? (
         <p role="alert" className="text-sm text-danger">

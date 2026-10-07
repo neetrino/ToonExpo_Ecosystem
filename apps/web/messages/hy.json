@@ -602,6 +602,8 @@
       "priceRange": "Գնային միջակայք",
       "noDescription": "Նկարագրությունը շուտով։",
       "noBuildings": "Դեռ հրապարակված շենքեր չկան։",
+      "apartmentsTitle": "Բնակարաններ",
+      "viewApartment": "Դիտել",
       "floor": "Հարկ {number}",
       "notFoundTitle": "Նախագիծը չի գտնվել",
       "metaFallback": "{name} — նախագծի էջ ToonExpo-ում"

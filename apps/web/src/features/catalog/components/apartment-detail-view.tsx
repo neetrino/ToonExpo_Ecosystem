@@ -111,7 +111,6 @@ export const ApartmentDetailView = async ({
           ariaLabel={t('apartment.breadcrumb')}
           district={district}
           project={apartment.project}
-          building={apartment.building}
           floor={{ id: apartment.floor.id, label: floorLabel }}
           apartment={{ id: apartment.id, slug: apartment.slug, label: title }}
           current="apartment"
@@ -197,7 +196,7 @@ export const ApartmentDetailView = async ({
             />
           </div>
           <p className="mt-2 text-lg leading-[1.2] text-header-muted">
-            {locationLine ?? `${apartment.building.name} · ${title}`}
+            {locationLine ?? apartment.project.name}
           </p>
 
           <div

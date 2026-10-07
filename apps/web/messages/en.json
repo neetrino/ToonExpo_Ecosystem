@@ -602,6 +602,8 @@
       "priceRange": "Price range",
       "noDescription": "Description coming soon.",
       "noBuildings": "No published buildings yet.",
+      "apartmentsTitle": "Apartments",
+      "viewApartment": "View",
       "floor": "Floor {number}",
       "notFoundTitle": "Project not found",
       "metaFallback": "{name} — project details on ToonExpo"
