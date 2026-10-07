@@ -1,5 +1,6 @@
 'use client';
 
+import type { PriceVisibility, ProjectBankPartnerOfferSummary } from '@toonexpo/contracts';
 import type { FormEvent } from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
@@ -9,6 +10,7 @@ import { formatPersonName } from '@toonexpo/shared';
 
 import { useMeQuery } from '@/features/auth/hooks/use-auth';
 import { useCreateBuyerRequestMutation } from '@/features/buyer/hooks/use-buyer';
+import { ApartmentBankOfferRequest } from '@/features/catalog/components/apartment-bank-offer-request';
 import { isNonBuyerStaff } from '@/features/buyer/utils/is-buyer-account';
 import { getAccountInitials } from '@/shared/lib/account-initials';
 import { Link, usePathname } from '@/i18n/navigation';
@@ -25,6 +27,10 @@ type ApartmentInquireCardProps = {
   projectName: string;
   builderName: string;
   builderLogoUrl: string | null;
+  priceAmount: string | null;
+  priceCurrency: string;
+  priceVisibility: PriceVisibility;
+  bankOffers: ProjectBankPartnerOfferSummary[];
   className?: string | undefined;
 };
 
@@ -43,6 +49,10 @@ export const ApartmentInquireCard = ({
   projectName,
   builderName,
   builderLogoUrl,
+  priceAmount,
+  priceCurrency,
+  priceVisibility,
+  bankOffers,
   className,
 }: ApartmentInquireCardProps) => {
   const t = useTranslations('Catalog.apartment');
@@ -229,6 +239,15 @@ export const ApartmentInquireCard = ({
           >
             {mutation.isPending ? t('inquireSubmitting') : t('inquireSubmit')}
           </button>
+
+          <ApartmentBankOfferRequest
+            apartmentId={apartmentId}
+            projectId={projectId}
+            amount={priceAmount}
+            currency={priceCurrency}
+            priceVisibility={priceVisibility}
+            offers={bankOffers}
+          />
 
           <Link
             href="/mortgage"

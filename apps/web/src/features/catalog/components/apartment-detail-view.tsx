@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { ApartmentDetail } from '@toonexpo/contracts';
+import type { ApartmentDetail, ProjectBankPartnerOfferSummary } from '@toonexpo/contracts';
 import Image from 'next/image';
 import { getLocale, getTranslations } from 'next-intl/server';
 
@@ -32,6 +32,7 @@ type ApartmentDetailViewProps = {
   district: string | null;
   /** Project catalog handover text (fallback when apartment has none). */
   projectHandoverDescription: string | null;
+  bankOffers: ProjectBankPartnerOfferSummary[];
 };
 
 const EMPTY_VALUE = '—';
@@ -46,6 +47,7 @@ export const ApartmentDetailView = async ({
   projectType,
   district,
   projectHandoverDescription,
+  bankOffers,
 }: ApartmentDetailViewProps) => {
   const t = await getTranslations('Catalog');
   const locale = await getLocale();
@@ -316,6 +318,10 @@ export const ApartmentDetailView = async ({
             projectName={apartment.project.name}
             builderName={apartment.builder.name}
             builderLogoUrl={apartment.builder.logoUrl}
+            priceAmount={apartment.price}
+            priceCurrency={apartment.priceCurrency}
+            priceVisibility={apartment.priceVisibility}
+            bankOffers={bankOffers}
           />
           <ApartmentMortgageEstimate
             apartmentId={apartment.id}

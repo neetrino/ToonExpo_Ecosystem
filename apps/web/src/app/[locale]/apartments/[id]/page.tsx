@@ -94,6 +94,7 @@ export default async function ApartmentPage({ params }: ApartmentPageProps) {
             projectType={project?.projectType ?? null}
             district={project?.district ?? null}
             projectHandoverDescription={projectHandoverDescription}
+            bankOffers={project?.bankPartnerOffers ?? []}
           />
           <ComparableHomesSection homes={comparableHomes} />
         </main>
