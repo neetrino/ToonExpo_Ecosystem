@@ -535,7 +535,8 @@
       "cancel": "Отмена",
       "close": "Закрыть",
       "validation": {
-        "note": "Сообщение слишком длинное"
+        "note": "Сообщение слишком длинное",
+        "phone": "Укажите номер телефона"
       },
       "success": {
         "created": "Заявка отправлена, застройщик свяжется.",
@@ -602,6 +603,8 @@
       "priceRange": "Диапазон цен",
       "noDescription": "Описание скоро появится.",
       "noBuildings": "Пока нет опубликованных корпусов.",
+      "apartmentsTitle": "Квартиры",
+      "viewApartment": "Смотреть",
       "floor": "Этаж {number}",
       "notFoundTitle": "Проект не найден",
       "metaFallback": "{name} — карточка проекта на ToonExpo"
@@ -857,6 +860,14 @@
       "inquireSubmit": "Запросить просмотр",
       "inquireSubmitting": "Отправка…",
       "inquireMortgage": "Предварительное одобрение ипотеки",
+      "bankOfferTotal": "Общая стоимость — {amount}",
+      "bankOfferMonthly": "Ежемесячный платёж — {amount} / {rate}%",
+      "bankOfferSend": "Отправить запрос",
+      "bankOfferOthers": "Предложения других банков",
+      "bankOfferSent": "Запрос отправлен. Проверьте почту.",
+      "bankOfferNote": "Запрос в банк",
+      "bankOfferError": "Не удалось отправить запрос. Попробуйте ещё раз.",
+      "bankOfferOnRequest": "По запросу",
       "inquireLoginHint": "Войдите как покупатель, чтобы отправить запрос.",
       "inquireLoginLink": "Войти",
       "inquireStaffBlocked": "Служебные аккаунты не могут отправлять запросы на просмотр.",

@@ -1,5 +1,6 @@
 'use client';
 
+import type { PriceVisibility, ProjectBankPartnerOfferSummary } from '@toonexpo/contracts';
 import type { FormEvent } from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
@@ -8,12 +9,12 @@ import { useEffect, useState } from 'react';
 import { formatPersonName } from '@toonexpo/shared';
 
 import { useMeQuery } from '@/features/auth/hooks/use-auth';
-import { ApartmentDetailFavorite } from '@/features/buyer/components/apartment-detail-favorite';
 import { useCreateBuyerRequestMutation } from '@/features/buyer/hooks/use-buyer';
+import { ApartmentBankOfferRequest } from '@/features/catalog/components/apartment-bank-offer-request';
 import { isNonBuyerStaff } from '@/features/buyer/utils/is-buyer-account';
 import { getAccountInitials } from '@/shared/lib/account-initials';
 import { Link, usePathname } from '@/i18n/navigation';
-import { isBlankPhone, sanitizePhoneInput } from '@/shared/lib/phone';
+import { isBlankPhone, isValidFilledPhone, sanitizePhoneInput } from '@/shared/lib/phone';
 import { cn } from '@/shared/ui/cn';
 import { Form } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
@@ -26,6 +27,10 @@ type ApartmentInquireCardProps = {
   projectName: string;
   builderName: string;
   builderLogoUrl: string | null;
+  priceAmount: string | null;
+  priceCurrency: string;
+  priceVisibility: PriceVisibility;
+  bankOffers: ProjectBankPartnerOfferSummary[];
   className?: string | undefined;
 };
 
@@ -44,6 +49,10 @@ export const ApartmentInquireCard = ({
   projectName,
   builderName,
   builderLogoUrl,
+  priceAmount,
+  priceCurrency,
+  priceVisibility,
+  bankOffers,
   className,
 }: ApartmentInquireCardProps) => {
   const t = useTranslations('Catalog.apartment');
@@ -68,9 +77,7 @@ export const ApartmentInquireCard = ({
       current.trim() === '' ? formatPersonName(user.name, user.surname) : current,
     );
     setEmail((current) => (current.trim() === '' ? user.email : current));
-    setPhone((current) =>
-      current.trim() === '' ? sanitizePhoneInput(user.phone ?? '') : current,
-    );
+    setPhone((current) => (current.trim() === '' ? sanitizePhoneInput(user.phone ?? '') : current));
   }, [user]);
 
   useEffect(() => {
@@ -109,6 +116,11 @@ export const ApartmentInquireCard = ({
 
     if (user.accountType !== 'buyer') {
       setFormError(tRequest('errors.generic'));
+      return;
+    }
+
+    if (!isValidFilledPhone(phone)) {
+      setFormError(tRequest('validation.phone'));
       return;
     }
 
@@ -154,7 +166,6 @@ export const ApartmentInquireCard = ({
             <p className="text-xs text-header-muted">{t('inquireAgentMeta')}</p>
           </div>
         </div>
-        <ApartmentDetailFavorite apartmentId={apartmentId} />
       </div>
 
       {success ? (
@@ -189,6 +200,7 @@ export const ApartmentInquireCard = ({
             value={phone}
             onChange={setPhone}
             className={FIELD_CLASS}
+            required
           />
           <Textarea
             name="message"
@@ -227,6 +239,15 @@ export const ApartmentInquireCard = ({
           >
             {mutation.isPending ? t('inquireSubmitting') : t('inquireSubmit')}
           </button>
+
+          <ApartmentBankOfferRequest
+            apartmentId={apartmentId}
+            projectId={projectId}
+            amount={priceAmount}
+            currency={priceCurrency}
+            priceVisibility={priceVisibility}
+            offers={bankOffers}
+          />
 
           <Link
             href="/mortgage"

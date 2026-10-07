@@ -535,7 +535,8 @@
       "cancel": "Cancel",
       "close": "Close",
       "validation": {
-        "note": "Message is too long"
+        "note": "Message is too long",
+        "phone": "Enter a phone number"
       },
       "success": {
         "created": "Request sent. The builder will contact you.",
@@ -602,6 +603,8 @@
       "priceRange": "Price range",
       "noDescription": "Description coming soon.",
       "noBuildings": "No published buildings yet.",
+      "apartmentsTitle": "Apartments",
+      "viewApartment": "View",
       "floor": "Floor {number}",
       "notFoundTitle": "Project not found",
       "metaFallback": "{name} — project details on ToonExpo"
@@ -857,6 +860,14 @@
       "inquireSubmit": "Request viewing",
       "inquireSubmitting": "Sending…",
       "inquireMortgage": "Get mortgage pre-qualification",
+      "bankOfferTotal": "Total — {amount}",
+      "bankOfferMonthly": "Monthly payment — {amount} / {rate}%",
+      "bankOfferSend": "Send request",
+      "bankOfferOthers": "Other bank offers",
+      "bankOfferSent": "Request sent. Check your email.",
+      "bankOfferNote": "Bank request",
+      "bankOfferError": "Could not send the request. Try again.",
+      "bankOfferOnRequest": "On request",
       "inquireLoginHint": "Sign in as a buyer to send this request.",
       "inquireLoginLink": "Sign in",
       "inquireStaffBlocked": "Staff accounts can't send buyer viewing requests.",

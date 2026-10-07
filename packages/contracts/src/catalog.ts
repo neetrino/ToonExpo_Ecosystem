@@ -342,4 +342,9 @@ export type ListApartmentsQuery = {
   featuredOnHome?: boolean;
   /** Catalog content locale (`hy` | `ru` | `en`). Falls back to Armenian. */
   locale?: string;
+  /** Viewport west edge. Applied only when all four bounds are set. */
+  west?: number;
+  south?: number;
+  east?: number;
+  north?: number;
 };

@@ -110,6 +110,10 @@ export const ApartmentPublicSalesStatus = ({
     });
   };
 
+  if (!canEdit) {
+    return null;
+  }
+
   return (
     <div
       ref={rootRef}
@@ -117,23 +121,17 @@ export const ApartmentPublicSalesStatus = ({
       onClick={(event) => event.stopPropagation()}
       onMouseDown={(event) => event.stopPropagation()}
     >
-      {canEdit ? (
-        <SalesStatusEditor
-          open={open}
-          listId={listId}
-          currentStatus={currentStatus}
-          isSaving={isSaving}
-          ariaLabel={t('salesStatusAria')}
-          menuRef={menuRef}
-          statusLabel={(status) => tStatus(status)}
-          onToggle={() => setOpen((current) => !current)}
-          onPick={onPick}
-        />
-      ) : (
-        <span className={cn(CHIP_PILL_CLASS, STATUS_TONE[currentStatus])}>
-          <span className="shrink-0 whitespace-nowrap text-on-dark">{tStatus(currentStatus)}</span>
-        </span>
-      )}
+      <SalesStatusEditor
+        open={open}
+        listId={listId}
+        currentStatus={currentStatus}
+        isSaving={isSaving}
+        ariaLabel={t('salesStatusAria')}
+        menuRef={menuRef}
+        statusLabel={(status) => tStatus(status)}
+        onToggle={() => setOpen((current) => !current)}
+        onPick={onPick}
+      />
       {errorMessage ? (
         <p role="alert" className="max-w-[12rem] text-right text-xs text-danger">
           {errorMessage}

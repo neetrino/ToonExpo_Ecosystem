@@ -112,13 +112,15 @@ export const ComparableHomeCard = ({ home, className }: ComparableHomeCardProps)
             'text-[11px] font-medium tracking-tight text-header-muted uppercase',
           )}
         >
-          <span>{home.bedrooms != null ? t('comparableBed', { count: home.bedrooms }) : '—'}</span>
-          <span>
-            {home.bathrooms != null ? t('comparableBath', { count: home.bathrooms }) : '—'}
-          </span>
-          <span>
-            {home.areaTotal != null ? t('comparableArea', { area: home.areaTotal }) : '—'}
-          </span>
+          {home.bedrooms != null ? (
+            <span>{t('comparableBed', { count: home.bedrooms })}</span>
+          ) : null}
+          {home.bathrooms != null ? (
+            <span>{t('comparableBath', { count: home.bathrooms })}</span>
+          ) : null}
+          {home.areaTotal != null ? (
+            <span>{t('comparableArea', { area: home.areaTotal })}</span>
+          ) : null}
         </div>
       </div>
     </article>

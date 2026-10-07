@@ -13,6 +13,7 @@ type ApartmentPricePerAreaProps = {
   currency: string;
   priceVisibility: PriceVisibility;
   areaTotal: string | null;
+  label: string;
   className?: string | undefined;
 };
 
@@ -25,6 +26,7 @@ export const ApartmentPricePerArea = ({
   currency,
   priceVisibility,
   areaTotal,
+  label,
   className,
 }: ApartmentPricePerAreaProps) => {
   const t = useTranslations('Catalog');
@@ -32,22 +34,21 @@ export const ApartmentPricePerArea = ({
   const overlay = usePriceOverlay().getApartmentPrice(apartmentId);
   const effectiveAmount = amount ?? overlay?.price ?? null;
   const area = areaTotal != null ? Number(areaTotal) : null;
+  const total = effectiveAmount != null ? Number(effectiveAmount) : null;
 
-  if (effectiveAmount == null || area == null || !Number.isFinite(area) || area <= 0) {
-    return (
-      <p className={cn('font-brand text-2xl font-bold text-ink-navy', className)}>—</p>
-    );
-  }
-
-  const total = Number(effectiveAmount);
-  if (!Number.isFinite(total)) {
-    return (
-      <p className={cn('font-brand text-2xl font-bold text-ink-navy', className)}>—</p>
-    );
+  if (
+    total == null ||
+    !Number.isFinite(total) ||
+    total <= 0 ||
+    area == null ||
+    !Number.isFinite(area) ||
+    area <= 0
+  ) {
+    return null;
   }
 
   const perArea = Math.round(total / area);
-  const label = formatCatalogPrice({
+  const priceLabel = formatCatalogPrice({
     amount: perArea,
     currency: overlay?.priceCurrency ?? currency,
     locale,
@@ -57,6 +58,16 @@ export const ApartmentPricePerArea = ({
   });
 
   return (
-    <p className={cn('font-brand text-2xl font-bold text-ink-navy', className)}>{label}</p>
+    <div
+      className={cn(
+        'col-span-3 flex min-w-0 flex-col items-center text-center md:order-5 md:shrink-0',
+        className,
+      )}
+    >
+      <p className="text-[10px] font-bold tracking-widest text-header-muted uppercase">{label}</p>
+      <p className="mt-1 font-brand text-[clamp(1.125rem,4vw,1.5rem)] font-bold text-ink-navy md:text-2xl">
+        {priceLabel}
+      </p>
+    </div>
   );
 };

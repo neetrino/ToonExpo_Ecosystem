@@ -10,7 +10,7 @@ import { useMeQuery } from '@/features/auth/hooks/use-auth';
 import { useCreateBuyerRequestMutation } from '@/features/buyer/hooks/use-buyer';
 import { isNonBuyerStaff } from '@/features/buyer/utils/is-buyer-account';
 import { Link, usePathname } from '@/i18n/navigation';
-import { isBlankPhone, sanitizePhoneInput } from '@/shared/lib/phone';
+import { isValidFilledPhone, sanitizePhoneInput } from '@/shared/lib/phone';
 import { cn } from '@/shared/ui/cn';
 import { Form } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
@@ -51,9 +51,7 @@ export const ProjectReserveCta = ({ projectId, projectName }: ProjectReserveCtaP
       current.trim() === '' ? formatPersonName(user.name, user.surname) : current,
     );
     setEmail((current) => (current.trim() === '' ? user.email : current));
-    setPhone((current) =>
-      current.trim() === '' ? sanitizePhoneInput(user.phone ?? '') : current,
-    );
+    setPhone((current) => (current.trim() === '' ? sanitizePhoneInput(user.phone ?? '') : current));
   }, [user]);
 
   const isStaff = isNonBuyerStaff(user?.accountType);
@@ -78,7 +76,12 @@ export const ProjectReserveCta = ({ projectId, projectName }: ProjectReserveCtaP
       return;
     }
 
-    const note = [name, email, isBlankPhone(phone) ? '' : phone]
+    if (!isValidFilledPhone(phone)) {
+      setFormError(tRequest('validation.phone'));
+      return;
+    }
+
+    const note = [name, email, phone]
       .map((part) => part.trim())
       .filter((part) => part.length > 0)
       .join(' · ');
@@ -161,6 +164,7 @@ export const ProjectReserveCta = ({ projectId, projectName }: ProjectReserveCtaP
                 value={phone}
                 onChange={setPhone}
                 className={FIELD_CLASS}
+                required
               />
               {formError ? (
                 <p className="text-sm text-[#fecaca]" role="alert">

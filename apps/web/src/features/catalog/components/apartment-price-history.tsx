@@ -78,9 +78,11 @@ export const ApartmentPriceHistory = ({
                 <p className="text-sm font-medium text-ink-navy">
                   {t(`apartment.priceHistory.${row.eventKey}`)}
                 </p>
-                <p className="mt-0.5 text-sm text-header-muted">
-                  {formatDisplayDate(row.dateIso, locale)}
-                </p>
+                {row.dateIso ? (
+                  <p className="mt-0.5 text-sm text-header-muted">
+                    {formatDisplayDate(row.dateIso, locale)}
+                  </p>
+                ) : null}
               </div>
               <p className="shrink-0 font-brand text-lg font-bold text-ink-navy">{priceLabel}</p>
             </li>

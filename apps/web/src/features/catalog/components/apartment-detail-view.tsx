@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { ApartmentDetail } from '@toonexpo/contracts';
+import type { ApartmentDetail, ProjectBankPartnerOfferSummary } from '@toonexpo/contracts';
 import Image from 'next/image';
 import { getLocale, getTranslations } from 'next-intl/server';
 
@@ -7,9 +7,9 @@ import { ApartmentAboutSection } from '@/features/catalog/components/apartment-a
 import { CatalogPathBreadcrumb } from '@/features/catalog/components/catalog-path-breadcrumb';
 import { ApartmentDetailCriteriaPanel } from '@/features/catalog/components/apartment-detail-criteria-panel';
 import { ApartmentDetailPrice } from '@/features/catalog/components/apartment-price-label';
+import { ApartmentDetailFavorite } from '@/features/buyer/components/apartment-detail-favorite';
 import { ApartmentInquireCard } from '@/features/catalog/components/apartment-inquire-card';
 import { ApartmentMortgageEstimate } from '@/features/catalog/components/apartment-mortgage-estimate';
-import { ApartmentNeighborhood } from '@/features/catalog/components/apartment-neighborhood';
 import { ApartmentPhotoGallery } from '@/features/catalog/components/apartment-photo-gallery';
 import { ApartmentPublicSalesStatus } from '@/features/catalog/components/apartment-public-sales-status';
 import { ApartmentPriceHistory } from '@/features/catalog/components/apartment-price-history';
@@ -31,9 +31,8 @@ type ApartmentDetailViewProps = {
   district: string | null;
   /** Project catalog handover text (fallback when apartment has none). */
   projectHandoverDescription: string | null;
+  bankOffers: ProjectBankPartnerOfferSummary[];
 };
-
-const EMPTY_VALUE = '—';
 
 /**
  * Public apartment detail — Lovable about block + existing property-details cards.
@@ -45,6 +44,7 @@ export const ApartmentDetailView = async ({
   projectType,
   district,
   projectHandoverDescription,
+  bankOffers,
 }: ApartmentDetailViewProps) => {
   const t = await getTranslations('Catalog');
   const locale = await getLocale();
@@ -78,21 +78,17 @@ export const ApartmentDetailView = async ({
     },
   }).filter((row) => row.id !== 'generalDescription');
 
-  const neighborhoodStats = [
-    { label: t('apartment.neighborhood.walkScore'), value: EMPTY_VALUE },
-    { label: t('apartment.neighborhood.transit'), value: EMPTY_VALUE },
-    { label: t('apartment.neighborhood.schools'), value: EMPTY_VALUE },
-    { label: t('apartment.neighborhood.crime'), value: EMPTY_VALUE },
-  ];
-
-  const priceHistoryRows = [
-    {
-      eventKey: 'listed' as const,
-      dateIso: null,
-      amount: apartment.price,
-      currency: apartment.priceCurrency,
-    },
-  ];
+  const priceHistoryRows =
+    apartment.price != null
+      ? [
+          {
+            eventKey: 'listed' as const,
+            dateIso: null,
+            amount: apartment.price,
+            currency: apartment.priceCurrency,
+          },
+        ]
+      : [];
 
   const floorLabel =
     apartment.floor.displayLabel?.trim() || t('project.floor', { number: apartment.floor.number });
@@ -111,7 +107,6 @@ export const ApartmentDetailView = async ({
           ariaLabel={t('apartment.breadcrumb')}
           district={district}
           project={apartment.project}
-          building={apartment.building}
           floor={{ id: apartment.floor.id, label: floorLabel }}
           apartment={{ id: apartment.id, slug: apartment.slug, label: title }}
           current="apartment"
@@ -172,32 +167,37 @@ export const ApartmentDetailView = async ({
                 {apartment.builder.name}
               </p>
             </div>
-            <CatalogEntityQr
-              payloadUrl={apartmentQrUrl}
-              codeLabel={t('apartment.qrTitle', {
-                name: apartment.project.name,
-                number: apartment.number,
-              })}
-              entityName={apartment.project.name}
-            />
+            <div className="flex shrink-0 items-center gap-2">
+              <ApartmentDetailFavorite apartmentId={apartment.id} />
+              <CatalogEntityQr
+                payloadUrl={apartmentQrUrl}
+                codeLabel={t('apartment.qrTitle', {
+                  name: apartment.project.name,
+                  number: apartment.number,
+                })}
+                entityName={apartment.project.name}
+              />
+            </div>
           </div>
 
           <div className="mt-3 flex items-start gap-3">
             <h1 className="min-w-0 flex-1 font-brand text-[clamp(2rem,5vw,3rem)] font-bold leading-[1.15] tracking-tight text-ink-navy">
               {apartment.project.name}
             </h1>
-            <CatalogEntityQr
-              className="mt-1 hidden lg:inline-flex"
-              payloadUrl={apartmentQrUrl}
-              codeLabel={t('apartment.qrTitle', {
-                name: apartment.project.name,
-                number: apartment.number,
-              })}
-              entityName={apartment.project.name}
-            />
+            <div className="mt-1 hidden shrink-0 items-center gap-2 lg:flex">
+              <ApartmentDetailFavorite apartmentId={apartment.id} />
+              <CatalogEntityQr
+                payloadUrl={apartmentQrUrl}
+                codeLabel={t('apartment.qrTitle', {
+                  name: apartment.project.name,
+                  number: apartment.number,
+                })}
+                entityName={apartment.project.name}
+              />
+            </div>
           </div>
           <p className="mt-2 text-lg leading-[1.2] text-header-muted">
-            {locationLine ?? `${apartment.building.name} · ${title}`}
+            {locationLine ?? apartment.project.name}
           </p>
 
           <div
@@ -224,52 +224,50 @@ export const ApartmentDetailView = async ({
                   )}
                 />
               </StatBlock>
-              <StatBlock
+              <ApartmentPricePerArea
+                apartmentId={apartment.id}
+                amount={apartment.price}
+                currency={apartment.priceCurrency}
+                priceVisibility={apartment.priceVisibility}
+                areaTotal={apartment.areaTotal}
                 label={t('apartment.pricePerAreaLabel')}
-                className="col-span-3 min-w-0 items-center text-center md:order-5 md:shrink-0"
-              >
-                <ApartmentPricePerArea
-                  apartmentId={apartment.id}
-                  amount={apartment.price}
-                  currency={apartment.priceCurrency}
-                  priceVisibility={apartment.priceVisibility}
-                  areaTotal={apartment.areaTotal}
-                  className="text-[clamp(1.125rem,4vw,1.5rem)] md:text-2xl"
-                />
-              </StatBlock>
-              <StatBlock
-                label={t('apartment.bedsLabel')}
-                className="col-span-2 min-w-0 -translate-x-[15px] items-center text-center md:order-2 md:translate-x-0"
-              >
-                <p className="font-brand text-2xl font-bold text-ink-navy">
-                  {apartment.bedrooms ?? EMPTY_VALUE}
-                </p>
-              </StatBlock>
-              <StatBlock
-                label={t('apartment.bathsLabel')}
-                className="col-span-2 min-w-0 -translate-x-[15px] items-center text-center md:order-3 md:translate-x-0"
-              >
-                <p className="font-brand text-2xl font-bold text-ink-navy">
-                  {apartment.bathrooms ?? EMPTY_VALUE}
-                </p>
-              </StatBlock>
-              <StatBlock
-                label={t('apartment.areaLabel')}
-                className="col-span-2 min-w-0 -translate-x-[15px] items-center text-center md:order-4 md:translate-x-0"
-              >
-                <p className="font-brand text-2xl font-bold text-ink-navy">
-                  {apartment.areaTotal != null
-                    ? t('apartment.area', { area: apartment.areaTotal })
-                    : EMPTY_VALUE}
-                </p>
-              </StatBlock>
+              />
+              {apartment.bedrooms != null ? (
+                <StatBlock
+                  label={t('apartment.bedsLabel')}
+                  className="col-span-2 min-w-0 -translate-x-[15px] items-center text-center md:order-2 md:translate-x-0"
+                >
+                  <p className="font-brand text-2xl font-bold text-ink-navy">
+                    {apartment.bedrooms}
+                  </p>
+                </StatBlock>
+              ) : null}
+              {apartment.bathrooms != null ? (
+                <StatBlock
+                  label={t('apartment.bathsLabel')}
+                  className="col-span-2 min-w-0 -translate-x-[15px] items-center text-center md:order-3 md:translate-x-0"
+                >
+                  <p className="font-brand text-2xl font-bold text-ink-navy">
+                    {apartment.bathrooms}
+                  </p>
+                </StatBlock>
+              ) : null}
+              {apartment.areaTotal != null ? (
+                <StatBlock
+                  label={t('apartment.areaLabel')}
+                  className="col-span-2 min-w-0 -translate-x-[15px] items-center text-center md:order-4 md:translate-x-0"
+                >
+                  <p className="font-brand text-2xl font-bold text-ink-navy">
+                    {t('apartment.area', { area: apartment.areaTotal })}
+                  </p>
+                </StatBlock>
+              ) : null}
             </div>
           </div>
 
           <ApartmentAboutSection
             title={t('apartment.aboutTitle')}
             description={apartment.description}
-            emptyLabel={t('apartment.aboutEmpty')}
           />
 
           <section className="py-10">
@@ -281,11 +279,6 @@ export const ApartmentDetailView = async ({
             external3dUrl={apartment.external3dUrl}
             matterportTitle={t('apartment.matterportTour')}
             external3dTitle={t('apartment.external3dTour')}
-          />
-
-          <ApartmentNeighborhood
-            title={t('apartment.neighborhoodTitle')}
-            stats={neighborhoodStats}
           />
 
           <ApartmentPriceHistory
@@ -311,6 +304,10 @@ export const ApartmentDetailView = async ({
             projectName={apartment.project.name}
             builderName={apartment.builder.name}
             builderLogoUrl={apartment.builder.logoUrl}
+            priceAmount={apartment.price}
+            priceCurrency={apartment.priceCurrency}
+            priceVisibility={apartment.priceVisibility}
+            bankOffers={bankOffers}
           />
           <ApartmentMortgageEstimate
             apartmentId={apartment.id}

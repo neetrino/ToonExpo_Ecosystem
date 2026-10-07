@@ -4,7 +4,7 @@ import { ProjectCatalogSection } from '@/features/catalog/components/project-cat
 import { ProjectConstructionTimeline } from '@/features/catalog/components/project-construction-timeline';
 import { ProjectDetailHero } from '@/features/catalog/components/project-detail-hero';
 import { ProjectReserveCta } from '@/features/catalog/components/project-reserve-cta';
-import { ProjectInteractiveMapSection } from '@/features/visual-map/components/project-interactive-map-section';
+import { ProjectApartmentCards } from '@/features/catalog/components/project-apartment-cards';
 
 type ProjectDetailViewProps = {
   project: ProjectDetail;
@@ -18,7 +18,7 @@ export const ProjectDetailView = ({ project }: ProjectDetailViewProps) => (
     <ProjectDetailHero project={project} />
     <ProjectCatalogSection project={project} />
     <ProjectConstructionTimeline project={project} />
-    <ProjectInteractiveMapSection projectId={project.id} projectSlug={project.slug} />
+    <ProjectApartmentCards projectId={project.id} buildings={project.buildings} />
     <ProjectReserveCta projectId={project.id} projectName={project.name} />
   </>
 );

@@ -89,6 +89,7 @@ export const GeoMapCanvas = ({
   adminOsmHideSession = null,
   greenCanopyEnabled = GEO_MAP_CITY_LIFE_PROPS.greenCanopyEnabled,
   roadTrafficEnabled = GEO_MAP_CITY_LIFE_PROPS.roadTrafficEnabled,
+  onViewportChange,
 }: GeoMapCanvasProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [uiOverlayRoot, setUiOverlayRoot] = useState<HTMLDivElement | null>(null);
@@ -107,6 +108,11 @@ export const GeoMapCanvas = ({
     ...(initialPitch !== undefined ? { initialPitch } : {}),
   });
   const { zoom, bounds } = useMapViewportState(map, isMapLoaded, initialZoom);
+  const onViewportChangeRef = useRef(onViewportChange);
+  onViewportChangeRef.current = onViewportChange;
+  useEffect(() => {
+    onViewportChangeRef.current?.({ zoom, bounds });
+  }, [zoom, bounds]);
   const { markerObjects, modelObjects } = useVisibleObjects(
     objects,
     dragOverride,

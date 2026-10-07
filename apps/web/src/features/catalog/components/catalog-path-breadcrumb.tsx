@@ -2,7 +2,11 @@ import type { CatalogProjectRef } from '@toonexpo/contracts';
 
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
-import { buildApartmentPublicHref, buildProjectBuildingPublicHref, buildProjectPublicHref } from '@/features/geo-map/public/utils/build-project-public-href';
+import {
+  buildApartmentPublicHref,
+  buildProjectBuildingPublicHref,
+  buildProjectPublicHref,
+} from '@/features/geo-map/public/utils/build-project-public-href';
 
 export type CatalogPathLevel = 'building' | 'floor' | 'apartment';
 
@@ -35,7 +39,7 @@ type CatalogPathBreadcrumbProps = {
   /** Geographic district when set on the project. */
   district: string | null;
   project: ProjectPathRef;
-  building: PathRef;
+  building?: PathRef;
   floor?: FloorPathRef;
   /** Current apartment, or a deeper shortcut from building/floor pages. */
   apartment?: ApartmentPathRef;
@@ -61,8 +65,8 @@ export const CatalogPathBreadcrumb = ({
   const items = buildCatalogPathItems({
     district,
     project,
-    building,
     current,
+    ...(building ? { building } : {}),
     ...(floor ? { floor } : {}),
     ...(apartment ? { apartment } : {}),
   });
@@ -118,7 +122,7 @@ const buildCatalogPathItems = ({
 }: {
   district: string | null;
   project: ProjectPathRef;
-  building: PathRef;
+  building?: PathRef;
   floor?: FloorPathRef;
   apartment?: ApartmentPathRef;
   current: CatalogPathLevel;
@@ -140,19 +144,22 @@ const buildCatalogPathItems = ({
     href: buildProjectPublicHref(project.slug),
   });
 
-  const buildingHref = buildProjectBuildingPublicHref(project.slug, building.id);
-  items.push({
-    id: 'building',
-    label: building.name,
-    ...(current === 'building' ? {} : { href: buildingHref }),
-  });
+  const buildingHref = building ? buildProjectBuildingPublicHref(project.slug, building.id) : null;
+
+  if (building && buildingHref) {
+    items.push({
+      id: 'building',
+      label: building.name,
+      ...(current === 'building' ? {} : { href: buildingHref }),
+    });
+  }
 
   if (floor) {
-    const floorHref = `${buildingHref}/floors/${floor.id}`;
+    const floorHref = buildingHref ? `${buildingHref}/floors/${floor.id}` : null;
     items.push({
       id: 'floor',
       label: floor.label,
-      ...(current === 'floor' ? {} : { href: floorHref }),
+      ...(current === 'floor' || !floorHref ? {} : { href: floorHref }),
     });
   }
 

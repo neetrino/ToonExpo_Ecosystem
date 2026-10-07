@@ -42,80 +42,82 @@ type BuildApartmentDetailRowsOptions = {
   projectHandoverDescription?: string | null;
 };
 
-const EMPTY_VALUE = '—';
-
 /**
- * Builds property-details rows: compact cards first (3 per row), descriptions last.
+ * Builds property-details rows from admin-filled values only.
  */
 export const buildApartmentDetailRows = (
   options: BuildApartmentDetailRowsOptions,
 ): ApartmentDetailRow[] => {
   const { apartment, district, labels, locale } = options;
   const extras = parseApartmentFeatureExtras(apartment.features);
-  const floorLabel = apartment.floor.number != null ? String(apartment.floor.number) : EMPTY_VALUE;
-  const neighborhoodLabel = district?.trim() || apartment.project.name.trim() || EMPTY_VALUE;
-  const finishingStatus =
-    resolveLocalizedFeatureText(extras.finishingStatus, locale) ?? EMPTY_VALUE;
   const handoverDescription =
     resolveLocalizedFeatureText(extras.handoverDescription, locale)?.trim() ||
     options.projectHandoverDescription?.trim() ||
     null;
-
-  return [
-    { id: 'neighborhood', label: labels.neighborhood, value: neighborhoodLabel },
-    { id: 'building', label: labels.building, value: apartment.building.name || EMPTY_VALUE },
-    { id: 'floor', label: labels.floor, value: floorLabel },
-    { id: 'unitNumber', label: labels.unitNumber, value: apartment.number || EMPTY_VALUE },
+  const rows: Array<ApartmentDetailRow | null> = [
+    filledRow('neighborhood', labels.neighborhood, district?.trim() || null),
+    filledRow('building', labels.building, apartment.building.name.trim() || null),
+    filledRow(
+      'floor',
+      labels.floor,
+      apartment.floor.number != null ? String(apartment.floor.number) : null,
+    ),
+    filledRow('unitNumber', labels.unitNumber, apartment.number.trim() || null),
     {
       id: 'status',
       label: labels.status,
       value: options.formatStatus(apartment.salesStatus),
       salesStatus: apartment.salesStatus,
     },
-    {
-      id: 'windows',
-      label: labels.windows,
-      value: formatOptionalCount(extras.windowsCount),
-    },
-    {
-      id: 'balconies',
-      label: labels.balconies,
-      value: formatOptionalCount(extras.balconiesCount),
-    },
-    {
-      id: 'ceilingHeight',
-      label: labels.ceilingHeight,
-      value: formatCeiling(extras, options.formatCeilingHeight),
-    },
-    {
-      id: 'finishingStatus',
-      label: labels.finishingStatus,
-      value: finishingStatus,
-    },
-    {
-      id: 'generalDescription',
-      label: labels.generalDescription,
-      value: apartment.description?.trim() || EMPTY_VALUE,
-      wide: true,
-    },
-    ...(handoverDescription
-      ? [
-          {
-            id: 'handoverDescription' as const,
-            label: labels.handoverDescription,
-            value: handoverDescription,
-            wide: true as const,
-          },
-        ]
-      : []),
+    filledRow('windows', labels.windows, formatOptionalCount(extras.windowsCount)),
+    filledRow('balconies', labels.balconies, formatOptionalCount(extras.balconiesCount)),
+    filledRow(
+      'ceilingHeight',
+      labels.ceilingHeight,
+      formatCeiling(extras, options.formatCeilingHeight),
+    ),
+    filledRow(
+      'finishingStatus',
+      labels.finishingStatus,
+      resolveLocalizedFeatureText(extras.finishingStatus, locale),
+    ),
+    filledRow(
+      'generalDescription',
+      labels.generalDescription,
+      apartment.description?.trim() || null,
+      true,
+    ),
+    handoverDescription
+      ? {
+          id: 'handoverDescription',
+          label: labels.handoverDescription,
+          value: handoverDescription,
+          wide: true,
+        }
+      : null,
   ];
+
+  return rows.filter((row): row is ApartmentDetailRow => row != null);
 };
 
-const formatOptionalCount = (value: number | null): string =>
-  value != null ? String(value) : EMPTY_VALUE;
+const filledRow = (
+  id: ApartmentDetailCriterionId,
+  label: string,
+  value: string | null,
+  wide = false,
+): ApartmentDetailRow | null => {
+  const text = value?.trim() ?? '';
+  if (text.length === 0) {
+    return null;
+  }
+  return wide ? { id, label, value: text, wide: true } : { id, label, value: text };
+};
+
+const formatOptionalCount = (value: number | null): string | null =>
+  value != null ? String(value) : null;
 
 const formatCeiling = (
   extras: ApartmentFeatureExtras,
   formatCeilingHeight: (height: number) => string,
-): string =>
-  extras.ceilingHeightM != null ? formatCeilingHeight(extras.ceilingHeightM) : EMPTY_VALUE;
+): string | null =>
+  extras.ceilingHeightM != null ? formatCeilingHeight(extras.ceilingHeightM) : null;

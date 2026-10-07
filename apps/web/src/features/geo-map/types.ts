@@ -1,4 +1,5 @@
 import type { SelectedOsmBuilding } from '@/features/geo-map/utils/building-identification';
+import type { LngLatBounds } from '@/features/geo-map/utils/geo-bounds';
 import type { OsmBuildingHideTarget } from '@/features/geo-map/utils/build-osm-building-extrusion-filter';
 import type { ObjectTransformOverride } from '@/features/geo-map/utils/apply-position-override';
 
@@ -150,6 +151,9 @@ export type GeoMapCanvasProps = {
    * Sparse white cars appear on visible streets at close zoom.
    */
   roadTrafficEnabled?: boolean | undefined;
+  /** Current camera zoom and geographic bounds, after viewport quantization. */
+  onViewportChange?:
+    ((viewport: { zoom: number; bounds: LngLatBounds | null }) => void) | undefined;
 };
 
 export type GeoMapAdminSelectionKind = 'osm' | 'model';

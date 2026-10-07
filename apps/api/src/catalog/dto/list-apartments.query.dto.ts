@@ -7,6 +7,7 @@ import {
   IsBoolean,
   IsEnum,
   IsInt,
+  IsNumber,
   IsOptional,
   IsString,
   Max,
@@ -161,4 +162,36 @@ export class ListApartmentsQueryDto {
     typeof value === 'string' ? value.trim().toLowerCase() : value,
   )
   locale?: string;
+
+  @ApiPropertyOptional({ description: 'Viewport west longitude. Requires south, east, and north.' })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(-180)
+  @Max(180)
+  west?: number;
+
+  @ApiPropertyOptional({ description: 'Viewport south latitude. Requires west, east, and north.' })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(-90)
+  @Max(90)
+  south?: number;
+
+  @ApiPropertyOptional({ description: 'Viewport east longitude. Requires west, south, and north.' })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(-180)
+  @Max(180)
+  east?: number;
+
+  @ApiPropertyOptional({ description: 'Viewport north latitude. Requires west, south, and east.' })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(-90)
+  @Max(90)
+  north?: number;
 }
