@@ -245,9 +245,12 @@ Stage rules:
   the shared `GeoMapInfoCard` (logo + name) on the canvas — not as a name pill
   on the pin — so home, `/map`, and apartments share one UX. Public payload
   includes `logoUrl` from `builderCompany.logoMedia`.
-- **Zoom-out apartment clusters (done):** Read-only maps merge pins within
-  `MARKER_CLUSTER_RADIUS_PX` into a bubble whose number is the sum of published
-  apartments in that group (green under 100, orange from 100). Activating a
+- **Zoom-out apartment clusters (done):** Read-only maps merge nearby pins into
+  one district bubble. A group joins only while it still fits inside
+  `MARKER_CLUSTER_MAX_DISTANCE_METERS`, so the next district stays its own
+  number and a nearby empty placement is absorbed instead of staying a pin.
+  The bubble shows the sum of published apartments, including a single
+  project; a placement with none and no neighbor stays a pin. Bubbles are copper below 50 and from 100, green from 50 through 99. Activating a
   bubble eases the camera in. Clustering stops at zoom 13.5 so each pin stays
   clickable beside its GLB. The admin editor keeps one draggable pin per placement.
 - **Default pitched camera (done):** Default `GeoMapCanvas` path mounts at

@@ -145,10 +145,17 @@ export const FOCUS_PITCH_DEG = DEFAULT_MAP_PITCH_DEG;
 export const MARKER_ELEMENT_SELECTED_CLASS_NAME = 'geo-map-pin--selected';
 
 /**
- * Public-map clustering: pins whose screen positions fall within this radius
- * merge into one bubble. ~1 km at the default city zoom (12).
+ * Turns district clustering on for the public map. Membership is the ground
+ * span below, so a pin that sits beside a count still joins that count.
  */
-export const MARKER_CLUSTER_RADIUS_PX = 56;
+export const MARKER_CLUSTER_RADIUS_PX = 160;
+
+/**
+ * Widest ground span of one bubble. Nearby placements inside a district share
+ * one number; the next district stays a separate number instead of chaining
+ * into a single city-wide circle.
+ */
+export const MARKER_CLUSTER_MAX_DISTANCE_METERS = 4500;
 
 /**
  * Clustering ends here so each project pin is clickable before GLBs appear
@@ -159,7 +166,10 @@ export const MARKER_CLUSTER_MAX_ZOOM = 13.5;
 /** Camera zoom added when a count bubble is activated. */
 export const MARKER_CLUSTER_ZOOM_STEP = 2;
 
-/** Apartment-count threshold for the larger orange bubble (green below). */
+/** Apartment-count threshold for the green bubble (copper returns at 100+). */
+export const MARKER_CLUSTER_GREEN_MIN_COUNT = 50;
+
+/** Apartment-count threshold for the larger copper bubble. */
 export const MARKER_CLUSTER_DENSE_MIN_COUNT = 100;
 
 /** Count-bubble root. MapLibre owns its transform; the disc is the child. */
@@ -167,6 +177,9 @@ export const CLUSTER_ELEMENT_CLASS_NAME = 'geo-map-cluster';
 
 /** Filled circle that shows the apartment count. */
 export const CLUSTER_DISC_CLASS_NAME = 'geo-map-cluster__disc';
+
+/** Applied on the root when the count is in the 50–99 band. */
+export const CLUSTER_ELEMENT_GREEN_CLASS_NAME = 'geo-map-cluster--green';
 
 /** Applied on the root when the count reaches {@link MARKER_CLUSTER_DENSE_MIN_COUNT}. */
 export const CLUSTER_ELEMENT_DENSE_CLASS_NAME = 'geo-map-cluster--dense';

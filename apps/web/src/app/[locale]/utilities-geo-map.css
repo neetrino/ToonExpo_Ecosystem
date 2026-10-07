@@ -155,12 +155,15 @@
   }
 
   /**
-   * Apartment-count bubble. MapLibre anchors the root at its center.
-   * Hover scale stays on the disc so the anchored coordinate does not drift.
+   * Apartment-count bubble. Copper is intentionally outside the brand palette
+   * so a group reads as a count, not another teal pin.
+   * MapLibre anchors the root at its center. Hover scale stays on the disc.
    */
   .geo-map-cluster {
-    width: 2.75rem;
-    height: 2.75rem;
+    --geo-map-cluster-fill: #c45c26;
+    --geo-map-cluster-fill-hover: #a84d1c;
+    width: 3rem;
+    height: 3rem;
     z-index: 2;
     cursor: pointer;
     user-select: none;
@@ -171,30 +174,37 @@
     position: absolute;
     inset: 0;
     place-items: center;
-    border: 2px solid #fff;
+    border: 3px solid #fff;
     border-radius: 999px;
-    background: #2f9e44;
+    background: var(--geo-map-cluster-fill);
     color: #fff;
     font-size: 0.8125rem;
     font-weight: 700;
     line-height: 1;
     box-shadow:
-      0 1px 2px rgb(0 0 0 / 0.18),
-      0 4px 10px rgb(0 0 0 / 0.18);
-    transition: transform var(--duration-base) var(--ease-out-premium);
+      0 0 0 1px rgb(196 92 38 / 0.35),
+      0 4px 12px rgb(80 32 8 / 0.28);
+    transition:
+      transform var(--duration-base) var(--ease-out-premium),
+      background-color var(--duration-base) var(--ease-out-premium);
+  }
+
+  .geo-map-cluster--green {
+    --geo-map-cluster-fill: #2f9e44;
+    --geo-map-cluster-fill-hover: #257d38;
   }
 
   .geo-map-cluster--dense {
-    width: 3.25rem;
-    height: 3.25rem;
+    width: 3.5rem;
+    height: 3.5rem;
   }
 
   .geo-map-cluster--dense .geo-map-cluster__disc {
-    background: #ef8b1a;
     font-size: 0.875rem;
   }
 
   .geo-map-cluster:hover .geo-map-cluster__disc {
+    background: var(--geo-map-cluster-fill-hover);
     transform: scale(1.06);
   }
 

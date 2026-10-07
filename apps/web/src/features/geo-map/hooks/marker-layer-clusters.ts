@@ -185,8 +185,8 @@ const applyClusterGroup = (
 };
 
 /**
- * Replaces overlapping public pins with apartment-count bubbles.
- * One-member groups stay ordinary pins so a lone project remains clickable.
+ * Replaces public pins with one apartment-count bubble per district.
+ * A placement with no published apartments stays an ordinary pin.
  */
 export const syncClusteredMarkers = (input: ClusterSyncInput): void => {
   const grouped = clusterScreenPoints(
