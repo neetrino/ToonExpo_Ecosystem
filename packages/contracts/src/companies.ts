@@ -80,7 +80,8 @@ export type CompanyProfileResponse = {
 };
 
 /**
- * Platform-admin company create payload (first company_admin invited).
+ * Platform-admin company create payload.
+ * Builder companies are stored without sending a set-password email.
  */
 export type CreateCompanyRequest = {
   name: string;

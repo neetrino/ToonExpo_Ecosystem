@@ -14,11 +14,11 @@ type CreateCompanySheetProps = {
 };
 
 /**
- * Compact right-side sheet to provision a company + invite the first admin.
+ * Compact right-side sheet to provision a builder company without an invite email.
  */
 export const CreateCompanySheet = ({ open, onClose }: CreateCompanySheetProps) => {
   const t = useTranslations('Admin.companies');
-  const [invitedEmail, setInvitedEmail] = useState<string | null>(null);
+  const [created, setCreated] = useState(false);
   const resetTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -36,7 +36,7 @@ export const CreateCompanySheet = ({ open, onClose }: CreateCompanySheetProps) =
     }
     resetTimerRef.current = window.setTimeout(() => {
       resetTimerRef.current = null;
-      setInvitedEmail(null);
+      setCreated(false);
     }, SIDE_SHEET_PANEL_TRANSITION_MS);
   };
 
@@ -45,24 +45,22 @@ export const CreateCompanySheet = ({ open, onClose }: CreateCompanySheetProps) =
       open={open}
       onClose={handleClose}
       size="comfortable"
-      title={invitedEmail ? t('inviteSuccess.title') : t('new.title')}
+      title={created ? t('createSuccess.title') : t('new.title')}
     >
-      {invitedEmail ? (
+      {created ? (
         <div className="flex flex-col gap-3">
-          <p className="text-sm text-ink-secondary">
-            {t('inviteSuccess.message', { email: invitedEmail })}
-          </p>
+          <p className="text-sm text-ink-secondary">{t('createSuccess.message')}</p>
           <div className="flex flex-wrap gap-2">
             <Button type="button" variant="secondary" size="sm" onClick={handleClose}>
-              {t('inviteSuccess.backToList')}
+              {t('createSuccess.backToList')}
             </Button>
-            <Button type="button" variant="outline" size="sm" onClick={() => setInvitedEmail(null)}>
-              {t('inviteSuccess.createAnother')}
+            <Button type="button" variant="outline" size="sm" onClick={() => setCreated(false)}>
+              {t('createSuccess.createAnother')}
             </Button>
           </div>
         </div>
       ) : (
-        <CreateCompanyForm onSuccess={setInvitedEmail} />
+        <CreateCompanyForm onSuccess={() => setCreated(true)} />
       )}
     </AdminCreateSheet>
   );

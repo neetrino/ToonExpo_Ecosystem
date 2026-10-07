@@ -43,7 +43,9 @@ export class AdminCompaniesController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Provision a company with first company_admin' })
-  @ApiCreatedResponse({ description: 'Company and invited admin created' })
+  @ApiCreatedResponse({
+    description: 'Company created. Builder admins are not emailed a set-password invite.',
+  })
   create(
     @CurrentUser() user: AuthenticatedUser,
     @Body() body: CreateCompanyDto,

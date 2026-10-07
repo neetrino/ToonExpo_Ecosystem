@@ -167,15 +167,15 @@ export class AdminCompaniesService {
         targetType: ReadinessAssessmentTargetType.builder_company,
         builderCompanyId: result.company.id,
       });
+    } else {
+      await this.provisioning.sendSetPasswordInviteBestEffort({
+        userId: result.adminUser.id,
+        email: result.adminUser.email,
+        name: result.adminUser.name,
+        companyName: result.company.name,
+        ...(input.locale ? { locale: input.locale } : {}),
+      });
     }
-
-    await this.provisioning.sendSetPasswordInviteBestEffort({
-      userId: result.adminUser.id,
-      email: result.adminUser.email,
-      name: result.adminUser.name,
-      companyName: result.company.name,
-      ...(input.locale ? { locale: input.locale } : {}),
-    });
 
     return {
       company: toCompanyResponse(

@@ -1933,7 +1933,7 @@
       },
       "new": {
         "title": "New company",
-        "subtitle": "Create a company and invite the first administrator"
+        "subtitle": "Create a builder company without sending a login email"
       },
       "form": {
         "companySection": "Company",
@@ -1962,7 +1962,7 @@
         "adminName": "Admin name",
         "adminEmail": "Admin email",
         "adminPhone": "Admin phone",
-        "submit": "Create & send invite",
+        "submit": "Create company",
         "submitting": "Creating…"
       },
       "validation": {
@@ -1985,9 +1985,9 @@
         "emailTaken": "This email is already registered",
         "generic": "Something went wrong. Please try again."
       },
-      "inviteSuccess": {
-        "title": "Invite sent",
-        "message": "Invite sent to {email}",
+      "createSuccess": {
+        "title": "Company created",
+        "message": "The builder was created. No login email was sent.",
         "backToList": "Back to companies",
         "createAnother": "Create another"
       },
