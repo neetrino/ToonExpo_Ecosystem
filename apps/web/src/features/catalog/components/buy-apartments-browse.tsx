@@ -1,13 +1,20 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 
 import { BuyApartmentCard } from '@/features/catalog/components/buy-apartment-card';
 import { BuyApartmentsMap } from '@/features/catalog/components/buy-apartments-map';
 import { BuyMapProjectFilterChip } from '@/features/catalog/components/buy-map-project-filter-chip';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
-import { BUY_APARTMENTS_MAP_HOVER_DEBOUNCE_MS } from '@/features/catalog/constants';
+import {
+  BUY_APARTMENTS_MAP_HOVER_DEBOUNCE_MS,
+  BUY_MAP_AREA_MIN_ZOOM,
+} from '@/features/catalog/constants';
+import {
+  useBuyMapAreaListings,
+  type BuyMapViewport,
+} from '@/features/catalog/hooks/use-buy-map-area-listings';
 import {
   CATALOG_CARD_CELL_FILL_CLASS,
   CATALOG_RESULTS_SCROLL_ID,
@@ -15,6 +22,7 @@ import {
 } from '@/features/catalog/constants/catalog-list';
 import type { BuyApartmentListing } from '@/features/catalog/utils/load-buy-apartments';
 import { filterListingsByProjectId } from '@/features/catalog/utils/filter-listings-by-project';
+import type { ProjectFilterParams } from '@/features/catalog/utils/project-filters';
 import { resolveMapObjectForProject } from '@/features/catalog/utils/resolve-map-object-for-project';
 import type { GeoMapFocusRequest, GeoMapObject } from '@/features/geo-map/types';
 import { mapPublicGeoMapItemsToObjects } from '@/features/geo-map/utils/map-object-mapper';
@@ -32,6 +40,7 @@ import {
 
 type BuyApartmentsBrowseProps = {
   listings: BuyApartmentListing[];
+  filters: ProjectFilterParams;
   /** Matching apartments across all pages (API `meta.total`). */
   totalCount: number;
   page: number;
@@ -47,6 +56,7 @@ type BuyApartmentsBrowseProps = {
  */
 export const BuyApartmentsBrowse = ({
   listings,
+  filters,
   totalCount,
   page,
   totalPages,
@@ -65,6 +75,14 @@ export const BuyApartmentsBrowse = ({
   const [mapProjectId, setMapProjectId] = useState<string | null>(null);
   const [mapProjectSlug, setMapProjectSlug] = useState<string | null>(null);
   const [mapProjectLabel, setMapProjectLabel] = useState<string | null>(null);
+  const [viewport, setViewport] = useState<BuyMapViewport | null>(null);
+  const onViewportChange = useCallback((next: BuyMapViewport) => {
+    setViewport(next);
+  }, []);
+  const areaQuery = useBuyMapAreaListings(viewport, filters);
+  const areaActive =
+    viewport != null && viewport.zoom >= BUY_MAP_AREA_MIN_ZOOM && viewport.bounds != null;
+  const sourceListings = areaActive && areaQuery.data != null ? areaQuery.data : listings;
   const loginHref = `/auth/login?returnUrl=${encodeURIComponent(pathname)}`;
 
   const objects = useMemo(
@@ -75,11 +93,11 @@ export const BuyApartmentsBrowse = ({
   objectsRef.current = objects;
 
   const visibleListings = useMemo(
-    () => filterListingsByProjectId(listings, mapProjectId),
-    [listings, mapProjectId],
+    () => filterListingsByProjectId(sourceListings, mapProjectId),
+    [sourceListings, mapProjectId],
   );
 
-  const resultsCount = mapProjectId != null ? visibleListings.length : totalCount;
+  const resultsCount = areaActive || mapProjectId != null ? visibleListings.length : totalCount;
 
   useEffect(() => {
     return () => {
@@ -143,6 +161,7 @@ export const BuyApartmentsBrowse = ({
         highlightedObjectId={highlightedObjectId}
         homesInViewCount={visibleListings.length}
         onObjectSelect={onMapObjectSelect}
+        onViewportChange={onViewportChange}
       />
 
       <div ref={listPanelRef} className="bg-canvas px-4 py-6 sm:px-6 lg:px-8 lg:overflow-y-auto">
@@ -172,10 +191,7 @@ export const BuyApartmentsBrowse = ({
         ) : (
           <StaggerGroup
             force
-            className={cn(
-              'grid grid-cols-1 gap-5 sm:grid-cols-2',
-              CATALOG_CARD_CELL_FILL_CLASS,
-            )}
+            className={cn('grid grid-cols-1 gap-5 sm:grid-cols-2', CATALOG_CARD_CELL_FILL_CLASS)}
             baseDelayMs={LIST_CONTENT_BASE_DELAY_MS}
             staggerMs={LIST_CARD_STAGGER_MS}
             durationMs={LIST_CARD_DURATION_MS}
@@ -192,17 +208,19 @@ export const BuyApartmentsBrowse = ({
           </StaggerGroup>
         )}
 
-        <CatalogPagination
-          className="mt-8"
-          page={page}
-          totalPages={totalPages}
-          previousHref={previousHref}
-          nextHref={nextHref}
-          previousLabel={catalogT('pagination.previous')}
-          nextLabel={catalogT('pagination.next')}
-          ariaLabel={catalogT('pagination.ariaLabel')}
-          scrollTargetId={CATALOG_RESULTS_SCROLL_ID}
-        />
+        {areaActive ? null : (
+          <CatalogPagination
+            className="mt-8"
+            page={page}
+            totalPages={totalPages}
+            previousHref={previousHref}
+            nextHref={nextHref}
+            previousLabel={catalogT('pagination.previous')}
+            nextLabel={catalogT('pagination.next')}
+            ariaLabel={catalogT('pagination.ariaLabel')}
+            scrollTargetId={CATALOG_RESULTS_SCROLL_ID}
+          />
+        )}
 
         <div className="mt-10 rounded-[20px] border border-dashed border-header-border px-6 py-8 text-center">
           <p className="text-sm text-header-muted">{t('saveSearchHint')}</p>

@@ -18,6 +18,11 @@ export const buildApartmentListWhere = (
     projectWhere.builderCompanyId = query.builderId;
   }
 
+  if (query.west != null && query.south != null && query.east != null && query.north != null) {
+    projectWhere.longitude = { gte: query.west, lte: query.east };
+    projectWhere.latitude = { gte: query.south, lte: query.north };
+  }
+
   if (query.city) {
     const cities = query.city
       .split(',')

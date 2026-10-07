@@ -107,6 +107,12 @@ const toApartmentSearchParams = (query: ListApartmentsQuery): string => {
   if (query.locale) {
     params.set('locale', query.locale);
   }
+  if (query.west != null && query.south != null && query.east != null && query.north != null) {
+    params.set('west', String(query.west));
+    params.set('south', String(query.south));
+    params.set('east', String(query.east));
+    params.set('north', String(query.north));
+  }
 
   const serialized = params.toString();
   return serialized.length > 0 ? `?${serialized}` : '';

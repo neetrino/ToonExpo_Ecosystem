@@ -88,6 +88,7 @@ export default async function ApartmentsIndexPage({
           <BuyApartmentsFilters filters={filters} cities={cities} />
           <BuyApartmentsBrowse
             listings={listingsPage.data}
+            filters={filters}
             totalCount={total}
             page={page}
             totalPages={totalPages}

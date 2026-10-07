@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 
 import { GeoMapCanvasLazy } from '@/features/geo-map/components/geo-map-canvas-lazy';
 import { GEO_MAP_CITY_LIFE_PROPS } from '@/features/geo-map/geo-map-city-life-props';
+import type { BuyMapViewport } from '@/features/catalog/hooks/use-buy-map-area-listings';
 import type { GeoMapFocusRequest, GeoMapObject } from '@/features/geo-map/types';
 import { mapPublicGeoMapItemsToObjects } from '@/features/geo-map/utils/map-object-mapper';
 import { GeoMapStatusOverlays } from '@/features/geo-map/public/components/geo-map-status-overlays';
@@ -18,6 +19,7 @@ type BuyApartmentsMapProps = {
   homesInViewCount: number;
   /** Map → list: select a project model without navigating away. */
   onObjectSelect?: ((object: GeoMapObject) => void) | undefined;
+  onViewportChange?: ((viewport: BuyMapViewport) => void) | undefined;
   className?: string | undefined;
 };
 
@@ -34,6 +36,7 @@ export const BuyApartmentsMap = ({
   highlightedObjectId = null,
   homesInViewCount,
   onObjectSelect,
+  onViewportChange,
   className,
 }: BuyApartmentsMapProps) => {
   const t = useTranslations('BuyPage');
@@ -70,6 +73,7 @@ export const BuyApartmentsMap = ({
         {...GEO_MAP_CITY_LIFE_PROPS}
         className="absolute inset-0 h-full w-full"
         onObjectClick={onObjectClick}
+        onViewportChange={onViewportChange}
       />
 
       <GeoMapStatusOverlays
