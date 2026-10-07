@@ -31,7 +31,10 @@ describe('clusterScreenPoints', () => {
   });
 
   it('keeps distant pins as separate one-member clusters', () => {
-    const clusters = clusterScreenPoints([point('a', 0, 10), point('b', 200, 15)], 56);
+    const clusters = clusterScreenPoints(
+      [point('a', 0, 10, 0, 44.51, 40.19), point('b', 200, 15, 0, 44.65, 40.19)],
+      56,
+    );
     expect(clusters.map((cluster) => cluster.id)).toEqual(['a', 'b']);
     expect(clusters.map((cluster) => cluster.apartmentCount)).toEqual([10, 15]);
   });
@@ -42,6 +45,15 @@ describe('clusterScreenPoints', () => {
       160,
     );
     expect(clusters.map((cluster) => cluster.id)).toEqual(['a', 'b']);
+  });
+
+  it('pulls an empty placement into the nearest district even when the icon sits apart', () => {
+    const clusters = clusterScreenPoints(
+      [point('malatia', 0, 6, 0, 44.44, 40.172), point('empty', 320, 0, 0, 44.4828, 40.1757)],
+      56,
+    );
+    expect(clusters).toHaveLength(1);
+    expect(clusters[0]?.apartmentCount).toBe(6);
   });
 
   it('merges a nearby pin into its district even when the icons do not overlap', () => {

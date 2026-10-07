@@ -28,9 +28,6 @@ export type MapMarkerCluster<T extends ClusterScreenPoint> = {
   members: readonly T[];
 };
 
-const screenDistance = (left: ClusterScreenPoint, right: ClusterScreenPoint): number =>
-  Math.hypot(left.x - right.x, left.y - right.y);
-
 const toRadians = (degrees: number): number => (degrees * Math.PI) / 180;
 
 /** Ground distance so a cluster cannot swallow a whole city when zoomed out. */
@@ -132,20 +129,6 @@ const membersOfRoots = (
   return members;
 };
 
-const withinScreenRadius = (
-  points: readonly ClusterScreenPoint[],
-  left: number,
-  right: number,
-  radiusPx: number,
-): boolean => {
-  const leftPoint = pointAt(points, left);
-  const rightPoint = pointAt(points, right);
-  if (!leftPoint || !rightPoint) {
-    return false;
-  }
-  return screenDistance(leftPoint, rightPoint) <= radiusPx;
-};
-
 /**
  * Joins a pair only when the whole resulting group still fits in one district.
  * A chain of close links cannot swallow the next district.
@@ -153,15 +136,11 @@ const withinScreenRadius = (
 const linkNeighborhoods = (
   points: readonly ClusterScreenPoint[],
   parent: number[],
-  radiusPx: number,
   maxDistanceMeters: number,
 ): void => {
   for (const pair of neighborhoodPairs(points)) {
     if (pair.distanceMeters > maxDistanceMeters) {
       return;
-    }
-    if (!withinScreenRadius(points, pair.left, pair.right, radiusPx)) {
-      continue;
     }
     const leftRoot = findRoot(parent, pair.left);
     const rightRoot = findRoot(parent, pair.right);
@@ -210,8 +189,8 @@ const buildClusters = <T extends ClusterScreenPoint>(
 };
 
 /**
- * Groups pins that sit in one district: close enough on screen to belong to
- * the same overview, and no wider on the ground than `maxDistanceMeters`.
+ * Groups pins that sit in one district: no wider on the ground than
+ * `maxDistanceMeters`. A positive `radiusPx` turns clustering on.
  * Lone pins stay one-member clusters. Position is the mean of member
  * coordinates; `apartmentCount` is the sum.
  */
@@ -225,7 +204,7 @@ export const clusterScreenPoints = <T extends ClusterScreenPoint>(
   }
   const parent = points.map((_, index) => index);
   if (radiusPx > 0) {
-    linkNeighborhoods(points, parent, radiusPx, maxDistanceMeters);
+    linkNeighborhoods(points, parent, maxDistanceMeters);
   }
   return buildClusters(points, parent);
 };

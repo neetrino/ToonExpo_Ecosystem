@@ -145,9 +145,8 @@ export const FOCUS_PITCH_DEG = DEFAULT_MAP_PITCH_DEG;
 export const MARKER_ELEMENT_SELECTED_CLASS_NAME = 'geo-map-pin--selected';
 
 /**
- * Public-map clustering: pins this close on screen can join one neighborhood
- * bubble. About 4–5 km at the city overview (zoom 11–12), so a pin sitting
- * beside a count still joins that count.
+ * Turns district clustering on for the public map. Membership is the ground
+ * span below, so a pin that sits beside a count still joins that count.
  */
 export const MARKER_CLUSTER_RADIUS_PX = 160;
 
