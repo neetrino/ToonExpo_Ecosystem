@@ -8,7 +8,6 @@ import { useEffect, useState } from 'react';
 import { formatPersonName } from '@toonexpo/shared';
 
 import { useMeQuery } from '@/features/auth/hooks/use-auth';
-import { ApartmentDetailFavorite } from '@/features/buyer/components/apartment-detail-favorite';
 import { useCreateBuyerRequestMutation } from '@/features/buyer/hooks/use-buyer';
 import { isNonBuyerStaff } from '@/features/buyer/utils/is-buyer-account';
 import { getAccountInitials } from '@/shared/lib/account-initials';
@@ -68,9 +67,7 @@ export const ApartmentInquireCard = ({
       current.trim() === '' ? formatPersonName(user.name, user.surname) : current,
     );
     setEmail((current) => (current.trim() === '' ? user.email : current));
-    setPhone((current) =>
-      current.trim() === '' ? sanitizePhoneInput(user.phone ?? '') : current,
-    );
+    setPhone((current) => (current.trim() === '' ? sanitizePhoneInput(user.phone ?? '') : current));
   }, [user]);
 
   useEffect(() => {
@@ -154,7 +151,6 @@ export const ApartmentInquireCard = ({
             <p className="text-xs text-header-muted">{t('inquireAgentMeta')}</p>
           </div>
         </div>
-        <ApartmentDetailFavorite apartmentId={apartmentId} />
       </div>
 
       {success ? (

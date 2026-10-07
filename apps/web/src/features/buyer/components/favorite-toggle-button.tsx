@@ -19,13 +19,29 @@ type FavoriteToggleButtonProps = {
   targetType: FavoriteTargetType;
   targetId: string;
   className?: string | undefined;
-  variant?: 'overlay' | 'surface' | undefined;
+  variant?: 'overlay' | 'surface' | 'prominent' | undefined;
+};
+
+const heartClassName = (
+  variant: 'overlay' | 'surface' | 'prominent',
+  favorited: boolean,
+): string | undefined => {
+  if (variant !== 'prominent') {
+    return undefined;
+  }
+  return favorited ? 'size-6 fill-brand text-brand' : 'size-6 fill-none text-current';
 };
 
 const variantClassNames = {
   overlay: 'border-white/50 bg-white/85 text-ink shadow-sm hover:bg-white',
   surface: 'border-border bg-surface text-ink shadow-none hover:bg-background',
+  prominent: '',
 } as const;
+
+const prominentClassName = (favorited: boolean): string =>
+  favorited
+    ? 'size-11 border-2 border-brand bg-white text-brand shadow-none hover:bg-band-mist'
+    : 'size-11 border-2 border-header-border bg-white text-header-muted shadow-none hover:border-brand hover:text-brand';
 
 /**
  * Catalog heart toggle — guests link to login; buyers toggle optimistically.
@@ -67,7 +83,7 @@ export const FavoriteToggleButton = ({
   const label = favorited ? t('removeLabel') : t('addLabel');
   const buttonClassName = cn(
     'inline-flex size-9 items-center justify-center rounded-pill border transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand',
-    variantClassNames[variant],
+    variant === 'prominent' ? prominentClassName(favorited) : variantClassNames[variant],
     className,
   );
 
@@ -79,7 +95,7 @@ export const FavoriteToggleButton = ({
         className={buttonClassName}
         aria-label={t('loginToSave')}
       >
-        <FavoriteHeartIcon filled={false} />
+        <FavoriteHeartIcon filled={false} className={heartClassName(variant, false)} />
       </Link>
     );
   }
@@ -109,7 +125,7 @@ export const FavoriteToggleButton = ({
       disabled={mutation.isPending}
       onClick={handleToggle}
     >
-      <FavoriteHeartIcon filled={favorited} />
+      <FavoriteHeartIcon filled={favorited} className={heartClassName(variant, favorited)} />
     </button>
   );
 };

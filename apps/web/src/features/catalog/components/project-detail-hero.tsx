@@ -98,7 +98,10 @@ const ProjectHeroSummary = ({
           {project.builder.name}
         </p>
       </div>
-      <CatalogEntityQr payloadUrl={projectQrUrl} codeLabel={qrTitle} entityName={project.name} />
+      <div className="flex shrink-0 items-center gap-2">
+        <ProjectDetailFavorite projectId={project.id} />
+        <CatalogEntityQr payloadUrl={projectQrUrl} codeLabel={qrTitle} entityName={project.name} />
+      </div>
     </div>
 
     <div className="mt-3 sm:hidden">
@@ -123,12 +126,14 @@ const ProjectHeroSummary = ({
           <h1 className="min-w-0 flex-1 font-brand text-[clamp(1.75rem,4vw,2.75rem)] font-bold leading-[1.15] tracking-[-0.03em] text-ink-navy">
             {project.name}
           </h1>
-          <CatalogEntityQr
-            className="mt-1"
-            payloadUrl={projectQrUrl}
-            codeLabel={qrTitle}
-            entityName={project.name}
-          />
+          <div className="mt-1 flex shrink-0 items-center gap-2">
+            <ProjectDetailFavorite projectId={project.id} />
+            <CatalogEntityQr
+              payloadUrl={projectQrUrl}
+              codeLabel={qrTitle}
+              entityName={project.name}
+            />
+          </div>
         </div>
         <p className={CATALOG_HERO_CARD_DESCRIPTION_DESKTOP_CLASS}>{description}</p>
       </div>
@@ -174,7 +179,6 @@ export const ProjectDetailHero = ({ project }: ProjectDetailHeroProps) => {
           <div className="size-full bg-band-mist" />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-ink/50 via-transparent to-ink/20" />
-        <ProjectDetailFavorite projectId={project.id} />
       </div>
 
       <div className="page-container relative z-[1] -mt-40 pb-4 sm:-mt-48">

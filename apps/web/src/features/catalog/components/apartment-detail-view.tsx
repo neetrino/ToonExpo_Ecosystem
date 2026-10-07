@@ -7,6 +7,7 @@ import { ApartmentAboutSection } from '@/features/catalog/components/apartment-a
 import { CatalogPathBreadcrumb } from '@/features/catalog/components/catalog-path-breadcrumb';
 import { ApartmentDetailCriteriaPanel } from '@/features/catalog/components/apartment-detail-criteria-panel';
 import { ApartmentDetailPrice } from '@/features/catalog/components/apartment-price-label';
+import { ApartmentDetailFavorite } from '@/features/buyer/components/apartment-detail-favorite';
 import { ApartmentInquireCard } from '@/features/catalog/components/apartment-inquire-card';
 import { ApartmentMortgageEstimate } from '@/features/catalog/components/apartment-mortgage-estimate';
 import { ApartmentNeighborhood } from '@/features/catalog/components/apartment-neighborhood';
@@ -171,29 +172,34 @@ export const ApartmentDetailView = async ({
                 {apartment.builder.name}
               </p>
             </div>
-            <CatalogEntityQr
-              payloadUrl={apartmentQrUrl}
-              codeLabel={t('apartment.qrTitle', {
-                name: apartment.project.name,
-                number: apartment.number,
-              })}
-              entityName={apartment.project.name}
-            />
+            <div className="flex shrink-0 items-center gap-2">
+              <ApartmentDetailFavorite apartmentId={apartment.id} />
+              <CatalogEntityQr
+                payloadUrl={apartmentQrUrl}
+                codeLabel={t('apartment.qrTitle', {
+                  name: apartment.project.name,
+                  number: apartment.number,
+                })}
+                entityName={apartment.project.name}
+              />
+            </div>
           </div>
 
           <div className="mt-3 flex items-start gap-3">
             <h1 className="min-w-0 flex-1 font-brand text-[clamp(2rem,5vw,3rem)] font-bold leading-[1.15] tracking-tight text-ink-navy">
               {apartment.project.name}
             </h1>
-            <CatalogEntityQr
-              className="mt-1 hidden lg:inline-flex"
-              payloadUrl={apartmentQrUrl}
-              codeLabel={t('apartment.qrTitle', {
-                name: apartment.project.name,
-                number: apartment.number,
-              })}
-              entityName={apartment.project.name}
-            />
+            <div className="mt-1 hidden shrink-0 items-center gap-2 lg:flex">
+              <ApartmentDetailFavorite apartmentId={apartment.id} />
+              <CatalogEntityQr
+                payloadUrl={apartmentQrUrl}
+                codeLabel={t('apartment.qrTitle', {
+                  name: apartment.project.name,
+                  number: apartment.number,
+                })}
+                entityName={apartment.project.name}
+              />
+            </div>
           </div>
           <p className="mt-2 text-lg leading-[1.2] text-header-muted">
             {locationLine ?? apartment.project.name}
