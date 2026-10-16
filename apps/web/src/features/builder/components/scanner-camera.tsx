@@ -42,6 +42,7 @@ export const ScannerCamera = ({ onToken, paused, showManualHint = true }: Scanne
   const t = useTranslations('Builder.scanner');
   const [phase, setPhase] = useState<CameraPhase>('starting');
   const [cameraRetryKey, setCameraRetryKey] = useState(0);
+  const [cameraErrorRetries, setCameraErrorRetries] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -66,11 +67,15 @@ export const ScannerCamera = ({ onToken, paused, showManualHint = true }: Scanne
       if (cancelled) {
         return;
       }
-      if (state === 'granted') {
-        setPhase('active');
+      if (state === 'denied') {
+        setPhase('blocked');
         return;
       }
-      setPhase('idle');
+      if (state === 'prompt') {
+        setPhase('idle');
+        return;
+      }
+      setPhase('active');
     });
 
     return () => {
@@ -145,6 +150,11 @@ export const ScannerCamera = ({ onToken, paused, showManualHint = true }: Scanne
         onError={(error: IScannerError) => {
           if (error.kind === 'permission-denied') {
             setPhase('blocked');
+            return;
+          }
+          if (cameraErrorRetries < 1) {
+            setCameraErrorRetries((count) => count + 1);
+            setCameraRetryKey((key) => key + 1);
             return;
           }
           setPhase('unavailable');
