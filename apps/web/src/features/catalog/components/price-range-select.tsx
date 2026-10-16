@@ -146,12 +146,12 @@ export const PriceRangeSelect = ({
         }}
       />
 
-      <DropdownPortal open={open} anchorRef={rootRef} exactWidth>
+      <DropdownPortal open={open} anchorRef={rootRef}>
         <div
           ref={panelRef}
           role="dialog"
           aria-label={labels.save}
-          className={cn(HERO_FILTER_PANEL_CLASS, 'p-3.5')}
+          className={cn(HERO_FILTER_PANEL_CLASS, 'w-[16.5rem] overflow-visible p-3.5')}
         >
           <div className="flex flex-col gap-3">
             <label className="space-y-1.5">
@@ -185,7 +185,8 @@ export const PriceRangeSelect = ({
           <button
             type="button"
             className={cn(
-              'mt-3.5 h-10 w-full rounded-[12px] bg-brand-deep px-4 text-sm font-semibold text-on-dark',
+              'mt-3.5 inline-flex h-10 w-full items-center justify-center whitespace-nowrap rounded-[12px]',
+              'bg-brand-deep px-4 text-sm font-semibold text-on-dark',
               'transition-colors hover:bg-brand-deep/90 focus-visible:outline-none',
               'focus-visible:ring-2 focus-visible:ring-brand-deep/30',
             )}

@@ -3384,6 +3384,18 @@
         "invalid": "Check your inputs and try again.",
         "downPaymentBelowMinimum": "Down payment is below the minimum for this offer.",
         "invalidTerm": "Selected term is not available for this offer."
+      },
+      "apply": {
+        "send": "Send application",
+        "title": "Application to the bank",
+        "noteLabel": "Message (optional)",
+        "notePlaceholder": "Add a note for the bank…",
+        "submit": "Send application",
+        "submitting": "Sending…",
+        "cancel": "Cancel",
+        "success": "Your application was sent to the selected bank.",
+        "error": "Could not send the application. Try again.",
+        "staffBlocked": "Staff accounts cannot send buyer applications."
       }
     }
   },
@@ -3444,6 +3456,13 @@
         "sortOrder": "Sort order",
         "featured": "Featured offer",
         "cancel": "Cancel"
+      },
+      "applications": {
+        "title": "Received applications",
+        "empty": "No applications yet.",
+        "error": "Could not load applications.",
+        "monthly": "Monthly: {amount}",
+        "term": "{years} years"
       }
     }
   },

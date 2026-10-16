@@ -4,6 +4,7 @@ import type { PublicMortgageOfferItem } from '@toonexpo/contracts';
 import { useLocale, useTranslations } from 'next-intl';
 import { useMemo, type ReactNode } from 'react';
 
+import { MortgageApplyButton } from '@/features/mortgage/components/mortgage-apply-button';
 import { MortgageLoanSlider } from '@/features/mortgage/components/mortgage-loan-slider';
 import { MortgageOfferCard } from '@/features/mortgage/components/mortgage-offer-card';
 import { MortgageResultsPanel } from '@/features/mortgage/components/mortgage-results-panel';
@@ -196,6 +197,14 @@ export const MortgageCalculatorSection = ({ offers }: MortgageCalculatorSectionP
               bankName={selectedOffer.bank.name}
               hasValidationError={validationMessage != null}
             />
+            {liveEstimate && loanTermYears != null ? (
+              <MortgageApplyButton
+                bankOfferId={selectedOffer.id}
+                propertyPrice={parsedPrice}
+                downPaymentPercent={parsedDownPercent}
+                loanTermYears={loanTermYears}
+              />
+            ) : null}
           </div>
         </aside>
       </Reveal>

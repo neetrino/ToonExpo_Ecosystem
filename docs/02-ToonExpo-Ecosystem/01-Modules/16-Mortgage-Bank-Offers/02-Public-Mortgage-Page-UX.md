@@ -70,16 +70,9 @@ Selected offer changes
 
 ## Call To Action
 
-v1 should avoid application flow.
+Under the selected bank's monthly payment, a signed-in buyer can send an application to that bank. The application stores the calculator inputs, the estimated payment, and an optional note. The bank partner sees it in the mortgage offers portal.
 
-Possible safe actions:
-
-- contact bank;
-- visit bank website;
-- view bank partner page;
-- request more info later if explicitly added.
-
-Do not add "Apply now" in v1.
+Anonymous visitors are sent to login first.
 
 ## Empty State
 
