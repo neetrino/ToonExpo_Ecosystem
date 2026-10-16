@@ -30,6 +30,15 @@ const isAuthRoute = (pathname: string): boolean => {
   return pathname === '/auth' || pathname.startsWith('/auth/');
 };
 
+const isAuthShellRoute = (pathname: string): boolean => {
+  return (
+    pathname === '/auth/login' ||
+    pathname.startsWith('/auth/login/') ||
+    pathname === '/auth/register' ||
+    pathname.startsWith('/auth/register/')
+  );
+};
+
 const isHomeRoute = (pathname: string): boolean => {
   return pathname === '/' || pathname === '';
 };
@@ -67,6 +76,7 @@ const isGeoMapRoute = (pathname: string): boolean => {
  * Persistent public chrome — keeps SiteHeader mounted across navigations
  * so the bar does not remount/jump when switching Projects / Builders / etc.
  * Auth routes use AuthPageShell instead of the public header.
+ * Login and register mount the mobile bottom nav (Profile stays selected).
  * Home, partners/projects/builders list+detail, and geo map
  * use a transparent header so content sits under the bar; other public pages
  * use the same floating pill chrome as home-after-scroll.
@@ -93,7 +103,12 @@ export const PublicChrome = ({ children }: PublicChromeProps) => {
       : 'solid';
 
   if (isAuthRoute(pathname)) {
-    return <DesktopFluidFrame>{children}</DesktopFluidFrame>;
+    return (
+      <DesktopFluidFrame>
+        {children}
+        {isAuthShellRoute(pathname) ? <MobileBottomNav /> : null}
+      </DesktopFluidFrame>
+    );
   }
 
   const isPortal = isPortalRoute(pathname);
