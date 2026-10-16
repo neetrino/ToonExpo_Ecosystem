@@ -15,6 +15,10 @@ export type ProjectFilterParams = {
   salesStatus?: ApartmentSalesStatus;
   minPrice?: number;
   maxPrice?: number;
+  minArea?: number;
+  maxArea?: number;
+  /** Home payment-method ids, comma-separated. Not sent to the list API yet. */
+  payment?: string;
   rooms?: number[];
   city?: string;
   builderId?: string;
@@ -100,6 +104,9 @@ export const parseProjectFilters = (
   const q = read('q')?.trim() || undefined;
   const minPrice = toNonNegativeNumber(read('minPrice'));
   const maxPrice = toNonNegativeNumber(read('maxPrice'));
+  const minArea = toNonNegativeNumber(read('minArea'));
+  const maxArea = toNonNegativeNumber(read('maxArea'));
+  const payment = read('payment')?.trim() || undefined;
   const rooms = parseRoomsFilterValue(readList('rooms'));
 
   const filters: ProjectFilterParams = {
@@ -115,6 +122,15 @@ export const parseProjectFilters = (
   }
   if (maxPrice != null) {
     filters.maxPrice = maxPrice;
+  }
+  if (minArea != null) {
+    filters.minArea = minArea;
+  }
+  if (maxArea != null) {
+    filters.maxArea = maxArea;
+  }
+  if (payment) {
+    filters.payment = payment;
   }
   if (rooms != null) {
     filters.rooms = rooms;
@@ -142,6 +158,8 @@ export const toListProjectsQuery = (filters: ProjectFilterParams): ListProjectsQ
     ...(filters.salesStatus ? { salesStatus: filters.salesStatus } : {}),
     ...(filters.minPrice != null ? { minPrice: filters.minPrice } : {}),
     ...(filters.maxPrice != null ? { maxPrice: filters.maxPrice } : {}),
+    ...(filters.minArea != null ? { minArea: filters.minArea } : {}),
+    ...(filters.maxArea != null ? { maxArea: filters.maxArea } : {}),
     ...(filters.rooms != null && filters.rooms.length > 0 ? { rooms: filters.rooms } : {}),
     ...(filters.city ? { city: filters.city } : {}),
     ...(filters.builderId ? { builderId: filters.builderId } : {}),
@@ -174,6 +192,15 @@ export const buildProjectSearchParams = (
   if (filters.maxPrice != null) {
     params['maxPrice'] = String(filters.maxPrice);
   }
+  if (filters.minArea != null) {
+    params['minArea'] = String(filters.minArea);
+  }
+  if (filters.maxArea != null) {
+    params['maxArea'] = String(filters.maxArea);
+  }
+  if (filters.payment) {
+    params['payment'] = filters.payment;
+  }
   if (filters.rooms != null && filters.rooms.length > 0) {
     params['rooms'] = filters.rooms.join(',');
   }
@@ -194,6 +221,9 @@ const OPTIONAL_FILTER_KEYS = [
   'salesStatus',
   'minPrice',
   'maxPrice',
+  'minArea',
+  'maxArea',
+  'payment',
   'rooms',
   'city',
   'builderId',

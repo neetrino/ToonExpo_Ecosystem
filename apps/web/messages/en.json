@@ -223,11 +223,27 @@
       "locationEmpty": "No cities found",
       "locationSelectedCount": "{count} selected",
       "priceLabel": "Price",
+      "priceSuffix": " mln AMD",
+      "areaLabel": "Area",
+      "areaSuffix": " m²",
+      "areaMin": "From",
+      "areaMax": "Up to",
       "priceAny": "Any price",
-      "priceMin": "Minimum",
-      "priceMax": "Maximum",
+      "priceMin": "From (mln AMD)",
+      "priceMax": "Up to (mln AMD)",
       "priceSave": "Save and show",
       "priceInvalidRange": "Minimum price cannot exceed maximum price",
+      "priceFromLabel": "Price from (million AMD)",
+      "priceToLabel": "Up to (million AMD)",
+      "areaFromLabel": "Area from (m²)",
+      "areaToLabel": "Up to (m²)",
+      "paymentLabel": "Payment method",
+      "paymentAny": "Any",
+      "paymentSelectedCount": "{count} selected",
+      "paymentMethods": {
+        "income_tax_refund": "Income tax refund"
+      },
+      "rangeInvalid": "“From” cannot be greater than “Up to”",
       "bedsLabel": "Beds",
       "bedsAny": "Any",
       "bedsValue": "{count}",
@@ -374,6 +390,7 @@
   "Nav": {
     "main": "Main navigation",
     "bottomNav": "Mobile navigation",
+    "scrollToTop": "Back to top",
     "home": "Home",
     "menu": "Open menu",
     "railExpand": "Expand sidebar",
@@ -408,6 +425,13 @@
     "title": "Discover",
     "subtitle": "Swipe right to like, left to skip",
     "hint": "Drag the card or use the buttons",
+    "hintCoach": {
+      "title": "Swipe the card",
+      "body": "Right to like, left to skip.",
+      "skip": "Not interested",
+      "like": "Like",
+      "dismiss": "Close"
+    },
     "loginHint": "Sign in to save apartments you like.",
     "loginCta": "Sign in",
     "error": "Could not load apartments. Try again.",
@@ -3368,6 +3392,18 @@
         "invalid": "Check your inputs and try again.",
         "downPaymentBelowMinimum": "Down payment is below the minimum for this offer.",
         "invalidTerm": "Selected term is not available for this offer."
+      },
+      "apply": {
+        "send": "Send application",
+        "title": "Application to the bank",
+        "noteLabel": "Message (optional)",
+        "notePlaceholder": "Add a note for the bank…",
+        "submit": "Send application",
+        "submitting": "Sending…",
+        "cancel": "Cancel",
+        "success": "Your application was sent to the selected bank.",
+        "error": "Could not send the application. Try again.",
+        "staffBlocked": "Staff accounts cannot send buyer applications."
       }
     }
   },
@@ -3428,6 +3464,13 @@
         "sortOrder": "Sort order",
         "featured": "Featured offer",
         "cancel": "Cancel"
+      },
+      "applications": {
+        "title": "Received applications",
+        "empty": "No applications yet.",
+        "error": "Could not load applications.",
+        "monthly": "Monthly: {amount}",
+        "term": "{years} years"
       }
     }
   },

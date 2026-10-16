@@ -244,6 +244,8 @@ export class ProjectsService {
       query.salesStatus != null ||
       query.minPrice != null ||
       query.maxPrice != null ||
+      query.minArea != null ||
+      query.maxArea != null ||
       (query.rooms != null && query.rooms.length > 0);
 
     if (!hasFilter) {
@@ -272,6 +274,16 @@ export class ProjectsService {
       }
       filter.priceVisibility = 'public';
       filter.building = { priceOnRequestEnabled: false };
+    }
+
+    if (query.minArea != null || query.maxArea != null) {
+      filter.areaTotal = {};
+      if (query.minArea != null) {
+        filter.areaTotal.gte = query.minArea;
+      }
+      if (query.maxArea != null) {
+        filter.areaTotal.lte = query.maxArea;
+      }
     }
 
     return filter;

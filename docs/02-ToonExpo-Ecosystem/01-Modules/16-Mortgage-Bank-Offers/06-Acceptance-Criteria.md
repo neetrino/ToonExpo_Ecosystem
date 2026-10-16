@@ -21,7 +21,7 @@
 
 ## Boundaries
 
-- No mortgage application is submitted in v1.
+- A signed-in buyer can send one application to the selected bank from the calculator.
 - No document collection exists in v1.
 - No bank API integration exists in v1.
 - No payment flow exists in v1.
@@ -32,4 +32,3 @@
 - Mortgage page works on mobile.
 - Offer cards are readable on mobile.
 - Calculator inputs are usable on mobile.
-

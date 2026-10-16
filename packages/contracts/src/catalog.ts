@@ -317,6 +317,9 @@ export type ListProjectsQuery = {
   salesStatus?: ApartmentSalesStatus;
   minPrice?: number;
   maxPrice?: number;
+  /** Apartment area in square meters. */
+  minArea?: number;
+  maxArea?: number;
   rooms?: number[];
   city?: string;
   builderId?: string;

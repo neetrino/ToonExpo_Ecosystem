@@ -92,13 +92,35 @@ model BankOffer {
   createdAt             DateTime          @default(now()) @map("created_at")
   updatedAt             DateTime          @updatedAt @map("updated_at")
 
-  partnerCompany PartnerCompany @relation(fields: [partnerCompanyId], references: [id], onDelete: Cascade)
-  createdBy      User           @relation("BankOfferCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
-  updatedBy      User?          @relation("BankOfferUpdater", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+  partnerCompany PartnerCompany         @relation(fields: [partnerCompanyId], references: [id], onDelete: Cascade)
+  createdBy      User                   @relation("BankOfferCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  updatedBy      User?                  @relation("BankOfferUpdater", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+  applications   MortgageApplication[]
 
   @@index([partnerCompanyId])
   @@index([publicationStatus])
   @@map("bank_offers")
+}
+
+/// Buyer application sent from the public mortgage calculator to a bank offer.
+model MortgageApplication {
+  id                 String   @id @default(cuid())
+  bankOfferId        String   @map("bank_offer_id")
+  buyerUserId        String   @map("buyer_user_id")
+  propertyPrice      Int      @map("property_price")
+  downPaymentPercent Decimal  @map("down_payment_percent") @db.Decimal(5, 2)
+  loanTermYears      Int      @map("loan_term_years")
+  monthlyPayment     Int      @map("monthly_payment")
+  loanAmount         Int      @map("loan_amount")
+  note               String?
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  bankOffer BankOffer @relation(fields: [bankOfferId], references: [id], onDelete: Cascade)
+  buyer     User      @relation("MortgageApplicationBuyer", fields: [buyerUserId], references: [id], onDelete: Cascade)
+
+  @@index([bankOfferId])
+  @@index([buyerUserId])
+  @@map("mortgage_applications")
 }
 
 /// Admin-managed reusable finance offer template (project Finance fields).

@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 
 import { BuyerQrCode } from '@/features/buyer/components/buyer-qr-code';
 import { BuyerScannerWorkspace } from '@/features/buyer/components/buyer-scanner-workspace';
+import { primeCameraAccess } from '@/features/builder/utils/request-camera-access';
 import { ScanHistoryList } from '@/features/buyer/components/scan-history-list';
 import { useBuyerQrQuery, useBuyerQrScansQuery } from '@/features/buyer/hooks/use-buyer';
 import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
@@ -97,6 +98,7 @@ export const BuyerQrPageContent = ({ buyerName }: BuyerQrPageContentProps) => {
             variant="secondary"
             className="mx-auto w-full max-w-[min(100%,17.5rem)]"
             onClick={() => {
+              primeCameraAccess();
               setScannerOpen(true);
             }}
           >

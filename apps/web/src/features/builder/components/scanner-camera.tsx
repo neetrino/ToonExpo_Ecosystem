@@ -2,9 +2,14 @@
 
 import { Scanner, type IScannerError } from '@yudiel/react-qr-scanner';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { requestCameraAccess } from '@/features/builder/utils/request-camera-access';
+import {
+  consumePrimedCameraAccess,
+  readCameraPermission,
+  requestCameraAccess,
+  type CameraAccessResult,
+} from '@/features/builder/utils/request-camera-access';
 import { Button } from '@/shared/ui/button';
 
 type ScannerCameraProps = {
@@ -14,16 +19,69 @@ type ScannerCameraProps = {
   showManualHint?: boolean;
 };
 
-type CameraPhase = 'idle' | 'active' | 'blocked' | 'unavailable';
+type CameraPhase = 'starting' | 'idle' | 'active' | 'blocked' | 'unavailable';
+
+const applyAccess = (
+  result: CameraAccessResult,
+  setPhase: (phase: CameraPhase) => void,
+  bumpKey: () => void,
+): void => {
+  if (result.status === 'granted') {
+    bumpKey();
+    setPhase('active');
+    return;
+  }
+  setPhase(result.status === 'denied' ? 'blocked' : 'unavailable');
+};
 
 /**
- * Camera QR scanner. Camera starts only after an explicit user tap so the
- * browser can show the permission prompt (auto-start on mount often cannot).
+ * Camera QR scanner. A scan click primes permission; an already-granted
+ * camera opens immediately without the extra prompt card.
  */
 export const ScannerCamera = ({ onToken, paused, showManualHint = true }: ScannerCameraProps) => {
   const t = useTranslations('Builder.scanner');
-  const [phase, setPhase] = useState<CameraPhase>('idle');
+  const [phase, setPhase] = useState<CameraPhase>('starting');
   const [cameraRetryKey, setCameraRetryKey] = useState(0);
+  const [cameraErrorRetries, setCameraErrorRetries] = useState(0);
+
+  useEffect(() => {
+    let cancelled = false;
+    const primed = consumePrimedCameraAccess();
+    const finish = (result: CameraAccessResult): void => {
+      if (cancelled) {
+        return;
+      }
+      applyAccess(result, setPhase, () => {
+        setCameraRetryKey((key) => key + 1);
+      });
+    };
+
+    if (primed) {
+      void primed.then(finish);
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    void readCameraPermission().then((state) => {
+      if (cancelled) {
+        return;
+      }
+      if (state === 'denied') {
+        setPhase('blocked');
+        return;
+      }
+      if (state === 'prompt') {
+        setPhase('idle');
+        return;
+      }
+      setPhase('active');
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleEnableCamera = async () => {
     // Must be the first await from the click — keeps user activation for the prompt.
@@ -35,6 +93,10 @@ export const ScannerCamera = ({ onToken, paused, showManualHint = true }: Scanne
     }
     setPhase(result.status === 'denied' ? 'blocked' : 'unavailable');
   };
+
+  if (phase === 'starting') {
+    return <div className="aspect-square w-full animate-pulse rounded-[20px] bg-band-mist" />;
+  }
 
   if (phase !== 'active') {
     const titleKey =
@@ -51,17 +113,15 @@ export const ScannerCamera = ({ onToken, paused, showManualHint = true }: Scanne
           : 'cameraPromptHint';
 
     return (
-      <div className="rounded-sm border border-border bg-surface px-4 py-6 text-center">
-        <p className="text-sm text-ink">{t(titleKey)}</p>
-        <p className="mt-2 text-sm text-ink-secondary">{t(hintKey)}</p>
+      <div className="rounded-[20px] bg-band-mist px-5 py-6 text-center">
+        <p className="text-sm font-medium text-ink-navy">{t(titleKey)}</p>
+        <p className="mt-2 text-sm leading-5 text-header-muted">{t(hintKey)}</p>
         {showManualHint && phase !== 'idle' ? (
-          <p className="mt-2 text-sm text-ink-secondary">{t('useManual')}</p>
+          <p className="mt-2 text-sm text-header-muted">{t('useManual')}</p>
         ) : null}
         <Button
           type="button"
-          variant="secondary"
-          size="sm"
-          className="mt-4"
+          className="mt-5 h-12 w-full rounded-full"
           onClick={() => {
             void handleEnableCamera();
           }}
@@ -90,6 +150,11 @@ export const ScannerCamera = ({ onToken, paused, showManualHint = true }: Scanne
         onError={(error: IScannerError) => {
           if (error.kind === 'permission-denied') {
             setPhase('blocked');
+            return;
+          }
+          if (cameraErrorRetries < 1) {
+            setCameraErrorRetries((count) => count + 1);
+            setCameraRetryKey((key) => key + 1);
             return;
           }
           setPhase('unavailable');

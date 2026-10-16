@@ -5,9 +5,6 @@ import { useLayoutEffect, useRef, useState } from 'react';
 
 import { cn } from '@/shared/ui/cn';
 
-/** Floor so controls stay usable on very short viewports. */
-const AUTH_FIT_MIN_SCALE = 0.68;
-
 type AuthFitStageProps = {
   children: ReactNode;
   className?: string;
@@ -42,12 +39,11 @@ export const AuthFitStage = ({ children, className }: AuthFitStageProps) => {
         return;
       }
 
-      const nextScale = Math.min(
-        1,
-        frame.clientHeight / naturalHeight,
-        frame.clientWidth / naturalWidth,
-      );
-      const scale = Math.max(AUTH_FIT_MIN_SCALE, Number.isFinite(nextScale) ? nextScale : 1);
+      const desktopFit = window.matchMedia('(min-width: 1024px)').matches;
+      const nextScale = desktopFit
+        ? Math.min(1, frame.clientHeight / naturalHeight, frame.clientWidth / naturalWidth)
+        : 1;
+      const scale = Number.isFinite(nextScale) ? nextScale : 1;
       const heightPx = Math.round(naturalHeight * scale);
       setFit((prev) =>
         prev.ready && Math.abs(prev.scale - scale) < 0.005 && prev.heightPx === heightPx
@@ -75,7 +71,7 @@ export const AuthFitStage = ({ children, className }: AuthFitStageProps) => {
     <div
       ref={frameRef}
       className={cn(
-        'relative flex min-h-0 flex-1 items-center justify-center overflow-hidden',
+        'relative flex min-h-0 flex-1 items-center justify-center overflow-hidden max-lg:h-auto max-lg:flex-none max-lg:overflow-visible',
         className,
       )}
     >

@@ -112,6 +112,37 @@ export type MortgageCalculatorOfferSummary = {
   bankName: string;
 };
 
+export type CreateMortgageApplicationBody = {
+  propertyPrice: number;
+  downPaymentPercent: number;
+  loanTermYears: number;
+  bankOfferId: string;
+  note?: string;
+};
+
+export type CreateMortgageApplicationResult = {
+  id: string;
+};
+
+export type PortalMortgageApplicationItem = {
+  id: string;
+  offerTitle: string;
+  buyerName: string;
+  buyerEmail: string;
+  buyerPhone: string | null;
+  propertyPrice: number;
+  downPaymentPercent: string;
+  loanTermYears: number;
+  monthlyPayment: number;
+  loanAmount: number;
+  note: string | null;
+  createdAt: string;
+};
+
+export type PortalMortgageApplicationListResponse = {
+  data: PortalMortgageApplicationItem[];
+};
+
 export type MortgageCalculatorResult = {
   monthlyPayment: number;
   loanAmount: number;

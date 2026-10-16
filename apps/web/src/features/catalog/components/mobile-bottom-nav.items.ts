@@ -181,4 +181,8 @@ export const BUILDER_NAV_ITEMS: BottomNavItem[] = [
   },
 ];
 
-export const resolveBuyerProfileActive = (pathname: string): boolean => isProfilePath(pathname);
+const isLoginPath = (pathname: string): boolean =>
+  pathname === '/auth/login' || pathname.startsWith('/auth/login/');
+
+export const resolveBuyerProfileActive = (pathname: string): boolean =>
+  isProfilePath(pathname) || isLoginPath(pathname);

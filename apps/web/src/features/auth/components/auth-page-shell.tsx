@@ -3,10 +3,12 @@ import { getTranslations } from 'next-intl/server';
 import type { ReactNode } from 'react';
 
 import { AuthFitStage } from '@/features/auth/components/auth-fit-stage';
+import { AuthMobileMenu } from '@/features/auth/components/auth-mobile-menu';
 import { staticAssetUrl } from '@/shared/lib/static-asset-url';
 import { BackLink } from '@/shared/ui/back-link';
 import { BrandLogo } from '@/shared/ui/brand-logo';
 import { cn } from '@/shared/ui/cn';
+import { MOBILE_BOTTOM_NAV_CONTENT_PB_CLASS } from '@/shared/ui/mobile-bottom-nav-clearance';
 
 const AUTH_PANEL_IMAGE = staticAssetUrl('/demo/northern-avenue.webp');
 
@@ -40,13 +42,14 @@ export const AuthPageShell = async ({ title, subtitle, children, variant }: Auth
   };
 
   return (
-    <div className="relative h-fluid-screen overflow-hidden bg-background">
+    <div className="relative h-fluid-screen overflow-x-hidden overflow-y-auto bg-background lg:overflow-hidden">
       <AuthVisualPanel copy={copy} />
       <AuthFormColumn
         title={title}
         subtitle={subtitle}
         formEyebrow={copy.formEyebrow}
         backHomeLabel={copy.backHome}
+        showMobileMenu
         compact={variant === 'register'}
       >
         {children}
@@ -107,6 +110,7 @@ type AuthFormColumnProps = {
   subtitle: string;
   formEyebrow: string;
   backHomeLabel: string;
+  showMobileMenu: boolean;
   compact: boolean;
   children: ReactNode;
 };
@@ -116,11 +120,17 @@ const AuthFormColumn = ({
   subtitle,
   formEyebrow,
   backHomeLabel,
+  showMobileMenu,
   compact,
   children,
 }: AuthFormColumnProps) => {
   return (
-    <div className="relative z-0 flex h-fluid-screen flex-col overflow-hidden lg:pl-[50%]">
+    <div
+      className={cn(
+        'relative z-0 flex flex-col max-lg:min-h-full lg:h-fluid-screen lg:overflow-hidden lg:pl-[50%]',
+        MOBILE_BOTTOM_NAV_CONTENT_PB_CLASS,
+      )}
+    >
       <div className="pointer-events-none absolute inset-0" aria-hidden>
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_55%_at_70%_-5%,rgb(184_149_108_/_0.12),transparent_55%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_45%_at_10%_100%,rgb(26_143_152_/_0.08),transparent_50%)]" />
@@ -128,15 +138,21 @@ const AuthFormColumn = ({
 
       <header
         className={cn(
-          'relative z-[1] flex shrink-0 items-center justify-between gap-3 px-5 lg:justify-end lg:px-12',
+          'relative z-20 flex shrink-0 items-center justify-between gap-3 px-5 lg:justify-end lg:px-12',
           compact ? 'py-3 sm:py-3.5' : 'py-4 sm:py-5',
         )}
       >
         <BrandLogo size="md" className="lg:hidden" />
-        <BackLink href="/" label={backHomeLabel} variant="compact" />
+        {showMobileMenu ? <AuthMobileMenu /> : null}
+        <BackLink
+          href="/"
+          label={backHomeLabel}
+          variant="compact"
+          className={showMobileMenu ? 'hidden lg:inline-flex' : undefined}
+        />
       </header>
 
-      <AuthFitStage className="relative z-[1] px-5 pb-4 sm:px-8 lg:px-12">
+      <AuthFitStage className="relative z-[1] px-5 pb-4 max-lg:overflow-visible sm:px-8 lg:px-12">
         <div className="animate-[page-enter_var(--duration-base)_var(--ease-out-premium)_both]">
           <div
             className={cn(
@@ -169,7 +185,7 @@ const AuthFormColumn = ({
 
           <div
             className={cn(
-              'relative overflow-hidden rounded-lg border border-border/50',
+              'relative rounded-lg border border-border/50',
               'bg-surface-elevated/90 backdrop-blur-xl',
               'ring-1 ring-accent/10',
               compact ? 'p-4 sm:p-5' : 'p-6 sm:p-8',

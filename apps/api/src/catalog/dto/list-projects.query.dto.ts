@@ -87,6 +87,20 @@ export class ListProjectsQueryDto {
   @Min(0)
   maxPrice?: number;
 
+  @ApiPropertyOptional({ description: 'Minimum apartment area in square meters' })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  minArea?: number;
+
+  @ApiPropertyOptional({ description: 'Maximum apartment area in square meters' })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  maxArea?: number;
+
   @ApiPropertyOptional({
     description: 'Rooms filter — one or more counts (comma-separated or repeated). `4` means 4+.',
     type: [Number],

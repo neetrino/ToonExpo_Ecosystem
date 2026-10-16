@@ -86,6 +86,7 @@ model User {
   createdReadinessRequiredActions ReadinessRequiredAction[] @relation("ReadinessRequiredActionCreator")
   authoredReadinessInternalNotes  ReadinessInternalNote[]   @relation("ReadinessInternalNoteAuthor")
   createdBankOffers               BankOffer[]               @relation("BankOfferCreator")
+  mortgageApplications            MortgageApplication[]     @relation("MortgageApplicationBuyer")
   updatedBankOffers               BankOffer[]               @relation("BankOfferUpdater")
   createdBankPartnerOfferTemplates BankPartnerOfferTemplate[] @relation("BankPartnerOfferTemplateCreator")
   updatedBankPartnerOfferTemplates BankPartnerOfferTemplate[] @relation("BankPartnerOfferTemplateUpdater")

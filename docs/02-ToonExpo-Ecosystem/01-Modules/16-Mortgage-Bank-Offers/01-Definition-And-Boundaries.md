@@ -29,11 +29,12 @@ Partners / Participants owns:
 Mortgage / Bank Offers owns:
 
 - BankOffer terms;
-- calculator/display logic.
+- calculator/display logic;
+- buyer applications sent to a published bank offer.
 
 ## Out Of Scope For v1
 
-- mortgage application submission;
+- mortgage pre-approval;
 - pre-qualification workflow;
 - document collection;
 - credit checks;
@@ -52,4 +53,3 @@ Exact wording can be finalized later, but product should not imply final bank ap
 Only partner companies with type `bank` should create/own BankOffer records.
 
 BigProjects Admin can manage all bank offers.
-

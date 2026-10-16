@@ -12,9 +12,7 @@ Route:
 
 ## Core Rule
 
-This module is informational/calculator-only in v1.
-
-It does not submit mortgage applications.
+Buyers compare offers in the calculator and can send an application to the selected bank.
 
 ## Reading Order
 
@@ -31,4 +29,3 @@ It does not submit mortgage applications.
 - Public Web / Mobile App
 - Admin / Content Management
 - Account & Access
-

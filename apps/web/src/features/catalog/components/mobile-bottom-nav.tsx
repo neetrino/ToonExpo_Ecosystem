@@ -7,6 +7,7 @@ import { createPortal } from 'react-dom';
 import { useMeQuery } from '@/features/auth/hooks/use-auth';
 import { BuyerQrSheet } from '@/features/buyer/components/buyer-qr-sheet';
 import { BuilderScannerSheet } from '@/features/builder/components/builder-scanner-sheet';
+import { primeCameraAccess } from '@/features/builder/utils/request-camera-access';
 import {
   BUILDER_NAV_ITEMS,
   buildAdminNavItems,
@@ -15,6 +16,7 @@ import {
   type BottomNavId,
   type BottomNavItem,
 } from '@/features/catalog/components/mobile-bottom-nav.items';
+import { ScrollToTopButton } from '@/features/catalog/components/scroll-to-top-button';
 import { usePublicSitePages } from '@/features/catalog/providers/public-site-pages-provider';
 import { Link, usePathname } from '@/i18n/navigation';
 import { isAdminPortalPath, isBuilderPortalPath } from '@/shared/ui/account-mobile-nav-controller';
@@ -182,6 +184,7 @@ export const MobileBottomNav = () => {
             'max-[22.5rem]:scale-[min(1,calc((100vw-0.75rem)/var(--bottom-nav-natural-width)))]',
           )}
         >
+          <ScrollToTopButton className="absolute right-1.5 bottom-[calc(100%+1.35rem)] z-[3]" />
           {/* Static white pads — never mount/unmount with selection (no pop). */}
           {items.map((item) => (
             <span
@@ -220,6 +223,9 @@ export const MobileBottomNav = () => {
                       if (sheetOpen) {
                         closeSheet();
                         return;
+                      }
+                      if (item.id === 'scanner') {
+                        primeCameraAccess();
                       }
                       openSheet();
                     }}
