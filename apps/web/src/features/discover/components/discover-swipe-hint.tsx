@@ -3,24 +3,47 @@
 import { Heart, X } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+
+const STORAGE_KEY = 'toonexpo.discover.swipe-hint-seen';
+
+const hasSeenHint = (): boolean => {
+  try {
+    return window.localStorage.getItem(STORAGE_KEY) === '1';
+  } catch {
+    return true;
+  }
+};
+
+const markHintSeen = (): void => {
+  try {
+    window.localStorage.setItem(STORAGE_KEY, '1');
+  } catch {
+    // Private mode: skip persisting; the hint can return next visit.
+  }
+};
 
 type DiscoverSwipeHintProps = {
   onDismiss?: () => void;
 };
 
 /**
- * Swipe coach on the card. Shown on every visit until it is closed.
+ * Swipe coach on the card. Shown once, until the visitor closes it.
  */
 export const DiscoverSwipeHint = ({ onDismiss }: DiscoverSwipeHintProps) => {
   const t = useTranslations('Discover.hintCoach');
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    setOpen(!hasSeenHint());
+  }, []);
 
   if (!open) {
     return null;
   }
 
   const dismiss = (): void => {
+    markHintSeen();
     setOpen(false);
     onDismiss?.();
   };
