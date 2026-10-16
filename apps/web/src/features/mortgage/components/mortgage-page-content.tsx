@@ -20,9 +20,9 @@ export const MortgagePageContent = () => {
           <p className="text-[11px] font-bold tracking-[0.2em] text-brand-secondary uppercase">
             {t('eyebrow')}
           </p>
-          <h1 className="mt-3 font-brand text-[clamp(1.4rem,5.4cqi,3.1rem)] font-bold leading-[1.15] tracking-[-0.03em] text-ink-navy">
-            <span className="block whitespace-nowrap">{t('titleLine1')}</span>
-            <span className="block whitespace-nowrap">{t('titleLine2')}</span>
+          <h1 className="mt-3 max-w-full font-brand text-[clamp(1.35rem,4.6cqi,3.1rem)] font-bold leading-[1.15] tracking-[-0.03em] text-balance text-ink-navy">
+            <span className="block">{t('titleLine1')}</span>
+            <span className="block">{t('titleLine2')}</span>
           </h1>
           <p className="mt-5 max-w-xl text-lg leading-7 text-header-muted">{t('subtitle')}</p>
         </div>

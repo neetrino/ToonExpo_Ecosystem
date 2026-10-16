@@ -6,6 +6,7 @@ import {
   MobileBottomNav,
   MobileBottomNavSpacer,
 } from '@/features/catalog/components/mobile-bottom-nav';
+import { ScrollToTopButton } from '@/features/catalog/components/scroll-to-top-button';
 import { usePathname } from '@/i18n/navigation';
 import { isBuyerAccountShellPath } from '@/shared/ui/account-mobile-nav-controller';
 import { DesktopFluidFrame } from '@/shared/ui/desktop-fluid-frame';
@@ -107,6 +108,7 @@ export const PublicChrome = ({ children }: PublicChromeProps) => {
       <DesktopFluidFrame>
         {children}
         {isAuthShellRoute(pathname) ? <MobileBottomNav /> : null}
+        <ScrollToTopButton className="fixed right-8 bottom-8 z-[var(--z-bottom-nav)] hidden lg:inline-flex" />
       </DesktopFluidFrame>
     );
   }
@@ -126,6 +128,7 @@ export const PublicChrome = ({ children }: PublicChromeProps) => {
       )}
       {isMap ? null : <MobileBottomNavSpacer />}
       <MobileBottomNav />
+      <ScrollToTopButton className="fixed right-8 bottom-8 z-[var(--z-bottom-nav)] hidden lg:inline-flex" />
     </DesktopFluidFrame>
   );
 };

@@ -8,6 +8,7 @@ import { createPortal } from 'react-dom';
 import { useMeQuery } from '@/features/auth/hooks/use-auth';
 import { BuyerQrCode } from '@/features/buyer/components/buyer-qr-code';
 import { BuyerScannerWorkspace } from '@/features/buyer/components/buyer-scanner-workspace';
+import { primeCameraAccess } from '@/features/builder/utils/request-camera-access';
 import { useBuyerQrQuery } from '@/features/buyer/hooks/use-buyer';
 import { isBuyerAccount } from '@/features/buyer/utils/is-buyer-account';
 import { Link } from '@/i18n/navigation';
@@ -227,6 +228,7 @@ export const BuyerQrSheet = ({ open, onClose }: BuyerQrSheetProps) => {
             ) : (
               <BuyerQrSheetBody
                 onOpenScanner={() => {
+                  primeCameraAccess();
                   setMode('scanner');
                 }}
               />

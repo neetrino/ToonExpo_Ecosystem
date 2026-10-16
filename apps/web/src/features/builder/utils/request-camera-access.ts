@@ -11,6 +11,38 @@ const stopTracks = (stream: MediaStream): void => {
   }
 };
 
+let primedAccess: Promise<CameraAccessResult> | null = null;
+
+/**
+ * Starts the permission prompt from the scan click, before the sheet mounts.
+ */
+export const primeCameraAccess = (): void => {
+  primedAccess = requestCameraAccess();
+};
+
+/** Takes the in-flight request started by the scan click. */
+export const consumePrimedCameraAccess = (): Promise<CameraAccessResult> | null => {
+  const pending = primedAccess;
+  primedAccess = null;
+  return pending;
+};
+
+/** `granted` when the user already allowed the camera for this site. */
+export const readCameraPermission = async (): Promise<'granted' | 'denied' | 'prompt'> => {
+  if (typeof navigator === 'undefined' || !navigator.permissions?.query) {
+    return 'prompt';
+  }
+  try {
+    const status = await navigator.permissions.query({ name: 'camera' as PermissionName });
+    if (status.state === 'granted' || status.state === 'denied') {
+      return status.state;
+    }
+    return 'prompt';
+  } catch {
+    return 'prompt';
+  }
+};
+
 /**
  * Requests camera permission. Call only from a user gesture so the browser
  * can show the system permission prompt.

@@ -390,6 +390,7 @@
   "Nav": {
     "main": "Main navigation",
     "bottomNav": "Mobile navigation",
+    "scrollToTop": "Back to top",
     "home": "Home",
     "menu": "Open menu",
     "railExpand": "Expand sidebar",
