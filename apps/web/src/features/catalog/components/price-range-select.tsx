@@ -24,6 +24,8 @@ type PriceRangeSelectProps = {
   };
   /** Visible field title inside the mobile block trigger. */
   fieldLabel: string;
+  /** Appended to the closed-state range, e.g. ` ֏` or ` m²`. */
+  valueSuffix?: string | undefined;
   onApply: (minPrice: number | null, maxPrice: number | null) => void;
   /** Section chrome (padding / borders) — root is the portal width anchor. */
   className?: string | undefined;
@@ -48,13 +50,14 @@ const formatRangeLabel = (
   minPrice: number | null,
   maxPrice: number | null,
   anyLabel: string,
+  valueSuffix: string,
 ): string => {
   if (minPrice == null && maxPrice == null) {
     return anyLabel;
   }
   const min = minPrice == null ? '0' : formatInputValue(String(minPrice));
   const max = maxPrice == null ? '∞' : formatInputValue(String(maxPrice));
-  return `${min} – ${max} ֏`;
+  return `${min} – ${max}${valueSuffix}`;
 };
 
 /**
@@ -65,6 +68,7 @@ export const PriceRangeSelect = ({
   maxPrice,
   labels,
   fieldLabel,
+  valueSuffix = ' ֏',
   onApply,
   className,
 }: PriceRangeSelectProps) => {
@@ -129,7 +133,7 @@ export const PriceRangeSelect = ({
       <HeroFilterTrigger
         ref={buttonRef}
         label={fieldLabel}
-        value={formatRangeLabel(minPrice, maxPrice, labels.any)}
+        value={formatRangeLabel(minPrice, maxPrice, labels.any, valueSuffix)}
         open={open}
         mutedValue={isAny}
         aria-haspopup="dialog"
@@ -157,7 +161,7 @@ export const PriceRangeSelect = ({
               <Input
                 value={draftMin}
                 inputMode="numeric"
-                placeholder="30 000 000"
+                placeholder="30"
                 aria-label={labels.min}
                 onKeyDown={applyOnEnter}
                 onChange={(event) => setDraftMin(formatInputValue(event.target.value))}
@@ -170,7 +174,7 @@ export const PriceRangeSelect = ({
               <Input
                 value={draftMax}
                 inputMode="numeric"
-                placeholder="100 000 000"
+                placeholder="100"
                 aria-label={labels.max}
                 onKeyDown={applyOnEnter}
                 onChange={(event) => setDraftMax(formatInputValue(event.target.value))}
