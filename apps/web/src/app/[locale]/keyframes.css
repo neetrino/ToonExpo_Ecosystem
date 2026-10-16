@@ -309,7 +309,7 @@
   }
 
   28% {
-    transform: translate3d(-3.25rem, -7rem, 0) scaleX(1);
+    transform: translate3d(-5.5rem, -0.75rem, 0) scaleX(1);
   }
 
   44% {
@@ -321,7 +321,7 @@
   }
 
   74% {
-    transform: translate3d(3.25rem, -7rem, 0) scaleX(-1);
+    transform: translate3d(5.5rem, -0.75rem, 0) scaleX(-1);
   }
 
   90%,

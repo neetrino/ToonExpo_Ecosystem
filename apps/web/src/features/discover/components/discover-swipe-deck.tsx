@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowLeft, ArrowRight, Heart, X } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -18,7 +18,6 @@ import {
 } from '@/features/discover/hooks/use-discover-swipe-card';
 import type { DiscoverApartmentCard } from '@/features/discover/utils/load-discover-apartments';
 import { Button } from '@/shared/ui/button';
-import { cn } from '@/shared/ui/cn';
 
 type DiscoverSwipeDeckProps = {
   apartments: DiscoverApartmentCard[];
@@ -42,7 +41,6 @@ export const DiscoverSwipeDeck = ({ apartments }: DiscoverSwipeDeckProps) => {
   const favoriteMutation = useToggleFavoriteMutation();
   const [index, setIndex] = useState(0);
   const [flyout, setFlyout] = useState<FlyoutCard | null>(null);
-  const [hintOpen, setHintOpen] = useState(true);
 
   const current = apartments[index] ?? null;
   const next = apartments[index + 1] ?? null;
@@ -160,39 +158,8 @@ export const DiscoverSwipeDeck = ({ apartments }: DiscoverSwipeDeckProps) => {
           />
         ) : null}
 
-        <DiscoverSwipeHint
-          onDismiss={() => {
-            setHintOpen(false);
-          }}
-        />
+        <DiscoverSwipeHint />
       </div>
-
-      {hintOpen ? null : (
-        <div className="flex shrink-0 items-center justify-center gap-5 pb-1" aria-hidden>
-          <span
-            className={cn(
-              'inline-flex size-14 items-center justify-center rounded-full',
-              'border border-danger/40 text-danger',
-            )}
-          >
-            <X className="size-7" strokeWidth={2.5} />
-          </span>
-
-          <span className="inline-flex items-center gap-5 text-ink-muted">
-            <ArrowLeft className="size-6" strokeWidth={2.25} />
-            <ArrowRight className="size-6" strokeWidth={2.25} />
-          </span>
-
-          <span
-            className={cn(
-              'inline-flex size-14 items-center justify-center rounded-full',
-              'border border-success/40 text-success',
-            )}
-          >
-            <Heart className="size-7 fill-current" strokeWidth={2.5} />
-          </span>
-        </div>
-      )}
     </div>
   );
 };
