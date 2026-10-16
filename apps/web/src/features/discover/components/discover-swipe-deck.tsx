@@ -8,6 +8,7 @@ import { useMeQuery } from '@/features/auth/hooks/use-auth';
 import { useToggleFavoriteMutation } from '@/features/buyer/hooks/use-favorites';
 import { isBuyerAccount } from '@/features/buyer/utils/is-buyer-account';
 import { DiscoverSwipeCard } from '@/features/discover/components/discover-swipe-card';
+import { DiscoverSwipeHint } from '@/features/discover/components/discover-swipe-hint';
 import { DISCOVER_SWIPE_EXIT_MS, DISCOVER_SWIPE_EXIT_PX } from '@/features/discover/constants';
 import {
   buildDiscoverFlyoutStyle,
@@ -41,6 +42,7 @@ export const DiscoverSwipeDeck = ({ apartments }: DiscoverSwipeDeckProps) => {
   const favoriteMutation = useToggleFavoriteMutation();
   const [index, setIndex] = useState(0);
   const [flyout, setFlyout] = useState<FlyoutCard | null>(null);
+  const [hintOpen, setHintOpen] = useState(true);
 
   const current = apartments[index] ?? null;
   const next = apartments[index + 1] ?? null;
@@ -157,32 +159,40 @@ export const DiscoverSwipeDeck = ({ apartments }: DiscoverSwipeDeckProps) => {
             )}
           />
         ) : null}
+
+        <DiscoverSwipeHint
+          onDismiss={() => {
+            setHintOpen(false);
+          }}
+        />
       </div>
 
-      <div className="flex shrink-0 items-center justify-center gap-5 pb-1" aria-hidden>
-        <span
-          className={cn(
-            'inline-flex size-14 items-center justify-center rounded-full',
-            'border border-danger/40 text-danger',
-          )}
-        >
-          <X className="size-7" strokeWidth={2.5} />
-        </span>
+      {hintOpen ? null : (
+        <div className="flex shrink-0 items-center justify-center gap-5 pb-1" aria-hidden>
+          <span
+            className={cn(
+              'inline-flex size-14 items-center justify-center rounded-full',
+              'border border-danger/40 text-danger',
+            )}
+          >
+            <X className="size-7" strokeWidth={2.5} />
+          </span>
 
-        <span className="inline-flex items-center gap-5 text-ink-muted">
-          <ArrowLeft className="size-6" strokeWidth={2.25} />
-          <ArrowRight className="size-6" strokeWidth={2.25} />
-        </span>
+          <span className="inline-flex items-center gap-5 text-ink-muted">
+            <ArrowLeft className="size-6" strokeWidth={2.25} />
+            <ArrowRight className="size-6" strokeWidth={2.25} />
+          </span>
 
-        <span
-          className={cn(
-            'inline-flex size-14 items-center justify-center rounded-full',
-            'border border-success/40 text-success',
-          )}
-        >
-          <Heart className="size-7 fill-current" strokeWidth={2.5} />
-        </span>
-      </div>
+          <span
+            className={cn(
+              'inline-flex size-14 items-center justify-center rounded-full',
+              'border border-success/40 text-success',
+            )}
+          >
+            <Heart className="size-7 fill-current" strokeWidth={2.5} />
+          </span>
+        </div>
+      )}
     </div>
   );
 };

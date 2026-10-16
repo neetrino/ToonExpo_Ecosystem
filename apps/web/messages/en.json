@@ -425,6 +425,13 @@
     "title": "Discover",
     "subtitle": "Swipe right to like, left to skip",
     "hint": "Drag the card or use the buttons",
+    "hintCoach": {
+      "title": "Swipe the card",
+      "body": "Right to like, left to skip.",
+      "skip": "Not interested",
+      "like": "Like",
+      "dismiss": "Close"
+    },
     "loginHint": "Sign in to save apartments you like.",
     "loginCta": "Sign in",
     "error": "Could not load apartments. Try again.",
