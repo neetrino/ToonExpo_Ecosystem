@@ -41,6 +41,13 @@ const VIMEO_POSTER_REMOTE_PATTERN = {
   pathname: '/**',
 };
 
+/** Privacy policy lockup hosted with the published policy. */
+const PRIVACY_LOGO_REMOTE_PATTERN = {
+  protocol: 'https' as const,
+  hostname: 'optim.tildacdn.net',
+  pathname: '/**',
+};
+
 /** Matterport showcase tour thumbnails. */
 const MATTERPORT_POSTER_REMOTE_PATTERN = {
   protocol: 'https' as const,
@@ -100,6 +107,7 @@ const resolveImageRemotePatterns = (): ImageRemotePattern[] => {
     YOUTUBE_POSTER_REMOTE_PATTERN,
     VIMEO_POSTER_REMOTE_PATTERN,
     MATTERPORT_POSTER_REMOTE_PATTERN,
+    PRIVACY_LOGO_REMOTE_PATTERN,
   ];
   if (
     fromEnv &&

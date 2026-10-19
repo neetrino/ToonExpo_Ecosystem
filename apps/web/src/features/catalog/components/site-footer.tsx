@@ -123,8 +123,7 @@ export const SiteFooter = async () => {
       items: [
         {
           label: t('links.privacyPolicy'),
-          href: mail(t('links.privacyPolicy')),
-          external: true,
+          href: '/privacy',
         },
         {
           label: t('links.terms'),
