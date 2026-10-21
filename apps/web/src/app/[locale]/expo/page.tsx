@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import { SiteFooter } from '@/features/catalog/components/site-footer';
-import { ExpoMapPage } from '@/features/exhibition/components/public/expo-map-page';
+import { ExpoVenueMap } from '@/features/exhibition/components/public/venue-map-3d/expo-venue-map-gate';
 
 type ExpoPageProps = {
   params: Promise<{ locale: string }>;
@@ -22,10 +21,5 @@ export default async function ExpoRoutePage({ params }: ExpoPageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  return (
-    <div className="-mt-[4.5rem] flex min-h-screen flex-col bg-band-mist/30 pt-[4.5rem]">
-      <ExpoMapPage />
-      <SiteFooter />
-    </div>
-  );
+  return <ExpoVenueMap />;
 }
