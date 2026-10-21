@@ -272,7 +272,7 @@ export const ExpoVenueMapView = ({ snapshot }: ExpoVenueMapViewProps) => {
       return typeof id === 'string' ? id : null;
     };
 
-    let pointers = new Map<number, { x: number; y: number }>();
+    const pointers = new Map<number, { x: number; y: number }>();
     let last = { x: 0, y: 0 };
     let moved = 0;
     let mode: 'rot' | 'pan' = 'rot';

@@ -8,7 +8,7 @@ import {
   LineSegments,
   Mesh,
   MeshStandardMaterial,
-  Scene,
+  type Scene,
   Shape,
   ShapeGeometry,
   SphereGeometry,

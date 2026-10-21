@@ -1,4 +1,4 @@
-import { Mesh, MeshStandardMaterial, Scene, Vector3 } from 'three';
+import { Vector3, type Mesh, type MeshStandardMaterial, type Scene } from 'three';
 
 import type { VenueBooth } from '@/features/exhibition/components/public/venue-map-3d/venue-map-booths';
 import {

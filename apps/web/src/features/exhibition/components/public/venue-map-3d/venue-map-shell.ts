@@ -1,4 +1,4 @@
-import { MeshStandardMaterial, PlaneGeometry, Scene, Mesh } from 'three';
+import { Mesh, PlaneGeometry, type MeshStandardMaterial, type Scene } from 'three';
 
 import {
   addArrow,
