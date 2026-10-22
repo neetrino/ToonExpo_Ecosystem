@@ -3,8 +3,8 @@
 import type { PublicVenueMapArea } from '@toonexpo/contracts';
 
 import { resolveVenueMapAreaTitle } from '@/features/exhibition/utils/resolve-venue-map-area-title';
+import { rectsToOutlinePath } from '@/features/exhibition/utils/venue-map-outline-path';
 import { resolveVenueMapAreaColor } from '@/features/exhibition/utils/venue-map-area-colors';
-import { venueMapOuterEdges } from '@/features/exhibition/utils/venue-map-outer-edges';
 
 const VENUE_MAP_STROKE_WIDTH = 1;
 const VENUE_MAP_STROKE_WIDTH_HIGHLIGHTED = 1.75;
@@ -18,7 +18,6 @@ type VenueMapAreaGroupProps = {
 };
 
 type VenueMapAreaShapeProps = {
-  areaId: string;
   rects: PublicVenueMapArea['rects'];
   fill: string;
   stroke: string;
@@ -28,42 +27,30 @@ type VenueMapAreaShapeProps = {
 };
 
 const VenueMapAreaShape = ({
-  areaId,
   rects,
   fill,
   stroke,
   fillOpacity,
   strokeOpacity,
   strokeWidth,
-}: VenueMapAreaShapeProps) => (
-  <>
-    {rects.map((rect, index) => (
-      <rect
-        key={`${areaId}-fill-${index}`}
-        x={rect.x}
-        y={rect.y}
-        width={rect.width}
-        height={rect.height}
-        fill={fill}
-        fillOpacity={fillOpacity}
-      />
-    ))}
-    {venueMapOuterEdges(rects).map((edge, index) => (
-      <line
-        key={`${areaId}-edge-${index}`}
-        x1={edge.x1}
-        y1={edge.y1}
-        x2={edge.x2}
-        y2={edge.y2}
-        fill="none"
-        stroke={stroke}
-        strokeOpacity={strokeOpacity}
-        strokeWidth={strokeWidth}
-        strokeLinecap="square"
-      />
-    ))}
-  </>
-);
+}: VenueMapAreaShapeProps) => {
+  const path = rectsToOutlinePath(rects);
+  if (path.length === 0) {
+    return null;
+  }
+  return (
+    <path
+      d={path}
+      fill={fill}
+      fillOpacity={fillOpacity}
+      stroke={stroke}
+      strokeOpacity={strokeOpacity}
+      strokeWidth={strokeWidth}
+      strokeLinejoin="miter"
+      fillRule="evenodd"
+    />
+  );
+};
 
 /**
  * Clickable area geometry + label for the public venue map SVG.
@@ -95,15 +82,12 @@ export const VenueMapAreaGroup = ({
       }}
     >
       <VenueMapAreaShape
-        areaId={area.id}
         rects={area.rects}
         fill={color.fill}
         stroke={color.stroke}
         fillOpacity={color.fillOpacity}
         strokeOpacity={color.strokeOpacity}
-        strokeWidth={
-          highlighted ? VENUE_MAP_STROKE_WIDTH_HIGHLIGHTED : VENUE_MAP_STROKE_WIDTH
-        }
+        strokeWidth={highlighted ? VENUE_MAP_STROKE_WIDTH_HIGHLIGHTED : VENUE_MAP_STROKE_WIDTH}
       />
       {isHidden ? null : (
         <text

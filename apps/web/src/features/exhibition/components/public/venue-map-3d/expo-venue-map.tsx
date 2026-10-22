@@ -27,8 +27,6 @@ import {
   worldZ,
   VENUE_CAMERA_LERP,
   VENUE_CLICK_MOVE_PX,
-  VENUE_DRAG_ROTATE,
-  VENUE_DRAG_TILT,
   VENUE_FLAT_POL,
   VENUE_LIFT_LERP,
   VENUE_HOVER_LIFT,
@@ -42,6 +40,11 @@ import {
   createVenueMapStage,
   resizeVenueStage,
 } from '@/features/exhibition/components/public/venue-map-3d/venue-map-stage';
+import {
+  VENUE_MARKS,
+  venueMarkScale,
+  venueMarkVisible,
+} from '@/features/exhibition/components/public/venue-map-3d/venue-map-marks';
 import css from '@/features/exhibition/components/public/venue-map-3d/venue-map-view.module.css';
 
 type VenueMapCss = {
@@ -54,6 +57,9 @@ type VenueMapCss = {
   labelOpen: string;
   labelBig: string;
   labelSelected: string;
+  zoneLabel: string;
+  pill: string;
+  poi: string;
   panel: string;
   brand: string;
   brandRow: string;
@@ -89,6 +95,14 @@ const LABEL_OPEN_MIN_H = 14;
 const FONT_MIN = 8;
 const FONT_MAX = 14;
 const FONT_MAX_BIG = 20;
+const LABEL_FONT_WIDTH_DIVISOR = 7.8;
+const LABEL_FONT_WIDTH_DIVISOR_BIG = 8.5;
+const LABEL_FONT_HEIGHT_DIVISOR = 2.6;
+const LABEL_AREA_MIN_HEIGHT_FACTOR = 3.4;
+const LABEL_WIDTH_RATIO = 0.94;
+const LABEL_MIN_WIDTH_PX = 30;
+const LABEL_CHAR_WIDTH_EM = 0.66;
+const LABEL_CHAR_WIDTH_EM_BIG = 0.74;
 
 const matches = (booth: VenueBooth, query: string): boolean => {
   const normalized = query.trim().toLowerCase();
@@ -140,7 +154,7 @@ export const ExpoVenueMapView = ({ snapshot }: ExpoVenueMapViewProps) => {
   const labelsRef = useRef<HTMLDivElement>(null);
   const [query, setQuery] = useState('');
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [flat, setFlat] = useState(false);
+  const [flat, setFlat] = useState(true);
   const [mounted, setMounted] = useState(false);
   const booths = useMemo(() => boothsFromSnapshot(snapshot), [snapshot]);
   const selected = booths.find((booth) => booth.id === selectedId) ?? null;
@@ -166,6 +180,18 @@ export const ExpoVenueMapView = ({ snapshot }: ExpoVenueMapViewProps) => {
       node.className = styles.label;
       labels.appendChild(node);
       labelNodes.set(item.booth.id, node);
+    });
+    const markClass = (kind: (typeof VENUE_MARKS)[number]['kind']): string => {
+      if (kind === 'zone') return styles.zoneLabel;
+      if (kind === 'poi') return styles.poi;
+      return styles.pill;
+    };
+    const markNodes = VENUE_MARKS.map((mark) => {
+      const node = document.createElement('div');
+      node.className = [styles.label, markClass(mark.kind)].join(' ');
+      node.textContent = mark.text;
+      labels.appendChild(node);
+      return node;
     });
     let frame = 0;
     let hoveredId: string | null = null;
@@ -230,19 +256,46 @@ export const ExpoVenueMapView = ({ snapshot }: ExpoVenueMapViewProps) => {
         node.append(
           document.createTextNode(selectedNow || item.booth.name ? name : area || 'Open'),
         );
-        if (area && item.booth.name && !selectedNow) {
+        const big = item.booth.kind === 'big';
+        const labelWidth = Math.max(LABEL_MIN_WIDTH_PX, span.w * LABEL_WIDTH_RATIO);
+        const divisor = big ? LABEL_FONT_WIDTH_DIVISOR_BIG : LABEL_FONT_WIDTH_DIVISOR;
+        const longestWord = name.split(/\s+/).reduce((max, word) => Math.max(max, word.length), 1);
+        const charWidth = big ? LABEL_CHAR_WIDTH_EM_BIG : LABEL_CHAR_WIDTH_EM;
+        const fitted = Math.min(
+          labelWidth / divisor,
+          labelWidth / Math.max(longestWord * charWidth, 1),
+          span.h / LABEL_FONT_HEIGHT_DIVISOR,
+        );
+        const fontSize = Math.min(big ? FONT_MAX_BIG : FONT_MAX, Math.max(FONT_MIN, fitted));
+        const showArea =
+          Boolean(area && item.booth.name) &&
+          (selectedNow || span.h >= fontSize * LABEL_AREA_MIN_HEIGHT_FACTOR);
+        if (showArea) {
           const areaNode = document.createElement('span');
           areaNode.className = styles.labelArea;
           areaNode.textContent = area;
           node.append(areaNode);
         }
         node.style.transform = `translate(${point.x}px, ${point.y}px) translate(-50%, -50%)`;
-        if (!selectedNow) {
-          const size = Math.min(named ? span.w / 7.8 : span.w / 8.5, span.h / 2.6);
-          const max = item.booth.kind === 'big' ? FONT_MAX_BIG : FONT_MAX;
-          node.style.fontSize = `${Math.min(max, Math.max(FONT_MIN, size))}px`;
-          node.style.width = `${Math.max(30, span.w * 0.94)}px`;
+        if (selectedNow) {
+          node.style.width = 'max-content';
+          node.style.fontSize = '';
+          return;
         }
+        node.style.fontSize = `${fontSize}px`;
+        node.style.width = `${labelWidth}px`;
+      });
+      markNodes.forEach((node, index) => {
+        const mark = VENUE_MARKS[index];
+        if (!mark) return;
+        const point = project(
+          new Vector3(worldX(toMetres(mark.x)), mark.y, worldZ(toMetres(mark.z))),
+        );
+        const visible = point.z <= 1 && venueMarkVisible(mark, stage.cameraState.dist);
+        node.style.display = visible ? (mark.kind === 'poi' ? 'flex' : 'block') : 'none';
+        if (!visible) return;
+        const scale = venueMarkScale(mark, stage.cameraState.dist);
+        node.style.transform = `translate(${point.x}px, ${point.y}px) translate(-50%, -50%) scale(${scale})`;
       });
     };
 
@@ -275,14 +328,12 @@ export const ExpoVenueMapView = ({ snapshot }: ExpoVenueMapViewProps) => {
     const pointers = new Map<number, { x: number; y: number }>();
     let last = { x: 0, y: 0 };
     let moved = 0;
-    let mode: 'rot' | 'pan' = 'rot';
 
     const onDown = (event: PointerEvent): void => {
       stage.renderer.domElement.setPointerCapture(event.pointerId);
       pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
       last = { x: event.clientX, y: event.clientY };
       moved = 0;
-      mode = event.button === 2 || event.shiftKey ? 'pan' : 'rot';
       host.classList.add(styles.dragging);
     };
     const onMove = (event: PointerEvent): void => {
@@ -294,12 +345,7 @@ export const ExpoVenueMapView = ({ snapshot }: ExpoVenueMapViewProps) => {
       const dy = event.clientY - last.y;
       last = { x: event.clientX, y: event.clientY };
       moved += Math.abs(dx) + Math.abs(dy);
-      if (mode === 'rot') {
-        stage.cameraGoal.az -= dx * VENUE_DRAG_ROTATE;
-        if (!flatRef.current) stage.cameraGoal.pol -= dy * VENUE_DRAG_TILT;
-      } else {
-        panVenueCamera(stage.cameraGoal, dx, dy);
-      }
+      panVenueCamera(stage.cameraGoal, dx, dy);
       clampVenueCamera(stage.cameraGoal);
     };
     const onUp = (event: PointerEvent): void => {
@@ -475,10 +521,10 @@ export const ExpoVenueMapView = ({ snapshot }: ExpoVenueMapViewProps) => {
           type="button"
           aria-label="Reset view"
           onClick={() => {
-            setFlat(false);
+            setFlat(true);
             setSelectedId(null);
             callApi(hostRef.current, (api) => {
-              api.setFlat(false);
+              api.setFlat(true);
               api.reset();
             });
           }}
@@ -486,9 +532,7 @@ export const ExpoVenueMapView = ({ snapshot }: ExpoVenueMapViewProps) => {
           ↺
         </button>
       </div>
-      <p className={styles.hint}>
-        Drag to rotate. Right-drag or Shift-drag to pan. Scroll to zoom.
-      </p>
+      <p className={styles.hint}>Drag to pan. Scroll to zoom.</p>
     </section>,
     document.body,
   );

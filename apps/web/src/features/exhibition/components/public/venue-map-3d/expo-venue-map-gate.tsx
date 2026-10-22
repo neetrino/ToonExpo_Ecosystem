@@ -1,20 +1,12 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
 
+import { ExpoVenueMapView } from '@/features/exhibition/components/public/venue-map-3d/expo-venue-map';
 import { usePublicVenueMapSnapshotQuery } from '@/features/exhibition/hooks/use-public-venue-map';
 
-const ExpoVenueMapView = dynamic(
-  () =>
-    import('@/features/exhibition/components/public/venue-map-3d/expo-venue-map').then(
-      (mod) => mod.ExpoVenueMapView,
-    ),
-  { ssr: false },
-);
-
 /**
- * Loads the published BOS snapshot, then mounts the 3D map in the browser.
+ * Loads the published BOS snapshot onto the same hall as the BOS venue map.
  */
 export const ExpoVenueMap = () => {
   const t = useTranslations('Expo');
