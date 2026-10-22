@@ -95,6 +95,12 @@ const LABEL_OPEN_MIN_H = 14;
 const FONT_MIN = 8;
 const FONT_MAX = 14;
 const FONT_MAX_BIG = 20;
+const LABEL_FONT_WIDTH_DIVISOR = 7.8;
+const LABEL_FONT_WIDTH_DIVISOR_BIG = 8.5;
+const LABEL_FONT_HEIGHT_DIVISOR = 2.6;
+const LABEL_AREA_MIN_HEIGHT_FACTOR = 3.4;
+const LABEL_WIDTH_RATIO = 0.94;
+const LABEL_MIN_WIDTH_PX = 30;
 
 const matches = (booth: VenueBooth, query: string): boolean => {
   const normalized = query.trim().toLowerCase();
@@ -248,19 +254,29 @@ export const ExpoVenueMapView = ({ snapshot }: ExpoVenueMapViewProps) => {
         node.append(
           document.createTextNode(selectedNow || item.booth.name ? name : area || 'Open'),
         );
-        if (area && item.booth.name && !selectedNow) {
+        const big = item.booth.kind === 'big';
+        const fitted = Math.min(
+          span.w / (big ? LABEL_FONT_WIDTH_DIVISOR_BIG : LABEL_FONT_WIDTH_DIVISOR),
+          span.h / LABEL_FONT_HEIGHT_DIVISOR,
+        );
+        const fontSize = Math.min(big ? FONT_MAX_BIG : FONT_MAX, Math.max(FONT_MIN, fitted));
+        const showArea =
+          Boolean(area && item.booth.name) &&
+          (selectedNow || span.h >= fontSize * LABEL_AREA_MIN_HEIGHT_FACTOR);
+        if (showArea) {
           const areaNode = document.createElement('span');
           areaNode.className = styles.labelArea;
           areaNode.textContent = area;
           node.append(areaNode);
         }
         node.style.transform = `translate(${point.x}px, ${point.y}px) translate(-50%, -50%)`;
-        if (!selectedNow) {
-          const size = Math.min(named ? span.w / 7.8 : span.w / 8.5, span.h / 2.6);
-          const max = item.booth.kind === 'big' ? FONT_MAX_BIG : FONT_MAX;
-          node.style.fontSize = `${Math.min(max, Math.max(FONT_MIN, size))}px`;
-          node.style.width = `${Math.max(30, span.w * 0.94)}px`;
+        if (selectedNow) {
+          node.style.width = 'max-content';
+          node.style.fontSize = '';
+          return;
         }
+        node.style.fontSize = `${fontSize}px`;
+        node.style.width = `${Math.max(LABEL_MIN_WIDTH_PX, span.w * LABEL_WIDTH_RATIO)}px`;
       });
       markNodes.forEach((node, index) => {
         const mark = VENUE_MARKS[index];

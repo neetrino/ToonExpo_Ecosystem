@@ -38,7 +38,6 @@
   top: 0;
   display: none;
   width: max-content;
-  max-width: 140px;
   color: #192643;
   font-size: 12px;
   font-weight: 600;
@@ -79,6 +78,7 @@
   font-size: 13px;
   font-weight: 700;
   white-space: nowrap;
+  text-transform: none;
   text-shadow: none;
 }
 
