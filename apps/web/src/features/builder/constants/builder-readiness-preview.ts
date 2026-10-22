@@ -15,6 +15,7 @@ export const BUILDER_READINESS_PREVIEW_ASSESSMENT: PortalReadinessAssessmentItem
   lastEvaluatedAt: '2026-08-01T10:00:00.000Z',
   scores: [
     {
+      id: 'preview-product',
       categoryId: 'preview-product',
       categoryCode: 'product',
       categoryName: 'Product',
@@ -120,6 +121,7 @@ export const BUILDER_READINESS_PREVIEW_ASSESSMENT: PortalReadinessAssessmentItem
       ],
     },
     {
+      id: 'preview-packaging',
       categoryId: 'preview-packaging',
       categoryCode: 'packaging',
       categoryName: 'Packaging',
@@ -199,6 +201,7 @@ export const BUILDER_READINESS_PREVIEW_ASSESSMENT: PortalReadinessAssessmentItem
       ],
     },
     {
+      id: 'preview-team',
       categoryId: 'preview-team',
       categoryCode: 'team',
       categoryName: 'Team',
@@ -271,8 +274,7 @@ export const BUILDER_READINESS_PREVIEW_ASSESSMENT: PortalReadinessAssessmentItem
     {
       id: 'preview-rec-1',
       title: 'Prioritize packaging',
-      description:
-        'Media quality has the biggest lift on your score before the exhibition opens.',
+      description: 'Media quality has the biggest lift on your score before the exhibition opens.',
       sortOrder: 1,
       scoreId: 'preview-packaging',
     },

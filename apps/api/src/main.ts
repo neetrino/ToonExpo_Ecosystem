@@ -12,6 +12,7 @@ import { Logger as PinoLogger } from 'nestjs-pino';
 
 import { AppModule } from './app.module.js';
 import {
+  API_JSON_BODY_LIMIT,
   DEFAULT_API_PORT,
   NODE_ENV_PRODUCTION,
   SWAGGER_PATH,
@@ -35,10 +36,10 @@ const bootstrap = async (): Promise<void> => {
   }
 
   const isProductionBoot = process.env['NODE_ENV'] === NODE_ENV_PRODUCTION;
-  const app = await NestFactory.create<NestExpressApplication>(
-    AppModule,
-    isProductionBoot ? { bufferLogs: true } : undefined,
-  );
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    bodyParser: false,
+    ...(isProductionBoot ? { bufferLogs: true } : {}),
+  });
 
   const configService = app.get(ConfigService<AppEnv, true>);
   const port = configService.get('PORT', { infer: true }) ?? DEFAULT_API_PORT;
@@ -54,6 +55,8 @@ const bootstrap = async (): Promise<void> => {
   // X-Forwarded-For. Trust only the first hop so req.ip is the client IP
   // (Nest throttler and controllers use req.ip consistently).
   app.set('trust proxy', TRUST_PROXY_HOPS);
+  app.useBodyParser('json', { limit: API_JSON_BODY_LIMIT });
+  app.useBodyParser('urlencoded', { extended: true, limit: API_JSON_BODY_LIMIT });
 
   app.use(helmet());
   app.use(cookieParser());

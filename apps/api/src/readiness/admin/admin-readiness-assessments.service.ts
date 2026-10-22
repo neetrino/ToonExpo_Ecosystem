@@ -17,6 +17,7 @@ import {
 } from '../mappers/readiness.mapper.js';
 import { deriveStatusFromScore } from '../utils/score-status.util.js';
 import { ReadinessAssessmentSupportService } from './readiness-assessment-support.service.js';
+import { buildSchedulePatch } from './criterion-schedule.js';
 import type { CreateReadinessAssessmentDto } from './dto/readiness-assessment.dto.js';
 import type { ListReadinessAssessmentsQueryDto } from './dto/readiness-assessment.dto.js';
 import type { UpdateReadinessAssessmentDto } from './dto/readiness-assessment.dto.js';
@@ -375,6 +376,11 @@ export class AdminReadinessAssessmentsService {
     const affectedCategoryIds = new Set(criteria.map((criterion) => criterion.categoryId));
 
     await this.prisma.db.$transaction(async (tx) => {
+      const existingScores = await tx.readinessCriterionScore.findMany({
+        where: { assessmentId, criterionId: { in: criterionIds } },
+      });
+      const existingByCriterion = new Map(existingScores.map((row) => [row.criterionId, row]));
+
       for (const item of body.items) {
         const nextValue =
           item.value === undefined
@@ -388,8 +394,14 @@ export class AdminReadinessAssessmentsService {
             : nextValue === undefined
               ? undefined
               : nextValue !== null;
+        const schedule = this.scheduleFor(
+          existingByCriterion.get(item.criterionId) ?? null,
+          item,
+          nextChecked,
+          evaluatedAt,
+        );
 
-        await tx.readinessCriterionScore.upsert({
+        const saved = await tx.readinessCriterionScore.upsert({
           where: {
             assessmentId_criterionId: {
               assessmentId,
@@ -401,12 +413,19 @@ export class AdminReadinessAssessmentsService {
             criterionId: item.criterionId,
             value: nextValue ?? null,
             checked: nextChecked ?? false,
+            ...schedule.data,
           },
           update: {
             ...(nextValue !== undefined ? { value: nextValue } : {}),
             ...(nextChecked !== undefined ? { checked: nextChecked } : {}),
+            ...schedule.data,
           },
         });
+        if (schedule.event) {
+          await tx.readinessCriterionStatusEvent.create({
+            data: { criterionScoreId: saved.id, ...schedule.event },
+          });
+        }
       }
 
       for (const categoryId of affectedCategoryIds) {
@@ -441,6 +460,23 @@ export class AdminReadinessAssessmentsService {
     });
 
     return this.getById(assessmentId);
+  }
+
+  private scheduleFor(
+    previous: { checked: boolean; startedAt: Date | null; completedAt: Date | null } | null,
+    item: { dueDate?: string | null; priority?: 'low' | 'medium' | 'high' | 'urgent' },
+    checked: boolean | undefined,
+    now: Date,
+  ) {
+    try {
+      return buildSchedulePatch(
+        previous,
+        { checked, dueDate: item.dueDate, priority: item.priority },
+        now,
+      );
+    } catch {
+      throw new BadRequestException('dueDate must be YYYY-MM-DD');
+    }
   }
 
   private trackReadinessChange(input: {

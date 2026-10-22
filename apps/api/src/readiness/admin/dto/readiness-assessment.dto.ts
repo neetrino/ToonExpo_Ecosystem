@@ -11,12 +11,17 @@ import {
   ArrayMinSize,
   Max,
   MaxLength,
+  Matches,
   Min,
   MinLength,
   ValidateIf,
   ValidateNested,
 } from 'class-validator';
-import { ReadinessAssessmentTargetType, ReadinessScoreStatus } from '@toonexpo/db';
+import {
+  ReadinessAssessmentTargetType,
+  ReadinessScoreStatus,
+  ReadinessTaskPriority,
+} from '@toonexpo/db';
 
 import {
   READINESS_CRITERION_SCORES_BATCH_MAX,
@@ -148,6 +153,17 @@ export class UpsertReadinessCriterionScoreDto {
   @IsOptional()
   @IsBoolean()
   checked?: boolean;
+
+  @ApiPropertyOptional({ enum: ReadinessTaskPriority })
+  @IsOptional()
+  @IsEnum(ReadinessTaskPriority)
+  priority?: ReadinessTaskPriority;
+
+  @ApiPropertyOptional({ nullable: true, example: '2026-10-20' })
+  @IsOptional()
+  @ValidateIf((_, value) => value !== null)
+  @Matches(/^\d{4}-\d{2}-\d{2}$/)
+  dueDate?: string | null;
 }
 
 export class UpsertReadinessCriterionScoreItemDto {
@@ -167,6 +183,17 @@ export class UpsertReadinessCriterionScoreItemDto {
   @IsOptional()
   @IsBoolean()
   checked?: boolean;
+
+  @ApiPropertyOptional({ enum: ReadinessTaskPriority })
+  @IsOptional()
+  @IsEnum(ReadinessTaskPriority)
+  priority?: ReadinessTaskPriority;
+
+  @ApiPropertyOptional({ nullable: true, example: '2026-10-20' })
+  @IsOptional()
+  @ValidateIf((_, value) => value !== null)
+  @Matches(/^\d{4}-\d{2}-\d{2}$/)
+  dueDate?: string | null;
 }
 
 export class UpsertReadinessCriterionScoresBatchDto {

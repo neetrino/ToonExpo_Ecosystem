@@ -51,6 +51,14 @@ export type UpdateReadinessCategoryBody = {
   active?: boolean;
 };
 
+export type ReadinessTaskPriority = 'low' | 'medium' | 'high' | 'urgent';
+
+export type ReadinessStatusEvent = {
+  at: string;
+  fromStatus: string | null;
+  toStatus: string;
+};
+
 export type ReadinessCriterionScoreItem = {
   scoreId: string | null;
   criterionId: string;
@@ -60,6 +68,13 @@ export type ReadinessCriterionScoreItem = {
   sortOrder: number;
   value: number | null;
   checked: boolean;
+  priority: ReadinessTaskPriority;
+  dueDate: string | null;
+  startedAt: string | null;
+  completedAt: string | null;
+  statusChangedAt: string | null;
+  createdAt: string | null;
+  history: ReadinessStatusEvent[];
   serviceProviderCategoryId: string | null;
   children: ReadinessCriterionScoreItem[];
 };
@@ -193,6 +208,8 @@ export type UpsertReadinessScoreBody = {
 export type UpsertReadinessCriterionScoreBody = {
   value?: number | null;
   checked?: boolean;
+  priority?: ReadinessTaskPriority;
+  dueDate?: string | null;
 };
 
 export type UpsertReadinessCriterionScoresBatchBody = {
@@ -200,6 +217,8 @@ export type UpsertReadinessCriterionScoresBatchBody = {
     criterionId: string;
     value?: number | null;
     checked?: boolean;
+    priority?: ReadinessTaskPriority;
+    dueDate?: string | null;
   }>;
 };
 
@@ -254,12 +273,21 @@ export type PortalReadinessCriterionItem = {
   checked: boolean;
   /** value / maxPoints as 0–100 when scored; null for non-scored rows. */
   percent: number | null;
+  priority?: ReadinessTaskPriority;
+  dueDate?: string | null;
+  startedAt?: string | null;
+  completedAt?: string | null;
+  statusChangedAt?: string | null;
+  createdAt?: string | null;
+  history?: ReadinessStatusEvent[];
   serviceProviderCategoryId: string | null;
   helpAvailable: boolean;
   children: PortalReadinessCriterionItem[];
 };
 
 export type PortalReadinessScoreItem = {
+  /** ReadinessScore row id. Required actions join on this value. */
+  id: string;
   categoryId: string;
   categoryCode: string;
   categoryName: string;
@@ -307,6 +335,8 @@ export type PortalReadinessAssessmentItem = {
 
 export type PortalReadinessResponse = {
   data: PortalReadinessAssessmentItem[];
+  /** Median overall score of active builder-company assessments. */
+  peerMedianPercent: number | null;
 };
 
 /** Result of ensuring company-level assessments exist for all builders. */

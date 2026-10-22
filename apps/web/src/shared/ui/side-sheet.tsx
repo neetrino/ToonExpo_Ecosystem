@@ -185,7 +185,9 @@ const SideSheetPanel = ({
           </div>
 
           {footer ? (
-            <footer className="safe-pb shrink-0 border-t border-border px-5 py-4">{footer}</footer>
+            <footer className="safe-pb shrink-0 border-t border-border bg-surface-elevated px-5 py-4">
+              {footer}
+            </footer>
           ) : null}
         </aside>
       </div>

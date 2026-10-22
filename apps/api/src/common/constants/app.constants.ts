@@ -4,6 +4,13 @@
 
 export const DEFAULT_API_PORT = 4000;
 
+/**
+ * JSON body limit. Venue-map publish sends every cell; the live plan is about
+ * 9k cells (~180KB). Express default (100kb) is not an HttpException, so the
+ * client only sees a generic 500.
+ */
+export const API_JSON_BODY_LIMIT = '5mb';
+
 export const API_SERVICE_NAME = 'toonexpo-api';
 
 export const API_PACKAGE_VERSION = '0.0.0';

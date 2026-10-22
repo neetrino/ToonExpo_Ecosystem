@@ -64,6 +64,16 @@ export class AllExceptionsFilter implements ExceptionFilter {
       return this.fromHttpException(exception, path, timestamp);
     }
 
+    if (isEntityTooLarge(exception)) {
+      return {
+        statusCode: HttpStatus.PAYLOAD_TOO_LARGE,
+        message: REQUEST_BODY_TOO_LARGE_MESSAGE,
+        error: 'Payload Too Large',
+        path,
+        timestamp,
+      };
+    }
+
     const nodeEnv = this.configService.get('NODE_ENV', { infer: true });
     const isProduction = nodeEnv === NODE_ENV_PRODUCTION;
 
@@ -125,3 +135,14 @@ export class AllExceptionsFilter implements ExceptionFilter {
     return 'Internal server error';
   }
 }
+
+const ENTITY_TOO_LARGE_TYPE = 'entity.too.large';
+const REQUEST_BODY_TOO_LARGE_MESSAGE = 'Request body is too large';
+
+const isEntityTooLarge = (exception: unknown): boolean => {
+  if (typeof exception !== 'object' || exception === null || !('type' in exception)) {
+    return false;
+  }
+
+  return exception.type === ENTITY_TOO_LARGE_TYPE;
+};

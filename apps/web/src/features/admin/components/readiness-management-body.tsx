@@ -3,7 +3,7 @@
 import type { ReadinessAssessmentDetail, ReadinessScoreItem } from '@toonexpo/contracts';
 import { ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 
 import {
   ReadinessCriterionRow,
@@ -16,10 +16,10 @@ import {
   isReadinessDraftDirty,
   weightedOverallFromPercents,
 } from '@/features/admin/components/readiness-management-drafts';
+import { ReadinessSaveBar } from '@/features/admin/components/readiness-management-save-bar';
 import { useUpsertReadinessCriterionScoresBatchMutation } from '@/features/admin/hooks/use-admin-readiness';
 import { barFillColSpanClass } from '@/features/analytics/utils/bar-fill-span';
 import { scorePercent } from '@/features/readiness/utils/readiness-score-display';
-import { Button } from '@/shared/ui/button';
 import { cn } from '@/shared/ui/cn';
 
 const ProgressBar = ({ percent, heightClass }: { percent: number; heightClass: string }) => {
@@ -127,12 +127,16 @@ const CategoryAccordion = ({
 
 type ReadinessManagementBodyProps = {
   assessment: ReadinessAssessmentDetail;
+  setFooter: (footer: ReactNode) => void;
 };
 
 /**
  * Editable readiness KPI checklist body for the management sheet.
  */
-export const ReadinessManagementBody = ({ assessment }: ReadinessManagementBodyProps) => {
+export const ReadinessManagementBody = ({
+  assessment,
+  setFooter,
+}: ReadinessManagementBodyProps) => {
   const t = useTranslations('Admin.readiness.management');
   const [baseline, setBaseline] = useState(() => buildReadinessDraftMap(assessment));
   const [drafts, setDrafts] = useState(() => buildReadinessDraftMap(assessment));
@@ -164,7 +168,7 @@ export const ReadinessManagementBody = ({ assessment }: ReadinessManagementBodyP
     setDrafts((prev) => ({ ...prev, [criterionId]: next }));
   };
 
-  const onSave = async () => {
+  const onSave = useCallback(async () => {
     setSaveError(null);
     const items = Object.entries(drafts)
       .filter(([criterionId, draft]) => {
@@ -172,12 +176,19 @@ export const ReadinessManagementBody = ({ assessment }: ReadinessManagementBodyP
         if (!original) {
           return true;
         }
-        return original.value !== draft.value || original.checked !== draft.checked;
+        return (
+          original.value !== draft.value ||
+          original.checked !== draft.checked ||
+          original.dueDate !== draft.dueDate ||
+          original.priority !== draft.priority
+        );
       })
       .map(([criterionId, draft]) => ({
         criterionId,
         value: draft.value,
         checked: draft.checked,
+        dueDate: draft.dueDate,
+        priority: draft.priority,
       }));
 
     if (items.length === 0) {
@@ -192,7 +203,25 @@ export const ReadinessManagementBody = ({ assessment }: ReadinessManagementBodyP
     } catch {
       setSaveError(t('saveError'));
     }
-  };
+  }, [baseline, drafts, saveMutation.mutateAsync, t]);
+
+  useEffect(() => {
+    setFooter(
+      <ReadinessSaveBar
+        hint={t('projectHint')}
+        error={saveError}
+        busy={busy}
+        dirty={dirty}
+        saveLabel={busy ? t('saving') : t('save')}
+        onSave={() => {
+          void onSave();
+        }}
+      />,
+    );
+    return () => {
+      setFooter(null);
+    };
+  }, [busy, dirty, onSave, saveError, setFooter, t]);
 
   return (
     <div className="flex flex-col gap-5">
@@ -237,20 +266,6 @@ export const ReadinessManagementBody = ({ assessment }: ReadinessManagementBodyP
             />
           );
         })}
-      </div>
-
-      <div className="flex flex-col gap-2 border-t border-border pt-4">
-        <p className="text-xs text-ink-secondary">{t('projectHint')}</p>
-        {saveError ? (
-          <p role="alert" className="text-sm text-danger">
-            {saveError}
-          </p>
-        ) : null}
-        <div className="flex justify-end">
-          <Button type="button" onClick={() => void onSave()} disabled={!dirty || busy}>
-            {busy ? t('saving') : t('save')}
-          </Button>
-        </div>
       </div>
     </div>
   );

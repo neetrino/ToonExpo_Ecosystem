@@ -47,7 +47,9 @@ export const toReadinessCategoryItem = (category: ReadinessCategory): ReadinessC
   updatedAt: toIso(category.updatedAt),
 });
 
-export const toReadinessCriterionItem = (criterion: ReadinessCriterion): ReadinessCriterionItem => ({
+export const toReadinessCriterionItem = (
+  criterion: ReadinessCriterion,
+): ReadinessCriterionItem => ({
   id: criterion.id,
   code: criterion.code,
   categoryId: criterion.categoryId,
@@ -123,7 +125,15 @@ export const toReadinessAssessmentListItem = (
 
 type CriterionScoreWithCriterion = ReadinessCriterionScore & {
   criterion: ReadinessCriterion;
+  statusEvents?: {
+    changedAt: Date;
+    fromStatus: string | null;
+    toStatus: string;
+  }[];
 };
+
+const dateOnly = (value: Date | null | undefined): string | null =>
+  value ? value.toISOString().slice(0, 10) : null;
 
 const toCriterionScoreFields = (
   criterion: ReadinessCriterion,
@@ -137,6 +147,17 @@ const toCriterionScoreFields = (
   sortOrder: criterion.sortOrder,
   value: score?.value ?? null,
   checked: score?.checked ?? false,
+  priority: score?.priority ?? 'medium',
+  dueDate: dateOnly(score?.dueDate),
+  startedAt: score?.startedAt ? toIso(score.startedAt) : null,
+  completedAt: score?.completedAt ? toIso(score.completedAt) : null,
+  statusChangedAt: score?.statusChangedAt ? toIso(score.statusChangedAt) : null,
+  createdAt: score ? toIso(score.createdAt) : null,
+  history: (score?.statusEvents ?? []).map((event) => ({
+    at: toIso(event.changedAt),
+    fromStatus: event.fromStatus,
+    toStatus: event.toStatus,
+  })),
   serviceProviderCategoryId: criterion.serviceProviderCategoryId,
 });
 
@@ -146,7 +167,10 @@ export const assessmentDetailInclude = {
     orderBy: [{ category: { sortOrder: 'asc' as const } }, { category: { name: 'asc' as const } }],
   },
   criterionScores: {
-    include: { criterion: true },
+    include: {
+      criterion: true,
+      statusEvents: { orderBy: { changedAt: 'asc' as const } },
+    },
   },
   recommendations: { orderBy: [{ sortOrder: 'asc' as const }, { createdAt: 'asc' as const }] },
   requiredActions: { orderBy: [{ createdAt: 'asc' as const }] },
@@ -220,6 +244,13 @@ const toPortalCriterionNode = (
   value: item.value,
   checked: item.checked,
   percent: criterionPercent(item.value, item.maxPoints),
+  priority: item.priority,
+  dueDate: item.dueDate,
+  startedAt: item.startedAt,
+  completedAt: item.completedAt,
+  statusChangedAt: item.statusChangedAt,
+  createdAt: item.createdAt,
+  history: item.history,
   serviceProviderCategoryId: item.serviceProviderCategoryId,
   helpAvailable: isHelpAvailable(item.serviceProviderCategoryId, helpByProviderCategoryId),
   children: item.children.map((child) => toPortalCriterionNode(child, helpByProviderCategoryId)),
@@ -313,6 +344,7 @@ export const toPortalReadinessScoreItem = (
   helpByProviderCategoryId: ReadonlyMap<string, boolean>,
   criteria: ReadinessCriterionScoreItem[] = [],
 ): PortalReadinessScoreItem => ({
+  id: score.id,
   categoryId: score.categoryId,
   categoryCode: score.category.code,
   categoryName: score.category.name,

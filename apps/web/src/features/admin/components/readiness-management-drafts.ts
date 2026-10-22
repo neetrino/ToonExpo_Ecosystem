@@ -25,6 +25,8 @@ export const buildReadinessDraftMap = (
       drafts[criterion.criterionId] = {
         value: criterion.value,
         checked: criterion.checked,
+        dueDate: criterion.dueDate,
+        priority: criterion.priority,
       };
     }
   }
@@ -88,7 +90,12 @@ export const isReadinessDraftDirty = (
     if (!left || !right) {
       return true;
     }
-    if (left.value !== right.value || left.checked !== right.checked) {
+    if (
+      left.value !== right.value ||
+      left.checked !== right.checked ||
+      left.dueDate !== right.dueDate ||
+      left.priority !== right.priority
+    ) {
       return true;
     }
   }

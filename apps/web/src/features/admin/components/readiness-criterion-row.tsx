@@ -1,15 +1,18 @@
 'use client';
 
-import type { ReadinessCriterionScoreItem } from '@toonexpo/contracts';
+import type { ReadinessCriterionScoreItem, ReadinessTaskPriority } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 import { ReadinessCriterionProviderSelect } from '@/features/admin/components/readiness-criterion-provider-select';
+import { ReadinessCriterionSchedule } from '@/features/admin/components/readiness-criterion-schedule';
 import { cn } from '@/shared/ui/cn';
 
 export type CriterionDraft = {
   value: number | null;
   checked: boolean;
+  dueDate: string | null;
+  priority: ReadinessTaskPriority;
 };
 
 export type CriterionDraftMap = Record<string, CriterionDraft>;
@@ -57,7 +60,10 @@ export const ReadinessCriterionRow = ({
   const draft = drafts[item.criterionId] ?? {
     value: item.value,
     checked: item.checked,
+    dueDate: item.dueDate,
+    priority: item.priority,
   };
+  const schedule = { dueDate: draft.dueDate, priority: draft.priority };
   const [text, setText] = useState(draft.value === null ? '' : String(draft.value));
   const isGroup = item.children.length > 0;
   const groupPercent = isGroup ? groupEarnedPercent(item, drafts) : null;
@@ -74,7 +80,7 @@ export const ReadinessCriterionRow = ({
     }
     const trimmed = raw.trim();
     if (trimmed === '') {
-      onChange(item.criterionId, { value: null, checked: false });
+      onChange(item.criterionId, { value: null, checked: false, ...schedule });
       return;
     }
     const parsed = Number.parseInt(trimmed, 10);
@@ -84,7 +90,7 @@ export const ReadinessCriterionRow = ({
     }
     const clamped = Math.max(0, Math.min(item.maxPoints ?? parsed, parsed));
     setText(String(clamped));
-    onChange(item.criterionId, { value: clamped, checked: true });
+    onChange(item.criterionId, { value: clamped, checked: true, ...schedule });
   };
 
   const toggleChecked = () => {
@@ -92,17 +98,18 @@ export const ReadinessCriterionRow = ({
       return;
     }
     if (draft.checked) {
-      onChange(item.criterionId, { checked: false, value: null });
+      onChange(item.criterionId, { checked: false, value: null, ...schedule });
       return;
     }
     if (canScore) {
       onChange(item.criterionId, {
         checked: true,
         value: draft.value ?? item.maxPoints,
+        ...schedule,
       });
       return;
     }
-    onChange(item.criterionId, { checked: true, value: draft.value });
+    onChange(item.criterionId, { checked: true, value: draft.value, ...schedule });
   };
 
   return (
@@ -169,6 +176,20 @@ export const ReadinessCriterionRow = ({
           <span className="shrink-0 text-sm text-ink-muted">—</span>
         )}
       </div>
+      {!isGroup ? (
+        <ReadinessCriterionSchedule
+          label={label}
+          dueDate={draft.dueDate}
+          priority={draft.priority}
+          disabled={disabled}
+          onDueDate={(dueDate) => {
+            onChange(item.criterionId, { ...draft, dueDate });
+          }}
+          onPriority={(priority) => {
+            onChange(item.criterionId, { ...draft, priority });
+          }}
+        />
+      ) : null}
 
       {item.children.map((child) => (
         <ReadinessCriterionRow

@@ -27,6 +27,13 @@ enum ReadinessRequiredActionStatus {
   cancelled
 }
 
+enum ReadinessTaskPriority {
+  low
+  medium
+  high
+  urgent
+}
+
 model ReadinessAssessment {
   id                      String                        @id @default(cuid())
   targetType              ReadinessAssessmentTargetType @map("target_type")
@@ -114,17 +121,37 @@ model ReadinessCriterionScore {
   assessmentId String   @map("assessment_id")
   criterionId  String   @map("criterion_id")
   value        Int?
-  checked      Boolean  @default(false)
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  checked      Boolean               @default(false)
+  priority     ReadinessTaskPriority @default(medium)
+  dueDate      DateTime?             @map("due_date")
+  startedAt    DateTime?             @map("started_at")
+  completedAt  DateTime?             @map("completed_at")
+  statusChangedAt DateTime?          @map("status_changed_at")
+  createdAt    DateTime              @default(now()) @map("created_at")
+  updatedAt    DateTime              @updatedAt @map("updated_at")
 
-  assessment ReadinessAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
-  criterion  ReadinessCriterion  @relation(fields: [criterionId], references: [id], onDelete: Restrict)
+  assessment   ReadinessAssessment            @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  criterion    ReadinessCriterion             @relation(fields: [criterionId], references: [id], onDelete: Restrict)
+  statusEvents ReadinessCriterionStatusEvent[]
 
   @@unique([assessmentId, criterionId])
   @@index([assessmentId])
   @@index([criterionId])
   @@map("readiness_criterion_scores")
+}
+
+/// Recorded status change for a criterion score. Powers the client report history.
+model ReadinessCriterionStatusEvent {
+  id               String   @id @default(cuid())
+  criterionScoreId String   @map("criterion_score_id")
+  fromStatus       String?  @map("from_status")
+  toStatus         String   @map("to_status")
+  changedAt        DateTime @default(now()) @map("changed_at")
+
+  criterionScore ReadinessCriterionScore @relation(fields: [criterionScoreId], references: [id], onDelete: Cascade)
+
+  @@index([criterionScoreId, changedAt])
+  @@map("readiness_criterion_status_events")
 }
 
 model ReadinessScore {
