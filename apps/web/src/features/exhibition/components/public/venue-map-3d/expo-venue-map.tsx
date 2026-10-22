@@ -328,14 +328,12 @@ export const ExpoVenueMapView = ({ snapshot }: ExpoVenueMapViewProps) => {
     const pointers = new Map<number, { x: number; y: number }>();
     let last = { x: 0, y: 0 };
     let moved = 0;
-    let mode: 'pan' = 'pan';
 
     const onDown = (event: PointerEvent): void => {
       stage.renderer.domElement.setPointerCapture(event.pointerId);
       pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
       last = { x: event.clientX, y: event.clientY };
       moved = 0;
-      mode = 'pan';
       host.classList.add(styles.dragging);
     };
     const onMove = (event: PointerEvent): void => {
@@ -347,7 +345,7 @@ export const ExpoVenueMapView = ({ snapshot }: ExpoVenueMapViewProps) => {
       const dy = event.clientY - last.y;
       last = { x: event.clientX, y: event.clientY };
       moved += Math.abs(dx) + Math.abs(dy);
-      if (mode === 'pan') panVenueCamera(stage.cameraGoal, dx, dy);
+      panVenueCamera(stage.cameraGoal, dx, dy);
       clampVenueCamera(stage.cameraGoal);
     };
     const onUp = (event: PointerEvent): void => {
