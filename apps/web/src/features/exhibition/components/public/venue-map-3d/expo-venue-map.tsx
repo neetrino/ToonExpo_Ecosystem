@@ -101,6 +101,8 @@ const LABEL_FONT_HEIGHT_DIVISOR = 2.6;
 const LABEL_AREA_MIN_HEIGHT_FACTOR = 3.4;
 const LABEL_WIDTH_RATIO = 0.94;
 const LABEL_MIN_WIDTH_PX = 30;
+const LABEL_CHAR_WIDTH_EM = 0.66;
+const LABEL_CHAR_WIDTH_EM_BIG = 0.74;
 
 const matches = (booth: VenueBooth, query: string): boolean => {
   const normalized = query.trim().toLowerCase();
@@ -255,8 +257,13 @@ export const ExpoVenueMapView = ({ snapshot }: ExpoVenueMapViewProps) => {
           document.createTextNode(selectedNow || item.booth.name ? name : area || 'Open'),
         );
         const big = item.booth.kind === 'big';
+        const labelWidth = Math.max(LABEL_MIN_WIDTH_PX, span.w * LABEL_WIDTH_RATIO);
+        const divisor = big ? LABEL_FONT_WIDTH_DIVISOR_BIG : LABEL_FONT_WIDTH_DIVISOR;
+        const longestWord = name.split(/\s+/).reduce((max, word) => Math.max(max, word.length), 1);
+        const charWidth = big ? LABEL_CHAR_WIDTH_EM_BIG : LABEL_CHAR_WIDTH_EM;
         const fitted = Math.min(
-          span.w / (big ? LABEL_FONT_WIDTH_DIVISOR_BIG : LABEL_FONT_WIDTH_DIVISOR),
+          labelWidth / divisor,
+          labelWidth / Math.max(longestWord * charWidth, 1),
           span.h / LABEL_FONT_HEIGHT_DIVISOR,
         );
         const fontSize = Math.min(big ? FONT_MAX_BIG : FONT_MAX, Math.max(FONT_MIN, fitted));
@@ -276,7 +283,7 @@ export const ExpoVenueMapView = ({ snapshot }: ExpoVenueMapViewProps) => {
           return;
         }
         node.style.fontSize = `${fontSize}px`;
-        node.style.width = `${Math.max(LABEL_MIN_WIDTH_PX, span.w * LABEL_WIDTH_RATIO)}px`;
+        node.style.width = `${labelWidth}px`;
       });
       markNodes.forEach((node, index) => {
         const mark = VENUE_MARKS[index];
