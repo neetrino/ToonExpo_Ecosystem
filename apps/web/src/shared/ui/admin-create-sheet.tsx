@@ -10,6 +10,8 @@ type AdminCreateSheetProps = {
   title: string;
   description?: string | undefined;
   children: ReactNode;
+  /** Pinned under the scrolling body. Stays visible while the sheet content scrolls. */
+  footer?: ReactNode | undefined;
   headerActions?: ReactNode | undefined;
   /** `compact` ≈ 420px; `comfortable` ≈ 500px; `wide` ≈ 640px; `default` ≈ 50vw. */
   size?: 'compact' | 'comfortable' | 'wide' | 'default' | undefined;
@@ -29,6 +31,7 @@ export const AdminCreateSheet = ({
   title,
   description,
   children,
+  footer,
   headerActions,
   size = 'compact',
   stackLevel,
@@ -41,6 +44,7 @@ export const AdminCreateSheet = ({
       title={title.replace(LEADING_PLUS, '')}
       description={description}
       headerActions={headerActions}
+      footer={footer}
       stackLevel={stackLevel}
     >
       {children}

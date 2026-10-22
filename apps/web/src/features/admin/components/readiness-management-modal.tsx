@@ -2,6 +2,7 @@
 
 import type { AdminBuildingListItem } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
+import { useState, type ReactNode } from 'react';
 
 import { ReadinessManagementBody } from '@/features/admin/components/readiness-management-body';
 import { useAdminReadinessAssessmentQuery } from '@/features/admin/hooks/use-admin-readiness';
@@ -23,6 +24,7 @@ type ReadinessManagementModalProps = {
 export const ReadinessManagementModal = ({ target, onClose }: ReadinessManagementModalProps) => {
   const t = useTranslations('Admin.readiness.management');
   const open = target != null;
+  const [footer, setFooter] = useState<ReactNode>(null);
 
   const buildingTarget = target?.kind === 'building' ? target.building : null;
   const assessmentId = target?.kind === 'assessment' ? target.assessmentId : '';
@@ -52,6 +54,7 @@ export const ReadinessManagementModal = ({ target, onClose }: ReadinessManagemen
       title={t('title')}
       description={subtitle}
       size="default"
+      footer={footer}
     >
       {isLoading ? <p className="text-sm text-ink-secondary">{t('loading')}</p> : null}
       {isError ? (
@@ -59,7 +62,9 @@ export const ReadinessManagementModal = ({ target, onClose }: ReadinessManagemen
           {t('error')}
         </p>
       ) : null}
-      {assessment ? <ReadinessManagementBody assessment={assessment} /> : null}
+      {assessment ? (
+        <ReadinessManagementBody assessment={assessment} setFooter={setFooter} />
+      ) : null}
     </AdminCreateSheet>
   );
 };
