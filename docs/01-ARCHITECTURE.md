@@ -80,7 +80,7 @@ BigProjects BOS owns Builder Sales, Partner Relations, event cycles, editable ve
 
 | Component         | Path                 | Responsibility                                                        | Deployment       |
 | ----------------- | -------------------- | --------------------------------------------------------------------- | ---------------- |
-| Web app           | `apps/web`           | Public pages and role-based frontend experiences                      | Vercel           |
+| Web app           | `apps/web`           | Public pages and role-based frontend experiences                      | Vercel or Coolify (Docker) |
 | API app           | `apps/api`           | Complete backend: auth, RBAC, workflows, persistence and integrations | Google Cloud Run |
 | Domain package    | `packages/domain`    | Small shared kernel for cross-module value objects only               | Bundled into API |
 | Contracts package | `packages/contracts` | Framework-neutral enums/schemas and generated API client support      | Bundled          |
@@ -103,6 +103,7 @@ toonexpo-ecosystem/
         components/             # app-level components
         lib/                    # typed NestJS API client, i18n, UI auth state
       public/
+      Dockerfile              # Coolify image; build context is the monorepo root
     api/
       src/
         auth/                   # sessions, RBAC, CSRF guards

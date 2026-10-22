@@ -31,7 +31,7 @@ Infrastructure and platform services completed during waves 1–4 (2026-07-18):
 - `.env` / `.env.example` revision; Armenian (`hy`) hardcoded as platform default locale (`DEFAULT_LOCALE` env removed).
 - Sentry in api + web (DSN-gated; sourcemap upload deferred to CI); `SENTRY_AUTH_TOKEN` in GitHub Secrets.
 - Distributed rate limiting via Upstash Redis (atomic Lua, fail-open, in-memory fallback).
-- Deploy artifacts: `apps/api/Dockerfile`, `.dockerignore`, `apps/web/vercel.json`, `docs/DEPLOYMENT.md`, `docs/SETTINGS.md`.
+- Deploy artifacts: `apps/api/Dockerfile`, `apps/web/Dockerfile`, `.dockerignore`, `apps/web/vercel.json`, `docs/DEPLOYMENT.md`, `docs/SETTINGS.md`.
 - PostgreSQL migrations and database-only product data lifecycle.
 
 ## Completed
