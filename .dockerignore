@@ -33,12 +33,15 @@ coverage
 .DS_Store
 Thumbs.db
 
-# CI, hooks, local tooling (not needed to build the API image)
+# CI, hooks, local tooling.
+# `/scripts` is root-only so `apps/web/scripts` stays in the context
+# (web prebuild copies the MapLibre worker from that directory).
 .github
 .husky
 .load
 load
-scripts
+/scripts
+/out
 
 # Docs and markdown (keep root README for image metadata if needed)
 docs

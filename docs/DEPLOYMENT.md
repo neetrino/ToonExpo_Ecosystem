@@ -259,6 +259,47 @@ sourcemaps: {
 
 To enable later: set `SENTRY_AUTH_TOKEN` in Vercel, remove or set `disable: false`, and configure your Sentry org/project in the Sentry webpack plugin options.
 
+### 4.4 Web — Coolify (Docker)
+
+`apps/web/vercel.json` remains the Vercel install/build path. Coolify uses `apps/web/Dockerfile`. The Docker build context is the **monorepo root**, same as `apps/api/Dockerfile`. Vercel’s root directory `apps/web` must not be copied into Coolify’s base directory.
+
+`output: "standalone"` stays off. The image runs the existing `start` script (`next start -H 0.0.0.0 -p 3000`). Node 24 loads `next.config.ts` on startup, and that file imports `dotenv` (a web devDependency) plus TypeScript source, so the runtime image keeps the pruned workspace install.
+
+| Coolify setting | Value |
+| --- | --- |
+| Build Pack | Dockerfile |
+| Base Directory | `/` (repository root) |
+| Dockerfile Location | `apps/web/Dockerfile` |
+| Exposed Port | `3000` |
+
+Do not select Nixpacks. Do not set the base directory to `apps/web`.
+
+#### Dockerfile stages
+
+| Stage | Purpose |
+| --- | --- |
+| `base` | Node 24 (Debian slim), Corepack, pnpm 11.14.0 |
+| `prune` | `turbo prune @toonexpo/web --docker` — web, `@toonexpo/contracts`, `@toonexpo/shared`, `@toonexpo/config` only |
+| `build` | `pnpm install --frozen-lockfile`, then `pnpm turbo run build --filter=@toonexpo/web` (runs `prebuild` + `next build`) |
+| `runner` | Non-root user `nextjs`, `NODE_ENV=production`, `CMD pnpm --filter @toonexpo/web start` |
+
+`next.config.ts` `rewrites()` and `images.remotePatterns` are evaluated during `next build` and stored in `.next`. Changing them requires a new image build. `NEXT_PUBLIC_*` values are inlined into the client bundle at the same time. Leave `NEXT_PUBLIC_API_URL` unset for proxy mode at **build** time, not only at container start.
+
+| Variable | Buildtime | Runtime | Notes |
+| --- | --- | --- | --- |
+| `API_PROXY_TARGET` | **Yes** | **Yes** | Proxy mode. Example: `https://toonexpo-api.neetrino.com`. Bakes `/api/v1/*` rewrites; server fetches read it again at runtime. |
+| `NEXT_PUBLIC_API_URL` | Leave unset | Leave unset | Direct mode only. Setting it at build switches the browser off the proxy. |
+| `R2_PUBLIC_URL` | **Yes**, if R2 media is used | **Yes** | Custom `next/image` host is fixed at build. `*.r2.dev` is always allowed. |
+| `NEXT_PUBLIC_R2_PUBLIC_URL` | **Yes**, if R2 media is used | **Yes** | Same public base as `R2_PUBLIC_URL`. |
+| `NEXT_PUBLIC_SENTRY_DSN` | **Yes**, if Sentry is on | **Yes** | Optional. Unset disables Sentry. |
+| `APP_URL` | **Yes** | **Yes** | Canonical site URL. Root `metadataBase` is computed at build. Use `https://toonexpo.neetrino.com`. |
+| `REVALIDATE_SECRET` | No | **Yes**, if tag purge is on | Read per request by `POST /api/revalidate`. Not a build arg. |
+| `SENTRY_AUTH_TOKEN` | No | No | Sourcemap upload is disabled. Do not put it in the image. |
+
+No API secrets (`DATABASE_URL`, session peppers, Resend, R2 keys, BOS) belong on this service. Mark build-time variables **Available at Buildtime** in Coolify; those values are also present at runtime. Do not add them as `ENV` instructions — the Dockerfile only declares `ARG`s so URLs are not stored as image environment.
+
+The API `CORS_ORIGINS` must include `https://toonexpo.neetrino.com`. If cache purge is used, set the API `WEB_REVALIDATE_URL` to `https://toonexpo.neetrino.com/api/revalidate` and the same `REVALIDATE_SECRET` / `WEB_REVALIDATE_SECRET` pair as in § Settings.
+
 ---
 
 ## 5. Cross-config checklist
@@ -319,18 +360,34 @@ When `api.toonexpo.com` is mapped to Cloud Run, unset `API_PROXY_TARGET` and set
 
 ## 7. Local Docker smoke test (optional)
 
-From monorepo root:
+From monorepo root.
+
+API:
 
 ```bash
 docker build -f apps/api/Dockerfile -t toonexpo-api .
 ```
 
-Run with a temp env file (never commit). Include at least: `NODE_ENV`, `DATABASE_URL`, `APP_URL`, `CORS_ORIGINS`, `SESSION_TOKEN_PEPPER`, `CSRF_SECRET`, `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, and `PORT=8080`.
+Run the API with a temp env file (never commit). Include at least: `NODE_ENV`, `DATABASE_URL`, `APP_URL`, `CORS_ORIGINS`, `SESSION_TOKEN_PEPPER`, `CSRF_SECRET`, `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, and `PORT=8080`.
 
 ```bash
 docker run --rm -p 8080:8080 --env-file /path/to/temp.env toonexpo-api
 curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/api/v1/health
 # Expect 200
+```
+
+Web (proxy mode). `API_PROXY_TARGET` and `APP_URL` must be present at build time; pass the same values again at run time for server-side fetch and dynamic metadata:
+
+```bash
+docker build -f apps/web/Dockerfile -t toonexpo-web \
+  --build-arg API_PROXY_TARGET=https://toonexpo-api.neetrino.com \
+  --build-arg APP_URL=https://toonexpo.neetrino.com \
+  .
+
+docker run --rm -p 3000:3000 \
+  -e API_PROXY_TARGET=https://toonexpo-api.neetrino.com \
+  -e APP_URL=https://toonexpo.neetrino.com \
+  toonexpo-web
 ```
 
 ---
