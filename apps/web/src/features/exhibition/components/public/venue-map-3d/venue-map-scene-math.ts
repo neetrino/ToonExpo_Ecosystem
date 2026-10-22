@@ -18,12 +18,15 @@ export type VenueCamera = {
   pol: number;
 };
 
+export const VENUE_FLAT_POL = 0.001;
+
+/** Top-down home, same as the BOS hall. */
 export const VENUE_CAMERA_HOME: VenueCamera = {
   tx: -8,
   tz: -6,
   dist: 330,
-  az: -0.3,
-  pol: 0.86,
+  az: 0,
+  pol: VENUE_FLAT_POL,
 };
 
 export const VENUE_CAMERA_DIST_MIN = 18;
@@ -33,7 +36,6 @@ export const VENUE_CAMERA_TX_MIN = -200;
 export const VENUE_CAMERA_TX_MAX = 200;
 export const VENUE_CAMERA_TZ_MIN = -130;
 export const VENUE_CAMERA_TZ_MAX = 130;
-export const VENUE_FLAT_POL = 0.001;
 export const VENUE_TILT_POL = 0.86;
 export const VENUE_CAMERA_LERP = 0.14;
 export const VENUE_LIFT_LERP = 0.2;

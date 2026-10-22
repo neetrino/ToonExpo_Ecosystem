@@ -104,6 +104,20 @@
   white-space: nowrap;
 }
 
+.poi {
+  display: none;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: #027691;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 800;
+  text-shadow: none;
+}
+
 .panel {
   position: fixed;
   top: calc(4.5rem + env(safe-area-inset-top, 0px) + 16px);

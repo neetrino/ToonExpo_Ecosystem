@@ -1,58 +1,47 @@
-import type { PublicVenueMapSnapshotResponse } from '@toonexpo/contracts';
+import type { PublicVenueMapArea, PublicVenueMapSnapshotResponse } from '@toonexpo/contracts';
 
 import type {
   VenueBooth,
   VenueBoothKind,
 } from '@/features/exhibition/components/public/venue-map-3d/venue-map-booths';
+import {
+  HALL_BOOTHS,
+  type HallBooth,
+} from '@/features/exhibition/components/public/venue-map-3d/venue-hall-booths';
 import { resolveVenueMapAreaTitle } from '@/features/exhibition/utils/resolve-venue-map-area-title';
 
-/** Main hall footprint from the floor plan, in PDF points. */
-const HALL_X = 137;
-const HALL_Y = 779;
-const HALL_WIDTH = 2236;
-const HALL_HEIGHT = 637;
-const BIG_BOOTH_SQM = 200;
+const BIG_BOOTH_SQM = 100;
 
-const kindFor = (sqm: number, named: boolean): VenueBoothKind => {
+const kindFor = (hall: HallBooth, sqm: number, named: boolean): VenueBoothKind => {
+  if (hall.kind === 'svc') return 'svc';
   if (!named) return 'open';
-  if (sqm >= BIG_BOOTH_SQM) return 'big';
+  if (hall.kind === 'big' || sqm >= BIG_BOOTH_SQM) return 'big';
   return 'booth';
 };
 
+const publishedBooth = (hall: HallBooth, area: PublicVenueMapArea | undefined): VenueBooth => {
+  const title = area ? resolveVenueMapAreaTitle(area) : '';
+  const named = Boolean(area && area.displayMode !== 'hidden' && title !== area.code);
+  const sqm = area?.areaSqm ?? hall.sqm;
+  return {
+    id: area?.id ?? hall.code,
+    name: named ? title : null,
+    sqm,
+    code: hall.code,
+    kind: kindFor(hall, sqm, named),
+    href: area?.company?.href ?? null,
+    searchText: [hall.code, title, area?.name ?? '', area?.company?.name ?? '']
+      .join(' ')
+      .toLowerCase(),
+    parts: hall.parts,
+  };
+};
+
 /**
- * Places the published BOS areas onto the 3D hall floor.
- * Rects stay in the snapshot's pixel space and are fitted into the hall.
+ * Puts each published area on the matching hall booth (M01, S02, …).
+ * Geometry stays the traced floor plan, so the public map matches BOS.
  */
 export const boothsFromSnapshot = (snapshot: PublicVenueMapSnapshotResponse): VenueBooth[] => {
-  const scale = Math.min(HALL_WIDTH / snapshot.mapWidth, HALL_HEIGHT / snapshot.mapHeight);
-  const offsetX = HALL_X + (HALL_WIDTH - snapshot.mapWidth * scale) / 2;
-  const offsetY = HALL_Y + (HALL_HEIGHT - snapshot.mapHeight * scale) / 2;
-
-  return snapshot.areas.flatMap((area) => {
-    if (area.rects.length === 0) return [];
-    const title = resolveVenueMapAreaTitle(area);
-    const named = area.displayMode !== 'hidden' && title !== area.code;
-    return [
-      {
-        id: area.id,
-        name: named ? title : null,
-        sqm: area.areaSqm,
-        code: area.code,
-        kind: kindFor(area.areaSqm, named),
-        href: area.company?.href ?? null,
-        searchText: [area.code, area.name ?? '', area.publicLabel ?? '', area.company?.name ?? '']
-          .join(' ')
-          .toLowerCase(),
-        parts: area.rects.map(
-          (rect) =>
-            [
-              offsetX + rect.x * scale,
-              offsetY + rect.y * scale,
-              offsetX + (rect.x + rect.width) * scale,
-              offsetY + (rect.y + rect.height) * scale,
-            ] as const,
-        ),
-      },
-    ];
-  });
+  const byCode = new Map(snapshot.areas.map((area) => [area.code, area]));
+  return HALL_BOOTHS.map((hall) => publishedBooth(hall, byCode.get(hall.code)));
 };

@@ -4684,7 +4684,11 @@
     },
     "map": {
       "noImage": "Map image is not available yet.",
-      "alt": "Venue map"
+      "alt": "Venue map",
+      "hint": "Drag to pan. Scroll to zoom.",
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "reset": "Reset view"
     },
     "area": {
       "close": "Close",

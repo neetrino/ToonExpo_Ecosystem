@@ -27,8 +27,6 @@ import {
   worldZ,
   VENUE_CAMERA_LERP,
   VENUE_CLICK_MOVE_PX,
-  VENUE_DRAG_ROTATE,
-  VENUE_DRAG_TILT,
   VENUE_FLAT_POL,
   VENUE_LIFT_LERP,
   VENUE_HOVER_LIFT,
@@ -42,6 +40,11 @@ import {
   createVenueMapStage,
   resizeVenueStage,
 } from '@/features/exhibition/components/public/venue-map-3d/venue-map-stage';
+import {
+  VENUE_MARKS,
+  venueMarkScale,
+  venueMarkVisible,
+} from '@/features/exhibition/components/public/venue-map-3d/venue-map-marks';
 import css from '@/features/exhibition/components/public/venue-map-3d/venue-map-view.module.css';
 
 type VenueMapCss = {
@@ -54,6 +57,9 @@ type VenueMapCss = {
   labelOpen: string;
   labelBig: string;
   labelSelected: string;
+  zoneLabel: string;
+  pill: string;
+  poi: string;
   panel: string;
   brand: string;
   brandRow: string;
@@ -140,7 +146,7 @@ export const ExpoVenueMapView = ({ snapshot }: ExpoVenueMapViewProps) => {
   const labelsRef = useRef<HTMLDivElement>(null);
   const [query, setQuery] = useState('');
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [flat, setFlat] = useState(false);
+  const [flat, setFlat] = useState(true);
   const [mounted, setMounted] = useState(false);
   const booths = useMemo(() => boothsFromSnapshot(snapshot), [snapshot]);
   const selected = booths.find((booth) => booth.id === selectedId) ?? null;
@@ -166,6 +172,18 @@ export const ExpoVenueMapView = ({ snapshot }: ExpoVenueMapViewProps) => {
       node.className = styles.label;
       labels.appendChild(node);
       labelNodes.set(item.booth.id, node);
+    });
+    const markClass = (kind: (typeof VENUE_MARKS)[number]['kind']): string => {
+      if (kind === 'zone') return styles.zoneLabel;
+      if (kind === 'poi') return styles.poi;
+      return styles.pill;
+    };
+    const markNodes = VENUE_MARKS.map((mark) => {
+      const node = document.createElement('div');
+      node.className = [styles.label, markClass(mark.kind)].join(' ');
+      node.textContent = mark.text;
+      labels.appendChild(node);
+      return node;
     });
     let frame = 0;
     let hoveredId: string | null = null;
@@ -244,6 +262,18 @@ export const ExpoVenueMapView = ({ snapshot }: ExpoVenueMapViewProps) => {
           node.style.width = `${Math.max(30, span.w * 0.94)}px`;
         }
       });
+      markNodes.forEach((node, index) => {
+        const mark = VENUE_MARKS[index];
+        if (!mark) return;
+        const point = project(
+          new Vector3(worldX(toMetres(mark.x)), mark.y, worldZ(toMetres(mark.z))),
+        );
+        const visible = point.z <= 1 && venueMarkVisible(mark, stage.cameraState.dist);
+        node.style.display = visible ? (mark.kind === 'poi' ? 'flex' : 'block') : 'none';
+        if (!visible) return;
+        const scale = venueMarkScale(mark, stage.cameraState.dist);
+        node.style.transform = `translate(${point.x}px, ${point.y}px) translate(-50%, -50%) scale(${scale})`;
+      });
     };
 
     const loop = (): void => {
@@ -275,14 +305,14 @@ export const ExpoVenueMapView = ({ snapshot }: ExpoVenueMapViewProps) => {
     const pointers = new Map<number, { x: number; y: number }>();
     let last = { x: 0, y: 0 };
     let moved = 0;
-    let mode: 'rot' | 'pan' = 'rot';
+    let mode: 'pan' = 'pan';
 
     const onDown = (event: PointerEvent): void => {
       stage.renderer.domElement.setPointerCapture(event.pointerId);
       pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
       last = { x: event.clientX, y: event.clientY };
       moved = 0;
-      mode = event.button === 2 || event.shiftKey ? 'pan' : 'rot';
+      mode = 'pan';
       host.classList.add(styles.dragging);
     };
     const onMove = (event: PointerEvent): void => {
@@ -294,12 +324,7 @@ export const ExpoVenueMapView = ({ snapshot }: ExpoVenueMapViewProps) => {
       const dy = event.clientY - last.y;
       last = { x: event.clientX, y: event.clientY };
       moved += Math.abs(dx) + Math.abs(dy);
-      if (mode === 'rot') {
-        stage.cameraGoal.az -= dx * VENUE_DRAG_ROTATE;
-        if (!flatRef.current) stage.cameraGoal.pol -= dy * VENUE_DRAG_TILT;
-      } else {
-        panVenueCamera(stage.cameraGoal, dx, dy);
-      }
+      if (mode === 'pan') panVenueCamera(stage.cameraGoal, dx, dy);
       clampVenueCamera(stage.cameraGoal);
     };
     const onUp = (event: PointerEvent): void => {
@@ -475,10 +500,10 @@ export const ExpoVenueMapView = ({ snapshot }: ExpoVenueMapViewProps) => {
           type="button"
           aria-label="Reset view"
           onClick={() => {
-            setFlat(false);
+            setFlat(true);
             setSelectedId(null);
             callApi(hostRef.current, (api) => {
-              api.setFlat(false);
+              api.setFlat(true);
               api.reset();
             });
           }}
@@ -486,9 +511,7 @@ export const ExpoVenueMapView = ({ snapshot }: ExpoVenueMapViewProps) => {
           ↺
         </button>
       </div>
-      <p className={styles.hint}>
-        Drag to rotate. Right-drag or Shift-drag to pan. Scroll to zoom.
-      </p>
+      <p className={styles.hint}>Drag to pan. Scroll to zoom.</p>
     </section>,
     document.body,
   );
