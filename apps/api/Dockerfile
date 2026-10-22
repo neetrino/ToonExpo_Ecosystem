@@ -43,7 +43,11 @@ RUN pnpm --filter ${API_PACKAGE} --prod deploy --legacy /app/deploy --config.ign
 FROM node:${NODE_VERSION} AS runner
 ENV NODE_ENV=production
 WORKDIR /app
-RUN groupadd --system --gid 1001 nestjs \
+# Coolify health checks curl from inside the container.
+RUN apt-get update -y \
+  && apt-get install -y --no-install-recommends curl ca-certificates \
+  && rm -rf /var/lib/apt/lists/* \
+  && groupadd --system --gid 1001 nestjs \
   && useradd --system --uid 1001 --gid nestjs nestjs
 COPY --from=build --chown=nestjs:nestjs /app/deploy ./
 USER nestjs
