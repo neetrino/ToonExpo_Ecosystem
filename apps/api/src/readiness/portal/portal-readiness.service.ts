@@ -5,6 +5,7 @@ import { ReadinessAssessmentTargetType, ReadinessVisibility } from '@toonexpo/db
 import type { CompanyMemberContext } from '../../company/types/company-member-context.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { toPortalReadinessAssessmentItem } from '../mappers/readiness.mapper.js';
+import { medianOfLatestScores } from './peer-median.js';
 
 @Injectable()
 export class PortalReadinessService {
@@ -30,8 +31,24 @@ export class PortalReadinessService {
     ]);
 
     const data = [...(companyAssessment ? [companyAssessment] : []), ...projectAssessments];
+    const peerMedianPercent = await this.loadPeerMedianPercent();
 
-    return { data };
+    return { data, peerMedianPercent };
+  }
+
+  private async loadPeerMedianPercent(): Promise<number | null> {
+    const rows = await this.prisma.db.readinessAssessment.findMany({
+      where: {
+        targetType: ReadinessAssessmentTargetType.builder_company,
+        projectId: null,
+        archivedAt: null,
+        overallScore: { not: null },
+      },
+      orderBy: { createdAt: 'desc' },
+      select: { builderCompanyId: true, overallScore: true },
+    });
+
+    return medianOfLatestScores(rows);
   }
 
   private async findActiveAssessment(
@@ -151,7 +168,10 @@ export class PortalReadinessService {
         orderBy: { category: { sortOrder: 'asc' as const } },
       },
       criterionScores: {
-        include: { criterion: true },
+        include: {
+          criterion: true,
+          statusEvents: { orderBy: { changedAt: 'asc' as const } },
+        },
       },
       recommendations: {
         where: { visibility: ReadinessVisibility.builder_visible },

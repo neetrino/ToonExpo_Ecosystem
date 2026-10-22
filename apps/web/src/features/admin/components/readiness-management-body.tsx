@@ -172,12 +172,19 @@ export const ReadinessManagementBody = ({ assessment }: ReadinessManagementBodyP
         if (!original) {
           return true;
         }
-        return original.value !== draft.value || original.checked !== draft.checked;
+        return (
+          original.value !== draft.value ||
+          original.checked !== draft.checked ||
+          original.dueDate !== draft.dueDate ||
+          original.priority !== draft.priority
+        );
       })
       .map(([criterionId, draft]) => ({
         criterionId,
         value: draft.value,
         checked: draft.checked,
+        dueDate: draft.dueDate,
+        priority: draft.priority,
       }));
 
     if (items.length === 0) {

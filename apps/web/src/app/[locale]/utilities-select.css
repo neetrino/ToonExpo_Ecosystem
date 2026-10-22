@@ -105,9 +105,9 @@
   }
 
   .site-select-option[aria-selected='true'] {
-    background-color: transparent;
-    font-weight: 500;
-    color: var(--color-ink);
+    background-color: var(--color-brand-soft);
+    font-weight: 600;
+    color: var(--color-brand-deep);
   }
 
   .site-select-option__check {
@@ -143,11 +143,16 @@
   }
 
   .site-select-option-row:has([aria-selected='true']) {
-    background-color: transparent;
+    background-color: var(--color-brand-soft);
   }
 
   .site-select-option-row:hover .site-select-option,
   .site-select-option-row:has([aria-selected='true']) .site-select-option {
     background-color: transparent;
+  }
+
+  .site-select-option-row:has([aria-selected='true']) .site-select-option {
+    font-weight: 600;
+    color: var(--color-brand-deep);
   }
 }

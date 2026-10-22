@@ -1,20 +1,22 @@
 'use client';
 
-import { ClipboardCheck } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { BuilderReadinessAssessmentPanel } from '@/features/builder/components/builder-readiness-assessment-panel';
 import { BUILDER_READINESS_PREVIEW_ASSESSMENT } from '@/features/builder/constants/builder-readiness-preview';
+import { useCompanyProfileQuery } from '@/features/builder/hooks/use-company-profile';
 import { usePortalReadinessQuery } from '@/features/builder/hooks/use-portal-readiness';
-import { PageTitleBlock } from '@/shared/ui/page-title-icon';
+import { BuilderReadinessReport } from '@/features/builder/readiness-report/builder-readiness-report';
+
+const PREVIEW_PEER_MEDIAN_PERCENT = 46;
 
 /**
- * Builder portal readiness page — KPI overview + criterion detail (read-only).
+ * Builder portal readiness page — client progress report (read-only).
  * When no assessment exists yet, shows a labeled preview sample of the full UI.
  */
 export const BuilderReadinessPage = () => {
   const t = useTranslations('Builder.readiness');
   const query = usePortalReadinessQuery();
+  const company = useCompanyProfileQuery();
 
   if (query.isLoading) {
     return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
@@ -31,11 +33,11 @@ export const BuilderReadinessPage = () => {
   const assessments = query.data.data;
   const isPreview = assessments.length === 0;
   const displayAssessments = isPreview ? [BUILDER_READINESS_PREVIEW_ASSESSMENT] : assessments;
+  const companyName = company.data?.name ?? t('companyAssessment');
+  const peerMedianPercent = isPreview ? PREVIEW_PEER_MEDIAN_PERCENT : query.data.peerMedianPercent;
 
   return (
-    <div className="flex flex-col gap-6">
-      <PageTitleBlock title={t('title')} subtitle={t('subtitle')} icon={ClipboardCheck} />
-
+    <div className="flex flex-col gap-8">
       {isPreview ? (
         <div
           role="status"
@@ -46,9 +48,15 @@ export const BuilderReadinessPage = () => {
         </div>
       ) : null}
 
-      <div className="flex flex-col gap-10">
+      <div className="flex flex-col gap-12">
         {displayAssessments.map((assessment) => (
-          <BuilderReadinessAssessmentPanel key={assessment.id} assessment={assessment} />
+          <BuilderReadinessReport
+            key={assessment.id}
+            assessment={assessment}
+            companyName={companyName}
+            logoUrl={company.data?.logoUrl ?? null}
+            peerMedianPercent={peerMedianPercent}
+          />
         ))}
       </div>
     </div>
