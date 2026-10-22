@@ -66,6 +66,10 @@ ENV NODE_ENV=production \
     HOME=/home/nextjs \
     pnpm_config_verify_deps_before_run=false
 WORKDIR /app
+# Coolify health checks curl from inside the container. The base stage does not install it.
+RUN apt-get update -y \
+  && apt-get install -y --no-install-recommends curl ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
 RUN groupadd --system --gid 1001 nodejs \
   && useradd --uid 1001 --gid nodejs --home-dir /home/nextjs --create-home --shell /usr/sbin/nologin nextjs \
   && cp -a /root/.cache /home/nextjs/.cache \
